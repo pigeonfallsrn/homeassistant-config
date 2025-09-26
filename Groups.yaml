@@ -1,0 +1,5 @@
+alaina_led_strips:
+  name: Alaina LED Strips
+  entities:
+    - light.kasa_led_strip_1
+    - light.kasa_led_strip_2

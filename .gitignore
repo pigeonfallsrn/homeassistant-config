@@ -1,0 +1,12 @@
+ecrets.yaml
+known_devices.yaml
+*.log
+*.db
+*.db-journal
+*.pid
+deps/
+tts/
+.cloud/
+.storage/
+home-assistant.log*
+home-assistant_v2.db*

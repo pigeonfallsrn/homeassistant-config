@@ -1,0 +1,15 @@
+# Bedtime sleep timers for each room
+dad_bedtime_timer:
+  name: Dad Bedtime Timer
+  duration: "00:00:00"
+  restore: true
+
+alaina_bedtime_timer:
+  name: Alaina Bedtime Timer
+  duration: "00:00:00"
+  restore: true
+
+ella_bedtime_timer:
+  name: Ella Bedtime Timer
+  duration: "00:00:00"
+  restore: true

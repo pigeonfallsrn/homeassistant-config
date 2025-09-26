@@ -1,0 +1,113 @@
+title: Test Dashboard
+background: center / cover no-repeat url("/local/test-bg.jpg")
+
+views:
+  - title: Test Hub
+    path: test-hub
+    icon: mdi:test-tube
+    theme: default
+    cards:
+
+      # -------------------
+      # Lights
+      # -------------------
+      - type: entities
+        title: 💡 Lights
+        show_header_toggle: false
+        entities:
+          - light.upstairs_hallway_color_floor_lamp_bulb
+          - light.alaina_s_bedside_color_lamp
+          - light.master_bedroom_wall_color_bulb
+          - light.ella_s_bedside_color_lamp
+
+      - type: entities
+        title: Light Groups (Fold Example)
+        entities:
+          - type: custom:fold-entity-row
+            head: light.upstairs_hallway_color_floor_lamp_bulb
+            entities:
+              - light.alaina_s_bedside_color_lamp
+              - light.master_bedroom_wall_color_bulb
+              - light.ella_s_bedside_color_lamp
+          - script.all_lights_off
+
+      # -------------------
+      # Thermostats
+      # -------------------
+      - type: entities
+        title: 🌡 Thermostats
+        entities:
+          - climate.basement_thermostat
+          - climate.pfp_west_nest_thermostat
+          - climate.pfp_east_nest_thermostat
+          - climate.garage_thermostat
+          - climate.first_floor_thermostat
+          - climate.upstairs
+
+      - type: custom:stack-in-card
+        mode: horizontal
+        title: 🌡 Thermostat Grid (Compact)
+        cards:
+          - type: thermostat
+            entity: climate.basement_thermostat
+            name: Basement
+          - type: thermostat
+            entity: climate.upstairs
+            name: Upstairs
+          - type: thermostat
+            entity: climate.garage_thermostat
+            name: Garage
+
+      # -------------------
+      # Temperatures
+      # -------------------
+      - type: glance
+        title: 🌡 Temperatures
+        entities:
+          - entity: sensor.basement_thermostat_temperature
+            name: Basement
+          - entity: sensor.pfp_west_nest_sensor_temperature
+            name: PFP West
+          - entity: sensor.pfp_east_nest_thermostat_sensor_temperature
+            name: PFP East
+          - entity: sensor.garage_thermostat_temperature
+            name: Garage
+          - entity: sensor.first_floor_thermostat_temperature
+            name: First Floor
+          - entity: sensor.upstairs_temperature
+            name: Upstairs
+
+      # -------------------
+      # Humidity
+      # -------------------
+      - type: glance
+        title: 💧 Humidity
+        entities:
+          - entity: sensor.pfp_west_nest_thermostat_sensor_humidity
+            name: PFP West
+          - entity: sensor.pfp_east_nest_thermostat_sensor_humidity
+            name: PFP East
+          - entity: sensor.garage_thermostat_humidity
+            name: Garage
+          - entity: sensor.basement_thermostat_humidity
+            name: Basement
+          - entity: sensor.first_floor_thermostat_humidity
+            name: First Floor
+          - entity: sensor.upstairs_humidity
+            name: Upstairs
+
+      # -------------------
+      # Weather
+      # -------------------
+      - type: weather-forecast
+        entity: weather.forecast_home
+        name: Local Weather
+
+      # -------------------
+      # Clock
+      # -------------------
+      - type: markdown
+        content: |
+          ⏰ **{{ now().strftime('%H:%M') }}**
+
+          📅 {{ now().strftime('%A, %B %d') }}

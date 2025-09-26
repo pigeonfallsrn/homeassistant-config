@@ -1,0 +1,58 @@
+title: Kitchen Dashboard
+background: center / cover no-repeat url("/local/kitchen-bg.jpg")
+
+views:
+  - title: Kitchen Hub
+    path: kitchen-hub
+    icon: mdi:fridge-outline
+    theme: default
+    cards:
+
+      # -------------------
+      # Calendar
+      # -------------------
+      - type: custom:atomic-calendar-revive
+        name: 📅 Family Calendar
+        entities:
+          - calendar.alaina_ella
+          - calendar.whitehall_6th_grade_volleyball
+          - calendar.bagc_maga_team_1_2_calendar
+        showLocation: true
+        showMonth: true
+        maxDaysToShow: 7
+        showWeekDay: true
+
+      # -------------------
+      # Lights Currently On
+      # -------------------
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: "💡 Lights Currently On"
+        filter:
+          include:
+            - domain: light
+              state: "on"
+        show_empty: false
+
+      # -------------------
+      # Turn All Lights Off
+      # -------------------
+      - type: button
+        name: "Turn All Lights Off"
+        icon: mdi:lightbulb-group-off-outline
+        tap_action:
+          action: call-service
+          service: light.turn_off
+          target:
+            entity_id: all
+        card_mod:
+          style: |
+            ha-card {
+              font-size: 12px;
+              padding: 4px;
+              background: #222;
+              color: #e74c3c;
+              border-radius: 8px;
+              text-align: center;
+            }

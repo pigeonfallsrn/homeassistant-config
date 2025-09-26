@@ -1,0 +1,113 @@
+title: Dad's Dashboard
+background: center / cover no-repeat url("/local/dad-bg.jpg")
+
+views:
+  - title: Dad’s Room
+    path: dad-room-dashboard
+    icon: mdi:account
+    theme: default
+    cards:
+
+      # -------------------
+      # Wake & Bed Buttons
+      # -------------------
+      - type: grid
+        title: "Wake & Bed Routines"
+        columns: 4
+        square: true
+        cards:
+          - type: button
+            name: Wake Quick
+            icon: mdi:weather-sunset-up
+            tap_action:
+              action: call-service
+              service: script.wake_dad_quick
+
+          - type: button
+            name: Wake 30m
+            icon: mdi:timer-30
+            tap_action:
+              action: call-service
+              service: script.wake_dad_30
+
+          - type: button
+            name: Wake 45m
+            icon: mdi:timer-45
+            tap_action:
+              action: call-service
+              service: script.wake_dad_45
+
+          - type: button
+            name: Wake 60m
+            icon: mdi:timer
+            tap_action:
+              action: call-service
+              service: script.wake_dad_60
+
+          - type: button
+            name: Bed Quick
+            icon: mdi:weather-night
+            tap_action:
+              action: call-service
+              service: script.bed_dad_quick
+
+          - type: button
+            name: Bed 30m
+            icon: mdi:timer-30
+            tap_action:
+              action: call-service
+              service: script.bed_dad_30
+
+          - type: button
+            name: Bed 45m
+            icon: mdi:timer-45
+            tap_action:
+              action: call-service
+              service: script.bed_dad_45
+
+          - type: button
+            name: Bed 60m
+            icon: mdi:timer
+            tap_action:
+              action: call-service
+              service: script.bed_dad_60
+
+      # -------------------
+      # Bedtime Timer Status
+      # -------------------
+      - type: entities
+        title: "⏳ Bedtime Timer Status"
+        entities:
+          - timer.dad_bedtime_timer
+
+      # -------------------
+      # Lights Currently On
+      # -------------------
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: "💡 Lights Currently On"
+        filter:
+          include:
+            - domain: light
+              state: "on"
+        show_empty: false
+
+      - type: button
+        name: "Turn All Lights Off"
+        icon: mdi:lightbulb-group-off-outline
+        tap_action:
+          action: call-service
+          service: light.turn_off
+          target:
+            entity_id: all
+        card_mod:
+          style: |
+            ha-card {
+              font-size: 12px;
+              padding: 4px;
+              background: #222;
+              color: #e74c3c;
+              border-radius: 8px;
+              text-align: center;
+            }

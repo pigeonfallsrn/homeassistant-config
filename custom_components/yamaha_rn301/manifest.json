@@ -1,0 +1,13 @@
+{
+  "domain": "yamaha_rn301",
+  "name": "Yamaha R-N301",
+  "codeowners": ["@rihokirss"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/rihokirss/homeasisstant-rn301#readme",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/rihokirss/homeasisstant-rn301/issues",
+  "requirements": [],
+  "version": "1.4.2"
+}

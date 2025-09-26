@@ -1,0 +1,55 @@
+###################################
+# ---- DAD BEDTIME TIMER FINISHED ----
+###################################
+
+- id: dad_bedtime_timer_finished
+  alias: "Dad – Bedtime Timer Finished"
+  description: "Turns off Dad's bedroom LED strip when the bedtime timer ends."
+  trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.dad_bedtime_timer
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.master_bedroom_led_light_strip
+  mode: single
+
+
+###################################
+# ---- ALAINA BEDTIME TIMER FINISHED ----
+###################################
+
+- id: alaina_bedtime_timer_finished
+  alias: "Alaina – Bedtime Timer Finished"
+  description: "Turns off Alaina's ceiling LED strip when the bedtime timer ends."
+  trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.alaina_bedtime_timer
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.alaina_s_ceiling_led_strip
+  mode: single
+
+
+###################################
+# ---- ELLA BEDTIME TIMER FINISHED ----
+###################################
+
+- id: ella_bedtime_timer_finished
+  alias: "Ella – Bedtime Timer Finished"
+  description: "Turns off Ella's LED lights when the bedtime timer ends."
+  trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.ella_bedtime_timer
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.ella_s_led_lights
+  mode: single
