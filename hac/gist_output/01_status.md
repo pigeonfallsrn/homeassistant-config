@@ -1,5 +1,5 @@
-# HA Status - 2026-01-23 12:55 CST
-Version: 2026.1.2 | HAC: v7.2
+# HA Status - 2026-01-23 13:04 CST
+Version: 2026.1.2 | HAC: v7.3
 
 ## People
 john_spencer: home
@@ -40,18 +40,17 @@ kitchen_table_manual_override: unavailable
 2026-01-23 12:28:58 presence_update_occupancy_combinations
 2026-01-23 12:28:58 presence_update_girls_status
 2026-01-23 12:28:58 presence_alaina_home
+2026-01-23 12:28:58 calendar_refresh_school_in_session_now
 2026-01-23 12:28:58 calendar_refresh_school_tomorrow
 2026-01-23 12:28:58 context_apply_on_occupancy_change
 2026-01-23 12:28:58 occupancy_update_mode
+2026-01-23 12:28:58 humidity_alert_2nd_floor_low_or_high
 2026-01-23 12:28:58 arrival_alaina_home
-2026-01-23 12:28:58 family_alaina_arrived_home
-2026-01-23 12:28:58 living_room_lamps_adaptive_control
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ living_room_lamps_adaptive_control: 16x
-⚠ entry_room_lamp_adaptive_lux_control: 10x
+⚠ living_room_lamps_adaptive_control: 20x
+⚠ entry_room_lamp_adaptive_lux_control: 14x
 ⚠ kitchen_lounge_lamp_adaptive_lux_control: 10x
-⚠ calendar_refresh_school_tomorrow: 4x
