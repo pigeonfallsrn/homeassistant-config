@@ -1,0 +1,33 @@
+=== SYSTEM STATE ===
+arch: aarch64
+audio_input: null
+audio_output: null
+backups_exclude_database: false
+boot: true
+duplicate_log_file: false
+image: ghcr.io/home-assistant/green-homeassistant
+ip_address: 172.30.32.1
+machine: green
+port: 8123
+ssl: false
+update_available: false
+version: 2025.12.4
+version_latest: 2025.12.4
+watchdog: false
+
+=== ENTITY COUNT ===
+
+=== TEMPLATE ENTITIES ===
+[36m2025-12-22 21:38:35.535 DEBUG (MainThread) [homeassistant.components.zha.entity] sensor.2nd_floor_bathroom_dual_smart_plug_power_2: Handling event from entity: EntityStateChangedEvent(event_type='entity', event='state_changed', platform=<Platform.SENSOR: 'sensor'>, unique_id='4c:e1:75:4c:d6:90:00:00-2-2820', device_ieee=4c:e1:75:4c:d6:90:00:00, endpoint_id=2, group_id=None)[0m
+[36m2025-12-22 21:38:36.384 DEBUG (MainThread) [homeassistant.components.zha.entity] sensor.2nd_floor_bathroom_dual_smart_plug_voltage: Handling event from entity: EntityStateChangedEvent(event_type='entity', event='state_changed', platform=<Platform.SENSOR: 'sensor'>, unique_id='4c:e1:75:4c:d6:90:00:00-1-2820-rms_voltage', device_ieee=4c:e1:75:4c:d6:90:00:00, endpoint_id=1, group_id=None)[0m
+[36m2025-12-22 21:38:36.494 DEBUG (MainThread) [homeassistant.components.zha.entity] sensor.2nd_floor_bathroom_dual_smart_plug_voltage_2: Handling event from entity: EntityStateChangedEvent(event_type='entity', event='state_changed', platform=<Platform.SENSOR: 'sensor'>, unique_id='4c:e1:75:4c:d6:90:00:00-2-2820-rms_voltage', device_ieee=4c:e1:75:4c:d6:90:00:00, endpoint_id=2, group_id=None)[0m
+
+=== RECENT ERRORS ===
+[33m2025-12-22 21:42:20.039 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+[33m2025-12-22 21:47:20.804 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+[33m2025-12-22 21:52:20.740 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+[33m2025-12-22 21:57:20.844 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+[33m2025-12-22 22:02:20.845 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+[33m2025-12-22 22:07:20.815 WARNING (MainThread) [aioamazondevices] Failed to obtain notification data.  Timers and alarms have not been updated[0m
+
+=== AUTOMATIONS STATUS ===

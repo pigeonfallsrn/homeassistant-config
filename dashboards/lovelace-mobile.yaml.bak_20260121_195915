@@ -1,0 +1,409 @@
+title: John's Mobile
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    type: sections
+    max_columns: 2
+    sections:
+      # === HEADER: Weather + Time + Temp ===
+      - type: grid
+        cards:
+          - type: custom:mushroom-chips-card
+            chips:
+              - type: weather
+                entity: weather.forecast_home
+                show_conditions: true
+                show_temperature: true
+              - type: template
+                icon: mdi:clock-outline
+                content: "{{ now().strftime('%-I:%M %p') }}"
+              - type: template
+                icon: mdi:thermometer
+                icon_color: "{% if states('sensor.first_floor_thermostat_temperature')|float > 72 %}orange{% elif states('sensor.first_floor_thermostat_temperature')|float < 66 %}blue{% else %}green{% endif %}"
+                content: "{{ states('sensor.first_floor_thermostat_temperature')|round }}°"
+            alignment: center
+
+      # === FAMILY PRESENCE - Clear text display ===
+      - type: grid
+        title: "👥 Family"
+        cards:
+          - type: custom:mushroom-template-card
+            primary: "🧔 John"
+            secondary: >
+              {% set loc = states('sensor.john_location') %}
+              {% set floor = states('sensor.john_floor_location') %}
+              {% if loc == 'Home' or states('input_boolean.john_home') == 'on' %}
+                🏠 Home{% if floor == '2nd_floor' %} · Upstairs{% elif floor == '1st_floor' %} · Downstairs{% endif %}
+              {% elif loc in ['unknown', 'unavailable', 'not_home'] %}
+                📍 Away
+              {% else %}
+                📍 {{ loc }}
+              {% endif %}
+            icon: mdi:face-man
+            icon_color: "{% if is_state('input_boolean.john_home','on') %}green{% else %}grey{% endif %}"
+            tap_action:
+              action: more-info
+              entity: person.john_spencer
+            layout: horizontal
+          - type: custom:mushroom-template-card
+            primary: "👩 Michelle"
+            secondary: >
+              {% set state = states('person.michelle') %}
+              {% if state == 'home' or is_state('binary_sensor.michelle_home_anywhere','on') %}
+                🏠 Home
+              {% elif state == 'Michelles_House' or 'michelle' in state|lower %}
+                🏡 Her House
+              {% elif 'traci' in state|lower %}
+                👩 Traci's
+              {% elif state in ['unknown', 'unavailable', 'not_home'] %}
+                📍 Away
+              {% else %}
+                📍 {{ state }}
+              {% endif %}
+            icon: mdi:face-woman-shimmer
+            icon_color: "{% if is_state('binary_sensor.michelle_home_anywhere','on') %}pink{% else %}grey{% endif %}"
+            tap_action:
+              action: more-info
+              entity: person.michelle
+            layout: horizontal
+          - type: custom:mushroom-template-card
+            primary: "👧 Ella"
+            secondary: >
+              {% set state = states('person.ella_spencer') %}
+              {% set floor = "" %}
+              {% if state == 'home' or is_state('input_boolean.ella_home','on') %}
+                🏠 Home{% if floor == '2nd_floor' %} · Upstairs{% elif floor == '1st_floor' %} · Downstairs{% endif %}
+              {% elif 'school' in state|lower or 'whitehall' in state|lower %}
+                🏫 School
+              {% elif 'michelle' in state|lower %}
+                🏡 Mom's
+              {% elif state in ['unknown', 'unavailable', 'not_home'] %}
+                📍 Away
+              {% else %}
+                📍 {{ state }}
+              {% endif %}
+            icon: mdi:face-woman
+            icon_color: "{% if is_state('input_boolean.ella_home','on') %}purple{% else %}grey{% endif %}"
+            tap_action:
+              action: more-info
+              entity: person.ella_spencer
+            layout: horizontal
+          - type: custom:mushroom-template-card
+            primary: "👧 Alaina"
+            secondary: >
+              {% set state = states('person.alaina_spencer') %}
+              {% set floor = states('sensor.alaina_floor_location') if states('sensor.alaina_floor_location') not in ['unknown','unavailable'] else '' %}
+              {% if state == 'home' or is_state('input_boolean.alaina_home','on') %}
+                🏠 Home{% if floor == '2nd_floor' %} · Upstairs{% elif floor == '1st_floor' %} · Downstairs{% endif %}
+              {% elif 'school' in state|lower or 'whitehall' in state|lower %}
+                🏫 School
+              {% elif 'michelle' in state|lower %}
+                🏡 Mom's
+              {% elif state in ['unknown', 'unavailable', 'not_home'] %}
+                📍 Away
+              {% else %}
+                📍 {{ state }}
+              {% endif %}
+            icon: mdi:face-woman
+            icon_color: "{% if is_state('input_boolean.alaina_home','on') %}cyan{% else %}grey{% endif %}"
+            tap_action:
+              action: more-info
+              entity: person.alaina_spencer
+            layout: horizontal
+
+      # === FAMILY MAP ===
+      - type: grid
+        title: "🗺️ Location"
+        cards:
+          - type: map
+            entities:
+              - entity: person.john_spencer
+              - entity: person.michelle
+              - entity: person.ella_spencer
+              - entity: person.alaina_spencer
+            dark_mode: true
+            default_zoom: 12
+            aspect_ratio: 16:9
+
+      # === GARAGE ===
+      - type: grid
+        title: "🚗 Garage"
+        cards:
+          - type: custom:mushroom-cover-card
+            entity: cover.ratgdo32disco_fd8d8c_door
+            name: North
+            icon: mdi:garage
+            show_buttons_control: true
+            layout: horizontal
+          - type: custom:mushroom-cover-card
+            entity: cover.ratgdo32disco_5735e8_door
+            name: South
+            icon: mdi:garage
+            show_buttons_control: true
+            layout: horizontal
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+                state: "on"
+            card:
+              type: custom:mushroom-template-card
+              primary: "⚠️ North Obstruction"
+              icon: mdi:alert
+              icon_color: red
+              layout: horizontal
+
+      # === QUICK ACTIONS ===
+      - type: grid
+        title: "⚡ Quick"
+        cards:
+          - type: custom:mushroom-template-card
+            primary: "Night"
+            icon: mdi:brightness-2
+            icon_color: "{% if is_state('input_boolean.preserve_night_vision','on') %}deep-purple{% else %}grey{% endif %}"
+            tap_action:
+              action: call-service
+              service: input_boolean.toggle
+              target:
+                entity_id: input_boolean.preserve_night_vision
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: "Guest"
+            icon: mdi:account-plus
+            icon_color: "{% if is_state('input_boolean.guest_present','on') %}cyan{% else %}grey{% endif %}"
+            tap_action:
+              action: call-service
+              service: input_boolean.toggle
+              target:
+                entity_id: input_boolean.guest_present
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: "Hot Tub"
+            icon: mdi:hot-tub
+            icon_color: "{% if is_state('input_boolean.hot_tub_mode','on') %}orange{% else %}grey{% endif %}"
+            tap_action:
+              action: call-service
+              service: input_boolean.toggle
+              target:
+                entity_id: input_boolean.hot_tub_mode
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: "All Off"
+            icon: mdi:lightbulb-off
+            icon_color: red
+            tap_action:
+              action: call-service
+              service: light.turn_off
+              target:
+                entity_id: all
+            layout: vertical
+
+      # === CLIMATE ===
+      - type: grid
+        title: "🌡️ Climate"
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.1st_floor_thermostat
+            name: "1st Flr"
+            collapsible_controls: true
+            show_temperature_control: true
+            layout: horizontal
+          - type: custom:mushroom-climate-card
+            entity: climate.master_nest_thermostat
+            name: "Master"
+            collapsible_controls: true
+            show_temperature_control: true
+            layout: horizontal
+          - type: custom:mushroom-climate-card
+            entity: climate.basement_nest_thermostat
+            name: "Bsmt"
+            collapsible_controls: true
+            show_temperature_control: true
+            layout: horizontal
+          - type: custom:mushroom-climate-card
+            entity: climate.garage_nest_thermostat
+            name: "Garage"
+            collapsible_controls: true
+            show_temperature_control: true
+            layout: horizontal
+
+      # === DOWNSTAIRS LIGHTS ===
+      - type: grid
+        title: "🏠 Downstairs"
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.entry_room
+            name: Entry
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.kitchen_lounge
+            name: Kitchen
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.living_room
+            name: Living
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.living_room_lounge
+            name: LR Lounge
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+
+      # === UPSTAIRS LIGHTS ===
+      - type: grid
+        title: "⬆️ Upstairs"
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.upstairs_hallway
+            name: Hall
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.master_bedroom
+            name: Master
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.ella_s_bedroom
+            name: Ella
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.alaina_s_bedroom
+            name: Alaina
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+
+      # === OUTSIDE ===
+      - type: grid
+        title: "🌙 Outside"
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.front_driveway
+            name: Driveway
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.back_patio
+            name: Patio
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.garage
+            name: Garage
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.hot_tub
+            name: Hot Tub
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+
+      # === SYSTEM ===
+      - type: grid
+        title: "⚙️ System"
+        cards:
+          - type: custom:mushroom-select-card
+            entity: input_select.occupancy_mode
+            name: Mode
+            layout: horizontal
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.school_tomorrow
+            name: School Tomorrow
+            tap_action:
+              action: toggle
+            layout: horizontal
+
+  - title: Garage
+    path: garage
+    icon: mdi:garage
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        title: "🚪 Doors"
+        cards:
+          - type: custom:mushroom-cover-card
+            entity: cover.ratgdo32disco_fd8d8c_door
+            name: North
+            show_buttons_control: true
+            layout: horizontal
+          - type: custom:mushroom-cover-card
+            entity: cover.ratgdo32disco_5735e8_door
+            name: South
+            show_buttons_control: true
+            layout: horizontal
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+            name: North Obstruction
+            layout: horizontal
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.ratgdo32disco_5735e8_obstruction
+            name: South Obstruction
+            layout: horizontal
+
+      - type: grid
+        title: "💡 Lights"
+        cards:
+          - type: custom:mushroom-light-card
+            entity: light.ratgdo32disco_fd8d8c_light
+            name: North Opener
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.ratgdo32disco_5735e8_light
+            name: South Opener
+            layout: horizontal
+          - type: custom:mushroom-light-card
+            entity: light.garage
+            name: Garage
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+            layout: horizontal
+
+  - title: Calendar
+    path: calendar
+    icon: mdi:calendar
+    cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: template
+            icon: mdi:calendar-today
+            icon_color: blue
+            content: "{{ now().strftime('%A, %b %-d') }}"
+        alignment: center
+      - type: calendar
+        entities:
+          - calendar.alaina_ella
+          - calendar.work
+          - calendar.john_michelle
+          - calendar.whitehall_middle_school_volleyball_calendar
+        initial_view: listWeek

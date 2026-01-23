@@ -1,0 +1,44 @@
+title: Kitchen
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    cards:
+      # Header with time and date
+      - type: markdown
+        content: |
+          # Kitchen Dashboard
+          {{ now().strftime('%I:%M %p') }}
+          {{ now().strftime('%A, %B %d, %Y') }}
+      
+      # Weather
+      - type: weather-forecast
+        entity: weather.forecast_home
+        forecast_type: daily
+        show_forecast: true
+      
+      # Kitchen Climate
+      - type: thermostat
+        entity: climate.kitchen_mini_split
+        name: Kitchen Temperature
+      
+      # Kitchen Lights - Quick Controls
+      - type: entities
+        title: Kitchen Lights
+        entities:
+          - entity: light.kitchen_ceiling_inovelli_vzm31_sn
+            name: Ceiling Light
+          - entity: light.kitchen_above_table_chandelier_inovelli
+            name: Table Chandelier
+          - entity: light.above_kitchen_sink_inovelli_switch
+            name: Sink Light
+      
+      # Living Room Quick Control
+      - type: light
+        entity: light.living_room_lounge_ceiling_hue_color_lights
+        name: Living Room
+      
+      # Master Bedroom Climate
+      - type: thermostat
+        entity: climate.master_nest_thermostat
+        name: Master Bedroom

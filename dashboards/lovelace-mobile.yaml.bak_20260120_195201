@@ -1,0 +1,225 @@
+title: Mobile
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    cards:
+      - type: markdown
+        content: |
+          # {{ states('sensor.house_occupancy_state') | default('Home') }}
+          **{{ states('sensor.people_home_count') | default('0') }} people home**
+          {{ now().strftime('%A, %B %d • %I:%M %p') }}
+
+      - type: glance
+        title: Family
+        show_name: true
+        show_state: true
+        columns: 4
+        entities:
+          - entity: sensor.john_location
+            name: John
+            icon: mdi:face-man
+          - entity: sensor.alaina_location
+            name: Alaina
+            icon: mdi:face-woman
+          - entity: sensor.ella_location
+            name: Ella
+            icon: mdi:face-woman
+          - entity: sensor.michelle_location
+            name: Michelle
+            icon: mdi:face-woman
+
+      - type: glance
+        title: John Detail
+        show_name: true
+        show_state: true
+        columns: 3
+        entities:
+          - entity: sensor.john_floor_location
+            name: Floor
+          - entity: binary_sensor.john_sleeping
+            name: Sleeping
+          - entity: binary_sensor.john_upstairs
+            name: Upstairs
+
+      - type: glance
+        title: Garage Doors
+        show_name: true
+        show_state: true
+        columns: 2
+        entities:
+          - entity: cover.ratgdo32disco_fd8d8c_door
+            name: North
+            tap_action:
+              action: toggle
+          - entity: cover.ratgdo32disco_5735e8_door
+            name: South
+            tap_action:
+              action: toggle
+
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+            state: "on"
+        card:
+          type: markdown
+          content: "⚠️ **North Garage Obstruction Detected**"
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Night Mode
+            icon: mdi:brightness-2
+            tap_action:
+              action: toggle
+            entity: input_boolean.preserve_night_vision
+          - type: button
+            name: Guest
+            icon: mdi:account-plus
+            tap_action:
+              action: toggle
+            entity: input_boolean.guest_present
+          - type: button
+            name: Hot Tub
+            icon: mdi:hot-tub
+            tap_action:
+              action: toggle
+            entity: input_boolean.hot_tub_mode
+
+      - type: horizontal-stack
+        cards:
+          - type: thermostat
+            entity: climate.1st_floor_thermostat
+            name: Down
+          - type: thermostat
+            entity: climate.upstairs_hallway_mini_split
+            name: Up
+
+      - type: entities
+        title: System
+        entities:
+          - entity: input_select.occupancy_mode
+          - entity: input_boolean.school_tomorrow
+          - entity: binary_sensor.anyone_upstairs
+            name: Anyone Upstairs
+
+      - type: entities
+        title: Lights
+        show_header_toggle: true
+        entities:
+          - entity: light.living_room_lounge_ceiling_hue_color_lights
+            name: Living Room
+          - entity: light.entry_room_ceiling_hue_white_lights
+            name: Entry
+          - entity: light.kitchen_chandelier_1of5
+            name: Kitchen
+          - entity: light.upstairs_hallway
+            name: Upstairs
+          - entity: light.master_bedroom
+            name: Master Bedroom
+          - entity: light.alaina_s_ceiling_led_lights
+            name: Alaina's Room
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: All Off
+            icon: mdi:lightbulb-off
+            tap_action:
+              action: call-service
+              service: light.turn_off
+              target:
+                entity_id: all
+          - type: button
+            name: Garage
+            icon: mdi:garage
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-mobile/garage
+
+  - title: Garage
+    path: garage
+    icon: mdi:garage
+    cards:
+      - type: entities
+        title: Garage Doors
+        entities:
+          - entity: cover.ratgdo32disco_fd8d8c_door
+            name: North Door
+          - entity: cover.ratgdo32disco_5735e8_door
+            name: South Door
+          - type: divider
+          - entity: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+            name: North Obstruction
+          - entity: binary_sensor.ratgdo32disco_5735e8_obstruction
+            name: South Obstruction
+          - type: divider
+          - entity: lock.ratgdo32disco_fd8d8c_lock_remotes
+            name: North Lock Remotes
+          - entity: lock.ratgdo32disco_5735e8_lock_remotes
+            name: South Lock Remotes
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Open North
+            icon: mdi:garage-open
+            tap_action:
+              action: call-service
+              service: cover.open_cover
+              target:
+                entity_id: cover.ratgdo32disco_fd8d8c_door
+          - type: button
+            name: Open South
+            icon: mdi:garage-open
+            tap_action:
+              action: call-service
+              service: cover.open_cover
+              target:
+                entity_id: cover.ratgdo32disco_5735e8_door
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Close North
+            icon: mdi:garage
+            tap_action:
+              action: call-service
+              service: cover.close_cover
+              target:
+                entity_id: cover.ratgdo32disco_fd8d8c_door
+          - type: button
+            name: Close South
+            icon: mdi:garage
+            tap_action:
+              action: call-service
+              service: cover.close_cover
+              target:
+                entity_id: cover.ratgdo32disco_5735e8_door
+
+      - type: entities
+        title: Garage Lights
+        entities:
+          - entity: light.ratgdo32disco_fd8d8c_light
+            name: North Opener Light
+          - entity: light.ratgdo32disco_5735e8_light
+            name: South Opener Light
+          - entity: light.garage_north_lift_master_garage_door_opener_west_light
+            name: North West
+          - entity: light.garage_north_lift_master_garage_door_opener_east_light
+            name: North East
+          - entity: light.garage_south_lift_master_garage_door_opener_west_light
+            name: South West
+          - entity: light.garage_south_lift_master_garage_door_opener_east_light
+            name: South East
+
+  - title: Calendar
+    path: calendar
+    icon: mdi:calendar
+    cards:
+      - type: calendar
+        entities:
+          - calendar.alaina_ella
+          - calendar.work
+          - calendar.john_michelle

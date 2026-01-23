@@ -1,0 +1,202 @@
+#!/bin/bash
+# HAC v6.1 - Home Assistant Context Manager
+set -e
+
+# === CONFIG ===
+HAC_DIR="/config/hac"
+OUTPUT_DIR="$HAC_DIR/gist_output"
+PACKAGES_DIR="/config/packages"
+DB_PATH="/config/home-assistant_v2.db"
+LEARNINGS_DIR="$HAC_DIR/learnings"
+TABLED_FILE="$HAC_DIR/tabled_projects.md"
+GIST_ID="b8a59919b8f0b71942fc21c10398f9a7"
+GITHUB_TOKEN_FILE="$HAC_DIR/.github_token"
+
+# === HELPERS ===
+log_ok() { echo -e "✓ $1"; }
+log_warn() { echo -e "⚠ $1"; }
+log_err() { echo -e "✗ $1"; }
+ensure_dirs() { mkdir -p "$OUTPUT_DIR" "$LEARNINGS_DIR" 2>/dev/null || true; }
+
+get_ha_version() {
+    curl -s "http://supervisor/core/api/config" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | \
+    python3 -c "import json,sys; print(json.load(sys.stdin).get('version','unknown'))" 2>/dev/null || echo "unknown"
+}
+
+# === GENERATORS ===
+generate_status() {
+    cat > "$OUTPUT_DIR/01_status.md" << INNER
+# HA Status - $(date '+%Y-%m-%d %H:%M')
+Version: $(get_ha_version)
+
+## People
+$(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 -c "
+import json,sys
+for e in json.load(sys.stdin):
+    if e['entity_id'].startswith('person.'): print(f\"{e['entity_id'].split('.')[1]}: {e['state']}\")" 2>/dev/null)
+
+## Modes
+$(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 -c "
+import json,sys
+for e in json.load(sys.stdin):
+    if e['entity_id'].startswith('input_boolean.'):
+        n=e['entity_id'].split('.')[1]
+        if any(x in n for x in ['_home','_mode','_override']) or n in ['school_tomorrow','guest_present','extended_evening','girls_home','both_girls_home']:
+            print(f\"{n}: {e['state']}\")" 2>/dev/null)
+
+## Triggers (last 20)
+$(sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT 20;" 2>/dev/null)
+
+## Errors (last 10)
+$(tail -500 /config/home-assistant.log 2>/dev/null | grep -iE "error|exception" | grep -v "DEBUG\|aiohttp\|httpx" | tail -10)
+
+## Entity Counts
+$(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 -c "
+import json,sys
+from collections import Counter
+data=json.load(sys.stdin)
+for d,c in Counter(e['entity_id'].split('.')[0] for e in data).most_common(15): print(f'{c:>6} {d}')" 2>/dev/null)
+INNER
+}
+
+generate_index() {
+    cat > "$OUTPUT_DIR/04_index.md" << INNER
+# Automation Index - $(date '+%Y-%m-%d %H:%M')
+Use: hac pkg <file> for full YAML with line numbers
+
+INNER
+    for f in "$PACKAGES_DIR"/*.yaml; do
+        [ -f "$f" ] || continue
+        echo "## $(basename $f)" >> "$OUTPUT_DIR/04_index.md"
+        grep -n "^  - id:\|^- id:" "$f" 2>/dev/null | sed 's/:  - id: /: /;s/:- id: /: /' >> "$OUTPUT_DIR/04_index.md"
+        echo "" >> "$OUTPUT_DIR/04_index.md"
+    done
+    [ -f "/config/automations.yaml" ] && echo "## automations.yaml" >> "$OUTPUT_DIR/04_index.md" && \
+        grep -n "^- id:" "/config/automations.yaml" 2>/dev/null | sed 's/:- id: /: /' >> "$OUTPUT_DIR/04_index.md"
+}
+
+generate_knowledge() {
+    cat > "$OUTPUT_DIR/03_knowledge.md" << INNER
+# System Knowledge - $(date '+%Y-%m-%d %H:%M')
+
+## Quick Ref
+- Packages: /config/packages/*.yaml
+- Presence: input_boolean.john_home (not binary_sensor)
+- North garage: cover.ratgdo32disco_fd8d8c_door
+- South garage: cover.ratgdo32disco_5735e8_door
+- Walk-in door: binary_sensor.aqara_door_and_window_sensor_door_3
+
+## Tabled Projects
+$(cat "$TABLED_FILE" 2>/dev/null || echo "None")
+
+## Recent Learnings
+$(cat "$LEARNINGS_DIR"/*.md 2>/dev/null | tail -30 || echo "None")
+INNER
+}
+
+generate_readme() {
+    cat > "$OUTPUT_DIR/00_README.md" << INNER
+# HAC Context - $(date '+%Y-%m-%d %H:%M')
+**HA Version:** $(get_ha_version) | **HAC:** v6.1
+
+## Commands
+| Cmd | Description |
+|-----|-------------|
+| hac push | Sync to gist (session start) |
+| hac q | New LLM session prompt |
+| hac pkg [f] | Package with line numbers |
+| hac ids [f] | Automation IDs + lines |
+| hac learn "x" | Add learning |
+| hac table "x" | Add tabled project |
+| hac status | Quick overview |
+| hac health | Full health check |
+
+## Rules
+1. Terminal only 2. && chaining 3. Backup before edit 4. Propose→approve
+INNER
+}
+
+sync_gist() {
+    [ ! -f "$GITHUB_TOKEN_FILE" ] && log_err "No GitHub token" && return 1
+    local token=$(cat "$GITHUB_TOKEN_FILE")
+    local files_json="{"
+    local first=true
+    for f in "$OUTPUT_DIR"/{00_README,01_status,03_knowledge,04_index}.md; do
+        [ -f "$f" ] || continue
+        local fn=$(basename "$f")
+        local content=$(python3 -c "import json; print(json.dumps(open('$f').read()))")
+        [ "$first" = true ] && first=false || files_json+=","
+        files_json+="\"$fn\":{\"content\":$content}"
+    done
+    files_json+="}"
+    curl -s -X PATCH -H "Authorization: token $token" -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/gists/$GIST_ID" -d "{\"files\":$files_json}" | grep -q '"id"' && log_ok "Gist synced" || log_err "Gist failed"
+}
+
+# === COMMANDS ===
+cmd_push() {
+    ensure_dirs
+    generate_readme; generate_status; generate_knowledge; generate_index
+    sync_gist
+    echo "═══════════════════════════════════════════════════════════"
+    echo "Fetch: https://gist.githubusercontent.com/pigeonfallsrn/$GIST_ID/raw/01_status.md"
+    echo "       https://gist.githubusercontent.com/pigeonfallsrn/$GIST_ID/raw/04_index.md"
+    echo "On-demand: hac pkg <file> | hac ids <file>"
+    echo "═══════════════════════════════════════════════════════════"
+}
+
+cmd_q() {
+    echo "═══════════════════════════════════════════════════════════"
+    echo "NEW LLM SESSION - Home Assistant"
+    echo "═══════════════════════════════════════════════════════════"
+    echo "Fetch these URLs:"
+    echo "  https://gist.githubusercontent.com/pigeonfallsrn/$GIST_ID/raw/01_status.md"
+    echo "  https://gist.githubusercontent.com/pigeonfallsrn/$GIST_ID/raw/04_index.md"
+    echo ""
+    echo "Rules: Terminal only | && chaining | Backup before edit"
+    echo "Context: hac pkg <file> | hac ids <file>"
+    echo "═══════════════════════════════════════════════════════════"
+}
+
+cmd_status() {
+    echo "=== $(get_ha_version) ===" 
+    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | \
+        python3 -c "import json,sys;[print(f\"{e['entity_id'].split('.')[1]}: {e['state']}\") for e in json.load(sys.stdin) if e['entity_id'].startswith('person.')]" 2>/dev/null
+    echo ""; sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT 5;" 2>/dev/null
+}
+
+cmd_pkg() {
+    [ -z "$1" ] && ls -1 "$PACKAGES_DIR"/*.yaml | xargs -n1 basename && return
+    local f="$PACKAGES_DIR/$1"; [ ! -f "$f" ] && f="/config/$1"; [ ! -f "$f" ] && log_err "Not found: $1" && return 1
+    echo "# $1 ($(wc -l < "$f") lines)"; cat -n "$f"
+}
+
+cmd_ids() {
+    if [ -z "$1" ]; then
+        for f in "$PACKAGES_DIR"/*.yaml; do [ -f "$f" ] && echo "## $(basename $f)" && grep -n "^  - id:\|^- id:" "$f" 2>/dev/null | sed 's/:  - id: /: /;s/:- id: /: /' && echo ""; done
+    else
+        local f="$PACKAGES_DIR/$1"; [ ! -f "$f" ] && f="/config/$1"; [ ! -f "$f" ] && log_err "Not found: $1" && return 1
+        grep -n "^  - id:\|^- id:" "$f" 2>/dev/null | sed 's/:  - id: /: /;s/:- id: /: /'
+    fi
+}
+
+cmd_learn() { [ -z "$1" ] && echo "Usage: hac learn \"note\"" && return; ensure_dirs; echo "- $(date '+%H:%M'): $1" >> "$LEARNINGS_DIR/$(date '+%Y%m%d').md"; log_ok "Added"; }
+cmd_table() { [ -z "$1" ] && cat "$TABLED_FILE" 2>/dev/null && return; ensure_dirs; echo "- $(date '+%Y-%m-%d'): $1" >> "$TABLED_FILE"; log_ok "Tabled"; }
+cmd_errors() { tail -500 /config/home-assistant.log 2>/dev/null | grep -iE "error|exception|fail" | grep -v "DEBUG\|aiohttp" | tail -"${1:-20}"; }
+cmd_triggers() { sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT ${1:-20};" 2>/dev/null; }
+
+cmd_health() {
+    echo "=== Health ===" 
+    curl -s "http://supervisor/core/api/config/config_entries/entry" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | \
+        python3 -c "import json,sys;d=json.load(sys.stdin);f=[e for e in d if e.get('state') not in ['loaded','not_loaded',None]];print('Integrations: '+('⚠ '+str(len(f))+' issues' if f else 'OK'))" 2>/dev/null
+    echo "Double-fires (1hr):"; sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_updated_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3;" 2>/dev/null | while IFS='|' read a c; do echo "  ⚠ $a: ${c}x"; done
+    ha core check 2>&1 | head -2
+}
+
+cmd_help() { echo "HAC v6.1: push|q|status|pkg|ids|learn|table|errors|triggers|health"; }
+
+case "${1:-}" in
+    push) cmd_push;; q) cmd_q;; status) cmd_status;; pkg) cmd_pkg "$2";; ids) cmd_ids "$2";;
+    learn) cmd_learn "$2";; table) cmd_table "$2";; errors) cmd_errors "$2";; triggers) cmd_triggers "$2";;
+    health) cmd_health;; *) cmd_help;;
+esac

@@ -1,0 +1,7 @@
+family:
+  name: Family
+  entities:
+    - person.john_spencer
+    - person.michelle
+    - person.alaina_spencer
+    - person.ella_spencer

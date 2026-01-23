@@ -139,6 +139,9 @@
       "enhancer": {
         "name": "Compressed Music Enhancer"
       },
+      "exbass": {
+        "name": "Extra Bass"
+      },
       "hdmiout": {
         "name": "HDMI Out"
       },
@@ -147,6 +150,9 @@
       },
       "hdmiout2": {
         "name": "HDMI Out 2"
+      },
+      "party": {
+        "name": "Party mode"
       },
       "puredirmode": {
         "name": "Pure Direct"
@@ -203,9 +209,9 @@
         "name": "Surround Decoder",
         "state": {
           "dolby_pl": "Dolby Pro Logic",
-          "dolby_plii_game": "Dolby Pro Logic II(x) Game",
-          "dolby_plii_movie": "Dolby Pro Logic II(x) Movie",
-          "dolby_plii_music": "Dolby Pro Logic II(x) Music",
+          "dolby_plii_game": "Dolby Pro Logic II Game",
+          "dolby_plii_movie": "Dolby Pro Logic II Movie",
+          "dolby_plii_music": "Dolby Pro Logic II Music",
           "dts_neo_6_cinema": "DTS NEO:6 Cinema",
           "dts_neo_6_music": "DTS NEO:6 Music",
           "auto": "Auto",
@@ -214,6 +220,19 @@
           "auro_3d": "AURO-3D"
         }
       }
+    },
+    "sensor": {
+      "inp": {
+        "name": "Source"
+      }
+    }
+  },
+  "exceptions": {
+    "config_entry_not_found": {
+      "message": "Config entry with id {config_entry_id} is invalid or not loaded."
+    },
+    "store_preset_not_supported_by_input": {
+      "message": "Storing presets is not supported by current input {input}."
     }
   },
   "services": {
@@ -221,6 +240,10 @@
       "name": "Send raw YNCA command",
       "description": "Send raw YNCA commands, intended for debugging. Responses can be seen in the 'history' part of the diagnostics file or in the Home Assistant logs after enabling debug logging on the Yamaha (YNCA) integration.",
       "fields": {
+        "config_entry_id": {
+          "name": "Yamaha (YNCA) instance",
+          "description": "The config entry representing the Yamaha receiver to handle the command(s)."
+        },
         "raw_data": {
           "name": "Raw YNCA data",
           "description": "Raw YNCA data to send. One command per line. Needs to follow YNCA format @SUBUNIT:FUNCTION=VALUE"

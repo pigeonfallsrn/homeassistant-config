@@ -1,0 +1,149 @@
+#!/bin/bash
+# HAC v5.0 - Home Assistant Command & AI Context System
+VERSION="5.0"
+CONTEXTS_DIR="/config/hac/contexts"
+DB="/config/home-assistant_v2.db"
+mkdir -p "$CONTEXTS_DIR"
+G='\033[0;32m';C='\033[0;36m';Y='\033[1;33m';R='\033[0;31m';N='\033[0m'
+
+get_entities() { grep '"entity_id"' /config/.storage/core.entity_registry | grep -o '"entity_id":"[^"]*"' | cut -d'"' -f4 | sort; }
+
+show_help() {
+    echo -e "${C}HAC v${VERSION} - Home Assistant Command & AI Context${N}"
+    echo -e "\n${Y}AI CONTEXT${N}"
+    echo "  q, quick       Minimal context + LLM rules"
+    echo "  c, claude      Full Claude context"
+    echo -e "\n${Y}DIAGNOSTICS${N}"
+    echo "  s, status      System health overview"
+    echo "  e, errors [N]  Recent errors (default 20)"
+    echo "  slow           Slow integrations"
+    echo -e "\n${Y}AUTOMATIONS${N}"
+    echo "  a, auto        Automation inventory"
+    echo "  t, triggers N  Recent triggers"
+    echo "  d, doubles     Double-trigger detection"
+    echo -e "\n${Y}ENTITIES${N}"
+    echo "  count          Entity counts"
+    echo "  search TERM    Search entities"
+    echo "  u, unavail     Unavailable entities"
+    echo -e "\n${Y}DATABASE${N}"
+    echo "  db             Database info"
+    echo "  h, history X   Entity history"
+    echo -e "\n${Y}MAINTENANCE${N}"
+    echo "  check          Config validation"
+    echo "  r, reload      Reload automations"
+    echo "  b, backup      Backup configs"
+    echo "  cs             Clean stale entities"
+    echo -e "\n${Y}HAC${N}"
+    echo "  list           Context files"
+    echo "  rules          LLM rules"
+}
+
+generate_base() {
+    echo "# HA Context $(date '+%Y-%m-%d %H:%M')"
+    echo "Location: Strum, WI | User: John Spencer"
+    ha core info 2>/dev/null | grep -E "^version" | head -1
+    echo "Entities: $(get_entities | wc -l) | Packages: $(ls /config/packages/*.yaml 2>/dev/null | wc -l)"
+    echo "## Packages"; ls /config/packages/*.yaml 2>/dev/null | xargs -n1 basename
+    echo "## Errors"; grep -i error /config/home-assistant.log 2>/dev/null | tail -3 || echo "None"
+}
+
+cmd_claude() {
+    local F="$CONTEXTS_DIR/claude_$(date +%Y%m%d_%H%M%S).md"
+    { echo "════════════════════════════════════════"; generate_base; } | tee "$F"
+    echo -e "${G}Saved: $F${N}"
+}
+
+cmd_quick() {
+    cat /config/hac/HAC_LLM_RULES.md 2>/dev/null
+    echo -e "\n# STATE: $(date '+%H:%M')"
+    echo "Entities: $(get_entities | wc -l) | Errors: $(grep -ci error /config/home-assistant.log 2>/dev/null)"
+}
+
+cmd_status() {
+    echo -e "${C}=== STATUS ===${N}"
+    echo "HA: $(ha core info 2>/dev/null | grep '^version' | cut -d: -f2)"
+    echo "Entities: $(get_entities | wc -l)"
+    echo "Unavailable: $(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | grep -o '"state":"unavailable"' | wc -l)"
+    echo -e "\n${C}=== AUTOMATIONS ===${N}"
+    echo "automations.yaml: $(grep -c '^- ' /config/automations.yaml 2>/dev/null)"
+    echo "main.yaml: $(grep -c '^- id:' /config/main.yaml 2>/dev/null)"
+    for p in /config/packages/*.yaml; do
+        c=$(grep -c -e '- id:' "$p" 2>/dev/null | head -1)
+        [ "$c" != "0" ] 2>/dev/null && echo "$(basename $p): $c"
+    done
+    echo -e "\n${C}=== RECENT ERRORS ===${N}"
+    grep -i error /config/home-assistant.log 2>/dev/null | tail -5 || echo "None"
+}
+
+cmd_errors() { grep -i error /config/home-assistant.log 2>/dev/null | tail -${1:-20}; }
+cmd_slow() { echo "Timeouts:"; grep -i timeout /config/home-assistant.log 2>/dev/null | grep -oE '\[[^]]+\]' | sort | uniq -c | sort -rn | head -10; }
+
+cmd_auto() {
+    echo -e "${C}=== AUTOMATIONS ===${N}"
+    echo "automations.yaml:"; grep -E '^\s*alias:' /config/automations.yaml 2>/dev/null | sed 's/.*alias:/  /'
+    echo "main.yaml:"; grep -E '^\s*alias:' /config/main.yaml 2>/dev/null | sed 's/.*alias:/  /'
+    for p in /config/packages/*.yaml; do
+        a=$(grep -E '^\s*alias:' "$p" 2>/dev/null)
+        [ -n "$a" ] && echo "$(basename $p):" && echo "$a" | sed 's/.*alias:/  /'
+    done
+}
+
+cmd_triggers() { sqlite3 "$DB" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),m.entity_id FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT ${1:-30};" 2>/dev/null; }
+
+cmd_doubles() {
+    echo -e "${C}=== DOUBLE TRIGGERS ===${N}"
+    sqlite3 "$DB" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),m.entity_id,COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' GROUP BY CAST(s.last_updated_ts AS INT),m.entity_id HAVING COUNT(*)>1 ORDER BY s.last_updated_ts DESC LIMIT 20;" 2>/dev/null
+}
+
+cmd_count() { get_entities | cut -d. -f1 | sort | uniq -c | sort -rn; }
+cmd_search() { get_entities | grep -i "$1"; }
+cmd_unavail() { curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | grep -o '"entity_id":"[^"]*","state":"unavailable"' | cut -d'"' -f4 | sort; }
+
+cmd_db() { echo "Size: $(ls -lh $DB | awk '{print $5}')"; sqlite3 "$DB" "SELECT 'states:'||COUNT(*) FROM states;SELECT 'events:'||COUNT(*) FROM events;" 2>/dev/null; }
+cmd_history() { sqlite3 "$DB" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),s.state FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id='$1' ORDER BY s.last_updated_ts DESC LIMIT 30;" 2>/dev/null; }
+
+cmd_check() { ha core check 2>&1; }
+cmd_reload() { curl -s -X POST http://supervisor/core/api/services/automation/reload -H "Authorization: Bearer $SUPERVISOR_TOKEN" && echo "Reloaded"; }
+cmd_backup() { D="/config/backups/hac_$(date +%Y%m%d_%H%M%S)"; mkdir -p "$D"; cp /config/automations.yaml /config/main.yaml "$D/" 2>/dev/null; cp -r /config/packages "$D/"; echo -e "${G}Saved: $D${N}"; }
+
+cmd_clean_stale() {
+    echo -e "${Y}=== STALE ENTITIES ===${N}"
+    stale=$(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" | grep -o '"entity_id":"automation\.[^"]*","state":"unavailable"' | cut -d'"' -f4)
+    [ -z "$stale" ] && echo "None found." && return
+    echo "$stale"
+    echo -e "\nRemove from registry? (y/N) "
+    read -r REPLY
+    if [ "$REPLY" = "y" ]; then
+        cp /config/.storage/core.entity_registry /config/.storage/core.entity_registry.bak
+        for e in $stale; do
+            python3 -c "import json;f='/config/.storage/core.entity_registry';d=json.load(open(f));d['data']['entities']=[x for x in d['data']['entities'] if x.get('entity_id')!='$e'];json.dump(d,open(f,'w'),indent=2)"
+            echo "Removed: $e"
+        done
+        echo -e "${G}Done. Restart HA to apply.${N}"
+    fi
+}
+
+cmd_list() { ls -lth "$CONTEXTS_DIR" | head -10; }
+cmd_rules() { cat /config/hac/HAC_LLM_RULES.md 2>/dev/null; }
+
+case "$1" in
+    q|quick) cmd_quick;; c|claude) cmd_claude;; s|status) cmd_status;;
+    e|errors) cmd_errors "$2";; slow) cmd_slow;; a|auto) cmd_auto;;
+    t|triggers) cmd_triggers "$2";; d|doubles) cmd_doubles;;
+    count) cmd_count;; search) cmd_search "$2";; u|unavail) cmd_unavail;;
+    db) cmd_db;; h|history) cmd_history "$2";;
+    check) cmd_check;; r|reload) cmd_reload;; b|backup) cmd_backup;;
+    cs|clean-stale) cmd_clean_stale;; list) cmd_list;; rules) cmd_rules;;
+    *) show_help;;
+esac
+
+cmd_ai() {
+    echo "# HA $(ha core info 2>/dev/null | grep -oP 'version: \K\S+') | $(date '+%Y-%m-%d %H:%M') | Strum, WI"
+    echo "E:$(get_entities | wc -l) U:$(curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | grep -o '"state":"unavailable"' | wc -l) A:$(grep -rch '^- id:' /config/automations.yaml /config/main.yaml /config/packages/*.yaml 2>/dev/null | paste -sd+ | bc)"
+    echo "## Packages"
+    ls /config/packages/*.yaml 2>/dev/null | xargs -n1 basename | paste -sd' '
+    echo "## Errors (last 5)"
+    grep -i error /config/home-assistant.log 2>/dev/null | tail -5 || echo "None"
+    echo "## Rules"
+    cat /config/hac/HAC_LLM_RULES.md 2>/dev/null
+}

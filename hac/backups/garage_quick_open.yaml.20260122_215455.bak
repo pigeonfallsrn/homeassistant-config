@@ -1,0 +1,159 @@
+# Garage Quick Open - North Door Only
+# Triggers: Approaching home (away) OR walk-in door opens (at home)
+# Single large actionable button
+# Created: 2026-01-22
+
+automation:
+  - id: garage_quick_open_north_door
+    alias: "Garage - Quick Open North Door Notification"
+    trigger:
+      # Trigger 1: Approaching home from away
+      - platform: numeric_state
+        entity_id: sensor.john_distance_to_home
+        below: 500
+        id: approaching
+      # Trigger 2: Walk-in door to garage opens
+      - platform: state
+        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+        to: "on"
+        id: walkin_door
+    condition:
+      - condition: or
+        conditions:
+          # Approaching: must be away
+          - condition: and
+            conditions:
+              - condition: trigger
+                id: approaching
+              - condition: state
+                entity_id: person.john_spencer
+                state: "not_home"
+          # Walk-in door: must be home
+          - condition: and
+            conditions:
+              - condition: trigger
+                id: walkin_door
+              - condition: state
+                entity_id: input_boolean.john_home
+                state: "on"
+      # Don't send if door already open
+      - condition: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        state: "closed"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "🚗 Garage"
+          message: "Tap to open North door"
+          data:
+            tag: "garage_quick_open"
+            ttl: 0
+            priority: high
+            importance: high
+            channel: alarm_stream
+            visibility: public
+            timeout: 120
+            notification_icon: "mdi:garage"
+            actions:
+              - action: "QUICK_OPEN_NORTH"
+                title: "OPEN NORTH DOOR"
+    mode: single
+
+  - id: garage_quick_open_north_action
+    alias: "Garage - Quick Open North Action Handler"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "QUICK_OPEN_NORTH"
+    action:
+      - service: cover.open_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_quick_open"
+    mode: single
+
+  - id: garage_quick_open_clear_on_open
+    alias: "Garage - Clear Quick Open When Door Opens"
+    trigger:
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: "open"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_quick_open"
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # North Door Opened - Momentary Close Option
+  # ---------------------------------------------------------------------------
+  - id: garage_north_opened_close_option
+    alias: "Garage - North Door Opened Close Option"
+    trigger:
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: "open"
+    action:
+      - delay:
+          seconds: 5
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "🚗 North Door Open"
+          message: "Tap to close"
+          data:
+            tag: "garage_north_close"
+            ttl: 0
+            priority: high
+            importance: high
+            channel: alarm_stream
+            visibility: public
+            timeout: 60
+            actions:
+              - action: "CLOSE_NORTH_NOW"
+                title: "CLOSE DOOR"
+    mode: single
+
+  - id: garage_north_close_action
+    alias: "Garage - North Close Action Handler"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "CLOSE_NORTH_NOW"
+    action:
+      - service: cover.close_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_north_close"
+    mode: single
+
+  # Clear close notification when door closes
+  - id: garage_north_close_clear
+    alias: "Garage - Clear Close Notification When Closed"
+    trigger:
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: "closed"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_north_close"
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_quick_open"
+    mode: single

@@ -1,0 +1,63 @@
+#!/bin/bash
+# HAC Context - Look up entity context from ENTITY_CONTEXT_MAP.md
+
+CONTEXT_FILE="/config/ENTITY_CONTEXT_MAP.md"
+
+if [ ! -f "$CONTEXT_FILE" ]; then
+    echo "ERROR: ENTITY_CONTEXT_MAP.md not found at $CONTEXT_FILE"
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo "Usage: hac context <entity_id>"
+    echo "       hac context list          # Show all documented entities"
+    echo "       hac context search <term> # Search for entities by keyword"
+    echo ""
+    echo "Example: hac context device_tracker.michelle_s_iphone_14_pro"
+    exit 0
+fi
+
+# List mode
+if [ "$1" = "list" ]; then
+    echo "=== Documented Entities ==="
+    grep "^### " "$CONTEXT_FILE" | sed 's/^### //' | sort
+    exit 0
+fi
+
+# Search mode
+if [ "$1" = "search" ]; then
+    if [ -z "$2" ]; then
+        echo "Usage: hac context search <keyword>"
+        exit 1
+    fi
+    echo "=== Searching for: $2 ==="
+    grep -i "$2" "$CONTEXT_FILE" | grep -v "^#" | head -20
+    exit 0
+fi
+
+# Entity lookup mode
+ENTITY="$1"
+
+# Find the entity section (starts with ### entity_id)
+FOUND=$(grep -n "^### $ENTITY" "$CONTEXT_FILE" | cut -d: -f1)
+
+if [ -z "$FOUND" ]; then
+    echo "Entity '$ENTITY' not found in context map."
+    echo ""
+    echo "Search for similar entities:"
+    echo "  hac context search ${ENTITY%%.*}"
+    echo ""
+    echo "Add this entity to the map:"
+    echo "  nano $CONTEXT_FILE"
+    exit 1
+fi
+
+# Extract from this entity to the next ### or ---
+awk -v start="$FOUND" '
+    NR >= start {
+        if (NR > start && /^###/) exit;
+        if (/^---/) exit;
+        print
+    }
+' "$CONTEXT_FILE"
+

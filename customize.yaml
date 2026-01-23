@@ -1,0 +1,29 @@
+switch.kitchen_lounge_tv_dual_smart_plug_switch:
+  friendly_name: "Kitchen Lounge Roku Plug"
+switch.kitchen_lounge_tv_dual_smart_plug_switch_2:
+  friendly_name: "Kitchen Lounge TV Plug"
+
+
+# Door Sensors - Named 2026-01-20
+binary_sensor.aqara_door_and_window_sensor_door:
+  friendly_name: "Back Patio Door"
+binary_sensor.aqara_door_and_window_sensor_door_2:
+  friendly_name: "Very Front Door"
+binary_sensor.aqara_door_and_window_sensor_door_3:
+  friendly_name: "Garage Walk-in Door"
+binary_sensor.aqara_door_and_window_sensor_door_4:
+  friendly_name: "Front Driveway Walk-in Door"
+binary_sensor.aqara_door_and_window_sensor_door_5:
+  friendly_name: "Garage South Bay Door"
+binary_sensor.aqara_door_and_window_sensor_door_6:
+  friendly_name: "Garage North Bay Door"
+
+# P1 Motion Sensors - Named 2026-01-20
+binary_sensor.aqara_motion_sensor_p1_occupancy:
+  friendly_name: "Kitchen Lounge P1 Motion"
+binary_sensor.aqara_motion_sensor_p1_occupancy_2:
+  friendly_name: "Upstairs Hallway P1 Motion"
+binary_sensor.aqara_motion_sensor_p1_occupancy_3:
+  friendly_name: "1st Floor Bathroom Hallway P1 Motion"
+binary_sensor.aqara_motion_sensor_p1_occupancy_6:
+  friendly_name: "Front Door Hallway P1 Motion"

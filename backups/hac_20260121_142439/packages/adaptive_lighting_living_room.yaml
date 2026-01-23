@@ -1,0 +1,280 @@
+# Living Room Lamps - Adaptive Lighting with Lux + Presence + Time Awareness
+# Covers: light.living_room_east_floor_lamp, light.living_room_lounge_lamp
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+
+input_number:
+  living_room_lux_threshold:
+    name: Living Room Lux Threshold
+    min: 10
+    max: 200
+    step: 10
+    initial: 50
+    unit_of_measurement: lux
+    icon: mdi:brightness-5
+
+input_boolean:
+  living_room_manual_override:
+    name: Living Room Manual Override
+    initial: false
+
+# =============================================================================
+# AUTOMATIONS
+# =============================================================================
+
+automation:
+  # ---------------------------------------------------------------------------
+  # Living Room Lamps - Motion Activated (using motionaware area sensor)
+  # ---------------------------------------------------------------------------
+  - id: living_room_lamps_adaptive_control
+    alias: "Living Room Lamps - Adaptive Control"
+    description: "Manages lamps based on motion, presence, time, and modes"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.living_rm_loungemotionaware_area
+        to: "on"
+        id: motion
+      - platform: state
+        entity_id: input_boolean.hot_tub_mode
+        id: hot_tub_toggle
+      - platform: state
+        entity_id: input_boolean.dad_bedtime_mode
+        to: "on"
+        id: bedtime_on
+    condition:
+      - condition: state
+        entity_id: input_boolean.living_room_manual_override
+        state: "off"
+    action:
+      - choose:
+          # HOT TUB MODE - Deep red, very dim
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "on"
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
+                data:
+                  rgb_color: [255, 30, 0]
+                  brightness_pct: 5
+                  transition: 2
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+
+          # DAD BEDTIME MODE - Fade off
+          - conditions:
+              - condition: trigger
+                id: bedtime_on
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
+                data:
+                  brightness_pct: 10
+                  color_temp_kelvin: 2200
+                  transition: 60
+              - delay:
+                  minutes: 15
+              - service: light.turn_off
+                target:
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
+                data:
+                  transition: 60
+
+          # MOTION + DARK - Turn on with AL
+          - conditions:
+              - condition: trigger
+                id: motion
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "off"
+              - condition: state
+                entity_id: input_boolean.dad_bedtime_mode
+                state: "off"
+              - condition: state
+                entity_id: sun.sun
+                state: "below_horizon"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+              - service: light.turn_on
+                target:
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
+                data:
+                  brightness_pct: "{{ states('sensor.evening_lamp_max_brightness') | int }}"
+
+          # HOT TUB MODE TURNED OFF - Restore AL
+          - conditions:
+              - condition: trigger
+                id: hot_tub_toggle
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "off"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+              - service: adaptive_lighting.apply
+                data:
+                  entity_id: switch.adaptive_lighting_living_spaces
+                  lights:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
+                  transition: 5
+
+  # ---------------------------------------------------------------------------
+  # Living Room Lamps - No Motion Timeout
+  # ---------------------------------------------------------------------------
+  - id: living_room_lamps_no_motion_dim
+    alias: "Living Room Lamps - Dim After 20min No Motion"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.living_room_motion
+        to: "off"
+        for:
+          minutes: 20
+    condition:
+      - condition: state
+        entity_id: input_boolean.living_room_manual_override
+        state: "off"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
+    action:
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+        data:
+          brightness_pct: 20
+          transition: 60
+    mode: single
+
+  - id: living_room_lamps_no_motion_off
+    alias: "Living Room Lamps - Off After 45min No Motion"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.living_room_motion
+        to: "off"
+        for:
+          minutes: 45
+    condition:
+      - condition: state
+        entity_id: input_boolean.living_room_manual_override
+        state: "off"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+        data:
+          transition: 60
+
+  # ---------------------------------------------------------------------------
+  # Living Room Lamps - Hard Off Time
+  # ---------------------------------------------------------------------------
+  - id: living_room_lamps_hard_off
+    alias: "Living Room Lamps - Hard Off at Evening End"
+    trigger:
+      - platform: template
+        value_template: >
+          {{ now().strftime('%H:%M') == states('sensor.evening_lamp_off_time') }}
+    condition:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+        data:
+          transition: 120
+
+  # ---------------------------------------------------------------------------
+  # Living Room Lamps - Everyone Left
+  # ---------------------------------------------------------------------------
+  - id: living_room_lamps_everyone_left
+    alias: "Living Room Lamps - Off When Everyone Leaves"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+    condition:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+        data:
+          transition: 30
+
+  # ---------------------------------------------------------------------------
+  # GLOBAL: Everyone Left - All Managed Lamps Off
+  # ---------------------------------------------------------------------------
+  - id: global_everyone_left_lamps_off
+    alias: "Global - All Adaptive Lamps Off When Everyone Leaves"
+    description: "Master switch - turns off all adaptive-managed lamps when house is empty"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.entry_room_hue_color_lamp
+            - light.kitchen_lounge_lamp
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+            - light.very_front_door_hallway
+        data:
+          transition: 10

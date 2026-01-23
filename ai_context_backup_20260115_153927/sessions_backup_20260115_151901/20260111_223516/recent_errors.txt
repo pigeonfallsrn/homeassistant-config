@@ -1,0 +1,1 @@
+[33m2026-01-11 22:35:10.229 WARNING (MainThread) [custom_components.hacs] You have 'custom-cards/spotify-card' installed with HACS this repository has been removed from HACS, please consider removing it. Removal reason (Repository is no longer maintained)[0m

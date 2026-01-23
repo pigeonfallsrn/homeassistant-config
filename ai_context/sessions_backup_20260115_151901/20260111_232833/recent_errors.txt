@@ -1,0 +1,6 @@
+[33m2026-01-11 23:27:44.985 WARNING (MainThread) [homeassistant.components.media_player] Setup of media_player platform alexa_media is taking over 10 seconds.[0m
+[33m2026-01-11 23:27:51.697 WARNING (MainThread) [homeassistant.components.media_player] Updating dlna_dmr media_player took longer than the scheduled update interval 0:00:10[0m
+[33m2026-01-11 23:27:51.698 WARNING (MainThread) [homeassistant.helpers.entity] Update of media_player.rx_v671 is taking over 10 seconds[0m
+[33m2026-01-11 23:27:51.706 WARNING (MainThread) [homeassistant.components.wyoming.assist_satellite] Satellite has been disconnected. Reconnecting in 10 second(s)[0m
+[31m2026-01-11 23:27:51.724 ERROR (MainThread) [homeassistant.components.roku.coordinator] Error fetching roku data: Invalid response from API: Timeout occurred while connecting to device[0m
+[33m2026-01-11 23:28:27.802 WARNING (MainThread) [custom_components.hacs] You have 'custom-cards/spotify-card' installed with HACS this repository has been removed from HACS, please consider removing it. Removal reason (Repository is no longer maintained)[0m

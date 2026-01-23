@@ -1,0 +1,17 @@
+- id: ai_context_notify
+  alias: "AI Context: Trigger Update"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.ai_context_pending
+      to: "on"
+  action:
+    - service: notify.mobile_app_samsung_s24_ultra
+      data:
+        title: "AI Session Done"
+        message: "Add to context?"
+        data:
+          actions:
+            - action: "AI_YES"
+              title: "Yes"
+            - action: "AI_NO"
+              title: "No"

@@ -1,0 +1,417 @@
+- id: '1766325027158'
+  alias: Entry Room - Inovelli Switch Controls
+  description: Control entry room Hue lights via Inovelli switch in smart bulb mode
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_id: d80c7fa6d013f0fd1cbdd6f67c6a1cac
+    trigger: event
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''on'' }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''off'' }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        action: light.turn_off
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''move_with_on_off'' and
+          trigger.event.data.args is defined and trigger.event.data.args|length >
+          0 and trigger.event.data.args[0] == 0 }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        data:
+          brightness_step_pct: 10
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''move'' and trigger.event.data.args
+          is defined and trigger.event.data.args|length > 0 and trigger.event.data.args[0]
+          == 1 }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        data:
+          brightness_step_pct: -10
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''stop'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''remote_set_level'' and
+          trigger.event.data.args is defined and trigger.event.data.args|length >
+          0 and trigger.event.data.args[0] == 254 }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        data:
+          brightness_pct: 100
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''remote_set_level'' and
+          trigger.event.data.args is defined and trigger.event.data.args|length >
+          0 and trigger.event.data.args[0] <= 25 }}'
+      sequence:
+      - target:
+          entity_id: light.entry_room
+        data:
+          brightness_pct: 10
+        action: light.turn_on
+  mode: single
+
+
+# ============================================================
+
+# 1ST FLOOR BATHROOM - Both Hue bulbs, config = scenes
+
+# KITCHEN LOUNGE - Hue bulbs + fan control
+
+# ============================================================
+
+
+# Reset overrides when someone comes home (fresh start each day)
+
+# Entry Room - On/Off/Dim/Scenes
+- id: 'entry_room_unified'
+  alias: Entry Room - Inovelli Controls
+  trigger:
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_id: d80c7fa6d013f0fd1cbdd6f67c6a1cac
+  action:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "on" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.entry_room_ceiling_hue_white_lights
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.entry_room_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "off" }}'
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.entry_room_ceiling_hue_white_lights
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.entry_room_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.entry_room_ceiling_hue_white_lights
+              data:
+                brightness: 255
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.entry_room_ceiling_hue_white_lights
+              data:
+                brightness: 5
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command in ["button_3", "button_3_press"] }}'
+          sequence:
+            - service: input_number.set_value
+              target:
+                entity_id: input_number.entry_room_scene_index
+              data:
+                value: "{{ (states('input_number.entry_room_scene_index')|int + 1) % 10 }}"
+            - service: python_script.inovelli_scene_apply
+              data:
+                lights:
+                  - light.entry_room_ceiling_hue_white_lights
+                scene_index: "{{ states('input_number.entry_room_scene_index')|int }}"
+  mode: single
+
+# Bathroom - On/Off/Dim/Scenes
+- id: 'bathroom_unified'
+  alias: 1st Floor Bathroom - Inovelli Controls
+  trigger:
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_id: 0600639e50d4e1ed71fdaa1ef789e678
+  action:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "on" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.1st_floor_bathroom_ceiling_1of2
+                  - light.1st_floor_bathroom_ceiling_2of2
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.bathroom_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "off" }}'
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.1st_floor_bathroom_ceiling_1of2
+                  - light.1st_floor_bathroom_ceiling_2of2
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.bathroom_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.1st_floor_bathroom_ceiling_1of2
+                  - light.1st_floor_bathroom_ceiling_2of2
+              data:
+                brightness: 255
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.1st_floor_bathroom_ceiling_1of2
+                  - light.1st_floor_bathroom_ceiling_2of2
+              data:
+                brightness: 5
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command in ["button_3", "button_3_press"] }}'
+          sequence:
+            - service: input_number.set_value
+              target:
+                entity_id: input_number.bathroom_scene_index
+              data:
+                value: "{{ (states('input_number.bathroom_scene_index')|int + 1) % 10 }}"
+            - service: python_script.inovelli_scene_apply
+              data:
+                lights:
+                  - light.1st_floor_bathroom_ceiling_1of2
+                  - light.1st_floor_bathroom_ceiling_2of2
+                scene_index: "{{ states('input_number.bathroom_scene_index')|int }}"
+  mode: single
+
+# Kitchen Lounge - On/Off/Dim + Fan Control
+- id: 'kitchen_lounge_unified'
+  alias: Kitchen Lounge - Inovelli Controls
+  trigger:
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_id: 5e2d477e04d216ab91a0c2f1364ab118
+  action:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "on" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.kitchen_lounge_ceiling_1of2
+                  - light.kitchen_lounge_ceiling_2of2
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.kitchen_lounge_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "off" }}'
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.kitchen_lounge_ceiling_1of2
+                  - light.kitchen_lounge_ceiling_2of2
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.kitchen_lounge_manual_override
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.kitchen_lounge_ceiling_1of2
+                  - light.kitchen_lounge_ceiling_2of2
+              data:
+                brightness: 255
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command == "move_to_level" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.kitchen_lounge_ceiling_1of2
+                  - light.kitchen_lounge_ceiling_2of2
+              data:
+                brightness: 5
+                transition: 3
+        
+        - conditions:
+            - condition: template
+              value_template: '{{ trigger.event.data.command in ["button_3", "button_3_press"] }}'
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: '{{ states("fan.kitchen_lounge_light_fan_inovelli_vzm36_fan") in ["off", "unknown", "unavailable"] }}'
+                  sequence:
+                    - service: fan.set_percentage
+                      target:
+                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+                      data:
+                        percentage: 33
+                - conditions:
+                    - condition: template
+                      value_template: '{{ state_attr("fan.kitchen_lounge_light_fan_inovelli_vzm36_fan", "percentage")|int <= 33 }}'
+                  sequence:
+                    - service: fan.set_percentage
+                      target:
+                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+                      data:
+                        percentage: 66
+                - conditions:
+                    - condition: template
+                      value_template: '{{ state_attr("fan.kitchen_lounge_light_fan_inovelli_vzm36_fan", "percentage")|int <= 66 }}'
+                  sequence:
+                    - service: fan.set_percentage
+                      target:
+                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+                      data:
+                        percentage: 100
+              default:
+                - service: fan.turn_off
+                  target:
+                    entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+  mode: single
+
+# Smart Auto-Off Automations
+- id: 'all_lights_midnight'
+  alias: All Lights - Midnight Auto-Off
+  trigger:
+    - platform: time
+      at: "00:00:00"
+  action:
+    - condition: state
+      entity_id: input_boolean.entry_room_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id: light.entry_room_ceiling_hue_white_lights
+    - condition: state
+      entity_id: input_boolean.bathroom_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.1st_floor_bathroom_ceiling_1of2
+          - light.1st_floor_bathroom_ceiling_2of2
+    - condition: state
+      entity_id: input_boolean.kitchen_lounge_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.kitchen_lounge_ceiling_1of2
+          - light.kitchen_lounge_ceiling_2of2
+  mode: single
+
+- id: 'all_lights_nobody_home'
+  alias: All Lights - Nobody Home Auto-Off
+  trigger:
+    - platform: state
+      entity_id: input_boolean.someone_home
+      to: "off"
+      for:
+        minutes: 5
+  action:
+    - condition: state
+      entity_id: input_boolean.entry_room_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id: light.entry_room_ceiling_hue_white_lights
+    - condition: state
+      entity_id: input_boolean.bathroom_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.1st_floor_bathroom_ceiling_1of2
+          - light.1st_floor_bathroom_ceiling_2of2
+    - condition: state
+      entity_id: input_boolean.kitchen_lounge_manual_override
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.kitchen_lounge_ceiling_1of2
+          - light.kitchen_lounge_ceiling_2of2
+    - service: fan.turn_off
+      target:
+        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+  mode: single
+
+- id: 'reset_overrides'
+  alias: Reset Overrides On Arrival
+  trigger:
+    - platform: state
+      entity_id: input_boolean.someone_home
+      to: "on"
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.entry_room_manual_override
+          - input_boolean.bathroom_manual_override
+          - input_boolean.kitchen_lounge_manual_override
+  mode: single

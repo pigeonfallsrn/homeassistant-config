@@ -1,0 +1,107 @@
+[2026-01-17 08:05] Completed comprehensive automation audit. Created 3 documents: INVENTORY (203 lines), HIERARCHY (109 lines), RECOMMENDATIONS, HIERARCHY, and RECOMMENDATIONS. 22 automations analyzed: 17 keep, 3 update, 1 delete, 5 new garage system deployed.
+[2026-01-17 08:14] Automation audit complete. Garage lighting system deployed and validated. Next: delete old garage automation, test system 2-3 days, update presence tracking to include Michelle.
+[2026-01-17 08:15] Created HAC_SYSTEM_GUIDE.md - comprehensive documentation for AI assistants on HAC system, data locations, workflows, and best practices. Ensures transparency and discoverability for multi-AI collaboration.
+[2026-01-17 08:16] Created HAC_SYSTEM_GUIDE.md (comprehensive AI assistant reference). Documents all HAC commands, data locations, workflows, best practices. Ensures complete transparency and discoverability for multi-AI collaboration. Any AI can now understand HAC system from scratch.
+[2026-01-17 08:16] === MAJOR SESSION COMPLETION ===
+Built complete garage lighting system (5 automations):
+  1. Arrival Lighting (door opens)
+  2. House Exit Lighting (walk-in door) 
+  3. Motion Keep-Alive (5min timeout)
+  4. Departure Auto-Off (20sec delay)
+  5. False Alarm Cleanup (3min window)
+
+Completed comprehensive automation audit:
+  - AUTOMATION_INVENTORY.md (203 lines) - Complete catalog with status
+  - AUTOMATION_HIERARCHY.md (109 lines) - Functional organization
+  - AUTOMATION_RECOMMENDATIONS.md (167 lines) - Prioritized action items
+  - Total: 479 lines of automation documentation
+  - Status: 17 keep, 3 update, 1 delete (old garage), 5 new
+
+Created HAC_SYSTEM_GUIDE.md (335 lines):
+  - Complete reference for AI assistants
+  - All commands documented with data sources
+  - Common workflows with examples
+  - Best practices for multi-AI collaboration
+  - Makes entire HAC system self-documenting
+
+System fully transparent and discoverable. Any AI can now:
+  - Understand HAC from scratch
+  - Find past work in .learnings
+  - Read entity context from ENTITY_CONTEXT_MAP
+  - Review automation status from audit docs
+  - Follow established workflows
+  - Contribute to knowledge base
+
+Next priorities:
+  1. Delete old garage automation (ID: 1767207374114)
+  2. Test new garage system (2-3 days)
+  3. Update "Everyone Away" to include Michelle
+  4. Complete person tracking (capture Michelle AP at 40154)
+  5. iPhone 17 setups for Alaina and Ella (weekend)
+[2026-01-17 08:16] === MAJOR SESSION COMPLETION ===
+Built complete garage lighting system (5 automations):
+  1. Arrival Lighting (door opens)
+  2. House Exit Lighting (walk-in door) 
+  3. Motion Keep-Alive (5min timeout)
+  4. Departure Auto-Off (20sec delay)
+  5. False Alarm Cleanup (3min window)
+
+Completed comprehensive automation audit:
+  - AUTOMATION_INVENTORY.md (203 lines) - Complete catalog with status
+  - AUTOMATION_HIERARCHY.md (109 lines) - Functional organization
+  - AUTOMATION_RECOMMENDATIONS.md (167 lines) - Prioritized action items
+  - Total: 479 lines of automation documentation
+  - Status: 17 keep, 3 update, 1 delete (old garage), 5 new
+
+Created HAC_SYSTEM_GUIDE.md (335 lines):
+  - Complete reference for AI assistants
+  - All commands documented with data sources
+  - Common workflows with examples
+  - Best practices for multi-AI collaboration
+  - Makes entire HAC system self-documenting
+
+System fully transparent and discoverable. Any AI can now:
+  - Understand HAC from scratch
+  - Find past work in .learnings
+  - Read entity context from ENTITY_CONTEXT_MAP
+  - Review automation status from audit docs
+  - Follow established workflows
+  - Contribute to knowledge base
+
+Next priorities:
+  1. Delete old garage automation (ID: 1767207374114)
+  2. Test new garage system (2-3 days)
+  3. Update "Everyone Away" to include Michelle
+  4. Complete person tracking (capture Michelle AP at 40154)
+  5. iPhone 17 setups for Alaina and Ella (weekend)
+[2026-01-17 08:23] Deleted old garage automation (ID: 1767207374114). System now clean with 5 new intelligent garage automations active. Testing phase begins. No conflicts detected on restart.
+[2026-01-17 08:28] Updated HAC to v4.1. Added audit commands (list/hierarchy/recommend), docs command, guide command. Fixed paths to ha-context-tools and .learnings. All AI collaboration packages now reference new documentation structure.
+[2026-01-17 08:30] Migrated ENTITY_CONTEXT_MAP.md from /config/ai_context/ to /config/ha-context-tools/. Consolidating all HAC documentation in single location.
+[2026-01-17 09:35] CLEANUP: Node-RED addon uninstalled successfully. custom_components remains empty; initiating search for moved files before re-installation.
+[2026-01-17 09:28] RECOVERY: custom_components directory is confirmed EMPTY. HACS and all dependent integrations (Navien, Yamaha, etc.) must be re-installed. Investigating if files were moved or deleted.
+[2026-01-17 09:35] CLEANUP: Node-RED addon uninstalled successfully. custom_components remains empty; initiating search for moved files before re-installation.
+[2026-01-17 09:48] RECOVERY: HACS bootstrap complete. System restarted. User moving to HACS UI to 'Redownload' Navien, Yamaha, and Adaptive Lighting. Mitsubishi requires a fresh search/install.
+[2026-01-17 10:25] RECOVERY: HACS UI restoration in progress. User is redownloading Navien, Yamaha, and Alexa. Investigating Mitsubishi fresh install.
+[2026-01-17 09:35] RECOVERY: Verified Node-RED removal and HACS bootstrap. Transitioning to HACS UI to manually 'Redownload' missing integration files.
+[2026-01-17 09:45] RESTORATION: All 5 integrations redownloaded. Triggering core restart to initialize recovered components.
+[2026-01-17 09:52] VERIFICATION: Integrations initialized. Checking entity states for Navien and Kumo Cloud.
+[2026-01-17 09:58] VERIFICATION: Reviewing logs for restored integrations after core restart.
+[2026-01-17 10:08] PROGRESS: All custom components (Navien, Kumo, Yamaha, Alexa) are physically restored and recognized by the Core. System is stable. Moving to UI-based entity verification.
+[2026-01-17 10:35] VERIFICATION: Files restored. Auditing live entity states for Navien and Kumo Cloud systems.
+[2026-01-17 11:05] VERIFICATION: Core config valid. Auditing log initialization for Navien, Kumo, Yamaha, and Alexa.
+[2026-01-17 10:45] PROJECT: ADB connection failures noted for 192.168.1.21 and .189. Potential smart plug power issue; deferred to future hardware audit.
+[2026-01-17 10:47] CLEANUP: Removing orphaned Node-RED configuration entry after successful addon uninstallation.
+[2026-01-17 10:10] HARDWARE: Kitchen Above Sink HS200 removed; replaced with Inovelli Blue. HS200 slated for 1st floor bathroom vanity (dimmer upgrade).
+[2026-01-17 10:12] DIAGNOSTIC: TP-Link 'Kitchen Above Sink' failure confirmed due to physical removal. Alaina's LED Strip 2 failure confirmed due to power-off state.
+[2026-01-17 10:15] VERIFICATION: Navien operational; monitoring Mitsubishi Kumo Cloud account link status.
+[2026-01-17 11:25] HARDWARE: TP-Link 'Kitchen Above Sink' HS200 physically removed; replaced by Inovelli Blue. HS200 reserved for 1st floor bathroom vanity upgrade.
+[2026-01-17 11:27] DIAGNOSTIC: TP-Link and ADB failures confirmed as power/physical removal issues (Alaina's Room/Kitchen). Focus shifting to Kumo Cloud initialization.
+[2026-01-17 10:55] HARDWARE: HS200 from Kitchen Above Sink removed; slated for 1st floor bathroom vanity upgrade. Inovelli Blue installed in its place.
+[2026-01-17 10:57] DIAGNOSTIC: TP-Link and ADB failures (Alaina's room/Kitchen) confirmed as power or physical removal issues. Mitsubishi and Navien fully recovered.
+[2026-01-17 10:08] /config/tablet_deployment/ENTITY_MAPPING.md
+[2026-01-17 10:55] HARDWARE: HS200 from Kitchen Above Sink removed; slated for 1st floor bathroom vanity upgrade. Inovelli Blue installed in its place.
+[2026-01-17 10:57] DIAGNOSTIC: TP-Link and ADB failures (Alaina's room/Kitchen) confirmed as power or physical removal issues. Mitsubishi and Navien fully recovered.
+[2026-01-17 10:55] HARDWARE: HS200 from Kitchen Above Sink removed; slated for bathroom vanity upgrade. Inovelli Blue active in kitchen.
+[2026-01-17 10:57] DIAGNOSTIC: TP-Link/ADB failures confirmed as power/physical issues. Mitsubishi, Navien, and Yamaha fully recovered.
+[2026-01-17 12:40] /config/tablet_deployment/ENTITY_MAPPING.md
+[2026-01-17 12:50] /config/tablet_deployment/ENTITY_MAPPING.md

@@ -1,0 +1,65 @@
+adaptive_lighting | Entry Room Ceiling Lights | null
+adaptive_lighting | Living Spaces | null
+alexa_devices | Pigeonfallsrn@gmail.com | null
+alexa_media | Pigeonfallsrn@gmail.com - amazon.com | null
+androidtv | 192.168.1.17 | null
+androidtv | 192.168.1.189 | null
+androidtv | 192.168.1.21 | null
+anthropic | Claude | null
+anthropic | Claude | null
+backup | Backup | null
+cast | Google Cast | null
+dlna_dmr | RX-V671 | null
+dlna_dms | HDHomeRun DMS 10977D67 | null
+dwains_dashboard |  | null
+esphome | ratgdo32disco 5735e8 | null
+esphome | ratgdo32disco fd8d8c | null
+go2rtc | go2rtc | null
+google | pigeonfallsrn@gmail.com | null
+google_translate | Google Translate text-to-speech | null
+group | Alaina's Ceiling LED Lights | null
+group | Entry Room Ceiling Hue White Lights | null
+group | Living Room Lamp Hue Color Lights | null
+group | Living Room Lounge Ceiling Hue Color Lights | null
+hacs |  | null
+hassio | Supervisor | null
+homeassistant_green | Home Assistant Green | null
+homekit_controller | FireTV AFTTIFF43 | null
+hue | Hue Bridge 00178868d58d | null
+matter | Matter | null
+met | Home | null
+met | Home | null
+mobile_app | Alaina’s iPhone 17 Phone | null
+mobile_app | Ella’s iPhone 17 Phone | null
+mobile_app | John's S24 Ultra Phone | null
+mobile_app | Kitchen Samsung Tablet Wall Mount | null
+moon | Moon | null
+music_assistant | Music Assistant | null
+nest | Pigeon Falls Lawn Care, LLC, Home | null
+nodered | name | null
+plex | https://192-168-1-52.89f45992833d4d05a161ce18d810ff26.plex.direct:32400 | null
+radio_browser | Radio Browser | null
+roku | Alaina's Bedroom Roku | null
+roku | Kitchen Lounge TV | null
+shelly | Upstairs Bathroom Fan | null
+shopping_list | Shopping list | null
+sonos | Sonos | null
+spotify | pigeonfallsrn | null
+sun | Sun | null
+thread | Thread | null
+tplink | Alaina's LED Light Strip 1 | null
+tplink | Alaina's LED Light Strip 2 | null
+tplink | Basement_Hallway_Smart_Switch HS200 | null
+tplink | Ella's LED lights KL400L10 | null
+tplink | Front Driveway Lights HS210 | null
+tplink | Living Room TV LED lights KL400L5 | null
+tplink | Master Bedroom LED Light Strip KL400L5 | null
+tplink | garage receiver HS100 | null
+unifi | Default | null
+unifiprotect | UDM PRO | null
+wyoming | Assist Microphone | null
+wyoming | Piper | null
+wyoming | Whisper | null
+wyoming | openWakeWord | null
+yamaha_ynca | RX-V671 | null
+zha | Sonoff Zigbee 3.0 USB Dongle Plus | null

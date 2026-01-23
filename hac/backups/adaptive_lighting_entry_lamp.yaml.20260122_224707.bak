@@ -1,0 +1,644 @@
+# Entry Room Lamp - Adaptive Lighting with Lux + Presence + Time Awareness
+# Also contains: Hot Tub Mode, Extended Evening, Global AL controls
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+
+input_boolean:
+  hot_tub_mode:
+    name: Hot Tub Mode
+    icon: mdi:hot-tub
+  extended_evening:
+    name: Extended Evening Mode
+    icon: mdi:weather-night-partly-cloudy
+
+input_number:
+  entry_room_lux_threshold:
+    name: Entry Room Lux Threshold
+    min: 10
+    max: 200
+    step: 10
+    initial: 50
+    unit_of_measurement: lux
+    icon: mdi:brightness-5
+
+template:
+  - sensor:
+      - name: "Entry Room Average Lux"
+        unique_id: entry_room_average_lux
+        unit_of_measurement: lux
+        device_class: illuminance
+        state: >
+          {% set east = states('sensor.entry_room_east_wall_nightlight_illuminance') | float(0) %}
+          {% set west = states('sensor.entry_room_west_wall_nightlight_illuminance') | float(0) %}
+          {{ ((east + west) / 2) | round(1) }}
+
+      # Dynamic evening off time based on conditions
+      - name: "Evening Lamp Off Time"
+        unique_id: evening_lamp_off_time
+        state: >
+          {% set kids_home = is_state('input_boolean.alaina_home', 'on') or is_state('input_boolean.ella_home', 'on') %}
+          {% set school = is_state('input_boolean.school_tomorrow', 'on') %}
+          {% if is_state('input_boolean.hot_tub_mode', 'on') %}
+            01:00
+          {% elif is_state('input_boolean.extended_evening', 'on') %}
+            00:30
+          {% elif is_state('input_boolean.guest_present', 'on') %}
+            00:30
+          {% elif kids_home and school %}
+            22:30
+          {% else %}
+            23:30
+          {% endif %}
+        icon: mdi:clock-outline
+
+      # Dynamic max brightness after wind-down time
+      - name: "Evening Lamp Max Brightness"
+        unique_id: evening_lamp_max_brightness
+        unit_of_measurement: "%"
+        state: >
+          {% set hour = now().hour %}
+          {% set minute = now().minute %}
+          {% set time_val = hour + minute/60 %}
+          {% set kids_home = is_state('input_boolean.alaina_home', 'on') or is_state('input_boolean.ella_home', 'on') %}
+          {% set school = is_state('input_boolean.school_tomorrow', 'on') %}
+          {% set extended = is_state('input_boolean.extended_evening', 'on') or is_state('input_boolean.guest_present', 'on') %}
+          {% set hot_tub = is_state('input_boolean.hot_tub_mode', 'on') %}
+          {% if hot_tub %}
+            5
+          {% elif extended %}
+            100
+          {% elif kids_home and school %}
+            {% if time_val >= 21.5 %}30{% else %}100{% endif %}
+          {% else %}
+            {% if time_val >= 22.5 %}30{% else %}100{% endif %}
+          {% endif %}
+
+# =============================================================================
+# AUTOMATIONS
+# =============================================================================
+
+automation:
+  # ---------------------------------------------------------------------------
+  # Extended Evening - Auto Set/Clear
+  # ---------------------------------------------------------------------------
+  - id: extended_evening_auto_set
+    alias: "Extended Evening - Auto Set for Weekends/Holidays"
+    trigger:
+      - platform: time
+        at: "18:00:00"
+    condition:
+      - condition: or
+        conditions:
+          - condition: time
+            weekday: [fri, sat]
+          - condition: state
+            entity_id: calendar.holidays_in_united_states
+            state: "on"
+          - condition: state
+            entity_id: input_boolean.guest_present
+            state: "on"
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.extended_evening
+
+  - id: extended_evening_auto_clear
+    alias: "Extended Evening - Auto Clear at 4am"
+    trigger:
+      - platform: time
+        at: "04:00:00"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.extended_evening
+
+  # ---------------------------------------------------------------------------
+  # Hot Tub Mode - Multiple Auto-Off Conditions
+  # ---------------------------------------------------------------------------
+  - id: hot_tub_mode_auto_reset
+    alias: "Hot Tub Mode - Auto Reset at 3am"
+    trigger:
+      - platform: time
+        at: "03:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "on"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.hot_tub_mode
+
+  - id: hot_tub_mode_auto_off_when_done
+    alias: "Hot Tub Mode - Auto Off When Back Inside"
+    description: "Turn off hot tub mode when back door closed 10 min OR nobody home"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.aqara_door_and_window_sensor_door
+        to: "off"
+        for:
+          minutes: 10
+        id: door_closed
+      - platform: time_pattern
+        minutes: "/5"
+        id: periodic_check
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+        id: nobody_home
+    condition:
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "on"
+    action:
+      - choose:
+          # Nobody home - immediate off
+          - conditions:
+              - condition: trigger
+                id: nobody_home
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.hot_tub_mode
+          # Door closed check
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.aqara_door_and_window_sensor_door
+                state: "off"
+                for:
+                  minutes: 10
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.hot_tub_mode
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Arrival - Turn On Adaptive Lighting + Welcome Light
+  # ---------------------------------------------------------------------------
+  - id: arrival_adaptive_lighting_on
+    alias: "Arrival - Adaptive Lighting Welcome"
+    description: "Turn on entry lamp when someone arrives after dark"
+    trigger:
+      # Person arrives home
+      - platform: state
+        entity_id:
+          - person.john_spencer
+          - person.alaina_spencer
+          - person.ella_spencer
+        to: "home"
+        id: person_arrived
+      # Garage door opens
+      - platform: state
+        entity_id:
+          - cover.ratgdo32disco_5735e8_door
+          - cover.ratgdo32disco_fd8d8c_door
+        to: "open"
+        id: garage_opened
+      # Front doors open
+      - platform: state
+        entity_id:
+          - binary_sensor.aqara_door_and_window_sensor_door_2
+          - binary_sensor.aqara_door_and_window_sensor_door_4
+        to: "on"
+        id: front_door_opened
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: "below_horizon"
+      - condition: numeric_state
+        entity_id: sensor.entry_room_average_lux
+        below: 50
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.dad_bedtime_mode
+        state: "off"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.adaptive_lighting_living_spaces
+      - service: light.turn_on
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          brightness_pct: "{{ states('sensor.evening_lamp_max_brightness') | int }}"
+
+  # ---------------------------------------------------------------------------
+  # Entry Room Lamp - Lux-Gated Adaptive Control
+  # ---------------------------------------------------------------------------
+  - id: entry_room_lamp_adaptive_control
+    alias: "Entry Room Lamp - Adaptive Lux Control"
+    description: "Manages lamp based on lux, presence, time, and modes"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.entry_room_average_lux
+        below: input_number.entry_room_lux_threshold
+        for:
+          seconds: 30
+        id: dark_enough
+      - platform: numeric_state
+        entity_id: sensor.entry_room_average_lux
+        above: 150
+        for:
+          seconds: 30
+        id: too_bright
+      - platform: state
+        entity_id: binary_sensor.entry_room_motion
+        to: "on"
+        for:
+          seconds: 2
+        id: motion
+      - platform: state
+        entity_id: input_boolean.hot_tub_mode
+        id: hot_tub_toggle
+      - platform: state
+        entity_id: input_boolean.entry_room_manual_override
+        to: "off"
+        id: override_cleared
+      - platform: state
+        entity_id: input_boolean.dad_bedtime_mode
+        to: "on"
+        id: bedtime_on
+    condition:
+      - condition: state
+        entity_id: input_boolean.entry_room_manual_override
+        state: "off"
+      # Debounce - prevent double-trigger from multiple motion sensors
+      - condition: template
+        value_template: >-
+          {{ (as_timestamp(now()) - as_timestamp(state_attr('automation.entry_room_lamp_adaptive_lux_control', 'last_triggered') | default(0))) > 5 }}
+      # Only respond to motion if light is currently off
+      - condition: or
+        conditions:
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: motion
+          - condition: state
+            entity_id: light.entry_room_hue_color_lamp
+            state: "off"
+    action:
+      - choose:
+          # HOT TUB MODE - Deep red, very dim
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "on"
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id: light.entry_room_hue_color_lamp
+                data:
+                  rgb_color: [255, 30, 0]
+                  brightness_pct: 5
+                  transition: 2
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+
+          # DAD BEDTIME MODE - Fade off
+          - conditions:
+              - condition: trigger
+                id: bedtime_on
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id: light.entry_room_hue_color_lamp
+                data:
+                  brightness_pct: 10
+                  color_temp_kelvin: 2200
+                  transition: 60
+              - delay:
+                  minutes: 15
+              - service: light.turn_off
+                target:
+                  entity_id: light.entry_room_hue_color_lamp
+                data:
+                  transition: 60
+
+          # ROOM TOO BRIGHT - Fade off
+          - conditions:
+              - condition: trigger
+                id: too_bright
+              - condition: state
+                entity_id: light.entry_room_hue_color_lamp
+                state: "on"
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id: light.entry_room_hue_color_lamp
+                data:
+                  transition: 120
+
+          # ROOM DARK + MOTION - Turn on with appropriate brightness
+          - conditions:
+              - condition: trigger
+                id: motion
+              - condition: numeric_state
+                entity_id: sensor.entry_room_average_lux
+                below: input_number.entry_room_lux_threshold
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "off"
+              - condition: state
+                entity_id: input_boolean.dad_bedtime_mode
+                state: "off"
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity_id: sun.sun
+                    state: "below_horizon"
+                  - condition: state
+                    entity_id: input_boolean.someone_home
+                    state: "on"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+              - service: light.turn_on
+                target:
+                  entity_id: light.entry_room_hue_color_lamp
+                data:
+                  brightness_pct: "{{ states('sensor.evening_lamp_max_brightness') | int }}"
+
+          # HOT TUB MODE TURNED OFF - Restore AL control
+          - conditions:
+              - condition: trigger
+                id: hot_tub_toggle
+              - condition: state
+                entity_id: input_boolean.hot_tub_mode
+                state: "off"
+            sequence:
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.adaptive_lighting_living_spaces
+              - condition: state
+                entity_id: light.entry_room_hue_color_lamp
+                state: "on"
+              - service: adaptive_lighting.apply
+                data:
+                  entity_id: switch.adaptive_lighting_living_spaces
+                  lights:
+                    - light.entry_room_hue_color_lamp
+                  transition: 5
+
+  # ---------------------------------------------------------------------------
+  # Entry Room Lamp - No Motion Timeout
+  # ---------------------------------------------------------------------------
+  - id: entry_room_lamp_no_motion_dim
+    alias: "Entry Room Lamp - Dim After 15min No Motion"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entry_room_motion
+        to: "off"
+        for:
+          minutes: 15
+    condition:
+      - condition: state
+        entity_id: input_boolean.entry_room_manual_override
+        state: "off"
+      # Only respond to motion if light is currently off
+      - condition: or
+        conditions:
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: motion
+          - condition: state
+            entity_id: light.entry_room_hue_color_lamp
+            state: "off"
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: "on"
+      - condition: numeric_state
+        entity_id: light.entry_room_hue_color_lamp
+        attribute: brightness
+        above: 50
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          brightness_pct: 20
+          transition: 60
+    mode: single
+
+  - id: entry_room_lamp_no_motion_off
+    alias: "Entry Room Lamp - Off After 30min No Motion"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entry_room_motion
+        to: "off"
+        for:
+          minutes: 30
+    condition:
+      - condition: state
+        entity_id: input_boolean.entry_room_manual_override
+        state: "off"
+      # Only respond to motion if light is currently off
+      - condition: or
+        conditions:
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: motion
+          - condition: state
+            entity_id: light.entry_room_hue_color_lamp
+            state: "off"
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          transition: 60
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Entry Room Lamp - Hard Off Time
+  # ---------------------------------------------------------------------------
+  - id: entry_room_lamp_hard_off
+    alias: "Entry Room Lamp - Hard Off at Evening End"
+    trigger:
+      - platform: template
+        value_template: >
+          {{ now().strftime('%H:%M') == states('sensor.evening_lamp_off_time') }}
+    condition:
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          transition: 120
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Everyone Left - Lamps Off
+  # ---------------------------------------------------------------------------
+  - id: entry_room_lamp_everyone_left
+    alias: "Entry Room Lamp - Off When Everyone Leaves"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          transition: 30
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Global AL Off - Nobody Home or Late Night
+  # ---------------------------------------------------------------------------
+  - id: adaptive_lighting_global_off
+    alias: "Adaptive Lighting - Off When Nobody Home or Late Night"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+        id: nobody_home
+      - platform: template
+        value_template: >
+          {% set off_time = states('sensor.evening_lamp_off_time') %}
+          {{ now().strftime('%H:%M') == off_time }}
+        id: hard_off_time
+    condition:
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.adaptive_lighting_living_spaces
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Hot Tub Mode - Actionable Notification
+  # ---------------------------------------------------------------------------
+  - id: hot_tub_mode_notification
+    alias: "Hot Tub Mode - Reminder Notification"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.hot_tub_mode
+        to: "on"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "Hot Tub Mode Active"
+          message: "Adaptive lighting paused. Entry lamp set to red."
+          data:
+            tag: "hot_tub_mode"
+            persistent: true
+            actions:
+              - action: "HOT_TUB_OFF"
+                title: "Turn Off"
+              - action: "HOT_TUB_SNOOZE_30"
+                title: "Snooze 30m"
+              - action: "HOT_TUB_SNOOZE_60"
+                title: "Snooze 1hr"
+    mode: single
+
+  - id: hot_tub_mode_notification_actions
+    alias: "Hot Tub Mode - Handle Notification Actions"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HOT_TUB_OFF"
+        id: turn_off
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HOT_TUB_SNOOZE_30"
+        id: snooze_30
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HOT_TUB_SNOOZE_60"
+        id: snooze_60
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: turn_off
+            sequence:
+              - service: input_boolean.turn_off
+                target:
+                  entity_id: input_boolean.hot_tub_mode
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "hot_tub_mode"
+
+          - conditions:
+              - condition: trigger
+                id: snooze_30
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "hot_tub_mode"
+              - delay:
+                  minutes: 30
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  title: "Hot Tub Mode Still Active"
+                  message: "30 minute snooze ended."
+                  data:
+                    tag: "hot_tub_mode"
+                    persistent: true
+                    actions:
+                      - action: "HOT_TUB_OFF"
+                        title: "Turn Off"
+                      - action: "HOT_TUB_SNOOZE_30"
+                        title: "Snooze 30m"
+                      - action: "HOT_TUB_SNOOZE_60"
+                        title: "Snooze 1hr"
+
+          - conditions:
+              - condition: trigger
+                id: snooze_60
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "hot_tub_mode"
+              - delay:
+                  minutes: 60
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  title: "Hot Tub Mode Still Active"
+                  message: "1 hour snooze ended."
+                  data:
+                    tag: "hot_tub_mode"
+                    persistent: true
+                    actions:
+                      - action: "HOT_TUB_OFF"
+                        title: "Turn Off"
+                      - action: "HOT_TUB_SNOOZE_30"
+                        title: "Snooze 30m"
+                      - action: "HOT_TUB_SNOOZE_60"
+                        title: "Snooze 1hr"
+    mode: single

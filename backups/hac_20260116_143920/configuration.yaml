@@ -1,0 +1,99 @@
+# Standard Configuration
+default_config:
+frontend:
+history:
+logbook:
+map:
+sun:
+
+# CONSOLIDATED TEMPLATES
+template:
+  - binary_sensor:
+      - name: "Family Home WiFi"
+        device_class: presence
+        state: >
+          {{ is_state('sensor.alainas_iphone_ssid_2', 'Spencer') or 
+             is_state('binary_sensor.johns_phone_static', 'on') or
+             is_state('binary_sensor.ellas_phone_static', 'on') }}
+      
+      - name: "Michelle Present"
+        device_class: presence
+        state: "{{ is_state('binary_sensor.michelle_phone_presence', 'on') }}"
+      
+      - name: "Anyone Home"
+        unique_id: anyone_home_presence
+        device_class: presence
+        state: >
+          {{ is_state('person.john_spencer', 'home') or 
+             is_state('person.michelle', 'home') or 
+             is_state('person.alaina', 'home') or 
+             is_state('person.ella', 'home') }}
+  
+  - sensor:
+      - name: "2nd Floor AP Clients"
+        unique_id: 2nd_floor_ap_clients
+        state: >
+          {% set devices = ['device_tracker.alaina_iphone','device_tracker.ella_iphone','device_tracker.john_s24'] %}
+          {{ devices | select('is_state', 'home') | list | count }}
+        unit_of_measurement: "devices"
+
+# Includes
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# HTTP Configuration
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+
+# Homeassistant Configuration
+homeassistant:
+  packages: !include_dir_named packages
+
+# Adaptive Lighting
+adaptive_lighting: !include adaptive_lighting.yaml
+
+# Scene Index Helpers (CONSOLIDATED - NO DUPLICATES)
+input_number:
+  entry_room_scene_index:
+    name: Entry Room Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  bathroom_scene_index:
+    name: Bathroom Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  kitchen_lounge_scene_index:
+    name: Kitchen Lounge Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  kitchen_table_scene_index:
+    name: Kitchen Table Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+
+# Override flags
+input_boolean:
+  entry_room_manual_override:
+    name: Entry Room Manual Override
+    initial: false
+  bathroom_manual_override:
+    name: Bathroom Manual Override
+    initial: false
+  kitchen_lounge_manual_override:
+    name: Kitchen Lounge Manual Override
+    initial: false

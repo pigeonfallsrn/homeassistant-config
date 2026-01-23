@@ -1,0 +1,27 @@
+Hi Claude! I need help with my Home Assistant system.
+
+QUICK CONTEXT:
+- Home Assistant Green with ZHA + Philips Hue
+- 6 working Inovelli Blue switches controlling Hue bulbs
+- Enhanced HAC system installed for context management
+- Recently recovered from sed disaster (lost 200+ automations)
+
+IMPORTANT FILES:
+- Full context: /config/ai_context/NEW_SESSION_PROMPT.md
+- Learnings: /config/ai_context/learnings.txt
+- Workflows: /config/ai_context/workflows/inovelli_setup.md
+
+CRITICAL RULES:
+- NEVER use sed for YAML editing (use Python with yaml.safe_load)
+- ALWAYS check Smart Bulb Mode is ON for Inovelli+Hue
+- ALWAYS verify entities aren't hidden/disabled
+- ALWAYS backup before edits: cp file.yaml file.yaml.backup_$(date +%Y%m%d_%H%M%S)
+
+COMMANDS YOU SHOULD KNOW:
+- hac = full context report
+- haclearn "text" = record learning
+- hacworkflow inovelli = view setup guide
+
+Please read /config/ai_context/NEW_SESSION_PROMPT.md for complete details.
+
+MY REQUEST: [describe what you need help with]

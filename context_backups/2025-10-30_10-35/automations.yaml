@@ -1,0 +1,826 @@
+- id: dad_bedtime_timer_finished
+  alias: "Dad \u2013 Bedtime Timer Finished"
+  description: Turns off Dad's bedroom LED strip when the bedtime timer ends.
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.dad_bedtime_timer
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.master_bedroom_led_light_strip
+  mode: single
+- id: alaina_bedtime_timer_finished
+  alias: "Alaina \u2013 Bedtime Timer Finished"
+  description: Turns off Alaina's ceiling LED strip when the bedtime timer ends.
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.alaina_bedtime_timer
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.alaina_s_ceiling_led_strip
+  mode: single
+- id: ella_bedtime_timer_finished
+  alias: "Ella \u2013 Bedtime Timer Finished"
+  description: Turns off Ella's LED lights when the bedtime timer ends.
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.ella_bedtime_timer
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.ella_s_led_lights
+  mode: single
+- id: bathroom_fan_auto_on_humidity
+  alias: "Bathroom Fan \u2013 Auto ON (RH \u2265 70% for 1 min)"
+  mode: restart
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+    above: 70
+    for: 00:01:00
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.upstairs_bathroom_fan
+- id: bathroom_fan_auto_off_humidity
+  alias: "Bathroom Fan \u2013 Auto OFF (RH \u2264 60% for 10 min)"
+  mode: restart
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+    below: 60
+    for: 00:10:00
+  action:
+  - service: switch.turn_off
+    target:
+      entity_id: switch.upstairs_bathroom_fan
+- id: everyone_away_lights_off
+  alias: "Everyone Away \u2192 All Lights Off"
+  mode: single
+  trigger:
+  - platform: state
+    entity_id:
+    - person.john_spencer
+    - person.alaina_spencer
+    - person.ella_spencer
+    to: not_home
+  condition:
+  - condition: state
+    entity_id: person.john_spencer
+    state: not_home
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: not_home
+  - condition: state
+    entity_id: person.ella_spencer
+    state: not_home
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: all
+- id: first_person_home_lights_on
+  alias: "First Person Home After Dark \u2192 Entry Lights On"
+  mode: single
+  trigger:
+  - platform: state
+    entity_id:
+    - person.john_spencer
+    - person.alaina_spencer
+    - person.ella_spencer
+    to: home
+  condition:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.entry_room
+      - light.upstairs_hallway
+      - light.living_room
+- id: alaina_bedtime_lights_dim
+  alias: "Alaina Bedtime \u2192 Dim Lights (8:30 PM)"
+  mode: single
+  trigger:
+  - platform: time
+    at: '20:30:00'
+  condition:
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: home
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.alaina_s_ceiling_led_strip
+    data:
+      brightness_pct: 20
+      color_temp_kelvin: 2200
+- id: ella_bedtime_lights_dim
+  alias: "Ella Bedtime \u2192 Dim Lights (8:30 PM)"
+  mode: single
+  trigger:
+  - platform: time
+    at: '20:30:00'
+  condition:
+  - condition: state
+    entity_id: person.ella_spencer
+    state: home
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.ella_s_led_lights
+    data:
+      brightness_pct: 20
+      color_temp_kelvin: 2200
+- id: entry_room_motion_brightness_boost
+  alias: "Entry Room Motion \u2192 Brightness Boost"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.entry_room_east_wall_nightlight_motion
+    - binary_sensor.entry_room_west_wall_nightlight_motion
+    - binary_sensor.entry_room_motion
+    to: 'on'
+  condition:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.entry_room
+    data:
+      brightness_pct: 100
+      transition: 1
+  - delay: 00:05:00
+  - service: adaptive_lighting.apply
+    target:
+      entity_id: light.entry_room
+    data:
+      entity_id: switch.adaptive_lighting_living_spaces
+- id: upstairs_hallway_motion_brightness_boost
+  alias: "Upstairs Hallway Motion \u2192 Brightness Boost"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.upstairs_hallway_main_nightlight_motion
+    - binary_sensor.upstairs_hallway_east_wall_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.upstairs_hallway
+    data:
+      brightness_pct: 100
+      transition: 1
+  - delay: 00:03:00
+  - service: adaptive_lighting.apply
+    target:
+      entity_id: light.upstairs_hallway
+    data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      transition: 30
+- id: bathroom_fan_backup_check
+  alias: Bathroom Fan Backup Check (Every 5 min if RH > 70%)
+  mode: single
+  trigger:
+  - platform: time_pattern
+    minutes: /5
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+    above: 70
+  - condition: state
+    entity_id: switch.upstairs_bathroom_fan
+    state: 'off'
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.upstairs_bathroom_fan
+- id: kitchen_motion_brightness_boost
+  alias: "Kitchen Motion \u2192 Brightness Boost (Adaptive)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'on'
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      brightness_pct: 100
+      transition: 1
+  - delay: 00:05:00
+  - service: switch.turn_on
+    target:
+      entity_id: switch.adaptive_lighting_adapt_brightness_kitchen_table
+- id: kitchen_counter_lights_morning
+  alias: "Kitchen Counter \u2192 Morning (6-9 AM)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_counter_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: time
+    after: 06:00:00
+    before: 09:00:00
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+    data:
+      brightness_pct: 100
+      color_temp_kelvin: 4500
+  - delay: 00:10:00
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+- id: kitchen_counter_lights_day
+  alias: "Kitchen Counter \u2192 Day (9 AM-5 PM)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_counter_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: time
+    after: 09:00:00
+    before: '17:00:00'
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+    data:
+      brightness_pct: 60
+      color_temp_kelvin: 4000
+  - delay: 00:05:00
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+- id: kitchen_counter_lights_evening
+  alias: "Kitchen Counter \u2192 Evening (5-9 PM)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_counter_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: time
+    after: '17:00:00'
+    before: '21:00:00'
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+    data:
+      brightness_pct: 100
+      color_temp_kelvin: 4500
+  - delay: 00:15:00
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+- id: kitchen_counter_lights_night
+  alias: "Kitchen Counter \u2192 Night (9 PM-6 AM)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_counter_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: or
+    conditions:
+    - condition: time
+      after: '21:00:00'
+    - condition: time
+      before: 06:00:00
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+    data:
+      brightness_pct: 10
+      color_temp_kelvin: 2000
+  - delay: 00:03:00
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.aqara_led_strip_t1_2
+      - light.aqara_led_strip_t1_2
+- id: kitchen_lights_auto_off_midnight
+  alias: "Kitchen Area Lights \u2192 Auto OFF at Midnight"
+  mode: single
+  trigger:
+  - platform: time
+    at: 00:00:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_table_chandelier_smart_dimmer_switch
+      - light.kitchen_lounge
+- id: kitchen_lights_auto_off_no_motion
+  alias: "Kitchen Area Lights \u2192 OFF After 30 Min No Motion"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    - binary_sensor.entry_room_motion
+    to: 'off'
+    for: 00:30:00
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'on'
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_table_chandelier_smart_dimmer_switch
+      - light.kitchen_lounge
+- id: living_entry_lights_auto_off_midnight
+  alias: "Living Room & Entry \u2192 Auto OFF at Midnight"
+  mode: single
+  trigger:
+  - platform: time
+    at: 00:00:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.living_room
+      - light.entry_room
+- id: living_entry_lights_auto_off_no_motion
+  alias: "Living Room & Entry \u2192 OFF After 30 Min No Motion"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.entry_room_motion
+    to: 'off'
+    for: 00:30:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.living_room
+      - light.entry_room
+- id: kitchen_lounge_motion_brightness_boost
+  alias: "Kitchen Lounge Motion \u2192 Brightness Boost"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.kitchen_lounge
+    data:
+      brightness_pct: 100
+      transition: 1
+  - delay: 00:05:00
+  - service: adaptive_lighting.apply
+    target:
+      entity_id: light.kitchen_lounge
+    data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      transition: 30
+- id: alaina_ceiling_leds_auto_off_11pm
+  alias: "Alaina's Ceiling LEDs \u2192 Auto OFF at 11 PM"
+  mode: single
+  trigger:
+  - platform: time
+    at: '23:00:00'
+  condition:
+  - condition: state
+    entity_id: light.alaina_s_ceiling_led_lights
+    state: 'on'
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.alaina_s_ceiling_led_lights
+- id: alaina_dashboard_school_morning
+  alias: "Kitchen Lounge TV \u2192 Alaina's Dashboard (School Mornings)"
+  description: Shows Alaina's dashboard when she's home on weekday mornings during
+    school year
+  mode: single
+  trigger:
+  - platform: time
+    at: 06:30:00
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: home
+  - condition: template
+    value_template: '{% set month = now().month %} {% set day = now().day %} {{ (month
+      >= 9) or (month <= 6 and not (month == 6 and day > 15)) }}
+
+      '
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id:
+      - switch.kitchen_lounge_tv_dual_smart_plug_switch
+      - switch.kitchen_lounge_tv_dual_smart_plug_switch_2
+  - delay: 00:00:15
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.kitchen_lounge_tv
+    data:
+      media_content_type: url
+      media_content_id: http://192.168.1.3:8123/alaina-dashboard
+- id: alaina_bedtime_phone_charging
+  alias: "Alaina's Room \u2192 Bedtime Mode (Phone Charging)"
+  description: Triggers bedtime settings when Alaina plugs in her phone at night
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: sensor.alainas_iphone_battery_state
+    to: Charging
+  condition:
+  - condition: time
+    after: '20:00:00'
+    before: 06:00:00
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: home
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.alaina_s_ceiling_led_strip
+    data:
+      brightness_pct: 5
+      color_temp: 500
+      transition: 3
+  - service: timer.start
+    target:
+      entity_id: timer.alaina_bedtime_timer
+    data:
+      duration: 01:00:00
+- id: upstairs_hallway_motion_lights_off
+  alias: "Upstairs Hallway No Motion \u2192 Lights Off (3 min)"
+  description: Turns off hallway lights after 3 minutes of no motion
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'off'
+    for: 00:03:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.upstairs_hallway
+    data:
+      transition: 2
+- id: kitchen_table_motion_auto_on
+  alias: "Kitchen Table \u2192 Motion Auto-ON (Adaptive)"
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'off'
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      transition: 2
+  - service: switch.turn_on
+    target:
+      entity_id: switch.adaptive_lighting_kitchen_table
+- id: doorbell_front_driveway
+  alias: Front Driveway Door
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_doorbell
+    to: 'on'
+  action:
+  - service: media_player.volume_set
+    target:
+      entity_id: &id001
+      - media_player.kitchen_echo_show
+      - media_player.basement_echo
+      - media_player.living_room_echo_show
+      - media_player.upstairs_bathroom_echo_plus
+      - media_player.echo_extra_3
+    data:
+      volume_level: 0.5
+  - service: notify.alexa_media_kitchen_echo_show
+    data:
+      message: Someone is at the Front Driveway Door
+      data:
+        type: announce
+  - service: notify.alexa_media_basement_echo
+    data:
+      message: Someone is at the Front Driveway Door
+      data:
+        type: announce
+  - service: notify.alexa_media_living_room_echo_show
+    data:
+      message: Someone is at the Front Driveway Door
+      data:
+        type: announce
+  - service: notify.alexa_media_upstairs_bathroom_echo_plus
+    data:
+      message: Someone is at the Front Driveway Door
+      data:
+        type: announce
+  - service: notify.alexa_media_echo_extra_3
+    data:
+      message: Someone is at the Front Driveway Door
+      data:
+        type: announce
+- id: doorbell_very_front
+  alias: Very Front Door
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.very_front_door_doorbell
+    to: 'on'
+  action:
+  - service: media_player.volume_set
+    target:
+      entity_id: *id001
+    data:
+      volume_level: 0.5
+  - service: notify.alexa_media_kitchen_echo_show
+    data:
+      message: Someone is at the Very Front Door
+      data:
+        type: announce
+  - service: notify.alexa_media_basement_echo
+    data:
+      message: Someone is at the Very Front Door
+      data:
+        type: announce
+  - service: notify.alexa_media_living_room_echo_show
+    data:
+      message: Someone is at the Very Front Door
+      data:
+        type: announce
+  - service: notify.alexa_media_upstairs_bathroom_echo_plus
+    data:
+      message: Someone is at the Very Front Door
+      data:
+        type: announce
+  - service: notify.alexa_media_echo_extra_3
+    data:
+      message: Someone is at the Very Front Door
+      data:
+        type: announce
+- id: doorbell_front_driveway
+  alias: Front Driveway Door
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_doorbell
+    to: 'on'
+  action:
+  - service: tts.google_translate_say
+    target:
+      entity_id: &id002
+      - media_player.kitchen_echo_show
+      - media_player.basement_echo
+      - media_player.living_room_echo_show
+      - media_player.upstairs_bathroom_echo_plus
+      - media_player.echo_extra_3
+    data:
+      message: Someone is at the Front Driveway Door
+- id: doorbell_very_front
+  alias: Very Front Door
+  mode: single
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.very_front_door_doorbell
+    to: 'on'
+  action:
+  - service: tts.google_translate_say
+    target:
+      entity_id: *id002
+    data:
+      message: Someone is at the Very Front Door
+- id: kitchen_table_smart_auto_off
+  alias: "Kitchen Table \u2192 Smart Auto OFF (Sun+Lux)"
+  description: Sun-based auto-off with lux sensing and adaptive timeout
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: &id003
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'off'
+    for: 00:05:00
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: sun
+        after: sunrise
+        after_offset: -00:30:00
+      - condition: sun
+        before: sunset
+        before_offset: 00:30:00
+      - condition: numeric_state
+        entity_id: sensor.kitchen_counter_night_light_illuminance
+        above: 100
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: person.john_spencer
+        state: not_home
+      - condition: state
+        entity_id: person.alaina_spencer
+        state: not_home
+      - condition: state
+        entity_id: person.ella_spencer
+        state: not_home
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      transition: 2
+- id: kitchen_table_night_auto_off
+  alias: "Kitchen Table \u2192 Night Auto OFF (10min)"
+  description: Longer timeout after sunset for less frequent motion
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: *id003
+    to: 'off'
+    for: 00:10:00
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'on'
+  - condition: sun
+    after: sunset
+    after_offset: 00:30:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      transition: 2
+- id: kitchen_table_smart_auto_off
+  alias: "Kitchen Table \u2192 Smart Auto OFF (Sun+Lux)"
+  description: Sun-based auto-off with lux sensing and adaptive timeout
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: &id004
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    - binary_sensor.aqara_motion_sensor_p1_occupancy
+    - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+    to: 'off'
+    for: 00:05:00
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: sun
+        after: sunrise
+        after_offset: -00:30:00
+      - condition: sun
+        before: sunset
+        before_offset: 00:30:00
+      - condition: numeric_state
+        entity_id: sensor.kitchen_counter_night_light_illuminance
+        above: 100
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: person.john_spencer
+        state: not_home
+      - condition: state
+        entity_id: person.alaina_spencer
+        state: not_home
+      - condition: state
+        entity_id: person.ella_spencer
+        state: not_home
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      transition: 2
+- id: kitchen_table_night_auto_off
+  alias: "Kitchen Table \u2192 Night Auto OFF (10min)"
+  description: Longer timeout after sunset for less frequent motion
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: *id004
+    to: 'off'
+    for: 00:10:00
+  condition:
+  - condition: state
+    entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    state: 'on'
+  - condition: sun
+    after: sunset
+    after_offset: 00:30:00
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.kitchen_table_chandelier_smart_dimmer_switch
+    data:
+      transition: 2
+- id: garage_alert_final
+  alias: Garage Door Alert
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.aqara_door_and_window_sensor_door_5
+    - binary_sensor.aqara_door_and_window_sensor_door_6
+    to: 'on'
+    for: 00:05:00
+  action:

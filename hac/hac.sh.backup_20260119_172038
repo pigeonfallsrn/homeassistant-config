@@ -1,0 +1,158 @@
+#!/bin/bash
+# HAC v4.3 - AI Context Generator
+VERSION="4.3"
+CONTEXTS_DIR="/config/hac/contexts"
+mkdir -p "$CONTEXTS_DIR"
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+get_entities() { grep '"entity_id"' /config/.storage/core.entity_registry | grep -o '"entity_id":"[^"]*"' | cut -d'"' -f4 | sort; }
+filter_entities() { get_entities | grep -i "$1"; }
+
+show_help() {
+    echo -e "${CYAN}HAC v${VERSION} - AI Context Generator${NC}"
+    echo ""
+    echo "Commands:"
+    echo "  c, claude    - Claude context"
+    echo "  g, gemini    - Gemini context"
+    echo "  gpt          - ChatGPT context"
+    echo "  search TERM  - Search entities"
+    echo "  check        - System check"
+    echo "  list         - List contexts"
+}
+
+generate_claude_context() {
+    FILE="$CONTEXTS_DIR/claude_$(date +%Y%m%d_%H%M%S).md"
+    {
+        echo "# Home Assistant System Context"
+        echo ""
+        echo "**Date:** $(date)"
+        echo "**Location:** Strum, Wisconsin"
+        echo "**User:** John Spencer"
+        echo ""
+        echo "## System"
+        ha core info 2>/dev/null | grep -E "version|arch"
+        echo ""
+        echo "## Stats"
+        echo "- Entities: $(get_entities | wc -l)"
+        echo "- Automations: $(ls /config/automations/*.yaml 2>/dev/null | wc -l) files"
+        echo "- Packages: $(ls /config/packages/*.yaml 2>/dev/null | wc -l) files"
+        echo ""
+        echo "## Entity Breakdown"
+        echo '```'
+        get_entities | awk -F'.' '{print $1}' | sort | uniq -c | sort -rn | head -20
+        echo '```'
+        echo ""
+        echo "## Packages"
+        echo '```'
+        ls /config/packages/*.yaml 2>/dev/null | xargs -I{} basename {}
+        echo '```'
+        echo ""
+        echo "## Areas ($(grep -c '"name"' /config/.storage/core.area_registry 2>/dev/null || echo 0))"
+        echo '```'
+        grep '"name"' /config/.storage/core.area_registry 2>/dev/null | grep -o '"name":"[^"]*"' | cut -d'"' -f4 | head -15
+        echo '```'
+        echo ""
+        echo "## Climate"
+        echo '```'
+        filter_entities "^climate\."
+        echo '```'
+        echo ""
+        echo "## Presence"
+        echo '```'
+        filter_entities "^person\."
+        echo '```'
+        echo ""
+        echo "## Recent Errors"
+        echo '```'
+        ha core logs 2>/dev/null | grep -i error | tail -5
+        echo '```'
+    } > "$FILE"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${CYAN}  CLAUDE CONTEXT (copy below)${NC}"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo ""
+    cat "$FILE"
+    echo ""
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}Saved: $FILE${NC}"
+}
+
+generate_gemini_context() {
+    FILE="$CONTEXTS_DIR/gemini_$(date +%Y%m%d_%H%M%S).txt"
+    {
+        echo "HOME ASSISTANT CONTEXT"
+        echo "Date: $(date)"
+        echo "Location: Strum, Wisconsin"
+        echo ""
+        echo "SYSTEM: $(ha core info 2>/dev/null | grep version | head -1)"
+        echo "ENTITIES: $(get_entities | wc -l)"
+        echo "PACKAGES: $(ls /config/packages/*.yaml 2>/dev/null | xargs -I{} basename {} | tr '\n' ' ')"
+        echo ""
+        echo "TOP DOMAINS:"
+        get_entities | awk -F'.' '{print $1}' | sort | uniq -c | sort -rn | head -10
+        echo ""
+        echo "ERRORS:"
+        ha core logs 2>/dev/null | grep -i error | tail -3
+    } > "$FILE"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${CYAN}  GEMINI CONTEXT${NC}"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    cat "$FILE"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}Saved: $FILE${NC}"
+}
+
+generate_chatgpt_context() {
+    FILE="$CONTEXTS_DIR/chatgpt_$(date +%Y%m%d_%H%M%S).md"
+    {
+        echo "# Home Assistant Setup"
+        echo "Location: Strum, Wisconsin | Version: $(ha core info 2>/dev/null | grep version | head -1 | cut -d: -f2)"
+        echo ""
+        echo "## Stats"
+        echo "- Entities: $(get_entities | wc -l)"
+        echo "- Areas: $(grep -c '"name"' /config/.storage/core.area_registry 2>/dev/null || echo 0)"
+        echo "- Packages: $(ls /config/packages/*.yaml 2>/dev/null | wc -l)"
+        echo ""
+        echo "## Device Types"
+        get_entities | awk -F'.' '{print $1}' | sort | uniq -c | sort -rn | head -12 | awk '{printf "- %s: %d\n", $2, $1}'
+        echo ""
+        echo "## Errors"
+        ha core logs 2>/dev/null | grep -i error | tail -3 | sed 's/^/> /'
+    } > "$FILE"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${CYAN}  CHATGPT CONTEXT${NC}"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    cat "$FILE"
+    echo -e "${GREEN}════════════════════════════════════════${NC}"
+    echo -e "${YELLOW}Saved: $FILE${NC}"
+}
+
+case "$1" in
+    c|claude) generate_claude_context ;;
+    g|gemini) generate_gemini_context ;;
+    gpt|chatgpt) generate_chatgpt_context ;;
+    search) filter_entities "$2" ;;
+    check) echo "Version: $(ha core info 2>/dev/null | grep version | head -1)" && echo "Entities: $(get_entities | wc -l)" && echo "Errors: $(ha core logs 2>/dev/null | grep -c -i error)" ;;
+    list) ls -lth "$CONTEXTS_DIR" | head -15 ;;
+    *) show_help ;;
+esac
+
+# Quick context with LLM rules
+quick() {
+    echo "═══════════════════════════════════════"
+    echo "# PASTE THIS ENTIRE BLOCK TO AI"
+    echo "═══════════════════════════════════════"
+    cat /config/hac/HAC_LLM_RULES.md
+    echo ""
+    echo "═══════════════════════════════════════"
+    echo "# CURRENT SYSTEM STATE"
+    echo "═══════════════════════════════════════"
+    /config/hac/hac_context.sh
+}
+
+case "$1" in
+    quick|q) quick ;;
+esac

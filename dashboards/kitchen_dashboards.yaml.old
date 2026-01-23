@@ -1,0 +1,429 @@
+# ═══════════════════════════════════════════════════════════
+# Kitchen Tablet & Mobile Dashboards
+# Optimized for Samsung S24 Ultra & Kitchen Tablet
+# Created: 2026-01-19
+# ═══════════════════════════════════════════════════════════
+
+# ───────────────────────────────────────────────────────────
+# FAMILY HOME - Default view when everyone is home
+# ───────────────────────────────────────────────────────────
+kitchen-family:
+  title: Home
+  icon: mdi:home
+  path: kitchen-family
+  badges: []
+  cards:
+    # Header with occupancy status
+    - type: vertical-stack
+      cards:
+        - type: markdown
+          content: |
+            # 🏠 Welcome Home
+            **{{ states('sensor.house_occupancy_state') }}** • {{ states('sensor.people_home_count') }} people
+            {{ now().strftime('%A, %B %d') }}
+        
+        - type: horizontal-stack
+          cards:
+            - type: button
+              entity: input_boolean.john_home
+              name: John
+              show_state: true
+              icon: mdi:account
+            - type: button
+              entity: input_boolean.alaina_home
+              name: Alaina
+              show_state: true
+              icon: mdi:account
+            - type: button
+              entity: input_boolean.ella_home
+              name: Ella
+              show_state: true
+              icon: mdi:account
+            - type: button
+              entity: input_boolean.michelle_home
+              name: Michelle
+              show_state: true
+              icon: mdi:account
+    
+    # Quick controls
+    - type: entities
+      title: Quick Controls
+      show_header_toggle: false
+      entities:
+        - entity: input_boolean.preserve_night_vision
+          name: Night Vision Mode
+        - entity: input_boolean.guest_present
+          name: Guest Present
+        - type: divider
+        - entity: sensor.time_context
+          name: Time of Day
+        - entity: input_boolean.school_tomorrow
+          name: School Tomorrow
+    
+    # Lights by area
+    - type: light
+      entity: light.living_room_lounge_ceiling_hue_color_lights
+      name: Living Room
+    
+    - type: light
+      entity: light.entry_room_ceiling_hue_white_lights
+      name: Entry Room
+    
+    - type: light
+      entity: light.kitchen_chandelier_1of5
+      name: Kitchen
+    
+    - type: light
+      entity: light.upstairs_hallway
+      name: Upstairs Hallway
+    
+    - type: light
+      entity: light.alaina_s_ceiling_led_lights
+      name: Alaina's Room
+    
+    # Climate controls
+    - type: thermostat
+      entity: climate.1st_floor_thermostat
+      name: Downstairs
+    
+    - type: thermostat
+      entity: climate.upstairs
+      name: Upstairs
+    
+    # Calendar glance
+    - type: calendar
+      entities:
+        - calendar.alaina_ella
+        - calendar.work
+        - calendar.john_michelle
+      initial_view: listWeek
+
+# ───────────────────────────────────────────────────────────
+# JOHN ONLY - Kids at school or away
+# ───────────────────────────────────────────────────────────
+kitchen-john:
+  title: John's View
+  icon: mdi:account
+  path: kitchen-john
+  badges: []
+  cards:
+    - type: markdown
+      content: |
+        # 👨 John's Dashboard
+        {{ now().strftime('%A, %B %d • %I:%M %p') }}
+        {% if is_state('binary_sensor.kids_expected_away', 'on') %}
+        🏫 Kids at school
+        {% else %}
+        📍 Kids away
+        {% endif %}
+    
+    # Personal quick actions
+    - type: horizontal-stack
+      cards:
+        - type: button
+          name: All Lights Off
+          icon: mdi:lightbulb-off
+          tap_action:
+            action: call-service
+            service: light.turn_off
+            target:
+              entity_id: all
+        - type: button
+          name: Goodnight
+          icon: mdi:weather-night
+          tap_action:
+            action: call-service
+            service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.preserve_night_vision
+    
+    # Work schedule
+    - type: entities
+      title: Today's Schedule
+      entities:
+        - entity: calendar.work
+          name: Work Calendar
+        - entity: calendar.alaina_ella
+          name: Kids Schedule
+        - type: divider
+        - entity: input_boolean.school_tomorrow
+          name: School Tomorrow
+    
+    # Main living area controls
+    - type: light
+      entity: light.living_room_lounge_ceiling_hue_color_lights
+      name: Living Room
+    
+    - type: light
+      entity: light.entry_room_ceiling_hue_white_lights
+      name: Entry
+    
+    - type: light
+      entity: light.kitchen_chandelier_1of5
+      name: Kitchen
+    
+    # Climate - focus on main floor
+    - type: thermostat
+      entity: climate.1st_floor_thermostat
+      name: Main Floor
+    
+    # Security/monitoring
+    - type: entities
+      title: House Status
+      show_header_toggle: false
+      entities:
+        - entity: binary_sensor.house_motion_active
+          name: Motion Detected
+        - entity: binary_sensor.garage_north_wall_nightlight_motion
+          name: Garage Motion
+        - entity: binary_sensor.aqara_motion_sensor_p1_occupancy
+          name: Kitchen Motion
+
+# ───────────────────────────────────────────────────────────
+# KIDS ONLY - When John is away
+# ───────────────────────────────────────────────────────────
+kitchen-kids:
+  title: Kids View
+  icon: mdi:account-multiple
+  path: kitchen-kids
+  badges: []
+  cards:
+    - type: markdown
+      content: |
+        # 👧👧 Alaina & Ella
+        {{ now().strftime('%A, %B %d • %I:%M %p') }}
+        {% if is_state('sensor.bedtime_window_active', 'on') %}
+        🌙 Bedtime soon!
+        {% endif %}
+    
+    # Fun quick actions
+    - type: horizontal-stack
+      cards:
+        - type: button
+          name: Movie Mode
+          icon: mdi:movie
+          tap_action:
+            action: call-service
+            service: scene.turn_on
+            target:
+              entity_id: scene.movie_mode
+        - type: button
+          name: Homework
+          icon: mdi:book-open-variant
+          tap_action:
+            action: call-service
+            service: light.turn_on
+            target:
+              entity_id: 
+                - light.alaina_s_ceiling_led_lights
+                - light.kitchen_chandelier_1of5
+            data:
+              brightness_pct: 100
+    
+    # Their schedules
+    - type: calendar
+      entities:
+        - calendar.alaina_ella
+      initial_view: listWeek
+    
+    # Room controls
+    - type: light
+      entity: light.alaina_s_ceiling_led_lights
+      name: Alaina's Room
+    
+    - type: light
+      entity: light.upstairs_hallway
+      name: Hallway
+    
+    - type: light
+      entity: light.2nd_floor_bathroom
+      name: Bathroom
+    
+    - type: light
+      entity: light.living_room_lounge_ceiling_hue_color_lights
+      name: Living Room
+    
+    - type: light
+      entity: light.kitchen_chandelier_1of5
+      name: Kitchen
+    
+    # Thermostat
+    - type: thermostat
+      entity: climate.upstairs
+      name: Upstairs
+
+# ───────────────────────────────────────────────────────────
+# AWAY - Empty house monitoring
+# ───────────────────────────────────────────────────────────
+kitchen-away:
+  title: Away Mode
+  icon: mdi:home-outline
+  path: kitchen-away
+  badges: []
+  cards:
+    - type: markdown
+      content: |
+        # 🏠 House Empty
+        {{ now().strftime('%A, %B %d • %I:%M %p') }}
+        All systems monitoring
+    
+    # Security overview
+    - type: picture-glance
+      title: Security Cameras
+      entities:
+        - binary_sensor.house_motion_active
+      camera_image: camera.kitchen_wall_a9_tablet
+    
+    - type: entities
+      title: Motion Sensors
+      show_header_toggle: false
+      entities:
+        - entity: binary_sensor.upstairs_hallway_aqara_motion_sensor
+          name: Upstairs Hallway
+        - entity: binary_sensor.garage_north_wall_nightlight_motion
+          name: Garage
+        - entity: binary_sensor.aqara_motion_sensor_p1_occupancy
+          name: Kitchen
+    
+    # Climate monitoring
+    - type: entities
+      title: Climate Status
+      entities:
+        - entity: climate.1st_floor_thermostat
+          name: Downstairs
+        - entity: climate.upstairs
+          name: Upstairs
+        - entity: climate.garage_nest_thermostat
+          name: Garage
+    
+    # All lights status
+    - type: entities
+      title: All Lights
+      show_header_toggle: true
+      entities:
+        - light.living_room_lounge_ceiling_hue_color_lights
+        - light.entry_room_ceiling_hue_white_lights
+        - light.kitchen_chandelier_1of5
+        - light.upstairs_hallway
+        - light.2nd_floor_bathroom
+        - light.garage
+
+# ───────────────────────────────────────────────────────────
+# GUEST - When guests are present
+# ───────────────────────────────────────────────────────────
+kitchen-guest:
+  title: Guest Mode
+  icon: mdi:account-supervisor
+  path: kitchen-guest
+  badges: []
+  cards:
+    - type: markdown
+      content: |
+        # 🏠 Welcome!
+        {{ now().strftime('%A, %B %d • %I:%M %p') }}
+    
+    # Simple, welcoming controls
+    - type: entities
+      title: Comfort Controls
+      entities:
+        - entity: climate.1st_floor_thermostat
+          name: Temperature
+        - entity: light.living_room_lounge_ceiling_hue_color_lights
+          name: Living Room Lights
+        - entity: light.entry_room_ceiling_hue_white_lights
+          name: Entry Lights
+    
+    # Media
+    - type: media-control
+      entity: media_player.kitchen
+    
+    # Weather
+    - type: weather-forecast
+      entity: weather.home
+      show_forecast: true
+
+# ───────────────────────────────────────────────────────────
+# MOBILE MAIN - S24 Ultra optimized main dashboard
+# ───────────────────────────────────────────────────────────
+mobile-main:
+  title: Mobile
+  icon: mdi:cellphone
+  path: mobile-main
+  badges: []
+  cards:
+    # Status header
+    - type: vertical-stack
+      cards:
+        - type: markdown
+          content: |
+            # {{ states('sensor.house_occupancy_state') }}
+            {{ now().strftime('%A, %B %d • %I:%M %p') }}
+        
+        - type: glance
+          show_name: false
+          show_state: true
+          entities:
+            - entity: input_boolean.john_home
+              name: J
+            - entity: input_boolean.alaina_home
+              name: A
+            - entity: input_boolean.ella_home
+              name: E
+            - entity: input_boolean.michelle_home
+              name: M
+    
+    # Quick toggles
+    - type: horizontal-stack
+      cards:
+        - type: button
+          name: Night Mode
+          icon: mdi:brightness-2
+          tap_action:
+            action: toggle
+          entity: input_boolean.preserve_night_vision
+        - type: button
+          name: Guest
+          icon: mdi:account-plus
+          tap_action:
+            action: toggle
+          entity: input_boolean.guest_present
+    
+    # Room scenes - swipeable
+    - type: entities
+      title: Rooms
+      show_header_toggle: false
+      entities:
+        - type: custom:slider-entity-row
+          entity: light.living_room_lounge_ceiling_hue_color_lights
+          name: Living Room
+        - type: custom:slider-entity-row
+          entity: light.entry_room_ceiling_hue_white_lights
+          name: Entry
+        - type: custom:slider-entity-row
+          entity: light.kitchen_chandelier_1of5
+          name: Kitchen
+        - type: custom:slider-entity-row
+          entity: light.upstairs_hallway
+          name: Upstairs
+        - type: custom:slider-entity-row
+          entity: light.alaina_s_ceiling_led_lights
+          name: Alaina's Room
+    
+    # Climate - compact
+    - type: horizontal-stack
+      cards:
+        - type: thermostat
+          entity: climate.1st_floor_thermostat
+          name: Down
+        - type: thermostat
+          entity: climate.upstairs
+          name: Up
+    
+    # Today's calendar
+    - type: calendar
+      entities:
+        - calendar.alaina_ella
+        - calendar.work
+        - calendar.john_michelle
+      initial_view: listWeek
+

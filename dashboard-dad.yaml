@@ -1,113 +1,190 @@
 title: Dad's Dashboard
-background: center / cover no-repeat url("/local/dad-bg.jpg")
-
 views:
-  - title: Dad’s Room
-    path: dad-room-dashboard
-    icon: mdi:account
-    theme: default
+  - title: Home
+    path: home
+    icon: mdi:home
     cards:
-
-      # -------------------
-      # Wake & Bed Buttons
-      # -------------------
+      # ===========================================
+      # LIGHTS - Compact Grid
+      # ===========================================
+      - type: custom:mushroom-title-card
+        title: Lights
+        subtitle: Quick Controls
+        
       - type: grid
-        title: "Wake & Bed Routines"
-        columns: 4
-        square: true
+        columns: 3
+        square: false
         cards:
-          - type: button
-            name: Wake Quick
-            icon: mdi:weather-sunset-up
+          - type: custom:mushroom-light-card
+            entity: light.master_bedroom
+            name: Master
+            icon: mdi:bed
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.alaina_s_room
+            name: Alaina
+            icon: mdi:bed
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.ella_s_room
+            name: Ella
+            icon: mdi:bed
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.hallway
+            name: Hallway
+            icon: mdi:lightbulb
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.entry_room
+            name: Entry
+            icon: mdi:door
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.kitchen_lounge
+            name: Kitchen
+            icon: mdi:chef-hat
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:mushroom-light-card
+            entity: light.kitchen_table
+            name: Table
+            icon: mdi:table-furniture
+            use_light_color: true
+            show_brightness_control: false
+          - type: custom:button-card
+            entity: script.all_lights_off
+            name: All OFF
+            icon: mdi:lightbulb-off
             tap_action:
               action: call-service
-              service: script.wake_dad_quick
+              service: script.turn_on
+              service_data:
+                entity_id: script.all_lights_off
+            styles:
+              card:
+                - height: 60px
+              icon:
+                - color: '#FF6B6B'
 
-          - type: button
-            name: Wake 30m
-            icon: mdi:timer-30
-            tap_action:
-              action: call-service
-              service: script.wake_dad_30
-
-          - type: button
-            name: Wake 45m
-            icon: mdi:timer-45
-            tap_action:
-              action: call-service
-              service: script.wake_dad_45
-
-          - type: button
-            name: Wake 60m
-            icon: mdi:timer
-            tap_action:
-              action: call-service
-              service: script.wake_dad_60
-
-          - type: button
-            name: Bed Quick
-            icon: mdi:weather-night
-            tap_action:
-              action: call-service
-              service: script.bed_dad_quick
-
-          - type: button
-            name: Bed 30m
-            icon: mdi:timer-30
-            tap_action:
-              action: call-service
-              service: script.bed_dad_30
-
-          - type: button
-            name: Bed 45m
-            icon: mdi:timer-45
-            tap_action:
-              action: call-service
-              service: script.bed_dad_45
-
-          - type: button
-            name: Bed 60m
-            icon: mdi:timer
-            tap_action:
-              action: call-service
-              service: script.bed_dad_60
-
-      # -------------------
-      # Bedtime Timer Status
-      # -------------------
-      - type: entities
-        title: "⏳ Bedtime Timer Status"
-        entities:
-          - timer.dad_bedtime_timer
-
-      # -------------------
-      # Lights Currently On
-      # -------------------
+      # ===========================================
+      # LIGHTS CURRENTLY ON - Mini Graph
+      # ===========================================
+      - type: custom:mushroom-title-card
+        title: Lights Currently On
+        
       - type: custom:auto-entities
         card:
           type: entities
-          title: "💡 Lights Currently On"
+          show_header_toggle: false
         filter:
           include:
             - domain: light
-              state: "on"
+              state: 'on'
+              options:
+                secondary_info: last-changed
         show_empty: false
+        sort:
+          method: last_changed
+          reverse: true
 
-      - type: button
-        name: "Turn All Lights Off"
-        icon: mdi:lightbulb-group-off-outline
-        tap_action:
-          action: call-service
-          service: light.turn_off
-          target:
-            entity_id: all
-        card_mod:
-          style: |
-            ha-card {
-              font-size: 12px;
-              padding: 4px;
-              background: #222;
-              color: #e74c3c;
-              border-radius: 8px;
-              text-align: center;
-            }
+      # ===========================================
+      # CLIMATE - Fixed Entities
+      # ===========================================
+      - type: custom:mushroom-title-card
+        title: Climate
+        subtitle: HVAC Systems
+        
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          # Hydronic Zones
+          - type: custom:mushroom-climate-card
+            entity: climate.1st_floor_thermostat
+            name: 1st Floor
+            icon: mdi:radiator
+            layout: horizontal
+            show_temperature_control: false
+            primary_info: name
+            secondary_info: state
+          - type: custom:mushroom-climate-card
+            entity: climate.master_nest_thermostat
+            name: 2nd Floor
+            icon: mdi:radiator
+            layout: horizontal
+            show_temperature_control: false
+            primary_info: name
+            secondary_info: state
+          - type: custom:mushroom-climate-card
+            entity: climate.basement_nest_thermostat
+            name: Basement
+            icon: mdi:radiator
+            layout: horizontal
+            show_temperature_control: false
+            primary_info: name
+            secondary_info: state
+          - type: custom:mushroom-climate-card
+            entity: climate.garage_nest_thermostat
+            name: Garage
+            icon: mdi:radiator
+            layout: horizontal
+            show_temperature_control: false
+            primary_info: name
+            secondary_info: state
+          # Mini-Splits
+          - type: custom:mushroom-climate-card
+            entity: climate.attic
+            name: Attic
+            icon: mdi:air-conditioner
+            layout: horizontal
+            show_temperature_control: false
+            fill_container: false
+          - type: custom:mushroom-climate-card
+            entity: climate.kitchen
+            name: Kitchen
+            icon: mdi:air-conditioner
+            layout: horizontal
+            show_temperature_control: false
+            fill_container: false
+          - type: custom:mushroom-climate-card
+            entity: climate.living_room
+            name: Living Room
+            icon: mdi:air-conditioner
+            layout: horizontal
+            show_temperature_control: false
+            fill_container: false
+          - type: custom:mushroom-climate-card
+            entity: climate.upstairs_2
+            name: Upstairs
+            icon: mdi:air-conditioner
+            layout: horizontal
+            show_temperature_control: false
+            fill_container: false
+
+      # ===========================================
+      # ENERGY MONITOR - Compact
+      # ===========================================
+      - type: custom:mushroom-title-card
+        title: Energy Monitor
+        
+      - type: grid
+        columns: 2
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: sensor.kitchen_keurig
+            name: Kitchen Keurig
+            icon: mdi:coffee-maker
+            primary_info: name
+            secondary_info: state
+          - type: custom:mushroom-entity-card
+            entity: sensor.total_energy_used
+            name: Total Energy
+            icon: mdi:lightning-bolt
+            primary_info: name
+            secondary_info: state

@@ -1,0 +1,211 @@
+# Location & Presence Detection Package
+# AP-based location awareness for family members
+# Created: 2026-01-20
+
+# =============================================================================
+# AP MAC REFERENCE
+# =============================================================================
+# 70:a7:41:c6:1e:6c = Your House - 2nd Floor AP
+# d0:21:f9:eb:b8:8c = Your House - 1st Floor AP
+# f4:92:bf:69:53:f0 = Your House - Garage AP
+# 60:22:32:3d:b6:44 = Michelle's House (40062 Hwy 53) - Goetting WiFi
+# f0:9f:c2:26:6e:23 = Big Garage/PFP (40003 Commercial Ave) - PFP IoT
+
+template:
+  # ---------------------------------------------------------------------------
+  # LOCATION SENSORS - Returns human-readable location
+  # ---------------------------------------------------------------------------
+  - sensor:
+      - name: "John Location"
+        unique_id: john_location_text
+        icon: mdi:map-marker
+        state: >
+          {% set tracker = 'device_tracker.john_s_s24_ultra_4' %}
+          {% set ap = state_attr(tracker, 'ap_mac') %}
+          {% set state = states(tracker) %}
+          {% if state == 'not_home' %}
+            Away
+          {% elif ap == '70:a7:41:c6:1e:6c' %}
+            Home · Upstairs
+          {% elif ap == 'd0:21:f9:eb:b8:8c' %}
+            Home · Downstairs
+          {% elif ap == 'f4:92:bf:69:53:f0' %}
+            Home · Garage
+          {% elif ap == '60:22:32:3d:b6:44' %}
+            Michelle's House
+          {% elif ap == 'f0:9f:c2:26:6e:23' %}
+            Big Garage (Commercial)
+          {% elif state == 'home' %}
+            Home
+          {% else %}
+            {{ state | title }}
+          {% endif %}
+        attributes:
+          ap_mac: "{{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') }}"
+          floor: >
+            {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') %}
+            {% if ap == '70:a7:41:c6:1e:6c' %}2nd
+            {% elif ap == 'd0:21:f9:eb:b8:8c' %}1st
+            {% elif ap == 'f4:92:bf:69:53:f0' %}garage
+            {% else %}unknown{% endif %}
+
+      - name: "Ella Location"
+        unique_id: ella_location_text
+        icon: mdi:map-marker
+        state: >
+          {% set unifi = 'device_tracker.ella_s_iphone' %}
+          {% set icloud = 'device_tracker.ellas_iphone' %}
+          {% set ap = state_attr(unifi, 'ap_mac') %}
+          {% set unifi_state = states(unifi) %}
+          {% set icloud_state = states(icloud) %}
+          {# Check UniFi first for AP-based location #}
+          {% if unifi_state == 'home' and ap %}
+            {% if ap == '70:a7:41:c6:1e:6c' %}
+              Home · Upstairs
+            {% elif ap == 'd0:21:f9:eb:b8:8c' %}
+              Home · Downstairs
+            {% elif ap == 'f4:92:bf:69:53:f0' %}
+              Home · Garage
+            {% else %}
+              Home
+            {% endif %}
+          {% elif unifi_state == 'home' %}
+            Home
+          {# Fall back to iCloud for away locations #}
+          {% elif icloud_state == 'not_home' %}
+            Away
+          {% elif 'Traci' in (state_attr(icloud, 'address') | default('', true)) %}
+            At Mom's House
+          {% elif icloud_state != 'home' and icloud_state != 'unknown' %}
+            {{ icloud_state | title }}
+          {% else %}
+            Away
+          {% endif %}
+        attributes:
+          ap_mac: "{{ state_attr('device_tracker.ella_s_iphone', 'ap_mac') }}"
+          floor: >
+            {% set ap = state_attr('device_tracker.ella_s_iphone', 'ap_mac') %}
+            {% if ap == '70:a7:41:c6:1e:6c' %}2nd
+            {% elif ap == 'd0:21:f9:eb:b8:8c' %}1st
+            {% elif ap == 'f4:92:bf:69:53:f0' %}garage
+            {% else %}unknown{% endif %}
+
+      - name: "Alaina Location"
+        unique_id: alaina_location_text
+        icon: mdi:map-marker
+        state: >
+          {% set unifi = 'device_tracker.alaina_s_iphone' %}
+          {% set icloud = 'device_tracker.alaina_s_iphone_17' %}
+          {% set ap = state_attr(unifi, 'ap_mac') %}
+          {% set state = states(unifi) %}
+          {% if state == 'not_home' %}
+            {% if states(icloud) not in ['home', 'not_home', 'unknown', 'unavailable'] %}
+              {{ states(icloud) | title }}
+            {% else %}
+              Away
+            {% endif %}
+          {% elif ap == '70:a7:41:c6:1e:6c' %}
+            Home · Upstairs
+          {% elif ap == 'd0:21:f9:eb:b8:8c' %}
+            Home · Downstairs
+          {% elif ap == 'f4:92:bf:69:53:f0' %}
+            Home · Garage
+          {% elif state == 'home' %}
+            Home
+          {% else %}
+            {{ state | title }}
+          {% endif %}
+        attributes:
+          ap_mac: "{{ state_attr('device_tracker.alaina_s_iphone', 'ap_mac') }}"
+          floor: >
+            {% set ap = state_attr('device_tracker.alaina_s_iphone', 'ap_mac') %}
+            {% if ap == '70:a7:41:c6:1e:6c' %}2nd
+            {% elif ap == 'd0:21:f9:eb:b8:8c' %}1st
+            {% elif ap == 'f4:92:bf:69:53:f0' %}garage
+            {% else %}unknown{% endif %}
+
+      - name: "Michelle Location"
+        unique_id: michelle_location_text
+        icon: mdi:map-marker
+        state: >
+          {% set tracker = 'device_tracker.michelle_s_iphone_14_pro' %}
+          {% set ap = state_attr(tracker, 'ap_mac') %}
+          {% set state = states(tracker) %}
+          {% if ap == '60:22:32:3d:b6:44' %}
+            Her House
+          {% elif ap in ['70:a7:41:c6:1e:6c', 'd0:21:f9:eb:b8:8c', 'f4:92:bf:69:53:f0'] %}
+            John's House
+          {% elif ap == 'f0:9f:c2:26:6e:23' %}
+            Big Garage
+          {% elif state == 'home' %}
+            Home
+          {% elif state == 'not_home' %}
+            Away
+          {% else %}
+            {{ state | title }}
+          {% endif %}
+        attributes:
+          ap_mac: "{{ state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') }}"
+
+  # ---------------------------------------------------------------------------
+  # BINARY SENSORS - Floor presence
+  # ---------------------------------------------------------------------------
+  - binary_sensor:
+      - name: "Someone Upstairs"
+        unique_id: someone_upstairs
+        device_class: occupancy
+        state: >
+          {% set ap_2nd = '70:a7:41:c6:1e:6c' %}
+          {{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == ap_2nd or
+             state_attr('device_tracker.ella_s_iphone', 'ap_mac') == ap_2nd or
+             state_attr('device_tracker.alaina_s_iphone', 'ap_mac') == ap_2nd or
+             state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') == ap_2nd }}
+
+      - name: "Someone Downstairs"
+        unique_id: someone_downstairs
+        device_class: occupancy
+        state: >
+          {% set ap_1st = 'd0:21:f9:eb:b8:8c' %}
+          {{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == ap_1st or
+             state_attr('device_tracker.ella_s_iphone', 'ap_mac') == ap_1st or
+             state_attr('device_tracker.alaina_s_iphone', 'ap_mac') == ap_1st or
+             state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') == ap_1st }}
+
+      - name: "Someone In Garage"
+        unique_id: someone_in_garage
+        device_class: occupancy
+        state: >
+          {% set ap_garage = 'f4:92:bf:69:53:f0' %}
+          {{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == ap_garage or
+             state_attr('device_tracker.ella_s_iphone', 'ap_mac') == ap_garage or
+             state_attr('device_tracker.alaina_s_iphone', 'ap_mac') == ap_garage or
+             state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') == ap_garage }}
+
+      - name: "John At Big Garage"
+        unique_id: john_at_big_garage
+        device_class: occupancy
+        state: "{{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == 'f0:9f:c2:26:6e:23' }}"
+
+      - name: "Michelle At Her House"
+        unique_id: michelle_at_her_house
+        device_class: presence
+        state: "{{ state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') == '60:22:32:3d:b6:44' }}"
+
+      - name: "Michelle At John House"
+        unique_id: michelle_at_john_house
+        device_class: presence
+        state: >
+          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') %}
+          {{ ap in ['70:a7:41:c6:1e:6c', 'd0:21:f9:eb:b8:8c', 'f4:92:bf:69:53:f0'] }}
+
+      - name: "Ella At Mom House"
+        unique_id: ella_at_mom_house
+        device_class: presence
+        state: >
+          {# Uses iCloud geo since Traci has no AP #}
+          {% set icloud = states.device_tracker.ellas_iphone %}
+          {% if icloud and icloud.attributes.address is defined %}
+            {{ 'Traci' in (icloud.attributes.address | default('')) }}
+          {% else %}
+            false
+          {% endif %}

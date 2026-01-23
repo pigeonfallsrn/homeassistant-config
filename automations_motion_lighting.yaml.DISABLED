@@ -1,0 +1,214 @@
+# GARAGE - All lights on with door/motion
+- alias: "Garage All Lights - Motion/Door"
+  trigger:
+    - platform: state
+      entity_id: 
+        - binary_sensor.ratgdo32disco_5735e8_motion
+        - binary_sensor.ratgdo32disco_fd8d8c_motion
+        - binary_sensor.garage_north_wall_nightlight_motion
+      to: 'on'
+    - platform: state
+      entity_id:
+        - cover.ratgdo32disco_5735e8_door
+        - cover.ratgdo32disco_fd8d8c_door
+      to: 'open'
+  condition:
+    - condition: numeric_state
+      entity_id: sun.sun
+      attribute: elevation
+      below: 5
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.ratgdo32disco_fd8d8c_light
+          - light.ratgdo32disco_5735e8_light
+          - light.south_east_lift
+          - light.south_west_garage_liftmaster
+          - light.garage_north_of_east_wall_motion_light_sensor
+          - light.garage_south_of_east_wall_motion_light_sensor
+          - light.garage_south_wall_motion_light_sensor
+      data:
+        brightness_pct: 100
+
+- alias: "Garage Lights Off - No Motion"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.ratgdo32disco_5735e8_motion
+        - binary_sensor.ratgdo32disco_fd8d8c_motion
+        - binary_sensor.garage_north_wall_nightlight_motion
+      to: 'off'
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: cover.ratgdo32disco_5735e8_door
+      state: 'closed'
+    - condition: state
+      entity_id: cover.ratgdo32disco_fd8d8c_door
+      state: 'closed'
+  action:
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.ratgdo32disco_fd8d8c_light
+          - light.ratgdo32disco_5735e8_light
+          - light.south_east_lift
+          - light.south_west_garage_liftmaster
+          - light.garage_north_of_east_wall_motion_light_sensor
+          - light.garage_south_of_east_wall_motion_light_sensor
+          - light.garage_south_wall_motion_light_sensor
+
+# ENTRY ROOM
+- alias: "Entry Room Motion - All Lights"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.entry_room_east_wall_nightlight_motion
+        - binary_sensor.entry_room_west_wall_nightlight_motion
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.entry_room_ceiling_hue_white_lights
+          - light.entry_room_hue_color_lamp
+      data:
+        brightness_pct: 80
+
+- alias: "Entry Room Motion Off"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.entry_room_east_wall_nightlight_motion
+        - binary_sensor.entry_room_west_wall_nightlight_motion
+      to: 'off'
+      for: "00:05:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.entry_room_ceiling_hue_white_lights
+          - light.entry_room_hue_color_lamp
+
+# KITCHEN
+- alias: "Kitchen Motion - All Lights"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.kitchen_counter_nightlight_motion
+        - binary_sensor.kitchen_west_wall_nightlight_motion
+        - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.kitchen_table_chandelier_smart_dimmer_switch
+          - light.kitchen_hue_color_floor_lamp
+          - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+      data:
+        brightness_pct: 75
+
+- alias: "Kitchen Motion Off"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.kitchen_counter_nightlight_motion
+        - binary_sensor.kitchen_west_wall_nightlight_motion
+        - binary_sensor.kitchen_lounge_east_wall_nightlight_motion
+      to: 'off'
+      for: "00:10:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.kitchen_table_chandelier_smart_dimmer_switch
+          - light.kitchen_hue_color_floor_lamp
+
+# UPSTAIRS HALLWAY
+- alias: "Upstairs Hallway Motion - Adaptive"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.upstairs_hallway_night_light_motion
+        - binary_sensor.upstairs_hallway_east_wall_night_light_motion
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.upstairs_hallway_night_light
+          - light.upstairs_hallway_east_wall_night_light
+      data:
+        brightness_pct: >
+          {% set hour = now().hour %}
+          {% if hour >= 23 or hour < 6 %}
+            15
+          {% elif hour >= 6 and hour < 9 %}
+            60
+          {% else %}
+            100
+          {% endif %}
+
+- alias: "Upstairs Hallway Motion Off"
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.upstairs_hallway_night_light_motion
+        - binary_sensor.upstairs_hallway_east_wall_night_light_motion
+      to: 'off'
+      for: "00:03:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.upstairs_hallway_night_light
+          - light.upstairs_hallway_east_wall_night_light
+
+# BATHROOMS
+- alias: "1st Floor Bathroom Motion"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.1st_floor_bathroom_night_light_motion
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.1st_floor_bathroom
+      data:
+        brightness_pct: 100
+
+- alias: "1st Floor Bathroom Motion Off"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.1st_floor_bathroom_night_light_motion
+      to: 'off'
+      for: "00:05:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.1st_floor_bathroom
+
+- alias: "Upstairs Bathroom Motion"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.upstairs_bathroom_night_light_motion
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.2nd_floor_bathroom
+      data:
+        brightness_pct: 100
+
+- alias: "Upstairs Bathroom Motion Off"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.upstairs_bathroom_night_light_motion
+      to: 'off'
+      for: "00:05:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.2nd_floor_bathroom

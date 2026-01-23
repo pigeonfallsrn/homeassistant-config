@@ -1,0 +1,5 @@
+switch.kitchen_lounge_tv_dual_smart_plug_switch:
+  friendly_name: "Kitchen Lounge Roku Plug"
+switch.kitchen_lounge_tv_dual_smart_plug_switch_2:
+  friendly_name: "Kitchen Lounge TV Plug"
+

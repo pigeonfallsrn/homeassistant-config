@@ -1,0 +1,172 @@
+# =========================
+# Home Assistant — configuration.yaml
+# Cleaned up & Kumo-ready (network checks + logging)
+# =========================
+
+# ---- Core defaults
+default_config:
+
+# ---- Split includes (kept from your config)
+script: !include scripts.yaml
+automation: !include automations.yaml
+scene: !include scenes.yaml
+timer: !include timers.yaml
+input_boolean: !include input_boolean.yaml
+group: !include Groups.yaml
+
+# ---- HTTP / Cloudflared (kept; minor tidy)
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+    - ::1
+    - 172.30.33.0/24
+    - 192.168.1.0/24
+    # Cloudflare IP ranges
+    - 173.245.48.0/20
+    - 103.21.244.0/22
+    - 141.101.64.0/18
+    - 108.162.192.0/18
+    - 198.41.128.0/17
+    - 162.158.0.0/15
+    - 104.16.0.0/12
+    - 172.64.0.0/13
+
+# ---- Lovelace (kept as-is)
+lovelace:
+  mode: yaml
+  resources:
+    - url: /hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js
+      type: module
+    - url: /hacsfiles/lovelace-card-mod/card-mod.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
+    - url: /hacsfiles/mini-graph-card/mini-graph-card.js
+      type: module
+    - url: /hacsfiles/button-card/button-card.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module
+    - url: /hacsfiles/fold-entity-row/fold-entity-row.js
+      type: module
+    - url: /hacsfiles/spotify-card/spotify-card.js
+      type: module
+    - url: /hacsfiles/mini-climate-card/mini-climate-card.js
+      type: module
+
+  dashboards:
+    dashboard-dad:
+      mode: yaml
+      title: Dad's Dashboard
+      icon: mdi:account
+      show_in_sidebar: true
+      filename: dashboard-dad.yaml
+
+    dashboard-alaina:
+      mode: yaml
+      title: Alaina's Dashboard
+      icon: mdi:face-woman
+      show_in_sidebar: true
+      filename: alaina-dashboard.yaml
+
+    dashboard-ella:
+      mode: yaml
+      title: Ella's Dashboard
+      icon: mdi:face-woman-outline
+      show_in_sidebar: true
+      filename: ella-dashboard.yaml
+
+    dashboard-kitchen:
+      mode: yaml
+      title: Kitchen Dashboard
+      icon: mdi:fridge-outline
+      show_in_sidebar: true
+      filename: dashboard-kitchen.yaml
+
+    dashboard-test:
+      mode: yaml
+      title: Test Dashboard
+      icon: mdi:test-tube
+      show_in_sidebar: true
+      filename: dashboard-test.yaml
+
+    dashboard-test-climate:
+      mode: yaml
+      title: Dad's Climate Dashboard
+      icon: mdi:home-thermometer-outline
+      show_in_sidebar: true
+      filename: dashboard-test-climate.yaml
+
+# ---- Logger: crank up pykumo + hass-kumo to DEBUG (helps while we fix LAN reachability)
+logger:
+  default: warning
+  logs:
+    pykumo: debug
+    pykumo.py_kumo_base: debug
+    custom_components.kumo: debug
+    urllib3.connectionpool: info
+
+# ---- Packages: network/API checks for Mitsubishi adapters (Ping handled in UI)
+
+# ===== Adaptive Lighting Configuration =====
+adaptive_lighting:
+  - name: "Living Spaces"
+    lights:
+      - light.entry_room
+      - light.upstairs_hallway
+    prefer_rgb_color: false
+    transition: 45
+    initial_transition: 1
+    interval: 90
+    min_brightness: 1
+    max_brightness: 100
+    min_color_temp: 2000
+    max_color_temp: 5500
+    sleep_brightness: 1
+    sleep_color_temp: 2000
+  
+  - name: "Kids Rooms"
+    lights:
+      - light.alaina_s_ceiling_led_strip
+      - light.ella_s_led_lights
+    prefer_rgb_color: false
+    transition: 45
+    initial_transition: 1
+    interval: 90
+    min_brightness: 1
+    max_brightness: 80
+    min_color_temp: 2200
+    max_color_temp: 4500
+    sleep_brightness: 5
+    sleep_color_temp: 2000
+
+  - name: "Kitchen Table"
+    lights:
+      - light.kitchen_table_chandelier_smart_dimmer_switch
+    prefer_rgb_color: false
+    transition: 30
+    initial_transition: 2
+    interval: 90
+    min_brightness: 20
+    max_brightness: 100
+    min_color_temp: 2200
+    max_color_temp: 5500
+    sleep_brightness: 5
+    sleep_color_temp: 2200
+
+homeassistant:
+
+# Text to Speech
+tts:
+  - platform: google_translate
+
+# Alaina's LED Strips Group
+light:
+  - platform: group
+    name: "Alaina's LED Strips"
+    entities:
+      - light.kl3_3
+      - light.kl3_2

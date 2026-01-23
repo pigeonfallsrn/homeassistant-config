@@ -1,0 +1,330 @@
+[
+  {
+    "entity_id": "automation.bathroom_fan_auto_on_rh_70_for_1_min",
+    "state": "on",
+    "attributes": {
+      "id": "bathroom_fan_auto_on_humidity",
+      "last_triggered": "2026-01-16T04:15:47.395536+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Bathroom Fan – Auto ON (RH ≥ 70% for 1 min)"
+    },
+    "last_changed": "2026-01-16T19:51:41.523513+00:00",
+    "last_reported": "2026-01-16T19:51:41.523513+00:00",
+    "last_updated": "2026-01-16T19:51:41.523513+00:00",
+    "context": {
+      "id": "01KF45T4PK1HBS5P80JWH0WVP2",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.bathroom_fan_auto_off_rh_60_for_10_min",
+    "state": "on",
+    "attributes": {
+      "id": "bathroom_fan_auto_off_humidity",
+      "last_triggered": "2026-01-16T04:46:37.091199+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Bathroom Fan – Auto OFF (RH ≤ 60% for 10 min)"
+    },
+    "last_changed": "2026-01-16T19:51:41.530024+00:00",
+    "last_reported": "2026-01-16T19:51:41.530024+00:00",
+    "last_updated": "2026-01-16T19:51:41.530024+00:00",
+    "context": {
+      "id": "01KF45T4PTZZDKRFKXN6QVE9RT",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.everyone_away_all_lights_off",
+    "state": "off",
+    "attributes": {
+      "id": "everyone_away_lights_off",
+      "last_triggered": "2025-12-31T05:17:36.248850+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "Everyone Away → All Lights Off"
+    },
+    "last_changed": "2026-01-16T19:51:41.531030+00:00",
+    "last_reported": "2026-01-16T19:51:41.531030+00:00",
+    "last_updated": "2026-01-16T19:51:41.531030+00:00",
+    "context": {
+      "id": "01KF45T4PVD4WYCP9DQN2WHTCW",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.first_person_home_after_dark_entry_lights_on",
+    "state": "off",
+    "attributes": {
+      "id": "first_person_home_lights_on",
+      "last_triggered": "2025-12-31T05:26:38.709605+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "First Person Home After Dark → Entry Lights On"
+    },
+    "last_changed": "2026-01-16T19:51:41.531999+00:00",
+    "last_reported": "2026-01-16T19:51:41.531999+00:00",
+    "last_updated": "2026-01-16T19:51:41.531999+00:00",
+    "context": {
+      "id": "01KF45T4PV48GFXRQVJ1K0HJWX",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.bathroom_red_light_11pm_5_30am",
+    "state": "off",
+    "attributes": {
+      "id": "bathroom_red_light_night",
+      "last_triggered": "2025-12-31T05:28:05.264756+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "Bathroom - Red Light (11pm-5:30am)"
+    },
+    "last_changed": "2026-01-16T19:51:41.532878+00:00",
+    "last_reported": "2026-01-16T19:51:41.532878+00:00",
+    "last_updated": "2026-01-16T19:51:41.532878+00:00",
+    "context": {
+      "id": "01KF45T4PW5C98TGJA3PJGRPZH",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.living_room_tv_off_full_av_system_off",
+    "state": "off",
+    "attributes": {
+      "id": "living_room_tv_off_trigger_av_system_off",
+      "last_triggered": "2025-12-31T00:26:36.718354+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Living Room TV OFF → Full AV System OFF"
+    },
+    "last_changed": "2026-01-16T19:51:41.533662+00:00",
+    "last_reported": "2026-01-16T19:51:41.533662+00:00",
+    "last_updated": "2026-01-16T19:51:41.533662+00:00",
+    "context": {
+      "id": "01KF45T4PXBZ06H6FNJZHDDHGR",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.garage_all_lights_off",
+    "state": "off",
+    "attributes": {
+      "id": "1767207374114",
+      "last_triggered": "2025-12-24T17:08:46.025784+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Garage All Lights OFF"
+    },
+    "last_changed": "2026-01-16T19:51:41.539692+00:00",
+    "last_reported": "2026-01-16T19:51:41.539692+00:00",
+    "last_updated": "2026-01-16T19:51:41.539692+00:00",
+    "context": {
+      "id": "01KF45T4Q348P5BCWRN536GDDJ",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.entry_room_inovelli_ceiling_lights",
+    "state": "on",
+    "attributes": {
+      "id": "1767461939171",
+      "last_triggered": "2026-01-16T02:05:32.948877+00:00",
+      "mode": "queued",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Entry Room - Inovelli Ceiling Lights"
+    },
+    "last_changed": "2026-01-16T19:51:41.540917+00:00",
+    "last_reported": "2026-01-16T19:51:41.540917+00:00",
+    "last_updated": "2026-01-16T19:51:41.540917+00:00",
+    "context": {
+      "id": "01KF45T4Q4HYPFQEF8DGD7XJBS",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.1st_floor_bathroom_ceiling_lights",
+    "state": "on",
+    "attributes": {
+      "id": "bathroom_ceiling_inovelli_main",
+      "last_triggered": "2026-01-16T19:26:54.629396+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "1st Floor Bathroom - Ceiling Lights"
+    },
+    "last_changed": "2026-01-16T19:51:41.542047+00:00",
+    "last_reported": "2026-01-16T19:51:41.542047+00:00",
+    "last_updated": "2026-01-16T19:51:41.542047+00:00",
+    "context": {
+      "id": "01KF45T4Q65HTN9B9HDS9GFG2J",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.entry_room_aux_switch_controls",
+    "state": "on",
+    "attributes": {
+      "id": "entry_room_aux_switch",
+      "last_triggered": "2026-01-16T02:05:32.967185+00:00",
+      "mode": "queued",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Entry Room - AUX Switch Controls"
+    },
+    "last_changed": "2026-01-16T19:51:41.543032+00:00",
+    "last_reported": "2026-01-16T19:51:41.543032+00:00",
+    "last_updated": "2026-01-16T19:51:41.543032+00:00",
+    "context": {
+      "id": "01KF45T4Q770ETKPS4X87FDDBE",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.kitchen_lounge_vzm36_fan_light_hue_ceiling",
+    "state": "on",
+    "attributes": {
+      "id": "kitchen_lounge_vzm36_fixed",
+      "last_triggered": null,
+      "mode": "queued",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Kitchen Lounge - VZM36 Fan/Light (Hue Ceiling)"
+    },
+    "last_changed": "2026-01-16T19:51:41.544065+00:00",
+    "last_reported": "2026-01-16T19:51:41.544065+00:00",
+    "last_updated": "2026-01-16T19:51:41.544065+00:00",
+    "context": {
+      "id": "01KF45T4Q8RR02HXDN3YXVQFYJ",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.kitchen_lounge_vzm31_sn_dimmer_hue_ceiling",
+    "state": "on",
+    "attributes": {
+      "id": "kitchen_lounge_dimmer_fixed",
+      "last_triggered": "2026-01-16T17:20:10.766462+00:00",
+      "mode": "queued",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Kitchen Lounge - VZM31-SN Dimmer (Hue Ceiling)"
+    },
+    "last_changed": "2026-01-16T19:51:41.555171+00:00",
+    "last_reported": "2026-01-16T19:51:41.555171+00:00",
+    "last_updated": "2026-01-16T19:51:41.555171+00:00",
+    "context": {
+      "id": "01KF45T4QKM7JWK08MJ98B60CJ",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.back_patio_inovelli_control",
+    "state": "on",
+    "attributes": {
+      "id": "back_patio_inovelli_hue_control",
+      "last_triggered": "2026-01-16T02:05:52.401628+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Back Patio: Inovelli Control"
+    },
+    "last_changed": "2026-01-16T19:51:41.556333+00:00",
+    "last_reported": "2026-01-16T19:51:41.556333+00:00",
+    "last_updated": "2026-01-16T19:51:41.556333+00:00",
+    "context": {
+      "id": "01KF45T4QMHGY3CG0096KGJ758",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.kitchen_chandelier_control_5_bulbs",
+    "state": "on",
+    "attributes": {
+      "id": "kitchen_chandelier_switch_v2",
+      "last_triggered": "2026-01-16T04:11:06.960674+00:00",
+      "mode": "queued",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Kitchen - Chandelier Control (5 Bulbs)"
+    },
+    "last_changed": "2026-01-16T19:51:41.557254+00:00",
+    "last_reported": "2026-01-16T19:51:41.557254+00:00",
+    "last_updated": "2026-01-16T19:51:41.557254+00:00",
+    "context": {
+      "id": "01KF45T4QN3J38AQK8CF7Y2QM0",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.kitchen_above_sink_inovelli_control",
+    "state": "on",
+    "attributes": {
+      "id": "kitchen_above_sink_inovelli",
+      "last_triggered": "2026-01-15T05:05:43.929985+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Kitchen Above Sink - Inovelli Control"
+    },
+    "last_changed": "2026-01-16T19:51:41.558235+00:00",
+    "last_reported": "2026-01-16T19:51:41.558235+00:00",
+    "last_updated": "2026-01-16T19:51:41.558235+00:00",
+    "context": {
+      "id": "01KF45T4QP7GB7JJQKKG0JCWQT",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.garage_all_lights_on",
+    "state": "off",
+    "attributes": {
+      "id": "garage_master_lights_on",
+      "last_triggered": "2025-12-31T17:00:56.023166+00:00",
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Garage All Lights ON"
+    },
+    "last_changed": "2026-01-16T19:51:41.559052+00:00",
+    "last_reported": "2026-01-16T19:51:41.559052+00:00",
+    "last_updated": "2026-01-16T19:51:41.559052+00:00",
+    "context": {
+      "id": "01KF45T4QQK91PJRRGNKB3EXTD",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  {
+    "entity_id": "automation.garage_all_lights_off_2",
+    "state": "off",
+    "attributes": {
+      "id": "garage_master_lights_off",
+      "last_triggered": null,
+      "mode": "restart",
+      "current": 0,
+      "friendly_name": "Garage All Lights OFF"
+    },
+    "last_changed": "2026-01-16T19:51:41.559797+00:00",
+    "last_reported": "2026-01-16T19:51:41.559797+00:00",
+    "last_updated": "2026-01-16T19:51:41.559797+00:00",
+    "context": {
+      "id": "01KF45T4QQPSTJ8EEDF7Q2KD88",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+]

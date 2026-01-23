@@ -1,0 +1,23 @@
+#!/bin/bash
+# Track Michelle's AP MAC changes to capture 40154 location
+
+LOG_FILE="/config/.ha-context-cache/michelle-ap-log.txt"
+
+# Get current AP MAC
+CURRENT_AP=$(curl -s -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+  "http://supervisor/core/api/states/device_tracker.michelle_s_iphone_14_pro" | \
+  jq -r '.attributes.ap_mac // "unknown"')
+
+CURRENT_ESSID=$(curl -s -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+  "http://supervisor/core/api/states/device_tracker.michelle_s_iphone_14_pro" | \
+  jq -r '.attributes.essid // "unknown"')
+
+# Log with timestamp
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] AP: $CURRENT_AP | ESSID: $CURRENT_ESSID" >> "$LOG_FILE"
+
+# Check if this is a NEW AP (not 40062's known AP)
+if [ "$CURRENT_AP" != "60:22:32:3d:b6:44" ] && [ "$CURRENT_AP" != "unknown" ]; then
+    echo "🎯 NEW AP DETECTED: $CURRENT_AP (ESSID: $CURRENT_ESSID)"
+    echo "    This might be 40154! Check the log:"
+    echo "    cat $LOG_FILE"
+fi

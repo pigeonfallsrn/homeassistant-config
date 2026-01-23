@@ -1,0 +1,39 @@
+#!/bin/bash
+# Quick-add entity to context map
+
+CONTEXT_FILE="/config/ENTITY_CONTEXT_MAP.md"
+
+if [ -z "$1" ]; then
+    echo "Usage: hac context add <entity_id>"
+    echo "Example: hac context add binary_sensor.michelle_present"
+    exit 1
+fi
+
+ENTITY="$1"
+
+# Check if already exists
+if grep -q "^### $ENTITY" "$CONTEXT_FILE"; then
+    echo "Entity '$ENTITY' already documented."
+    echo "Edit with: nano +$(grep -n "^### $ENTITY" "$CONTEXT_FILE" | cut -d: -f1) $CONTEXT_FILE"
+    exit 1
+fi
+
+# Find appropriate section or add to end
+SECTION="## Uncategorized"
+
+# Template
+cat >> "$CONTEXT_FILE" << TEMPLATE
+
+### $ENTITY
+- **Real-World**: [Describe the physical device/location/person]
+- **Purpose**: [Why this entity exists, what problem it solves]
+- **Key Learnings**:
+  - [Add configuration details, gotchas, etc.]
+- **Related Entities**:
+  - [List dependencies, groups, automations]
+- **Last Updated**: $(date +%Y-%m-%d)
+TEMPLATE
+
+echo "✓ Added template for $ENTITY to context map"
+echo "Edit with: nano $CONTEXT_FILE"
+echo "Search for: $ENTITY"

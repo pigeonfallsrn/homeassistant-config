@@ -134,7 +134,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         schema[
             vol.Required(
                 CONF_SELECTED_SOUND_MODES,
-                default=self.options.get(CONF_SELECTED_SOUND_MODES, []),
+                default=self.options.get(CONF_SELECTED_SOUND_MODES, all_sound_modes),
             )
         ] = cv.multi_select(all_sound_modes)
 
@@ -216,8 +216,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         schema: dict[Any, Any] = {}
 
         # Select inputs for zone
-        selected_inputs = self.options.get(zone_id, {}).get(CONF_SELECTED_INPUTS, [])
-
         all_receiver_inputs = {}
         for input_, name in InputHelper.get_source_mapping(self.api).items():
             all_receiver_inputs[input_.value] = (
@@ -230,9 +228,18 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             sorted(all_receiver_inputs.items(), key=lambda item: item[1].lower())
         )
 
+        # Remove Main Zone Sync from main zone because it can't sync with itself
+        if step_id == STEP_ID_MAIN:
+            all_receiver_inputs.pop(ynca.Input.MAIN_ZONE_SYNC.value, None)
+
         # Due to actual supported inputs of receiver is unknown at migration time the list of selected inputs
         # can contain inputs not detected as supported by the receiver
         all_receiver_input_ids = list(all_receiver_inputs.keys())
+
+        selected_inputs = self.options.get(zone_id, {}).get(
+            CONF_SELECTED_INPUTS, all_receiver_input_ids
+        )
+
         applicable_selected_input_ids = [
             input_id
             for input_id in selected_inputs

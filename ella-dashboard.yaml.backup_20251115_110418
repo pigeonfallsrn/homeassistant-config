@@ -1,0 +1,62 @@
+title: Ella's Dashboard
+views:
+  - title: Home
+    cards:
+      # -------------------
+      # Bedroom Light Controls
+      # -------------------
+      - type: grid
+        title: "💡 Bedroom Lights"
+        columns: 2
+        square: false
+        cards:
+          - type: button
+            entity: light.ella_s_ceiling_hue_lights
+            name: Ceiling Hue Lights
+            icon: mdi:ceiling-light
+            tap_action:
+              action: more-info
+          - type: button
+            entity: light.ella_s_led_lights
+            name: LED Strip
+            icon: mdi:led-strip-variant
+            tap_action:
+              action: more-info
+          - type: button
+            entity: light.ella_s_govee_floor_lamp
+            name: Floor Lamp
+            icon: mdi:floor-lamp
+            tap_action:
+              action: more-info
+          - type: button
+            entity: light.ella_s_bedroom
+            name: Bedside Lamp
+            icon: mdi:lamp
+            tap_action:
+              action: more-info
+      # -------------------
+      # Calendar
+      # -------------------
+      - type: custom:atomic-calendar-revive
+        name: 📅 Ella's Upcoming Events
+        entities:
+          - calendar.alaina_ella
+          - calendar.whitehall_6th_grade_volleyball
+          - calendar.bagc_maga_team_1_2_calendar
+        showLocation: true
+        showMonth: true
+        maxDaysToShow: 7
+        showWeekDay: true
+        showDate: true
+      # -------------------
+      # Lights Currently On
+      # -------------------
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: "💡 Lights Currently On"
+        filter:
+          include:
+            - domain: light
+              state: "on"
+        show_empty: false

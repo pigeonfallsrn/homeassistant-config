@@ -1,0 +1,12 @@
+adaptive_lighting
+alexa_media
+battery_notes
+dwains_dashboard
+hacs
+localtuya
+nodered
+spotcast
+tuya_local
+ui_lovelace_minimalist
+yamaha_rn301
+yamaha_ynca

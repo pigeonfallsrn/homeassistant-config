@@ -1,0 +1,69 @@
+# Standard Configuration
+default_config:
+frontend:
+history:
+logbook:
+map:
+sun:
+
+# CONSOLIDATED BINARY SENSORS
+
+# CONSOLIDATED TEMPLATES
+template:
+  - binary_sensor:
+      - name: "Family Home WiFi"
+        device_class: presence
+        state: >
+          {{ is_state('sensor.alainas_iphone_ssid_2', 'Spencer') or 
+             is_state('binary_sensor.johns_phone_static', 'on') or
+             is_state('binary_sensor.ellas_phone_static', 'on') }}
+      - name: "Michelle Present"
+        device_class: presence
+        state: "{{ is_state('binary_sensor.michelle_phone_presence', 'on') }}"
+
+# Includes
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+
+
+homeassistant:
+  packages: !include_dir_named packages
+adaptive_lighting: !include adaptive_lighting.yaml
+automation adaptive_lighting: !include automations_adaptive_lighting.yaml
+
+
+
+# ============================================================
+# MODERN TEMPLATE SENSORS (2024+ Format)
+# ============================================================
+
+# Presence Detection
+template:
+  - binary_sensor:
+      - name: "Anyone Home"
+        unique_id: anyone_home_presence
+        device_class: presence
+        state: >
+          {{ is_state('person.john_spencer', 'home') or 
+             is_state('person.michelle', 'home') or 
+             is_state('person.alaina', 'home') or 
+             is_state('person.ella', 'home') }}
+
+  - sensor:
+      - name: "2nd Floor AP Clients"
+        unique_id: 2nd_floor_ap_clients
+        state: >
+          {% set devices = [
+            'device_tracker.alaina_iphone',
+            'device_tracker.ella_iphone',
+            'device_tracker.john_s24'
+          ] %}
+          {{ devices | select('is_state', 'home') | list | count }}
+        unit_of_measurement: "devices"
+

@@ -1,0 +1,217 @@
+# =============================================================================
+# HYBRID AP-Based Presence Detection System
+# Created: 2026-01-20
+# =============================================================================
+# Uses BOTH UniFi ap_mac AND Companion App BSSID for maximum coverage
+#
+# AP REFERENCE:
+#   2nd Floor: MAC 70:a7:41:c6:1e:6c | BSSIDs start with 70:a7:41 or 72:a7:41
+#   1st Floor: MAC d0:21:f9:eb:b8:8c | BSSIDs start with d0:21:f9 or d2:21:f9
+#   Garage:    MAC f4:92:bf:69:53:f0 | BSSIDs start with f4:92:bf or f6:92:bf
+#   Michelle's: MAC 60:22:32:3d:b6:44 | BSSIDs start with 60:22:32 or 62:22:32
+#   Big Garage: MAC f0:9f:c2:26:6e:23 | BSSIDs start with f0:9f:c2 or f2:9f:c2
+# =============================================================================
+
+template:
+  - sensor:
+      # -------------------------------------------------------------------------
+      # JOHN - Uses UniFi (Samsung S24)
+      # -------------------------------------------------------------------------
+      - name: "John AP Location"
+        unique_id: john_ap_location_hybrid
+        icon: mdi:map-marker-account
+        state: >
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('') %}
+          {% set state = states('device_tracker.john_s_s24_ultra_4') %}
+          {% if ap[:11] in ['70:a7:41:c6', '72:a7:41'] or ap == '70:a7:41:c6:1e:6c' %}Home · Upstairs
+          {% elif ap[:11] in ['d0:21:f9:eb', 'd2:21:f9'] or ap == 'd0:21:f9:eb:b8:8c' %}Home · Downstairs
+          {% elif ap[:11] in ['f4:92:bf:69', 'f6:92:bf'] or ap == 'f4:92:bf:69:53:f0' %}Home · Garage
+          {% elif ap[:11] in ['60:22:32:3d', '62:22:32'] or ap == '60:22:32:3d:b6:44' %}Michelle's House
+          {% elif ap[:11] in ['f0:9f:c2:26', 'f2:9f:c2'] or ap == 'f0:9f:c2:26:6e:23' %}Big Garage
+          {% elif state == 'home' %}Home
+          {% elif state == 'not_home' %}Away
+          {% else %}{{ state | title }}{% endif %}
+        attributes:
+          source: unifi
+          ap_mac: "{{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') }}"
+          floor: >
+            {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('') %}
+            {% if ap[:8] in ['70:a7:41', '72:a7:41'] %}2nd
+            {% elif ap[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif ap[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
+            {% else %}unknown{% endif %}
+
+      # -------------------------------------------------------------------------
+      # ELLA - Uses Companion App BSSID (iPhone)
+      # -------------------------------------------------------------------------
+      - name: "Ella AP Location"
+        unique_id: ella_ap_location_hybrid
+        icon: mdi:map-marker-account
+        state: >
+          {% set bssid = states('sensor.ellas_iphone_bssid') | default('') %}
+          {% set ssid = states('sensor.ellas_iphone_ssid') | default('') %}
+          {% set icloud_state = states('device_tracker.ellas_iphone') %}
+          {% set icloud_addr = state_attr('device_tracker.ellas_iphone', 'address') | default('') %}
+          {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
+          {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
+          {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
+          {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
+          {% elif bssid[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
+          {% elif ssid in ['Spencer', 'Spencer IoT', 'Spencer - guest'] %}Home
+          {% elif 'Traci' in icloud_addr %}At Mom's
+          {% elif icloud_state == 'home' %}Home
+          {% elif bssid == 'Not Connected' and icloud_state == 'not_home' %}Away
+          {% elif icloud_state == 'not_home' %}Away
+          {% else %}{{ icloud_state | title }}{% endif %}
+        attributes:
+          source: companion_bssid
+          bssid: "{{ states('sensor.ellas_iphone_bssid') }}"
+          ssid: "{{ states('sensor.ellas_iphone_ssid') }}"
+          floor: >
+            {% set bssid = states('sensor.ellas_iphone_bssid') | default('') %}
+            {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
+            {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
+            {% else %}unknown{% endif %}
+          at_moms: "{{ 'Traci' in (state_attr('device_tracker.ellas_iphone', 'address') | default('')) }}"
+
+      # -------------------------------------------------------------------------
+      # ALAINA - Uses Companion App BSSID (iPhone)
+      # -------------------------------------------------------------------------
+      - name: "Alaina AP Location"
+        unique_id: alaina_ap_location_hybrid
+        icon: mdi:map-marker-account
+        state: >
+          {% set bssid = states('sensor.alainas_iphone_bssid') | default('') %}
+          {% set ssid = states('sensor.alainas_iphone_ssid') | default('') %}
+          {% set icloud_state = states('device_tracker.alaina_s_iphone_17') %}
+          {% set icloud_addr = state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('') %}
+          {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
+          {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
+          {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
+          {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
+          {% elif bssid[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
+          {% elif ssid in ['Spencer', 'Spencer IoT', 'Spencer - guest'] %}Home
+          {% elif 'Traci' in icloud_addr %}At Mom's
+          {% elif icloud_state == 'home' %}Home
+          {% elif bssid == 'Not Connected' and icloud_state == 'not_home' %}Away
+          {% elif icloud_state == 'not_home' %}Away
+          {% else %}{{ icloud_state | title }}{% endif %}
+        attributes:
+          source: companion_bssid
+          bssid: "{{ states('sensor.alainas_iphone_bssid') }}"
+          ssid: "{{ states('sensor.alainas_iphone_ssid') }}"
+          floor: >
+            {% set bssid = states('sensor.alainas_iphone_bssid') | default('') %}
+            {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
+            {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
+            {% else %}unknown{% endif %}
+          at_moms: "{{ 'Traci' in (state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('')) }}"
+
+      # -------------------------------------------------------------------------
+      # MICHELLE - Uses UniFi (iPhone but tracked via UniFi)
+      # -------------------------------------------------------------------------
+      - name: "Michelle AP Location"
+        unique_id: michelle_ap_location_hybrid
+        icon: mdi:map-marker-account
+        state: >
+          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
+          {% set state = states('device_tracker.michelle_s_iphone_14_pro') %}
+          {% if ap[:8] in ['60:22:32', '62:22:32'] or ap == '60:22:32:3d:b6:44' %}Her House
+          {% elif ap[:8] in ['70:a7:41', '72:a7:41'] %}John's House · Upstairs
+          {% elif ap[:8] in ['d0:21:f9', 'd2:21:f9'] %}John's House · Downstairs
+          {% elif ap[:8] in ['f4:92:bf', 'f6:92:bf'] %}John's House · Garage
+          {% elif ap[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
+          {% elif state == 'home' %}Home
+          {% elif state == 'not_home' %}Away
+          {% else %}{{ state | title }}{% endif %}
+        attributes:
+          source: unifi
+          ap_mac: "{{ state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') }}"
+          at_her_house: >
+            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
+            {{ ap[:8] in ['60:22:32', '62:22:32'] }}
+          at_johns_house: >
+            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
+            {{ ap[:8] in ['70:a7:41', '72:a7:41', 'd0:21:f9', 'd2:21:f9', 'f4:92:bf', 'f6:92:bf'] }}
+
+  # ---------------------------------------------------------------------------
+  # AGGREGATE SENSORS - Floor occupancy with "who" attribute
+  # ---------------------------------------------------------------------------
+  - binary_sensor:
+      - name: "Family Upstairs"
+        unique_id: family_upstairs_hybrid
+        device_class: occupancy
+        state: >
+          {{ is_state('sensor.john_ap_location', 'Home · Upstairs') or
+             is_state('sensor.ella_ap_location', 'Home · Upstairs') or
+             is_state('sensor.alaina_ap_location', 'Home · Upstairs') or
+             is_state('sensor.michelle_ap_location', "John's House · Upstairs") }}
+        attributes:
+          who: >
+            {% set p = [] %}
+            {% if is_state('sensor.john_ap_location', 'Home · Upstairs') %}{% set p = p + ['John'] %}{% endif %}
+            {% if is_state('sensor.ella_ap_location', 'Home · Upstairs') %}{% set p = p + ['Ella'] %}{% endif %}
+            {% if is_state('sensor.alaina_ap_location', 'Home · Upstairs') %}{% set p = p + ['Alaina'] %}{% endif %}
+            {% if is_state('sensor.michelle_ap_location', "John's House · Upstairs") %}{% set p = p + ['Michelle'] %}{% endif %}
+            {{ p | join(', ') if p else 'Nobody' }}
+
+      - name: "Family Downstairs"
+        unique_id: family_downstairs_hybrid
+        device_class: occupancy
+        state: >
+          {{ is_state('sensor.john_ap_location', 'Home · Downstairs') or
+             is_state('sensor.ella_ap_location', 'Home · Downstairs') or
+             is_state('sensor.alaina_ap_location', 'Home · Downstairs') or
+             is_state('sensor.michelle_ap_location', "John's House · Downstairs") }}
+        attributes:
+          who: >
+            {% set p = [] %}
+            {% if is_state('sensor.john_ap_location', 'Home · Downstairs') %}{% set p = p + ['John'] %}{% endif %}
+            {% if is_state('sensor.ella_ap_location', 'Home · Downstairs') %}{% set p = p + ['Ella'] %}{% endif %}
+            {% if is_state('sensor.alaina_ap_location', 'Home · Downstairs') %}{% set p = p + ['Alaina'] %}{% endif %}
+            {% if is_state('sensor.michelle_ap_location', "John's House · Downstairs") %}{% set p = p + ['Michelle'] %}{% endif %}
+            {{ p | join(', ') if p else 'Nobody' }}
+
+      - name: "Anyone Home"
+        unique_id: anyone_home_hybrid
+        device_class: presence
+        state: >
+          {{ 'Home' in states('sensor.john_ap_location') or
+             'Home' in states('sensor.ella_ap_location') or
+             'Home' in states('sensor.alaina_ap_location') or
+             "John's House" in states('sensor.michelle_ap_location') }}
+        attributes:
+          who_home: >
+            {% set p = [] %}
+            {% if 'Home' in states('sensor.john_ap_location') %}{% set p = p + ['John'] %}{% endif %}
+            {% if 'Home' in states('sensor.ella_ap_location') %}{% set p = p + ['Ella'] %}{% endif %}
+            {% if 'Home' in states('sensor.alaina_ap_location') %}{% set p = p + ['Alaina'] %}{% endif %}
+            {% if "John's House" in states('sensor.michelle_ap_location') %}{% set p = p + ['Michelle'] %}{% endif %}
+            {{ p | join(', ') if p else 'Nobody' }}
+          count: >
+            {% set c = 0 %}
+            {% if 'Home' in states('sensor.john_ap_location') %}{% set c = c + 1 %}{% endif %}
+            {% if 'Home' in states('sensor.ella_ap_location') %}{% set c = c + 1 %}{% endif %}
+            {% if 'Home' in states('sensor.alaina_ap_location') %}{% set c = c + 1 %}{% endif %}
+            {% if "John's House" in states('sensor.michelle_ap_location') %}{% set c = c + 1 %}{% endif %}
+            {{ c }}
+
+      - name: "John At Big Garage"
+        unique_id: john_at_big_garage_hybrid
+        device_class: occupancy
+        state: "{{ is_state('sensor.john_ap_location', 'Big Garage') }}"
+
+      - name: "Michelle At Her House"
+        unique_id: michelle_at_her_house_hybrid
+        device_class: presence
+        state: "{{ is_state('sensor.michelle_ap_location', 'Her House') }}"
+
+# =============================================================================
+# TO ADD A NEW PERSON:
+# 1. Determine if they use iPhone (companion app bssid) or Android (unifi ap_mac)
+# 2. Copy the appropriate sensor template (Ella for iPhone, John for Android)
+# 3. Update entity references and unique_id
+# 4. Add them to aggregate sensors (Family Upstairs, Anyone Home, etc.)
+# =============================================================================

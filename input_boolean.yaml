@@ -12,3 +12,29 @@ party_mode:
   name: Party Mode
   icon: mdi:party-popper
   initial: off
+# Humidity Management Controls
+bathroom_fan_pause_low_humidity:
+  name: "Pause Bathroom Fan (Low Humidity)"
+  icon: mdi:fan-off
+
+# Water Leak Protection
+water_valve_auto_shutoff:
+  name: "Auto Shutoff Water Valve on Leak"
+  icon: mdi:water-off
+  initial: true
+
+# AI Context System
+ai_context_pending:
+  name: "AI Context Update Pending"
+  icon: mdi:brain
+  initial: false
+
+entry_room_manual_override:
+  name: Entry Room Manual Override
+  initial: false
+bathroom_manual_override:
+  name: Bathroom Manual Override
+  initial: false
+kitchen_lounge_manual_override:
+  name: Kitchen Lounge Manual Override
+  initial: false

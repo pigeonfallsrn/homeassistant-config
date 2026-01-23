@@ -1,0 +1,550 @@
+# Auto-generated: 2026-01-16 19:36:10
+
+assist_satellite:
+  count: 1
+  entities:
+    - assist_satellite.assist_microphone
+
+automation:
+  count: 17
+  entities:
+    - automation.1st_floor_bathroom_ceiling_lights
+    - automation.back_patio_inovelli_control
+    - automation.bathroom_fan_auto_off_rh_60_for_10_min
+    - automation.bathroom_fan_auto_on_rh_70_for_1_min
+    - automation.bathroom_red_light_11pm_5_30am
+    - automation.entry_room_aux_switch_controls
+    - automation.entry_room_inovelli_ceiling_lights
+    - automation.everyone_away_all_lights_off
+    - automation.first_person_home_after_dark_entry_lights_on
+    - automation.garage_all_lights_off
+    - automation.garage_all_lights_off_2
+    - automation.garage_all_lights_on
+    - automation.kitchen_above_sink_inovelli_control
+    - automation.kitchen_chandelier_control_5_bulbs
+    - automation.kitchen_lounge_vzm31_sn_dimmer_hue_ceiling
+    - automation.kitchen_lounge_vzm36_fan_light_hue_ceiling
+    - automation.living_room_tv_off_full_av_system_off
+
+binary_sensor:
+  count: 198
+  entities:
+    - binary_sensor.1_cloud_connection
+    - binary_sensor.1st_floor_bathroom_night_light_motion
+    - binary_sensor.advanced_ssh_web_terminal_running
+    - binary_sensor.ai_theta_animal_detected
+    - binary_sensor.ai_theta_audio_object_detected
+    - binary_sensor.ai_theta_is_dark
+    - binary_sensor.ai_theta_motion
+    - binary_sensor.ai_theta_object_detected
+    - binary_sensor.ai_theta_person_detected
+    - binary_sensor.ai_theta_vehicle_detected
+    - binary_sensor.alaina_s_bedroom_roku_headphones_connected
+    - binary_sensor.alaina_s_bedroom_roku_supports_airplay
+    - binary_sensor.alaina_s_bedroom_roku_supports_ethernet
+    - binary_sensor.alaina_s_bedroom_roku_supports_find_remote
+    - binary_sensor.alaina_s_bedroomotionaware_area
+    - binary_sensor.anyone_home
+    - binary_sensor.aqara_door_and_window_sensor_door
+    - binary_sensor.aqara_door_and_window_sensor_door_2
+    - binary_sensor.aqara_door_and_window_sensor_door_3
+    - binary_sensor.aqara_door_and_window_sensor_door_4
+    # ... and 178 more
+
+button:
+  count: 202
+  entities:
+    - button.1_restart
+    - button.1st_floor_ap_restart
+    - button.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_identify
+    - button.1st_floor_bathroom_night_light_identify
+    - button.1st_floor_bathroom_vanity_lights_identify
+    - button.2nd_floor_ap_restart
+    - button.2nd_floor_bathroom_dual_smart_plug_identify
+    - button.2nd_floor_bathroom_dual_smart_plug_reset_left_summation_delivered
+    - button.2nd_floor_bathroom_dual_smart_plug_reset_right_summation_delivered
+    - button.40062_hwy_53_ubb_restart
+    - button.above_kitchen_sink_inovelli_switch_identify
+    - button.ai_theta_restart
+    - button.ai_theta_unadopt_device
+    - button.aqara_door_and_window_sensor_identify
+    - button.aqara_door_and_window_sensor_identify_2
+    - button.aqara_door_and_window_sensor_identify_3
+    - button.aqara_door_and_window_sensor_identify_4
+    - button.aqara_door_and_window_sensor_identify_5
+    - button.aqara_door_and_window_sensor_identify_6
+    - button.aqara_hub_m3_identify
+    # ... and 182 more
+
+calendar:
+  count: 20
+  entities:
+    - calendar.12s_1
+    - calendar.14s_2
+    - calendar.6th_grade_girls_basketball
+    - calendar.alaina_ella
+    - calendar.bagc_maga_team_1_2_calendar
+    - calendar.birthdays
+    - calendar.christian_holidays
+    - calendar.holidays_in_united_states
+    - calendar.john_michelle
+    - calendar.master_calendar
+    - calendar.minnesota_vikings
+    - calendar.minnesota_vikings_2
+    - calendar.phases_of_the_moon
+    - calendar.pigeon_falls_lions_club
+    - calendar.pigeonfallsrn_gmail_com
+    - calendar.whitehall_6th_grade_volleyball
+    - calendar.whitehall_middle_school_volleyball_calendar
+    - calendar.whitehall_orange_3_4
+    - calendar.work
+    - calendar.working_location
+
+camera:
+  count: 16
+  entities:
+    - camera.ai_theta_high_resolution_channel
+    - camera.ai_theta_high_resolution_channel_insecure
+    - camera.back_yard_high_resolution_channel
+    - camera.back_yard_high_resolution_channel_insecure
+    - camera.front_driveway_door_high_resolution_channel
+    - camera.front_driveway_door_high_resolution_channel_insecure
+    - camera.front_driveway_door_package_camera
+    - camera.g4_bullet_high_resolution_channel
+    - camera.g4_bullet_high_resolution_channel_insecure
+    - camera.g6_bullet_high_resolution_channel
+    - camera.g6_bullet_high_resolution_channel_insecure
+    - camera.kitchen_ai_theta_high_resolution_channel
+    - camera.kitchen_ai_theta_high_resolution_channel_insecure
+    - camera.very_front_door_high_resolution_channel
+    - camera.very_front_door_high_resolution_channel_insecure
+    - camera.very_front_door_package_camera
+
+climate:
+  count: 6
+  entities:
+    - climate.1st_floor_thermostat
+    - climate.basement_nest_thermostat
+    - climate.garage_nest_thermostat
+    - climate.master_nest_thermostat
+    - climate.pfp_east_nest_thermostat_control
+    - climate.pfp_west_nest_thermostat_control
+
+conversation:
+  count: 1
+  entities:
+    - conversation.claude_conversation
+
+cover:
+  count: 2
+  entities:
+    - cover.ratgdo32disco_5735e8_door
+    - cover.ratgdo32disco_fd8d8c_door
+
+device_tracker:
+  count: 176
+  entities:
+    - device_tracker.1st_floor_ap
+    - device_tracker.1st_floor_bathroom_echo_dot
+    - device_tracker.2nd_floor_ap
+    - device_tracker.40003_east_nest_thermostat
+    - device_tracker.40003_kwikset_lock
+    - device_tracker.40003_west_nest_thermostat
+    - device_tracker.40062_hwy_53_ubb
+    - device_tracker.addy_s_s_s24
+    - device_tracker.alaina_s_iphone
+    - device_tracker.alaina_s_iphone_2
+    - device_tracker.alainasbedroomroku
+    - device_tracker.amazon_02ca5df64
+    - device_tracker.amazon_2b8b5cedc
+    - device_tracker.amazon_4d9c37aaf_localdomain
+    - device_tracker.amazon_67373c19c
+    - device_tracker.amazon_7a1d71ea0
+    - device_tracker.amazon_ae6c5cebb
+    - device_tracker.aqara_hub_m3_926b
+    - device_tracker.back_door_lock
+    - device_tracker.back_yard
+    # ... and 156 more
+
+event:
+  count: 52
+  entities:
+    - event.ai_theta_vehicle
+    - event.back_yard_vehicle
+    - event.backup_automatic_backup
+    - event.front_driveway_door_doorbell
+    - event.front_driveway_door_fingerprint
+    - event.front_driveway_door_nfc
+    - event.front_driveway_door_vehicle
+    - event.g4_bullet_vehicle
+    - event.g6_bullet_vehicle
+    - event.hue_dimmer_switch_1_button_1
+    - event.hue_dimmer_switch_1_button_2
+    - event.hue_dimmer_switch_1_button_3
+    - event.hue_dimmer_switch_1_button_4
+    - event.hue_dimmer_switch_2_button_1
+    - event.hue_dimmer_switch_2_button_2
+    - event.hue_dimmer_switch_2_button_3
+    - event.hue_dimmer_switch_2_button_4
+    - event.hue_dimmer_switch_3_button_1
+    - event.hue_dimmer_switch_3_button_2
+    - event.hue_dimmer_switch_3_button_3
+    # ... and 32 more
+
+fan:
+  count: 2
+  entities:
+    - fan.inovelli_vzm36_fan_2
+    - fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+
+image:
+  count: 6
+  entities:
+    - image.goetting_qr_code
+    - image.pigeon_falls_properties_iot_qr_code
+    - image.pigeon_falls_properties_qr_code
+    - image.spencer_guest_qr_code
+    - image.spencer_iot_qr_code
+    - image.spencer_qr_code
+
+input_boolean:
+  count: 13
+  entities:
+    - input_boolean.alaina_led_strips
+    - input_boolean.bathroom_fan_pause_low_humidity
+    - input_boolean.bathroom_manual_override
+    - input_boolean.dad_awake
+    - input_boolean.dad_bedtime_mode
+    - input_boolean.entry_room_manual_override
+    - input_boolean.input_boolean_dad_alarm_off_test
+    - input_boolean.input_boolean_dad_alarm_set_test
+    - input_boolean.input_boolean_dad_charging_test
+    - input_boolean.input_boolean_dad_discharging_test
+    - input_boolean.kitchen_lounge_manual_override
+    - input_boolean.kitchen_table_manual_override
+    - input_boolean.party_mode
+
+input_button:
+  count: 1
+  entities:
+    - input_button.alaina_led_strip_lights
+
+input_number:
+  count: 8
+  entities:
+    - input_number.bathroom_fan_pause_hours
+    - input_number.bathroom_scene_index
+    - input_number.electricity_rate_summer
+    - input_number.electricity_rate_winter
+    - input_number.entry_room_scene_index
+    - input_number.kitchen_lounge_scene_index
+    - input_number.kitchen_table_scene_index
+    - input_number.monthly_energy_budget
+
+input_text:
+  count: 1
+  entities:
+    - input_text.ai_context_update
+
+light:
+  count: 135
+  entities:
+    - light.1st_floor_ap_led
+    - light.1st_floor_bathroom
+    - light.1st_floor_bathroom_ceiling_1of2
+    - light.1st_floor_bathroom_ceiling_2of2
+    - light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn
+    - light.1st_floor_bathroom_vanity_lights
+    - light.1st_floor_moderate_lighting
+    - light.1st_floor_table_lamps
+    - light.2nd_floor_ap_led
+    - light.2nd_floor_bathroom
+    - light.40062_hwy_53_ubb_led
+    - light.above_kitchen_sink_inovelli_switch
+    - light.alaina_s_bedroom
+    - light.alaina_s_bedroom_echo_glow
+    - light.alaina_s_bedside_lamp
+    - light.alaina_s_ceiling_led_lights
+    - light.alaina_s_floor_govee_lamp
+    - light.alaina_s_led_light_strip_1
+    - light.aqara_led_strip_t1
+    - light.aqara_led_strip_t1_2
+    # ... and 115 more
+
+lock:
+  count: 2
+  entities:
+    - lock.ratgdo32disco_5735e8_lock_remotes
+    - lock.ratgdo32disco_fd8d8c_lock_remotes
+
+media_player:
+  count: 38
+  entities:
+    - media_player.1st_floor_bathroom_echo_dot
+    - media_player.ai_theta_speaker
+    - media_player.alaina_s_bedroom_echo_show
+    - media_player.alaina_s_bedroom_roku
+    - media_player.basement_display
+    - media_player.basement_echo
+    - media_player.basement_yamaha_av_receiver_rx_v671_main
+    - media_player.echo_dot_extra
+    - media_player.echo_dot_extra_2
+    - media_player.echo_dot_extra_4
+    - media_player.echo_extra_3
+    - media_player.ella_s_bedroom_echo_show
+    - media_player.everywhere
+    - media_player.front_driveway_door_speaker
+    - media_player.john_s_echo
+    - media_player.john_s_echo_link
+    - media_player.john_s_firetvstick
+    - media_player.john_s_sonos_beam
+    - media_player.john_s_wh_1000xm4
+    - media_player.kitchen
+    # ... and 18 more
+
+number:
+  count: 418
+  entities:
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_automatic_switch_shutoff_timer
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_button_delay
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_default_all_led_off_color
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_default_all_led_off_intensity
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_default_all_led_on_color
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_default_all_led_on_intensity
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_double_tap_down_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_double_tap_up_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_load_level_indicator_timeout
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_default_dimming_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_dimming_down_speed
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_dimming_up_speed
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_ramp_rate_off_to_on
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_ramp_rate_on_to_off
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_maximum_load_dimming_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_minimum_load_dimming_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_on_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_on_off_transition_time
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_remote_default_dimming_level
+    - number.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_remote_dimming_down_speed
+    # ... and 398 more
+
+person:
+  count: 7
+  entities:
+    - person.alaina_spencer
+    - person.ella_spencer
+    - person.jarrett_goetting
+    - person.jean_spencer
+    - person.john_spencer
+    - person.michelle
+    - person.owen_goetting
+
+remote:
+  count: 5
+  entities:
+    - remote.alaina_s_bedroom_roku
+    - remote.basement_yamaha_av_receiver_rx_v671_main_remote
+    - remote.kitchen_lounge_tv
+    - remote.living_room_fire_tv_192_168_1_17
+    - remote.rx_v671_zone2_remote
+
+scene:
+  count: 179
+  entities:
+    - scene.1st_floor_table_lamps_concentrate
+    - scene.1st_floor_table_lamps_energize
+    - scene.1st_floor_table_lamps_nightlight
+    - scene.1st_floor_table_lamps_read
+    - scene.1st_floor_table_lamps_relax
+    - scene.2nd_floor_bathroom_concentrate
+    - scene.alaina_s_bedroom_color_burst
+    - scene.alaina_s_bedroom_concentrate
+    - scene.alaina_s_bedroom_dreamy_dusk
+    - scene.alaina_s_bedroom_energize
+    - scene.alaina_s_bedroom_island_warmth
+    - scene.alaina_s_bedroom_malibu_pink
+    - scene.alaina_s_bedroom_natural_light_3
+    - scene.alaina_s_bedroom_nightlight
+    - scene.alaina_s_bedroom_nighttime
+    - scene.alaina_s_bedroom_read
+    - scene.alaina_s_bedroom_relax
+    - scene.alaina_s_bedroom_rest
+    - scene.back_patio_concentrate
+    - scene.back_patio_energize
+    # ... and 159 more
+
+script:
+  count: 75
+  entities:
+    - script.alaina_all_lights_off
+    - script.alaina_bedtime_glow
+    - script.alaina_bedtime_glow_default
+    - script.alaina_night_glow
+    - script.alaina_sleep_timer_30
+    - script.alaina_sleep_timer_45
+    - script.alaina_sleep_timer_60
+    - script.bed_dad_30
+    - script.bed_dad_45
+    - script.bed_dad_60
+    - script.bed_dad_quick
+    - script.bedside_lamp_timer
+    - script.bedside_lamp_timer_alaina
+    - script.bedside_lamp_timer_alaina_quick
+    - script.bedside_lamp_timer_alaina_vibrant
+    - script.bedside_lamp_timer_dad_quick
+    - script.bedside_lamp_timer_dad_vibrant
+    - script.bedside_lamp_timer_ella
+    - script.bedside_lamp_timer_ella_quick
+    - script.bedside_lamp_timer_ella_vibrant
+    # ... and 55 more
+
+select:
+  count: 129
+  entities:
+    - select.1_light_preset
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_dimming_mode
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_increased_non_neutral_output
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_led_scaling_mode
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_output_mode
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_start_up_behavior
+    - select.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_switch_type
+    - select.1st_floor_bathroom_night_light_start_up_behavior
+    - select.1st_floor_bathroom_vanity_lights_led_scaling_mode
+    - select.1st_floor_bathroom_vanity_lights_output_mode
+    - select.1st_floor_bathroom_vanity_lights_start_up_behavior
+    - select.2nd_floor_bathroom_dual_smart_plug_start_up_behavior
+    - select.2nd_floor_bathroom_dual_smart_plug_start_up_behavior_2
+    - select.above_kitchen_sink_inovelli_switch_led_scaling_mode
+    - select.above_kitchen_sink_inovelli_switch_output_mode
+    - select.above_kitchen_sink_inovelli_switch_start_up_behavior
+    - select.ai_theta_recording_mode
+    - select.alaina_s_bedroom_roku_application
+    - select.aqara_led_strip_t1_power_on_behavior_on_startup
+    - select.aqara_led_strip_t1_power_on_behavior_on_startup_2
+    # ... and 109 more
+
+sensor:
+  count: 1029
+  entities:
+    - sensor.1_current_consumption
+    - sensor.1_signal_strength
+    - sensor.1_this_month_s_consumption
+    - sensor.1_today_s_consumption
+    - sensor.1_total_consumption
+    - sensor.1st_floor_ap_clients
+    - sensor.1st_floor_ap_cpu_utilization
+    - sensor.1st_floor_ap_memory_utilization
+    - sensor.1st_floor_ap_state
+    - sensor.1st_floor_ap_uplink_mac
+    - sensor.1st_floor_ap_uptime
+    - sensor.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_internal_temperature
+    - sensor.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_overheat_protection
+    - sensor.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_power
+    - sensor.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_summation_delivered
+    - sensor.1st_floor_bathroom_echo_dot_next_alarm_2
+    - sensor.1st_floor_bathroom_echo_dot_next_reminder_2
+    - sensor.1st_floor_bathroom_echo_dot_next_timer_2
+    - sensor.1st_floor_bathroom_night_light_illuminance
+    - sensor.1st_floor_bathroom_vanity_lights_current
+    # ... and 1009 more
+
+stt:
+  count: 1
+  entities:
+    - stt.faster_whisper
+
+switch:
+  count: 500
+  entities:
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_aux_switch_scenes
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_binding_off_to_on_sync_level
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_disable_config_2x_tap_to_clear_notifications
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_disable_relay_click_in_on_off_mode
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_double_tap_down_enabled
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_double_tap_up_enabled
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_firmware_progress_led
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_invert_switch
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_local_protection
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_only_1_led_mode
+    - switch.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_smart_bulb_mode
+    - switch.1st_floor_bathroom_echo_dot_do_not_disturb_switch
+    - switch.1st_floor_bathroom_echo_dot_repeat_switch
+    - switch.1st_floor_bathroom_echo_dot_shuffle_switch
+    - switch.1st_floor_bathroom_vanity_lights_aux_switch_scenes
+    - switch.1st_floor_bathroom_vanity_lights_binding_off_to_on_sync_level
+    - switch.1st_floor_bathroom_vanity_lights_disable_config_2x_tap_to_clear_notifications
+    - switch.1st_floor_bathroom_vanity_lights_firmware_progress_led
+    - switch.1st_floor_bathroom_vanity_lights_invert_switch
+    - switch.1st_floor_bathroom_vanity_lights_local_protection
+    # ... and 480 more
+
+text:
+  count: 2
+  entities:
+    - text.front_driveway_door_doorbell
+    - text.very_front_door_doorbell
+
+timer:
+  count: 3
+  entities:
+    - timer.alaina_bedtime_timer
+    - timer.dad_bedtime_timer
+    - timer.ella_bedtime_timer
+
+todo:
+  count: 1
+  entities:
+    - todo.shopping_list
+
+tts:
+  count: 2
+  entities:
+    - tts.google_translate_en_com
+    - tts.piper
+
+update:
+  count: 122
+  entities:
+    - update.1st_floor_ap
+    - update.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_firmware
+    - update.1st_floor_bathroom_night_light_firmware
+    - update.1st_floor_bathroom_vanity_lights_firmware
+    - update.2nd_floor_ap
+    - update.2nd_floor_bathroom_dual_smart_plug_firmware
+    - update.40062_hwy_53_ubb
+    - update.above_kitchen_sink_inovelli_switch_firmware
+    - update.adaptive_lighting_update
+    - update.advanced_ssh_web_terminal_update
+    - update.alexa_media_player_update
+    - update.apexcharts_card_update
+    - update.assist_microphone_update
+    - update.atomic_calendar_revive_update
+    - update.auto_entities_update
+    - update.back_door_patio_light_inovelli_switch_firmware
+    - update.basement_dehumidifier_plug_firmware
+    - update.basement_echo_smart_plug_firmware
+    - update.basement_flourescent_light_plug_firmware
+    - update.basement_milwaukee_charger_smart_plug_firmware
+    # ... and 102 more
+
+wake_word:
+  count: 1
+  entities:
+    - wake_word.openwakeword
+
+water_heater:
+  count: 1
+  entities:
+    - water_heater.navi_link_wifi_module
+
+weather:
+  count: 2
+  entities:
+    - weather.forecast_home
+    - weather.forecast_home_2
+
+zone:
+  count: 2
+  entities:
+    - zone.home_40154_hwy_53
+    - zone.michelles_house_40062_us_hwy_53
+

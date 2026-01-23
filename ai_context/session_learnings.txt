@@ -1,0 +1,37 @@
+=== HOME ASSISTANT AI LEARNING LOG ===
+
+[2026-01-06 21:15] HA API returns flat JSON array, not nested by domain
+[2026-01-06 21:15] No yq available in HA OS, use jq for all JSON parsing
+[2026-01-06 21:15] Created baseline system: 1.5MB JSON with all 2,912 entities
+[2026-01-06 21:15] hac command generates 40-line summary referencing baseline
+[2026-01-06 21:15] Session files export to /config/ai_context/sessions/TIMESTAMP/
+[2026-01-06 21:25] Built self-documenting hac output with AI instructions, cross-tool compatibility, and learning persistence
+[2026-01-06 21:25] Gemini auto-indexes Google Drive AI_Context folder, providing free insights
+[2026-01-06 21:25] Complete diagnostic system: baseline (1.5MB) + session exports (2 seconds) + learnings log
+[2026-01-06 21:27] System complete: hac generates self-documenting output with AI instructions, entity lists, and persistent learnings across all AI tools
+[2026-01-06 21:29] lesson
+[2026-01-06 21:46] Created AI_INSTRUCTIONS.md with complete system guide for ChatGPT/Gemini/Claude collaboration
+[2026-01-06 21:46] AI_ONBOARDING.txt provides quick-start text for new AI sessions with all key preferences
+[2026-01-06 21:47] Get-AIOnboarding.ps1 PowerShell script auto-copies onboarding text to clipboard for easy pasting
+[2026-01-06 21:47] AI_ONBOARDING.txt provides quick-start text for new AI sessions with all key preferences
+[2026-01-06 21:52] Complete HAC system documentation created: README, instructions, onboarding guides all syncing to Google Drive
+[2026-01-07 14:33] HAC instructions updated: emphasize && chaining for sequential commands to reduce back-and-forth
+[2026-01-08 20:30] Inovelli VZM31-SN with AUX switch in 3-way setup: Main switch uses button_1/button_2, AUX switch uses button_4/button_5. Blueprint doesn't support AUX buttons, so create separate custom automation listening for button_4_press and button_5_press on same device_id. Enable 'AUX switch scenes' on main switch device for AUX to send ZHA events.
+[2026-01-09 09:36] When editing YAML files with Python: Use simple content.replace() for straightforward text substitutions instead of complex regex patterns. Regex can fail with multiline YAML indentation. Example: content.replace('old_entity', 'new_entity') works reliably.
+[2026-01-11 23:25] Inovelli VZM31-SN and VZM36 binding issue: When switches are physically 'bound' together in ZHA, pressing buttons on one switch directly controls the other's outputs, bypassing automations. Solution: Go to device > Manage Zigbee Device > Bindings tab > Select the bound device > Click Unbind. This removes the Zigbee-level binding so automations can control lights independently. In Kitchen Lounge case: VZM31-SN was bound to VZM36, causing fan to turn on with lights. Unbinding fixed it.
+[2026-01-12 08:53] Kitchen Lounge dimmer output mode issue: Changing from OnOff to Dimmer mode stopped all functionality. May need to revert to OnOff mode or find alternative solution. The direct 'off' command conflict with button_1_press automation needs different approach.
+[2026-01-12 10:22] Kitchen Lounge VZM31-SN SOLVED: Output mode OnOff + Smart bulb mode ON for Hue automation control via button events
+[2026-01-12 10:25] Kitchen Lounge fix complete
+[2026-01-12 10:25] Kitchen Lounge VZM31-SN complete solution: Changed output mode from Dimmer back to OnOff + enabled Smart bulb mode ON in ZHA device configuration. This keeps constant power to Hue bulbs while sending button press events to automations. UP button (button_2_press) turns on light.kitchen_lounge_ceiling_1of2 and light.kitchen_lounge_ceiling_2of2 via automation. DOWN button (button_1_press) turns them off. Key insight: For Inovelli switches controlling Hue/Zigbee bulbs, always use OnOff output mode + Smart bulb mode to prevent relay switching while preserving automation control.
+[2026-01-12 10:35] what you solved
+[2026-01-12 10:41] HAC system streamlined: Token-efficient output (~20 lines vs 200). Added haclogs for detailed errors. Filters out 'DockerMount JSON serializable' bug from ha core check (not a real config error). Commands: hac (quick), haclogs (detailed), hacerrors (config), haclearn (save solution).
+[2026-01-12 10:43] Complete Inovelli automation system working: Entry Room (UP=On, DOWN=Off, CONFIG=Scene cycle), 1st Floor Bathroom (time-based lighting + brightness cycle), Kitchen Lounge VZM31-SN (UP=Hue on, DOWN=Hue off via OnOff mode + Smart bulb), Kitchen Lounge VZM36 (CONFIG=fan cycle Off→Low→Med→High). All switches use automations, not internal relays, for maximum control flexibility.
+[2026-01-12 10:52] Google Drive sync working: Use robocopy from Windows PC to sync \homeassistant.local\config\ai_context to G:\AI_Context (Synology NAS Google Drive). Command: robocopy source dest /MIR /R:3 /W:5. All sessions and learnings now accessible to Gemini via Google Drive.
+[2026-01-12 10:58] Documentation updated: README and QUICK_START now reflect hac system v2.0 with token-efficient output, clear HA→Google Drive sync workflow, and command reference. Single source of truth is HA /config/ai_context/, Google Drive is read-only mirror. Always edit on HA, then sync to Google Drive.
+[2026-01-12 11:07] 2026-01-12 Complete System Overhaul: (1) Fixed Kitchen Lounge Inovelli switches - VZM31-SN OnOff+Smart bulb mode for Hue control, VZM36 CONFIG fan cycling. (2) Optimized HAC system - 90% token reduction (200→20 lines), added haclogs/hacerrors/hacfull commands. (3) Established HA→Google Drive sync workflow via robocopy. (4) Updated all documentation. (5) Created Sync-HAContext PowerShell function for simple sync. System fully operational with cross-AI collaboration working.
+[2026-01-12 11:08] what you fixed
+[2026-01-12 11:34] Configured Back Patio Inovelli Blue (device 2110c715) to turn on Hue bulb via ZHA blueprint
+[2026-01-12 11:47] Fixed Back Patio control using raw ZHA events (device 70c1c990) to control light.back_patio, bypassing blueprint errors.
+[2026-01-12 11:56] Standardized Inovelli-to-Hue control: Bypassed blueprints for Back Patio (ID: 70c1c990c1792ade4fc2eb2fd0d8487a) and Kitchen Lounge. Use raw 'zha_event' with 'move_to_level_with_on_off' (On) and 'stop' (Off). Always reload via curl API POST to bypass restricted HA CLI.
+[2026-01-12 13:32] Final system verification: All hac commands working after .zshrc reload
+[2026-01-12 13:35] Complete system operational 2026-01-12: (1) HA commands: hac, haclogs, hacerrors, haclearn, hacfull all working. (2) Windows sync: Sync-HAContext function works after '. $PROFILE' in PowerShell, or use direct robocopy command. (3) PowerShell execution policy set to RemoteSigned. (4) All 321 files (77.6 MB) synced to Google Drive. (5) .zshrc backed up as .zshrc.working_backup_20260112. System ready for production use.

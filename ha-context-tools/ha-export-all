@@ -1,0 +1,38 @@
+#!/bin/bash
+echo "Exporting HA data..."
+
+# Entities
+python3 -c "
+import json
+from datetime import datetime
+
+with open('/config/.storage/core.entity_registry', 'r') as f:
+    data = json.load(f)
+
+entities_by_domain = {}
+for entry in data['data']['entities']:
+    entity_id = entry['entity_id']
+    domain = entity_id.split('.')[0]
+    if domain not in entities_by_domain:
+        entities_by_domain[domain] = []
+    entities_by_domain[domain].append(entity_id)
+
+with open('/config/.ha-context-cache/entities.yaml', 'w') as f:
+    f.write('# Auto-generated: ' + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '\n\n')
+    for domain in sorted(entities_by_domain.keys()):
+        f.write(domain + ':\n')
+        f.write('  count: ' + str(len(entities_by_domain[domain])) + '\n')
+        f.write('  entities:\n')
+        for entity in sorted(entities_by_domain[domain])[:20]:
+            f.write('    - ' + entity + '\n')
+        if len(entities_by_domain[domain]) > 20:
+            f.write('    # ... and ' + str(len(entities_by_domain[domain]) - 20) + ' more\n')
+        f.write('\n')
+"
+
+# Timestamp
+date '+%Y-%m-%d %H:%M:%S' > /config/.ha-context-cache/last-export.txt
+
+echo "Export complete!"
+echo "Last export: $(cat /config/.ha-context-cache/last-export.txt)"
+

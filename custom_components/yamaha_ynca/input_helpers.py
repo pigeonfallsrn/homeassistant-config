@@ -17,8 +17,10 @@ input_mappings: list[Mapping] = [
     # Inputs provided by subunits
     Mapping(ynca.Input.AIRPLAY, ["airplay"]),
     Mapping(ynca.Input.BLUETOOTH, ["bt"]),
+    Mapping(ynca.Input.DEEZER, ["deezer"]),
     Mapping(ynca.Input.IPOD, ["ipod"]),
     Mapping(ynca.Input.IPOD_USB, ["ipodusb"]),
+    Mapping(ynca.Input.MCLINK, ["mclink"]),
     Mapping(ynca.Input.NAPSTER, ["napster"]),
     Mapping(ynca.Input.NETRADIO, ["netradio"]),
     Mapping(ynca.Input.PANDORA, ["pandora"]),
@@ -29,6 +31,7 @@ input_mappings: list[Mapping] = [
     Mapping(ynca.Input.SIRIUS_IR, ["siriusir"]),
     Mapping(ynca.Input.SIRIUS_XM, ["siriusxm"]),
     Mapping(ynca.Input.SPOTIFY, ["spotify"]),
+    Mapping(ynca.Input.TIDAL, ["tidal"]),
     Mapping(ynca.Input.TUNER, ["tun", "dab"]),
     Mapping(ynca.Input.UAW, ["uaw"]),
     Mapping(ynca.Input.USB, ["usb"]),
@@ -46,6 +49,9 @@ input_mappings: list[Mapping] = [
     Mapping(ynca.Input.AV5, []),
     Mapping(ynca.Input.AV6, []),
     Mapping(ynca.Input.AV7, []),
+    Mapping(ynca.Input.CD, []),
+    Mapping(ynca.Input.COAXIAL1, []),
+    Mapping(ynca.Input.COAXIAL2, []),
     Mapping(ynca.Input.DOCK, []),
     Mapping(ynca.Input.HDMI1, []),
     Mapping(ynca.Input.HDMI2, []),
@@ -54,6 +60,9 @@ input_mappings: list[Mapping] = [
     Mapping(ynca.Input.HDMI5, []),
     Mapping(ynca.Input.HDMI6, []),
     Mapping(ynca.Input.HDMI7, []),
+    Mapping(ynca.Input.LINE1, []),
+    Mapping(ynca.Input.LINE2, []),
+    Mapping(ynca.Input.LINE3, []),
     Mapping(
         ynca.Input.MAIN_ZONE_SYNC, []
     ),  # Not an external input, but also not a subunit
@@ -68,6 +77,18 @@ input_mappings: list[Mapping] = [
 
 
 class InputHelper:
+    @staticmethod
+    def get_source_list(api: ynca.YncaApi, selected_inputs: list[str]) -> list[str]:
+        """Return list of source names for the provided selected inputs."""
+        source_mapping = InputHelper.get_source_mapping(api)
+
+        filtered_sources = [
+            name
+            for input_, name in source_mapping.items()
+            if input_.value in selected_inputs
+        ]
+
+        return sorted(filtered_sources, key=str.lower)
 
     @staticmethod
     def get_internal_subunit_attribute_names() -> list[str]:
@@ -144,6 +165,10 @@ class InputHelper:
             for mapping in input_mappings:
                 if not mapping.subunit_attribute_names:
                     source_mapping[mapping.ynca_input] = mapping.ynca_input.value
+
+        # Manually add Main Zone Sync because it can not be autodetected
+        if ynca.Input.MAIN_ZONE_SYNC not in source_mapping:
+            source_mapping[ynca.Input.MAIN_ZONE_SYNC] = ynca.Input.MAIN_ZONE_SYNC.value
 
         # Add sources from subunits
         for mapping in input_mappings:

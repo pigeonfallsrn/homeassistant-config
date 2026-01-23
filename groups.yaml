@@ -1,0 +1,10 @@
+# Family Group
+family:
+  name: Family
+  icon: mdi:account-multiple
+  all: false
+  entities:
+    - person.john_spencer
+    - person.michelle
+    - person.alaina_spencer
+    - person.ella_spencer

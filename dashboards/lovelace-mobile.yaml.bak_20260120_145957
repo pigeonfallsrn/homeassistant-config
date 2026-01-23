@@ -1,0 +1,84 @@
+title: Mobile
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    cards:
+      - type: markdown
+        content: |
+          # {{ states('sensor.house_occupancy_state') }}
+          **{{ states('sensor.people_home_count') }} people home**
+          {{ now().strftime('%A, %B %d • %I:%M %p') }}
+      
+      - type: glance
+        show_name: true
+        show_state: true
+        entities:
+          - entity: input_boolean.john_home
+            name: John
+          - entity: input_boolean.alaina_home
+            name: Alaina
+          - entity: input_boolean.ella_home
+            name: Ella
+          - entity: input_boolean.michelle_home
+            name: Michelle
+      
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Night Mode
+            icon: mdi:brightness-2
+            tap_action:
+              action: toggle
+            entity: input_boolean.preserve_night_vision
+          - type: button
+            name: Guest
+            icon: mdi:account-plus
+            tap_action:
+              action: toggle
+            entity: input_boolean.guest_present
+          - type: button
+            name: Hot Tub
+            icon: mdi:hot-tub
+            tap_action:
+              action: toggle
+            entity: input_boolean.hot_tub_mode
+      
+      - type: entities
+        title: Lights
+        entities:
+          - entity: light.living_room_lounge_ceiling_hue_color_lights
+            name: Living Room
+          - entity: light.entry_room_ceiling_hue_white_lights
+            name: Entry
+          - entity: light.kitchen_chandelier_1of5
+            name: Kitchen
+          - entity: light.upstairs_hallway
+            name: Upstairs
+          - entity: light.alaina_s_ceiling_led_lights
+            name: Alaina's Room
+      
+      - type: horizontal-stack
+        cards:
+          - type: thermostat
+            entity: climate.1st_floor_thermostat
+            name: Down
+          - type: thermostat
+            entity: climate.upstairs
+            name: Up
+      
+      - type: entities
+        title: System
+        entities:
+          - entity: input_select.occupancy_mode
+          - entity: input_boolean.school_tomorrow
+  
+  - title: Calendar
+    path: calendar
+    icon: mdi:calendar
+    cards:
+      - type: calendar
+        entities:
+          - calendar.alaina_ella
+          - calendar.work
+          - calendar.john_michelle

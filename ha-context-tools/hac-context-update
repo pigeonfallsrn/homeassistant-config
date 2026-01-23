@@ -1,0 +1,32 @@
+#!/bin/bash
+# Update an existing entity context entry
+
+CONTEXT_FILE="/config/ENTITY_CONTEXT_MAP.md"
+ENTITY="$1"
+NEW_CONTENT="$2"
+
+if [ -z "$ENTITY" ] || [ -z "$NEW_CONTENT" ]; then
+    echo "Usage: hac-context-update <entity_id> <content_file>"
+    exit 1
+fi
+
+# Find start and end lines of the entity section
+START=$(grep -n "^### $ENTITY" "$CONTEXT_FILE" | cut -d: -f1)
+if [ -z "$START" ]; then
+    echo "Entity '$ENTITY' not found in context map"
+    exit 1
+fi
+
+# Find the next ### or --- after this entity
+END=$(awk -v start="$START" 'NR > start && /^(###|---)/ {print NR; exit}' "$CONTEXT_FILE")
+if [ -z "$END" ]; then
+    END=$(wc -l < "$CONTEXT_FILE")
+else
+    END=$((END - 1))
+fi
+
+# Delete old section and insert new
+sed -i "${START},${END}d" "$CONTEXT_FILE"
+sed -i "${START}r $NEW_CONTENT" "$CONTEXT_FILE"
+
+echo "✓ Updated $ENTITY context"

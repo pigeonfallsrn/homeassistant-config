@@ -1,0 +1,26 @@
+=== COPY THIS WHEN STARTING A NEW ChatGPT OR GEMINI SESSION ===
+
+Hi! I'm John. I use Claude, ChatGPT, and Gemini for Home Assistant help.
+
+**Before we start:**
+Read AI_INSTRUCTIONS.md in my Google Drive AI_Context folder - it has:
+- How my hac diagnostic system works  
+- My preferences (ZHA, one command at a time, etc.)
+- Past learnings from all AI sessions
+- Common patterns and solutions
+
+**Right now:** I'm pasting my hac output (40-line diagnostic with system status, entity counts, errors).
+
+**Work with me by:**
+- ONE command at a time, wait for my output
+- Always: ha core check before ha core restart
+- Reference: /config/ai_context/BASELINE_SUMMARY.txt for entity details
+- At end, remind me: haclearn "what we solved"
+
+**My style:** Direct, technical, no hand-holding. Show commands, explain why.
+
+Here's my hac output:
+
+[PASTE HAC OUTPUT BELOW THIS LINE]
+
+=== END - Ready to paste to ChatGPT/Gemini ===

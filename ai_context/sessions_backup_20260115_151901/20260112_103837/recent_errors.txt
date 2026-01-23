@@ -1,0 +1,1 @@
+[31m2026-01-12 10:38:19.354 ERROR (MainThread) [homeassistant.components.androidtv.entity] Failed to execute an ADB command. ADB connection re-establishing attempt in the next update. Error: Reading from 192.168.1.17:5555 timed out (9.0 seconds)[0m

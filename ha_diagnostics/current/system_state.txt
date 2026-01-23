@@ -1,0 +1,39 @@
+arch: aarch64
+channel: stable
+docker: 28.3.3
+features:
+- reboot
+- shutdown
+- services
+- network
+- hostname
+- timedate
+- os_agent
+- haos
+- resolved
+- journal
+- disk
+- mount
+hassos: "16.3"
+homeassistant: 2025.12.4
+hostname: homeassistant
+logging: info
+machine: green
+machine_id: 6d27878e380c4640a2683c01a0eb367c
+operating_system: Home Assistant OS 16.3
+state: running
+supervisor: 2025.12.3
+supported: true
+supported_arch:
+- aarch64
+- armv7
+- armhf
+timezone: America/Chicago
+blk_read: 0
+blk_write: 0
+cpu_percent: 10.39
+memory_limit: 4113870848
+memory_percent: 18.93
+memory_usage: 778752000
+network_rx: 0
+network_tx: 0

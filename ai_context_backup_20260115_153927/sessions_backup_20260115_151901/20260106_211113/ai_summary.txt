@@ -1,0 +1,54 @@
+=== HOME ASSISTANT CONTEXT ===
+Generated: Tue Jan  6 21:12:32 CST 2026
+Session: 20260106_211113
+
+== SYSTEM STATUS ==
+version: 2025.12.5
+version_latest: 2025.12.5
+
+== CONFIG CHECK ==
+✅ Valid
+
+== ENTITY COUNTS ==
+Lights: 136
+Switches: 357
+Sensors: 668
+Automations: 186
+
+== RECENT ERRORS (last 10) ==
+
+
+== AUTOMATIONS ==
+  alias: Bathroom Fan – Auto ON (RH ≥ 70% for 1 min)
+  alias: Bathroom Fan – Auto OFF (RH ≤ 60% for 10 min)
+  alias: Everyone Away → All Lights Off
+  alias: First Person Home After Dark → Entry Lights On
+  alias: Bathroom - Red Light (11pm-5:30am)
+  alias: Living Room TV OFF → Full AV System OFF
+  alias: Garage All Lights OFF
+  alias: Entry Room Inovelli Ceiling Lights Switch
+
+== INOVELLI DEVICES ==
+light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn
+light.above_kitchen_sink_inovelli_switch
+light.back_door_patio_light_inovelli_switch
+light.entry_room_ceiling_light_inovelli_smart_dimmer_switch
+light.inovelli_vzm31_sn_3
+light.inovelli_vzm31_sn_4
+light.inovelli_vzm36_light_3
+light.inovelli_vzm36_light_4
+light.kitchen_above_table_chandelier_inovelli
+light.kitchen_ceiling_inovelli_vzm31_sn
+light.kitchen_lounge_inovelli_smart_dimmer
+light.kitchen_lounge_light_fan_inovelli_vzm36_light
+light.kitchen_lounge_light_fan_inovelli_vzm36_light_2
+
+=== FILES EXPORTED ===
+📁 /config/ai_context/sessions/20260106_211113
+   • system_info.txt
+   • all_entities.txt  
+   • recent_errors.txt
+   • automation_names.txt
+   • config_check.txt
+
+Run 'cat /config/ai_context/latest_session/[filename]' to view details.

@@ -1,0 +1,119 @@
+=== HAC FULL CONTEXT ===
+Generated: 2026-01-15 14:53:56 CST
+Session ID: 20260115_145356
+
+--- SYSTEM INFO ---
+Version: 2026.1.1
+State: null
+
+--- ENTITY SUMMARY ---
+  assist_satellite:    1
+  automation:          17
+  binary_sensor:       147
+  button:              174
+  calendar:            18
+  camera:              11
+  climate:             6
+  conversation:        2
+  cover:               2
+  device_tracker:      50
+  event:               52
+  fan:                 2
+  input_boolean:       13
+  input_button:        1
+  input_number:        8
+  input_text:          1
+  light:               135
+  lock:                2
+  media_player:        35
+  number:              410
+  person:              4
+  remote:              5
+  scene:               179
+  script:              75
+  select:              129
+  sensor:              556
+  stt:                 1
+  sun:                 1
+  switch:              336
+  text:                2
+  timer:               3
+  todo:                1
+  tts:                 2
+  update:              121
+  wake_word:           1
+  weather:             2
+  zone:                2
+
+--- RECENT ERRORS (last 20) ---
+  [31m2026-01-15 14:24:02.769 ERROR (MainThread) [homeassistant.components.androidtv.entity] Failed to execute an ADB command. ADB connection re-establishing attempt in the next update. Error: Reading from 192.168.1.17:5555 timed out (9.0 seconds)[0m
+  [31m2026-01-15 14:49:44.148 ERROR (MainThread) [homeassistant.components.websocket_api.commands] Unable to get manifest for integration navien_water_heater: Integration 'navien_water_heater' not found.[0m
+
+--- ALL LEARNINGS ---
+  • [Wed Jan 14 09:59:24 CST 2026] COMPLETE FIX: Entry Room Inovelli + Hue Smart Bulb Control
+  • 
+  • PROBLEM SUMMARY:
+  • - Entry Room VZM31-SN switch automation not controlling Hue bulbs
+  • - Multiple root causes identified through systematic troubleshooting
+  • 
+  • ROOT CAUSES FOUND:
+  • 1. Wrong entity names in automation (light.entry_room_ceiling_hue_white_lights vs actual individual lights)
+  • 2. Adaptive Lighting switch command failing and blocking automation
+  • 3. Individual Hue bulbs hidden by integration (hidden_by: integration)
+  • 4. Smart Bulb Mode was already enabled (not the issue)
+  • 
+  • SOLUTION APPLIED:
+  • 1. Used Python to parse YAML and replace entity names recursively throughout automation
+  • 2. Removed Adaptive Lighting switch.turn_on commands that were failing
+  • 3. Unhid the individual light entities in core.entity_registry
+  • 4. Entities: light.entry_rm_ceiling_hue_white_1_2 and light.entry_rm_ceiling_hue_white_2_2
+  • 5. Device: Entry Room Ceiling Light Inovelli Smart Dimmer (VZM31-SN)
+  • 6. Device ID: d80c7fa6d013f0fd1cbdd6f67c6a1cac
+  • 7. IEEE: 8c:8b:48:ff:fe:4d:18:9f
+  • 
+  • KEY LESSONS:
+  • - NEVER use sed to delete lines in live config files (caused 200+ automation loss)
+  • - ALWAYS use Python with proper YAML parsing for complex config edits
+  • - Check if entities are hidden_by: integration when automations don't work
+  • - Hue creates group entities but hides individuals - unhide them for direct control
+  • - Smart Bulb Mode must be enabled for switch to not cut power to bulbs
+  • - When Adaptive Lighting is disabled, remove its service calls from automations
+  • 
+  • WORKING AUTOMATIONS:
+  • - Entry Room - Inovelli Ceiling Lights (main switch, blueprint)
+  • - Entry Room - AUX Switch Controls (aux switch, manual)
+  • 
+  • STATUS: ✅ BOTH SWITCHES WORKING
+  • [Wed Jan 14 09:59:34 CST 2026] REMAINING WORK - Back Patio Switch:
+  • - Device: Back Door Patio Light Inovelli Switch (VZM30-SN)
+  • - Device ID: 70c1c990c1792ade4fc2eb2fd0d8487a
+  • - Current automation exists but needs testing
+  • - Apply same fix pattern as Entry Room if needed
+  • - Check for hidden entities, wrong entity names, adaptive lighting conflicts
+  • [2026-01-14 10:00] COMPLETE FIX: Entry Room Inovelli + Hue Smart Bulb Control - Both main and AUX switches working after fixing entity names, removing Adaptive Lighting commands, and unhiding hidden Hue bulb entities
+  • [2026-01-14 10:00] REMAINING: Back Patio switch (device_id: 70c1c990c1792ade4fc2eb2fd0d8487a) needs testing
+  • [2026-01-14 14:56] COMPLETE FIX: Entry Room Inovelli + Hue Smart Bulb Control - Both main and AUX switches working after fixing entity names, removing Adaptive Lighting commands, and unhiding hidden Hue bulb entities
+  • [2026-01-14 14:56] REMAINING: Back Patio switch (device_id: 70c1c990c1792ade4fc2eb2fd0d8487a) needs testing
+  • [2026-01-14 15:28] Back Patio Complete: VZM30-SN controlling light.back_patio_steps_light with scene cycling - UP=Bright(100%/4000K), CONFIG cycles through Bright→Evening(60%/2700K)→Hot Tub(20%/amber)→Off, DOWN=Off. Smart Bulb Mode enabled.
+  • [2026-01-14 15:28] Session Success: All 3 Inovelli+Hue setups working: Kitchen Chandelier, Entry Room (main+AUX), Back Patio (with scene cycling). Key fixes: entity names, hidden entities, Smart Bulb Mode, button commands, Adaptive Lighting removal.
+  • [2026-01-14 21:34] NEVER use sed for YAML - use Python with yaml.safe_load
+  • [2026-01-14 21:34] Inovelli switches need Smart Bulb Mode ON for Hue control
+  • [2026-01-14 21:34] Hue hides entities with hidden_by: integration - unhide via Python
+  • [2026-01-14 21:34] VZM30-SN and VZM31-SN use button_X_press not move_to_level
+  • [2026-01-14 21:34] Always backup before edits: cp file.yaml file.yaml.backup_$(date +%Y%m%d_%H%M%S)
+  • [2026-01-14 21:34] Check hidden entities: grep ENTITY /config/.storage/core.entity_registry | grep hidden_by
+  • [2026-01-14 21:35] Scene cycling on Back Patio works with button_3_press conditions
+  • [2026-01-14 23:07] Cleaned up 201 ghost automations from entity registry after sed disaster - kept 17 working automations
+  • [2026-01-15 07:02] Successfully cleaned entity registry - removed 184 ghost automations after stopping HA. Final count: 17 working automations, down from 201 ghosts
+  • [2026-01-15 07:04] HAC v2.0 system fully tested and operational
+  • [2026-01-15 08:55] sed disaster wiped Mobile App integrations for Alaina and Ella's phones. Solution: reinstall HA Companion app on their iPhone 17s, grant location permissions, then manually link new device_trackers to person entities in Settings → People
+
+--- WORKING INOVELLI SETUPS ---
+  • Kitchen Chandelier (VZM30-SN)
+  • Entry Room (VZM31-SN + AUX)
+  • Back Patio (VZM30-SN with scene cycling)
+  • Kitchen Above Sink (VZM31-SN)
+  • Kitchen Lounge (VZM36 + VZM31-SN)
+  • 1st Floor Bathroom (VZM31-SN)
+
+=== END CONTEXT ===

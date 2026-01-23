@@ -1,0 +1,52 @@
+{
+    "config": {
+      "step": {
+        "user": {
+          "title": "Mitsubishi Comfort Setup",
+          "description": "Enter your Kumo Cloud credentials to connect your Mitsubishi climate control system.",
+          "data": {
+            "username": "Username (Email)",
+            "password": "Password"
+          }
+        },
+        "site": {
+          "title": "Select Site",
+          "description": "Select the site you want to control. You have {num_sites} available sites.",
+          "data": {
+            "site_id": "Site"
+          }
+        },
+        "reauth_confirm": {
+          "title": "Re-authenticate",
+          "description": "Your Kumo Cloud credentials need to be updated. Please enter your current password.",
+          "data": {
+            "password": "Password"
+          }
+        }
+      },
+      "error": {
+        "invalid_auth": "Invalid credentials. Please check your username and password.",
+        "cannot_connect": "Unable to connect to Kumo Cloud. Please check your internet connection.",
+        "unknown": "An unexpected error occurred. Please try again."
+      },
+      "abort": {
+        "already_configured": "This account is already configured.",
+        "reauth_successful": "Re-authentication successful."
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Mitsubishi Comfort Options",
+          "description": "Configure options for your Mitsubishi Comfort integration."
+        }
+      }
+    },
+    "entity": {
+      "climate": {
+        "kumo_cloud": {
+          "name": "Climate"
+        }
+      }
+    }
+  }

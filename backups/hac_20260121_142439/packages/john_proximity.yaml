@@ -1,0 +1,32 @@
+# John Proximity to Home
+# Triggers approaching home notification earlier
+
+template:
+  - sensor:
+      - name: "John Distance to Home"
+        unique_id: john_distance_to_home
+        unit_of_measurement: "m"
+        state: >
+          {% set home_lat = 44.42452455932065 %}
+          {% set home_lon = -91.21117829649491 %}
+          {% set john_lat = state_attr('device_tracker.john_s_phone', 'latitude') | float(0) %}
+          {% set john_lon = state_attr('device_tracker.john_s_phone', 'longitude') | float(0) %}
+          {% if john_lat == 0 or john_lon == 0 %}
+            unknown
+          {% else %}
+            {% set lat_diff = (home_lat - john_lat) * 111000 %}
+            {% set lon_diff = (home_lon - john_lon) * 111000 * cos(home_lat * 3.14159 / 180) %}
+            {{ ((lat_diff**2 + lon_diff**2) ** 0.5) | round(0) }}
+          {% endif %}
+        icon: mdi:map-marker-distance
+
+  - binary_sensor:
+      - name: "John Approaching Home"
+        unique_id: john_approaching_home
+        state: >
+          {% set dist = states('sensor.john_distance_to_home') | float(9999) %}
+          {% set prev = state_attr('binary_sensor.john_approaching_home', 'previous_distance') | float(9999) %}
+          {{ dist < 500 and dist < prev and states('person.john_spencer') != 'home' }}
+        attributes:
+          previous_distance: "{{ states('sensor.john_distance_to_home') | float(9999) }}"
+        icon: mdi:home-import-outline

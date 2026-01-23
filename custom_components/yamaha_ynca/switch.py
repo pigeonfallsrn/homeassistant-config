@@ -75,6 +75,12 @@ ZONE_ENTITY_DESCRIPTIONS = [
         off=ynca.Enhancer.OFF,
     ),
     YncaSwitchEntityDescription(
+        key="exbass",
+        entity_category=EntityCategory.CONFIG,
+        on=ynca.ExBass.AUTO,
+        off=ynca.ExBass.OFF,
+    ),
+    YncaSwitchEntityDescription(
         key="hdmiout",
         icon="mdi:hdmi-port",
         entity_category=EntityCategory.CONFIG,
@@ -100,10 +106,10 @@ ZONE_ENTITY_DESCRIPTIONS = [
         on=ynca.SpeakerA.ON,
         off=ynca.SpeakerA.OFF,
         # On receivers with ZoneB the Speaker A/B functions are linked to zonepower is undesired
-        # So avoid showing switches in that case
+        # So avoid showing switches when there is a ZoneB
         supported_check=lambda entity_description, zone_subunit: (
             subunit_supports_entitydescription_key(entity_description, zone_subunit)
-            and getattr(zone_subunit, "zonebavail", None) is not ynca.ZoneBAvail.READY
+            and getattr(zone_subunit, "zonebavail", None) is None
         ),
     ),
     YncaSwitchEntityDescription(
@@ -113,10 +119,10 @@ ZONE_ENTITY_DESCRIPTIONS = [
         on=ynca.SpeakerB.ON,
         off=ynca.SpeakerB.OFF,
         # On receivers with ZoneB the Speaker A/B functions are linked to zonepower is undesired
-        # So avoid showing switches in that case
+        # So avoid showing switches when there is a ZoneB
         supported_check=lambda entity_description, zone_subunit: (
             subunit_supports_entitydescription_key(entity_description, zone_subunit)
-            and getattr(zone_subunit, "zonebavail", None) is not ynca.ZoneBAvail.READY
+            and getattr(zone_subunit, "zonebavail", None) is None
         ),
     ),
     YncaSwitchEntityDescription(
@@ -152,6 +158,13 @@ SYS_ENTITY_DESCRIPTIONS = [
         icon="mdi:hdmi-port",
         on=ynca.HdmiOutOnOff.ON,
         off=ynca.HdmiOutOnOff.OFF,
+        associated_zone_attr="main",
+    ),
+    YncaSwitchEntityDescription(
+        key="party",
+        icon="mdi:party-popper",
+        on=ynca.Party.ON,
+        off=ynca.Party.OFF,
         associated_zone_attr="main",
     ),
 ]

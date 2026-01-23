@@ -1,0 +1,21 @@
+#!/bin/bash
+# Extract entity mentions from HAC collaboration package and recent progress
+
+echo "=== Entity Context Extraction ==="
+echo "Scanning collaboration package for entity references..."
+echo ""
+
+# Get today's collaboration package
+hac a 2>/dev/null | grep -E "(device_tracker\.|binary_sensor\.|light\.|sensor\.|switch\.|automation\.|cover\.)" | \
+while read -r line; do
+    # Extract entity IDs
+    echo "$line" | grep -oE "(device_tracker|binary_sensor|light|sensor|switch|automation|cover)\.[a-z0-9_]+" | sort -u
+done | sort -u
+
+echo ""
+echo "=== High-Priority Entities from Recent Progress ==="
+echo "device_tracker.michelle_s_iphone_14_pro"
+echo "binary_sensor.michelle_phone_at_michelle_s_house_40062"
+echo "binary_sensor.michelle_present (pending)"
+echo ""
+echo "Run: hac a | grep 'entity_name' to see full context"
