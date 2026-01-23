@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-23 11:41
+# System Knowledge - 2026-01-23 12:00
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -21,28 +21,30 @@
 - [ ] Fix SSH key auth to Synology (add ha_to_synology.pub to admin@[IP]:~/.ssh/authorized_keys) then integrate Google Drive sync into hac push
 - [ ] Double-trigger still occurring - combined motion sensors may be firing twice. Investigate motion_aggregation.yaml template definition
 - 2026-01-22: Fix SSH key auth to Synology for Google Drive sync - add ha_to_synology.pub to admin@[IP]:~/.ssh/authorized_keys, then integrate gdrive sync into hac push
+- 2026-01-23: Phase 2 family_activities: Connect winddown sensors to kids_bedroom_automation.yaml, add WAYA softball calendars when season starts, dashboard card
+- 2026-01-23: HAC v7.3 Architecture Redesign - Multi-LLM workflow optimization: (1) Dynamic tabled/learnings management with rationale tracking, (2) LLM-specific session prompts (Claude web, Claude Desktop+MCP, Gemini Pro), (3) MCP-aware mode with privacy guards and guided rules, (4) Token-efficient non-MCP fallback mode, (5) Strategic workflow guidance per use case (coding, research, config). See hac/learnings/20260123.md for full spec.
+- 2026-01-23: Infrastructure integration: UniFi Protect motion events to HA, Synology automated HA snapshot backups
 
 ## Recent Session Learnings
-- `calendar.whitehall_middle_school_volleyball_calendar` - School volleyball
-- `calendar.bagc_maga_team_1_2_calendar` - BAGC gymnastics (final season)
+### Device Ecosystem
+- **Lighting:** Philips Hue, Inovelli switches, Govee lamps, Aqara sensors
+- **Climate:** Nest thermostats, Mitsubishi mini-splits (Kumo Cloud)
+- **Voice:** Amazon Echo devices throughout
+- **Tablets:** Kitchen wall tablet (Fully Kiosk), [PERSON]'s Fire tablet
+- **Garage:** ratgdo controllers (2x), Aqara motion sensors
 
-### Key Design Decisions
-1. **Calendar + Location Fusion** - Combines "not home" + "calendar event active" for reliable activity detection even without precise GPS zones for every venue
-2. **Late Activity = 7pm+** - Arriving home after 7pm with activity flag triggers 90-min delayed wind-down instead of fixed 9pm
-3. **Lights only (silent)** - Wind-down triggers lighting changes without phone notifications
-4. **Grade-based logic** - Age divisions (12U, 14U) and school levels (elementary, middle, high) derived from grade
+### Automation Patterns Established
+- **Presence:** Multi-method (WiFi AP + GPS + Motion)
+- **Lighting:** Adaptive lighting with manual override detection
+- **Bedtime:** Context-aware wind-down (new family_activities system)
+- **Notifications:** Actionable mobile notifications with response handling
 
-### Future Enhancements (Phase 2)
-- [ ] Connect wind-down sensors to kids_bedroom_automation.yaml
-- [ ] Add WAYA softball calendars when season starts
-- [ ] Seasonal sport active flags
-- [ ] Dashboard card for family activities visibility
-
-### Notes
-- [PERSON]'s Tenacity 14s-2: Practice only, no tournaments (still triggers activity detection)
-- [PERSON]'s BAGC gymnastics: Final season
-- [PERSON]'s softball: Last year of 14U
-- [PERSON]'s softball: 12U this year, then 2 years of 14U
+### HAC Workflow Preferences
+- Terminal commands only, no GUI
+- Chain with `&&` for efficiency
+- `hac backup` before any edit
+- Propose → approve → execute pattern
+- `hac learn` to capture insights
 
 ## Historical Learnings (last 30 lines)
 - hacs: v2.0.5

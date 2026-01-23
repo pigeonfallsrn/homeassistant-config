@@ -16,8 +16,6 @@ template:
              or is_state('binary_sensor.entry_room_west_wall_nightlight_motion', 'on') }}
         delay_off:
           seconds: 30
-        delay_on:
-          milliseconds: 150
 
       # -----------------------------------------------------------------
       # Kitchen Lounge - Combined Motion (P1 + TR)
@@ -105,8 +103,6 @@ template:
              or is_state('binary_sensor.living_rm_loungemotionaware_area', 'on') }}
         delay_off:
           seconds: 30
-        delay_on:
-          milliseconds: 150
 
       # -----------------------------------------------------------------
       # Downstairs - Any motion on first floor

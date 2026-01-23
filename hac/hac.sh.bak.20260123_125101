@@ -238,7 +238,7 @@ $(sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime')
 $(tail -500 /config/home-assistant.log 2>/dev/null | grep -iE "error|exception" | grep -v "DEBUG\|aiohttp\|httpx\|async_timeout" | tail -5 || echo "None")
 
 ## Double-Fires (last hour)
-$(sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_changed_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3 ORDER BY COUNT(*) DESC LIMIT 5;" 2>/dev/null | while IFS='|' read a c; do echo "⚠ $a: ${c}x"; done)
+$(sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_updated_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3 ORDER BY COUNT(*) DESC LIMIT 5;" 2>/dev/null | while IFS='|' read a c; do echo "⚠ $a: ${c}x"; done)
 INNER
 )
     sanitize_output "$content" > "$OUTPUT_DIR/01_status.md"
@@ -635,7 +635,7 @@ cmd_health() {
         python3 -c "import json,sys;d=json.load(sys.stdin);f=[e for e in d if e.get('state') not in ['loaded','not_loaded',None]];print('  Issues: '+str(len(f)) if f else '  All OK')" 2>/dev/null
     echo ""
     echo "Double-fires (1hr):"
-    sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_changed_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3 ORDER BY COUNT(*) DESC;" 2>/dev/null | while IFS='|' read a c; do echo "  ⚠ $a: ${c}x"; done || echo "  None"
+    sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_updated_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3 ORDER BY COUNT(*) DESC;" 2>/dev/null | while IFS='|' read a c; do echo "  ⚠ $a: ${c}x"; done || echo "  None"
     echo ""
     echo "Config Check:"
     ha core check 2>&1 | head -3
