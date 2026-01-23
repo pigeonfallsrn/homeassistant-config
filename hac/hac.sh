@@ -1,12 +1,12 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# HAC v7.1 - Home Assistant Context Manager
+# HAC v7.3 - Home Assistant Context Manager
 # Token-efficient | Secret Gist | Auto-backup | Privacy-first | Safe editing
 # ═══════════════════════════════════════════════════════════════════════════════
 set -e
 
 # === CONFIG ===
-HAC_VERSION="7.2"
+HAC_VERSION="7.3"
 HAC_DIR="/config/hac"
 OUTPUT_DIR="$HAC_DIR/gist_output"
 PACKAGES_DIR="/config/packages"

@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-23 12:00
+# System Knowledge - 2026-01-23 12:55
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -26,10 +26,6 @@
 - 2026-01-23: Infrastructure integration: UniFi Protect motion events to HA, Synology automated HA snapshot backups
 
 ## Recent Session Learnings
-### Device Ecosystem
-- **Lighting:** Philips Hue, Inovelli switches, Govee lamps, Aqara sensors
-- **Climate:** Nest thermostats, Mitsubishi mini-splits (Kumo Cloud)
-- **Voice:** Amazon Echo devices throughout
 - **Tablets:** Kitchen wall tablet (Fully Kiosk), [PERSON]'s Fire tablet
 - **Garage:** ratgdo controllers (2x), Aqara motion sensors
 
@@ -45,6 +41,11 @@
 - `hac backup` before any edit
 - Propose → approve → execute pattern
 - `hac learn` to capture insights
+
+- 12:24: Double-fire fix: combined motion sensors need delay_on debounce when OR-ing multiple physical sensors
+- 12:50: HAC status double-fire false positives: HA sqlite stores multiple state rows per automation trigger (start, attribute updates). Query should use DISTINCT on timestamp rounded to seconds, or check last_changed vs last_updated to filter actual trigger events vs attribute updates
+- 12:50: Confirmed: delay_on 150ms on template sensors works - combined sensor fired once at .879 after east sensor at .726 (153ms delta). Double-fires in status were reporting artifact, not actual duplicate automation runs
+- 12:51: Fixing HAC status double-fire query to use last_changed_ts instead of last_updated_ts to avoid counting attribute updates as separate triggers
 
 ## Historical Learnings (last 30 lines)
 - hacs: v2.0.5
