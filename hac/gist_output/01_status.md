@@ -1,4 +1,4 @@
-# HA Status - 2026-01-23 09:33 CST
+# HA Status - 2026-01-23 11:41 CST
 Version: 2026.1.2 | HAC: v7.2
 
 ## People
@@ -32,22 +32,24 @@ someone_home: on
 girls_home: off
 both_girls_home: off
 kitchen_table_manual_override: unavailable
+ella_winddown_override: off
+alaina_winddown_override: off
 
 ## Recent Triggers (last 10)
-2026-01-23 09:29:17 2nd_floor_bathroom_night_lighting
-2026-01-23 09:19:55 living_room_lamps_activity_boost
-2026-01-23 09:19:51 living_room_lamps_activity_boost
-2026-01-23 09:19:51 living_room_lamps_adaptive_control
-2026-01-23 09:19:51 living_room_lamps_adaptive_control
-2026-01-23 09:10:20 living_room_lamps_dim_after_20min_no_motion
-2026-01-23 09:10:20 living_room_lamps_dim_after_20min_no_motion
-2026-01-23 09:00:04 humidity_alert_2nd_floor_low_or_high
-2026-01-23 09:00:00 low_battery_daily_digest
-2026-01-23 09:00:00 low_battery_daily_digest
+2026-01-23 11:38:24 entry_room_lamp_adaptive_lux_control
+2026-01-23 11:38:24 entry_room_lamp_adaptive_lux_control
+2026-01-23 11:38:11 living_room_lamps_adaptive_control
+2026-01-23 11:38:11 living_room_lamps_adaptive_control
+2026-01-23 11:36:34 entry_room_lamp_adaptive_lux_control
+2026-01-23 11:36:34 entry_room_lamp_adaptive_lux_control
+2026-01-23 11:35:55 living_room_lamps_adaptive_control
+2026-01-23 11:35:55 living_room_lamps_adaptive_control
+2026-01-23 11:35:03 entry_room_lamp_adaptive_lux_control
+2026-01-23 11:35:03 entry_room_lamp_adaptive_lux_control
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ living_room_lamps_activity_boost: 4x
-⚠ living_room_lamps_adaptive_control: 4x
+⚠ entry_room_lamp_adaptive_lux_control: 20x
+⚠ living_room_lamps_adaptive_control: 10x

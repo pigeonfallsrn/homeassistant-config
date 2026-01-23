@@ -1,4 +1,4 @@
-# Automation Index - 2026-01-23 09:33
+# Automation Index - 2026-01-23 11:41
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -9,6 +9,7 @@ Fetch full YAML: `hac pkg <filename>`
 0 automations)
 - **ella_bedroom.yaml** (0
 0 automations)
+- **family_activities.yaml** (6 automations)
 - **garage_door_alerts.yaml** (2 automations)
 - **garage_lighting_automation.yaml** (2 automations)
 - **garage_quick_open.yaml** (10 automations)
@@ -60,6 +61,14 @@ Fetch full YAML: `hac pkg <filename>`
 ### ap_presence_hybrid.yaml
 
 ### ella_bedroom.yaml
+
+### family_activities.yaml
+278: family_ella_arrived_home
+292: family_alaina_arrived_home
+306: family_ella_left_for_activity
+318: family_alaina_left_for_activity
+330: family_daily_reset
+345: family_increment_grades
 
 ### garage_door_alerts.yaml
 98: garage_door_alert_actions

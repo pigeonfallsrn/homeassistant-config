@@ -4,3 +4,4 @@
 - [ ] Fix SSH key auth to Synology (add ha_to_synology.pub to admin@192.168.1.52:~/.ssh/authorized_keys) then integrate Google Drive sync into hac push
 - [ ] Double-trigger still occurring - combined motion sensors may be firing twice. Investigate motion_aggregation.yaml template definition
 - 2026-01-22: Fix SSH key auth to Synology for Google Drive sync - add ha_to_synology.pub to admin@192.168.1.52:~/.ssh/authorized_keys, then integrate gdrive sync into hac push
+- 2026-01-23: Phase 2 family_activities: Connect winddown sensors to kids_bedroom_automation.yaml, add WAYA softball calendars when season starts, dashboard card

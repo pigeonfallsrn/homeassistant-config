@@ -527,19 +527,16 @@ cmd_q() {
     [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
     local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
     
-    echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo "HAC v$HAC_VERSION - CONTINUE SESSION"
-    echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo "Fetch: $gist_url/01_status.md"
-    echo "       $gist_url/02_index.md"
-    echo "Rules: Terminal | && chain | hac backup before edit | propose→approve"
-    echo "On-demand: hac pkg <file> | hac ids <file>"
-    if [ -f "$HAC_DIR/tabled_projects.md" ] && [ -s "$HAC_DIR/tabled_projects.md" ]; then
-        echo "───────────────────────────────────────────────────────────────────────────────"
-        echo "Tabled Projects (recent 3):"
-        tail -3 "$HAC_DIR/tabled_projects.md" | while read line; do echo "  $line"; done
-    fi
-    echo "═══════════════════════════════════════════════════════════════════════════════"
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HAC v$HAC_VERSION - CONTINUE SESSION
+═══════════════════════════════════════════════════════════════════════════════
+Fetch: $gist_url/01_status.md
+       $gist_url/02_index.md
+Rules: Terminal | && chain | hac backup before edit | propose→approve
+On-demand: hac pkg <file> | hac ids <file>
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
 }
 
 cmd_status() {

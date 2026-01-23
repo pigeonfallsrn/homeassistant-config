@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-23 09:33
+# System Knowledge - 2026-01-23 11:41
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -23,7 +23,26 @@
 - 2026-01-22: Fix SSH key auth to Synology for Google Drive sync - add ha_to_synology.pub to admin@[IP]:~/.ssh/authorized_keys, then integrate gdrive sync into hac push
 
 ## Recent Session Learnings
-- 09:33: Consolidated 2nd floor lighting: Replaced 3 automations (night_path_upstairs_hallway, night_path_2nd_floor_bathroom, morning_wake_upstairs_hallway) with 2 clean automations: upstairs_hallway_motion_lighting (all time contexts, deep red at night, adaptive handoff day) and 2nd_floor_bathroom_night_lighting (night only, triggered by hallway P1, shower-safe 15min timeout). Disabled morning_wake_master_bedroom in UI. Lines 505 and 570 in occupancy_system.yaml.
+- `calendar.whitehall_middle_school_volleyball_calendar` - School volleyball
+- `calendar.bagc_maga_team_1_2_calendar` - BAGC gymnastics (final season)
+
+### Key Design Decisions
+1. **Calendar + Location Fusion** - Combines "not home" + "calendar event active" for reliable activity detection even without precise GPS zones for every venue
+2. **Late Activity = 7pm+** - Arriving home after 7pm with activity flag triggers 90-min delayed wind-down instead of fixed 9pm
+3. **Lights only (silent)** - Wind-down triggers lighting changes without phone notifications
+4. **Grade-based logic** - Age divisions (12U, 14U) and school levels (elementary, middle, high) derived from grade
+
+### Future Enhancements (Phase 2)
+- [ ] Connect wind-down sensors to kids_bedroom_automation.yaml
+- [ ] Add WAYA softball calendars when season starts
+- [ ] Seasonal sport active flags
+- [ ] Dashboard card for family activities visibility
+
+### Notes
+- [PERSON]'s Tenacity 14s-2: Practice only, no tournaments (still triggers activity detection)
+- [PERSON]'s BAGC gymnastics: Final season
+- [PERSON]'s softball: Last year of 14U
+- [PERSON]'s softball: 12U this year, then 2 years of 14U
 
 ## Historical Learnings (last 30 lines)
 - hacs: v2.0.5
