@@ -670,6 +670,10 @@ HAC v$HAC_VERSION - Home Assistant Context Manager
 SYNC & SESSION
   push          Generate + audit + sync + session prompt
   q             Quick session prompt (no sync)
+  gpt           ChatGPT session prompt
+  gem           Gemini session prompt
+  mcp           Claude Desktop + MCP (rich context)
+  research      Deep research mode (full history)
   init          Initialize new secret gist
   migrate       Migrate from v6 public → v7 secret gist
 
@@ -698,10 +702,138 @@ LOGGING
 HELP
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# HAC v7.3 - Multi-LLM Output Commands
+# ═══════════════════════════════════════════════════════════════════════════════
+
+cmd_gpt() {
+    local gist_id=$(get_gist_id)
+    [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
+    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
+    
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HOME ASSISTANT CONTEXT - ChatGPT Session
+═══════════════════════════════════════════════════════════════════════════════
+You're helping with Home Assistant automation. Use web search for HA docs.
+
+**Context URLs (fetch these):**
+- $gist_url/01_status.md
+- $gist_url/02_index.md
+
+## Quick Status
+$(cmd_status 2>/dev/null | head -12)
+
+## Rules
+- Terminal commands only via SSH
+- Propose changes, wait for approval
+- Backup before edits: cp file file.bak.\$(date +%Y%m%d_%H%M%S)
+
+## Recent Notes
+$(cat "$SESSION_FILE" 2>/dev/null | tail -5 || echo "None")
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
+}
+
+cmd_gem() {
+    local gist_id=$(get_gist_id)
+    [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
+    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
+    
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HOME ASSISTANT CONTEXT - Gemini Session
+═══════════════════════════════════════════════════════════════════════════════
+Help with Home Assistant automation.
+
+**Fetch:** $gist_url/01_status.md and $gist_url/02_index.md
+
+## Status
+$(cmd_status 2>/dev/null | head -12)
+
+## Workflow
+1. Describe need → 2. You propose → 3. I approve → 4. Verify
+
+## Notes
+$(cat "$SESSION_FILE" 2>/dev/null | tail -5 || echo "New session")
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
+}
+
+cmd_mcp() {
+    local gist_id=$(get_gist_id)
+    [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
+    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
+    
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HAC v$HAC_VERSION - CLAUDE DESKTOP + MCP SESSION
+═══════════════════════════════════════════════════════════════════════════════
+MCP HA server connected - query entities directly.
+
+**URLs:** $gist_url/01_status.md | 02_index.md | 03_knowledge.md
+
+## MCP Actions Available
+- Query entity states directly
+- Call services (careful)
+- Read configs via terminal
+
+## Live Status
+$(cmd_status 2>/dev/null)
+
+## Rules
+1. MCP for live state, gist for structure
+2. hac backup <file> before edits
+3. hac learn "insight" to persist
+
+## Session
+$(cat "$SESSION_FILE" 2>/dev/null | tail -10 || echo "New")
+
+## Today's Learnings
+$(tail -15 "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null || echo "None")
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
+}
+
+cmd_research() {
+    local gist_id=$(get_gist_id)
+    [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
+    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
+    
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HAC RESEARCH MODE - Deep Dive
+═══════════════════════════════════════════════════════════════════════════════
+Complex problem - use web search extensively for HA docs/community.
+
+**Full Context:**
+- $gist_url/01_status.md (state)
+- $gist_url/02_index.md (automations)
+- $gist_url/03_knowledge.md (learnings)
+- $gist_url/04_delta.md (changes)
+
+## Overview
+HA $(get_ha_version) | $(ls -1 "$PACKAGES_DIR"/*.yaml 2>/dev/null | wc -l) packages | $(grep -r "^  - id:" "$PACKAGES_DIR"/*.yaml 2>/dev/null | wc -l) automations
+
+## Status
+$(cmd_status 2>/dev/null)
+
+## Recent Learnings (7 days)
+$(find "$LEARNINGS_DIR" -name "*.md" -mtime -7 -exec cat {} \; 2>/dev/null | tail -20 || echo "None")
+
+## Tabled Projects
+$(cat "$HAC_DIR/tabled_projects.md" 2>/dev/null || echo "None")
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
+}
 # === MAIN ===
 case "${1:-}" in
     push) cmd_push;;
     q) cmd_q;;
+    gpt) cmd_gpt;;
+    gem) cmd_gem;;
+    mcp) cmd_mcp;;
+    research) cmd_research;;
     status) cmd_status;;
     pkg) cmd_pkg "$2";;
     ids) cmd_ids "$2";;
@@ -723,3 +855,4 @@ case "${1:-}" in
     help|--help|-h) cmd_help;;
     *) cmd_help;;
 esac
+

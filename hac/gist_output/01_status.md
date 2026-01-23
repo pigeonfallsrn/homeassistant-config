@@ -1,4 +1,4 @@
-# HA Status - 2026-01-23 13:04 CST
+# HA Status - 2026-01-23 13:07 CST
 Version: 2026.1.2 | HAC: v7.3
 
 ## People
@@ -51,6 +51,6 @@ kitchen_table_manual_override: unavailable
 
 
 ## Double-Fires (last hour)
-⚠ living_room_lamps_adaptive_control: 20x
-⚠ entry_room_lamp_adaptive_lux_control: 14x
+⚠ living_room_lamps_adaptive_control: 24x
+⚠ entry_room_lamp_adaptive_lux_control: 16x
 ⚠ kitchen_lounge_lamp_adaptive_lux_control: 10x
