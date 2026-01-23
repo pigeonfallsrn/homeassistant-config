@@ -232,7 +232,7 @@ for e in json.load(sys.stdin):
             print(f\"{n}: {e['state']}\")" 2>/dev/null || echo "API unavailable")
 
 ## Recent Triggers (last 10)
-$(sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime')||' '||replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT 10;" 2>/dev/null || echo "DB unavailable")
+$(sqlite3 "$DB_PATH" "SELECT DISTINCT datetime(s.last_changed_ts,'unixepoch','localtime')||' '||replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_changed_ts DESC LIMIT 10;" 2>/dev/null || echo "DB unavailable")
 
 ## Errors (last 5)
 $(tail -500 /config/home-assistant.log 2>/dev/null | grep -iE "error|exception" | grep -v "DEBUG\|aiohttp\|httpx\|async_timeout" | tail -5 || echo "None")
@@ -548,7 +548,7 @@ cmd_status() {
         python3 -c "import json,sys;[print(f\"{e['entity_id'].split('.')[1]}: {e['state']}\") for e in json.load(sys.stdin) if e['entity_id'].startswith('person.')]" 2>/dev/null
     echo ""
     echo "Last 5 triggers:"
-    sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT 5;" 2>/dev/null
+    sqlite3 "$DB_PATH" "SELECT datetime(s.last_changed_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_changed_ts DESC LIMIT 5;" 2>/dev/null
 }
 
 cmd_pkg() {
@@ -623,7 +623,7 @@ cmd_errors() {
 
 cmd_triggers() {
     local n="${1:-20}"
-    sqlite3 "$DB_PATH" "SELECT datetime(s.last_updated_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT $n;" 2>/dev/null
+    sqlite3 "$DB_PATH" "SELECT datetime(s.last_changed_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT $n;" 2>/dev/null
 }
 
 cmd_health() {
