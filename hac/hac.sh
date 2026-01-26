@@ -676,6 +676,7 @@ SYNC & SESSION
   q             Quick session prompt (no sync)
   gpt           ChatGPT session prompt
   gem           Gemini session prompt
+  gdrive        Sync to Google Drive via Synology
   mcp           Claude Desktop + MCP (rich context)
   research      Deep research mode (full history)
   init          Initialize new secret gist
@@ -831,11 +832,37 @@ $(cat "$HAC_DIR/tabled_projects.md" 2>/dev/null || echo "None")
 PROMPT
 }
 # === MAIN ===
+
+# Google Drive sync via Synology
+sync_to_gdrive() {
+    local SYNOLOGY_USER="admin"
+    local SYNOLOGY_HOST="192.168.1.52"
+    local SYNOLOGY_KEY="$HOME/.ssh/ha_to_synology"
+    local GDRIVE_BASE="/volume1/GoogleDrive/HAC"
+    log_ok "Syncing to Google Drive via Synology..."
+    for f in "$OUTPUT_DIR"/*.md; do
+        [ -f "$f" ] && cat "$f" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" "cat > $GDRIVE_BASE/context/$(basename $f)" 2>/dev/null
+    done
+    local today=$(date +%Y%m%d)
+    [ -f "$HAC_DIR/session_$today.md" ] && cat "$HAC_DIR/session_$today.md" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" "cat > $GDRIVE_BASE/sessions/$(date +%Y-%m-%d).md" 2>/dev/null
+    [ -f "$LEARNINGS_DIR/$today.md" ] && cat "$LEARNINGS_DIR/$today.md" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" "cat > $GDRIVE_BASE/learnings/$today.md" 2>/dev/null
+    log_ok "Google Drive sync complete"
+}
+cmd_gdrive() {
+    ensure_dirs
+    generate_readme
+    generate_status
+    generate_index
+    generate_knowledge
+    generate_delta
+    sync_to_gdrive
+}
 case "${1:-}" in
     push) cmd_push;;
     q) cmd_q;;
     gpt) cmd_gpt;;
     gem) cmd_gem;;
+    gdrive) cmd_gdrive;;
     mcp) cmd_mcp;;
     research) cmd_research;;
     status) cmd_status;;

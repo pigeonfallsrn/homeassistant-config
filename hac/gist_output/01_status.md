@@ -1,4 +1,4 @@
-# HA Status - 2026-01-26 12:52 CST
+# HA Status - 2026-01-26 14:03 CST
 Version: 2026.1.3 | HAC: v7.3
 
 ## People
@@ -41,11 +41,11 @@ kitchen_table_manual_override: unavailable
 2026-01-26 11:12:54 calendar_refresh_school_tomorrow
 2026-01-26 11:12:54 context_apply_on_time_change
 2026-01-26 11:12:53 living_room_lamps_adaptive_control
+2026-01-26 11:12:53 entry_room_lamp_adaptive_lux_control
 2026-01-26 11:12:53 kitchen_tablet_wake_on_motion
 2026-01-26 07:21:28 presence_update_someone_home
 2026-01-26 07:21:28 presence_update_occupancy_combinations
 2026-01-26 07:21:28 presence_ella_away
-2026-01-26 07:21:28 presence_alaina_away
 
 ## Errors (last 5)
 

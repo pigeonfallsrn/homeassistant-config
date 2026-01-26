@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-26 12:52
+# System Knowledge - 2026-01-26 14:03
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -36,6 +36,8 @@
 - 11:54: 2nd Floor Bathroom motion lighting added. Disabled 2 old automations: bathroom_red_light_11pm_5_30am + 2nd_floor_bathroom_night_lighting (never triggered). New uses template sensor upstairs_bathroom_motion_combined + time_context. Both bathrooms consistent: 8min timeout, 10pct/2200K night, AL day, shared override.
 - 11:56: ZSH CLI rules: 1) escape ! with quotes or omit (use "include_dir" not !include_dir), 2) avoid chaining commands after python3 -c with && on same line - run separately, 3) use single quotes for hac learn strings with special chars
 - 12:11: Session summary: HAC script needs update - add automations dir + ZSH rules to Architecture/Critical Rules sections. Fix Historical Learnings grep. See previous session for full proposed changes.
+- 13:03: HAC v7.3 script updated: added automations dir + config paths to Architecture, ZSH/CLI rules to Critical Rules, fixed Historical Learnings grep to filter 2026*.md files. MCP privacy verified - token rotated 4 days ago, 0 sensitive entities exposed.
+- 13:20: Git SSH to GitHub fixed: created ~/.ssh/github_ha key, added to GitHub, configured SSH config, changed remote from HTTPS to SSH. Removed expired ghp token from repo. Full hac push pipeline now working.
 
 ## Historical Learnings (last 30 lines)
 - HA behind Cloudflare Tunnel (cloudflared)
