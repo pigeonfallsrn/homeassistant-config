@@ -280,16 +280,12 @@ generate_knowledge() {
 - **South garage door:** cover.ratgdo32disco_5735e8_door  
 - **Walk-in door sensor:** binary_sensor.aqara_door_and_window_sensor_door_3
 - **Motion aggregation:** /config/packages/motion_aggregation.yaml
-- **Automations:** /homeassistant/automations/ (NOT automations.yaml) - uses include_dir_merge_list
-- **Config paths:** /homeassistant/ (not /config/), storage at /homeassistant/.storage/
 
 ## Critical Rules (from past disasters)
 - NEVER use raw sed on YAML without backup
 - ALWAYS use \`hac sed\` or \`hac backup\` first
 - Check \`ha core check\` before restart
 - Inovelli+Hue: Smart Bulb Mode must be ON
-- ZSH: escape ! in strings, dont chain after python3 -c on same line
-- HA CLI: ha command doesnt support services - use REST API, websocket, or UI
 
 ## Tabled Projects
 $(cat "$TABLED_FILE" 2>/dev/null || echo "None")
@@ -298,7 +294,7 @@ $(cat "$TABLED_FILE" 2>/dev/null || echo "None")
 $(cat "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null | tail -20 || echo "None today")
 
 ## Historical Learnings (last 30 lines)
-$(find "$LEARNINGS_DIR" -name "2026*.md" -type f | sort -r | head -5 | xargs cat 2>/dev/null | grep "^-" | tail -30 || echo "None")
+$(find "$LEARNINGS_DIR" -name "*.md" -type f | xargs cat 2>/dev/null | grep "^-" | tail -30 || echo "None")
 INNER
 )
     sanitize_output "$content" > "$OUTPUT_DIR/03_knowledge.md"

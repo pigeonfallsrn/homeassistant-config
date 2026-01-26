@@ -1,4 +1,4 @@
-# Automation Index - 2026-01-24 11:57
+# Automation Index - 2026-01-26 12:52
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -7,19 +7,27 @@ Fetch full YAML: `hac pkg <filename>`
 - **adaptive_lighting_living_room.yaml** (6 automations)
 - **ap_presence_hybrid.yaml** (0
 0 automations)
+- **aqara_sensor_names.yaml** (0
+0 automations)
+- **climate_analytics.yaml** (0
+0 automations)
 - **ella_bedroom.yaml** (0
 0 automations)
 - **family_activities.yaml** (6 automations)
 - **garage_door_alerts.yaml** (2 automations)
 - **garage_lighting_automation.yaml** (2 automations)
-- **garage_quick_open.yaml** (10 automations)
+- **garage_quick_open.yaml** (11 automations)
+- **hac_session_log.yaml** (0
+0 automations)
+- **humidity_smart_alerts.yaml** (4 automations)
 - **john_proximity.yaml** (0
 0 automations)
-- **kids_bedroom_automation.yaml** (10 automations)
+- **kids_bedroom_automation.yaml** (12 automations)
 - **kitchen_tablet_dashboard.yaml** (6 automations)
+- **lights_auto_off_safety.yaml** (3 automations)
 - **motion_aggregation.yaml** (0
 0 automations)
-- **notifications_system.yaml** (11 automations)
+- **notifications_system.yaml** (8 automations)
 - **occupancy_system.yaml** (9 automations)
 - **presence_display.yaml** (0
 0 automations)
@@ -61,6 +69,10 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### ap_presence_hybrid.yaml
 
+### aqara_sensor_names.yaml
+
+### climate_analytics.yaml
+
 ### ella_bedroom.yaml
 
 ### family_activities.yaml
@@ -76,20 +88,29 @@ Fetch full YAML: `hac pkg <filename>`
 223: garage_door_reset_snooze_on_close
 
 ### garage_lighting_automation.yaml
-21: garage_master_lights_on
-64: garage_master_lights_off
+9: garage_master_lights_on
+42: garage_master_lights_off
 
 ### garage_quick_open.yaml
-9: garage_quick_open_north_door
-59: garage_quick_open_north_action
-77: garage_quick_open_clear_on_open
-94: arrival_lights_approaching
-120: garage_north_opened_close_option
-146: garage_north_close_action
-164: garage_north_close_clear
-186: garage_south_opened_close_option
-212: garage_south_close_action
-230: garage_south_close_clear
+12: garage_quick_open_approaching
+70: garage_quick_open_walkin
+101: garage_quick_open_action_handler
+152: garage_quick_open_clear
+171: arrival_lights_approaching
+196: garage_north_opened_close_option
+223: garage_north_close_action
+241: garage_north_close_clear
+260: garage_south_opened_close_option
+287: garage_south_close_action
+305: garage_south_close_clear
+
+### hac_session_log.yaml
+
+### humidity_smart_alerts.yaml
+63: humidity_smart_shower_alert
+108: humidity_smart_actions
+224: humidity_fan_unpause
+245: humidity_fan_block_when_paused
 
 ### john_proximity.yaml
 
@@ -104,6 +125,8 @@ Fetch full YAML: `hac pkg <filename>`
 386: alaina_lights_off_when_leaving
 405: kids_lights_off_everyone_away
 419: kids_bedroom_override_reset
+435: alaina_lights_auto_off_midnight_weekend
+468: ella_lights_auto_off_midnight_weekend
 
 ### kitchen_tablet_dashboard.yaml
 233: kitchen_tablet_brightness_schedule
@@ -113,11 +136,15 @@ Fetch full YAML: `hac pkg <filename>`
 351: kitchen_tablet_wake_on_presence
 374: kitchen_tablet_sleep_when_away
 
+### lights_auto_off_safety.yaml
+15: safety_all_lights_off_nobody_home
+66: safety_main_areas_no_motion_off
+99: safety_midnight_all_lights_off
+
 ### motion_aggregation.yaml
 
 ### notifications_system.yaml
 10: arrival_notification_john
-36: arrival_notification_alaina
 51: arrival_notification_ella
 69: arrival_notification_actions
 114: low_battery_daily_digest
@@ -125,8 +152,6 @@ Fetch full YAML: `hac pkg <filename>`
 190: critical_battery_alert
 237: bedtime_first_floor_lights_off_prompt
 281: bedtime_lights_notification_actions
-373: humidity_alert_2nd_floor
-438: humidity_notification_actions
 
 ### occupancy_system.yaml
 374: update_occupancy_mode
@@ -160,5 +185,3 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### automations.yaml
 1: '1769232141408'
-62: '1769232386253'
-123: '1769232392078'
