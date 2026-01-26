@@ -2,7 +2,7 @@
 # HAC Gist Sync v2.1 - Comprehensive context for Claude
 # Syncs multiple files to single gist
 
-GITHUB_TOKEN="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"
+GITHUB_TOKEN="${GITHUB_TOKEN}"
 GIST_ID="b8a59919b8f0b71942fc21c10398f9a7"
 GIST_URL="https://gist.githubusercontent.com/pigeonfallsrn/$GIST_ID/raw"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
