@@ -1,0 +1,405 @@
+#══════════════════════════════════════════════════════════════════════════════
+# KITCHEN TABLET DASHBOARD PACKAGE
+# Created: 2026-01-23 | HAC v7.3 Compliant
+#══════════════════════════════════════════════════════════════════════════════
+
+template:
+  - binary_sensor:
+      - name: "John Home Alone"
+        unique_id: john_home_alone
+        state: >
+          {{ is_state('person.john_spencer', 'home') and
+             is_state('person.michelle', 'not_home') and
+             is_state('person.alaina_spencer', 'not_home') and
+             is_state('person.ella_spencer', 'not_home') and
+             is_state('person.jarrett_goetting', 'not_home') and
+             is_state('person.owen_goetting', 'not_home') }}
+        icon: mdi:account
+
+      - name: "Adults Only Home"
+        unique_id: adults_only_home
+        state: >
+          {{ (is_state('person.john_spencer', 'home') or is_state('person.michelle', 'home')) and
+             is_state('person.alaina_spencer', 'not_home') and
+             is_state('person.ella_spencer', 'not_home') and
+             is_state('person.jarrett_goetting', 'not_home') and
+             is_state('person.owen_goetting', 'not_home') }}
+        icon: mdi:account-multiple
+
+      - name: "House Occupied"
+        unique_id: house_occupied
+        device_class: occupancy
+        state: >
+          {{ is_state('person.john_spencer', 'home') or
+             is_state('person.michelle', 'home') or
+             is_state('person.alaina_spencer', 'home') or
+             is_state('person.ella_spencer', 'home') or
+             is_state('person.jarrett_goetting', 'home') or
+             is_state('person.owen_goetting', 'home') }}
+        icon: mdi:home-account
+
+      - name: "Kids Home"
+        unique_id: kids_home
+        state: >
+          {{ is_state('person.alaina_spencer', 'home') or
+             is_state('person.ella_spencer', 'home') or
+             is_state('person.jarrett_goetting', 'home') or
+             is_state('person.owen_goetting', 'home') }}
+        icon: mdi:human-child
+
+  - sensor:
+      - name: "People Home List"
+        unique_id: people_home_list
+        state: >
+          {% set people = [
+            ('John', is_state('person.john_spencer', 'home')),
+            ('Michelle', is_state('person.michelle', 'home')),
+            ('Alaina', is_state('person.alaina_spencer', 'home')),
+            ('Ella', is_state('person.ella_spencer', 'home')),
+            ('Jarrett', is_state('person.jarrett_goetting', 'home')),
+            ('Owen', is_state('person.owen_goetting', 'home'))
+          ] %}
+          {% set home = people | selectattr(1) | map(attribute=0) | list %}
+          {{ home | join(', ') if home else 'Nobody' }}
+        icon: mdi:account-group
+
+      - name: "People Home Count"
+        unique_id: people_home_count
+        state: >
+          {{ [
+            is_state('person.john_spencer', 'home'),
+            is_state('person.michelle', 'home'),
+            is_state('person.alaina_spencer', 'home'),
+            is_state('person.ella_spencer', 'home'),
+            is_state('person.jarrett_goetting', 'home'),
+            is_state('person.owen_goetting', 'home')
+          ] | select | list | count }}
+        icon: mdi:counter
+
+input_boolean:
+  kitchen_tablet_doorbell_popup:
+    name: Kitchen Tablet Doorbell Popup Active
+    icon: mdi:bell-ring
+
+input_select:
+  kitchen_lighting_scene:
+    name: Kitchen Lighting Scene
+    options:
+      - "Off"
+      - "Cooking Bright"
+      - "Dinner Dim"
+      - "Movie Night"
+      - "Nightlight Only"
+      - "All On"
+    initial: "Off"
+    icon: mdi:lightbulb-group
+
+script:
+  kitchen_scene_cooking_bright:
+    alias: "Kitchen Scene - Cooking Bright"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+            - light.kitchen_above_table_chandelier_inovelli
+        data:
+          brightness_pct: 100
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge_light_fan_inovelli_vzm36_light
+        data:
+          brightness_pct: 80
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "Cooking Bright"
+
+  kitchen_scene_dinner_dim:
+    alias: "Kitchen Scene - Dinner Dim"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen_above_table_chandelier_inovelli
+        data:
+          brightness_pct: 40
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge_light_fan_inovelli_vzm36_light
+        data:
+          brightness_pct: 30
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "Dinner Dim"
+
+  kitchen_scene_movie_night:
+    alias: "Kitchen Scene - Movie Night"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+            - light.kitchen_above_table_chandelier_inovelli
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.kitchen_counter_night_light
+            - light.kitchen_west_wall_nightlight
+        data:
+          brightness_pct: 15
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge_light_fan_inovelli_vzm36_light
+        data:
+          brightness_pct: 10
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "Movie Night"
+
+  kitchen_scene_nightlight:
+    alias: "Kitchen Scene - Nightlight Only"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+            - light.kitchen_above_table_chandelier_inovelli
+            - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.kitchen_counter_night_light
+            - light.kitchen_west_wall_nightlight
+        data:
+          brightness_pct: 5
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "Nightlight Only"
+
+  kitchen_scene_all_off:
+    alias: "Kitchen Scene - All Off"
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+            - light.kitchen_above_table_chandelier_inovelli
+            - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+            - light.kitchen_counter_night_light
+            - light.kitchen_west_wall_nightlight
+            - light.kitchen_lounge_inovelli_smart_dimmer
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "Off"
+
+  kitchen_scene_all_on:
+    alias: "Kitchen Scene - All On"
+    sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.above_kitchen_sink_inovelli_switch
+            - light.kitchen_above_table_chandelier_inovelli
+            - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+            - light.kitchen_lounge_inovelli_smart_dimmer
+        data:
+          brightness_pct: 100
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: "All On"
+
+automation:
+  - id: kitchen_tablet_brightness_schedule
+    alias: "Kitchen Tablet - Brightness Schedule"
+    trigger:
+      - platform: time
+        at: "07:00:00"
+      - platform: time
+        at: "20:00:00"
+      - platform: time
+        at: "22:00:00"
+      - platform: homeassistant
+        event: start
+    action:
+      - choose:
+          - conditions:
+              - condition: time
+                after: "07:00:00"
+                before: "20:00:00"
+            sequence:
+              - service: number.set_value
+                target:
+                  entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+                data:
+                  value: 80
+          - conditions:
+              - condition: time
+                after: "20:00:00"
+                before: "22:00:00"
+            sequence:
+              - service: number.set_value
+                target:
+                  entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+                data:
+                  value: 50
+        default:
+          - service: number.set_value
+            target:
+              entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+            data:
+              value: 20
+
+  - id: kitchen_tablet_doorbell_popup
+    alias: "Kitchen Tablet - Doorbell Camera Popup"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.very_front_door_doorbell
+        to: "on"
+        id: front_door
+      - platform: state
+        entity_id: binary_sensor.front_driveway_door_doorbell
+        to: "on"
+        id: driveway
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied
+        state: "on"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.kitchen_wall_a9_tablet_screen
+      - service: number.set_value
+        target:
+          entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+        data:
+          value: 100
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.kitchen_tablet_doorbell_popup
+      - delay:
+          seconds: 60
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.kitchen_tablet_doorbell_popup
+
+  - id: kitchen_tablet_motion_wake
+    alias: "Kitchen Tablet - Wake on Kitchen Motion"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.kitchen_counter_night_light_motion
+          - binary_sensor.kitchen_counter_nightlight_motion
+          - binary_sensor.kitchen_west_wall_nightlight_motion
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+        state: "off"
+      - condition: state
+        entity_id: binary_sensor.house_occupied
+        state: "on"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.kitchen_wall_a9_tablet_screen
+
+  - id: kitchen_tablet_sleep_inactivity
+    alias: "Kitchen Tablet - Sleep After Inactivity"
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_wall_a9_tablet
+        to: "Idle"
+        for:
+          minutes: 5
+    condition:
+      - condition: state
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.kitchen_tablet_doorbell_popup
+        state: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.kitchen_wall_a9_tablet_screen
+
+# ============================================================================
+# TABLET WAKE AUTOMATION
+# ============================================================================
+automation:
+  - id: kitchen_tablet_wake_on_presence
+    alias: "Kitchen Tablet - Wake on Presence"
+    description: "Wake tablet when someone is home"
+    trigger:
+      - platform: state
+        entity_id:
+          - person.john_spencer
+          - person.alaina_spencer
+          - person.ella_spencer
+        to: "home"
+      - platform: state
+        entity_id: binary_sensor.kitchen_ai_theta_motion
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_tablet_screen_control
+        state: "on"
+    action:
+      - service: notify.mobile_app_kitchen_samsung_tablet_wall_mount
+        data:
+          message: "command_screen_on"
+    mode: single
+
+  - id: kitchen_tablet_sleep_when_away
+    alias: "Kitchen Tablet - Sleep When Away"
+    description: "Turn off tablet screen when no one home"
+    trigger:
+      - platform: state
+        entity_id: 
+          - person.john_spencer
+          - person.alaina_spencer
+          - person.ella_spencer
+        to: "not_home"
+        for:
+          minutes: 10
+    condition:
+      - condition: state
+        entity_id: person.john_spencer
+        state: "not_home"
+      - condition: state
+        entity_id: person.alaina_spencer
+        state: "not_home"
+      - condition: state
+        entity_id: person.ella_spencer
+        state: "not_home"
+    action:
+      - service: notify.mobile_app_kitchen_samsung_tablet_wall_mount
+        data:
+          message: "command_screen_off"
+    mode: single
+
+input_boolean:
+  kitchen_tablet_screen_control:
+    name: "Kitchen Tablet Screen Control"
+    icon: mdi:tablet

@@ -1,0 +1,628 @@
+title: Climate Command Center
+views:
+  # =========================================================================
+  # VIEW 1: MAIN CLIMATE OVERVIEW
+  # =========================================================================
+  - title: Overview
+    path: overview
+    icon: mdi:home-thermometer
+    cards:
+      # --- HEADER: Weather & Outside ---
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: "{{ states('weather.forecast_home') | title }}"
+            secondary: "Outside: {{ state_attr('weather.forecast_home', 'temperature') }}°F"
+            icon: >
+              {% set cond = states('weather.forecast_home') %}
+              {% if 'cloud' in cond %}mdi:weather-cloudy
+              {% elif 'rain' in cond %}mdi:weather-rainy
+              {% elif 'snow' in cond %}mdi:weather-snowy
+              {% elif 'clear' in cond and now().hour > 18 %}mdi:weather-night
+              {% else %}mdi:weather-sunny{% endif %}
+            icon_color: >
+              {% if state_attr('weather.forecast_home', 'temperature') | float < 20 %}blue
+              {% elif state_attr('weather.forecast_home', 'temperature') | float < 40 %}cyan
+              {% elif state_attr('weather.forecast_home', 'temperature') | float < 60 %}green
+              {% else %}orange{% endif %}
+            entity: weather.forecast_home
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: "House Avg"
+            secondary: "{{ states('sensor.house_average_temperature') }}°F | {{ states('sensor.house_average_humidity') }}% RH"
+            icon: mdi:home-thermometer
+            icon_color: green
+
+          - type: custom:mushroom-template-card
+            primary: "Navien Boiler"
+            secondary: "{{ states('sensor.navien_heating_power') }}% power"
+            icon: mdi:fire
+            icon_color: "{{ 'red' if states('sensor.navien_heating_power') | float > 0 else 'grey' }}"
+            entity: sensor.navien_heating_power
+            tap_action:
+              action: more-info
+
+      # --- NAVIEN BOILER DETAILS ---
+      - type: custom:mushroom-title-card
+        title: "🔥 Navien Combi Boiler"
+        subtitle: "DHW + Hydronic Heating"
+
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.navien_hot_water_temp
+            name: "DHW Temp"
+            min: 70
+            max: 140
+            severity:
+              green: 110
+              yellow: 90
+              red: 70
+            needle: true
+
+          - type: gauge
+            entity: sensor.navien_heating_power
+            name: "Heat Power"
+            min: 0
+            max: 100
+            severity:
+              green: 0
+              yellow: 50
+              red: 80
+            needle: true
+
+          - type: gauge
+            entity: sensor.navien_current_gas_use
+            name: "BTU/h"
+            min: 0
+            max: 200000
+            needle: true
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.navien_inlet_temp
+            name: "Inlet"
+            icon: mdi:thermometer-water
+          - type: entity
+            entity: sensor.navien_water_flow
+            name: "Flow"
+            icon: mdi:water-pump
+          - type: entity
+            entity: sensor.navien_total_gas_use
+            name: "Total Gas"
+            icon: mdi:gas-burner
+          - type: entity
+            entity: sensor.basement_boiler_room_navien_combi_boiler_aqara_smart_plug_power
+            name: "Elec Power"
+            icon: mdi:lightning-bolt
+
+      # --- MAIN HOUSE ZONES ---
+      - type: custom:mushroom-title-card
+        title: "🏠 Main House Zones"
+        subtitle: "Navien Hydronic System"
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.1st_floor_thermostat
+            name: "1st Floor"
+            icon: mdi:home-floor-1
+            show_temperature_control: true
+
+          - type: custom:mushroom-climate-card
+            entity: climate.master_nest_thermostat
+            name: "2nd Floor"
+            icon: mdi:home-floor-2
+            show_temperature_control: true
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.basement_nest_thermostat
+            name: "Basement"
+            icon: mdi:home-floor-b
+            show_temperature_control: true
+
+          - type: custom:mushroom-climate-card
+            entity: climate.garage_nest_thermostat
+            name: "Garage"
+            icon: mdi:garage
+            show_temperature_control: true
+
+      # --- PFP RENTAL PROPERTY ---
+      - type: custom:mushroom-title-card
+        title: "🏢 Pigeon Falls Properties"
+        subtitle: "Rental Units"
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.pfp_east_nest_thermostat_control
+            name: "PFP East"
+            icon: mdi:office-building
+            show_temperature_control: true
+
+          - type: custom:mushroom-climate-card
+            entity: climate.pfp_west_nest_thermostat_control
+            name: "PFP West"
+            icon: mdi:office-building-outline
+            show_temperature_control: true
+
+      # --- MINI-SPLITS ---
+      - type: custom:mushroom-title-card
+        title: "❄️ Mini-Splits"
+        subtitle: "Mitsubishi Heat Pumps"
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.kitchen_mini_split
+            name: "Kitchen"
+            icon: mdi:countertop
+            show_temperature_control: true
+            collapsible_controls: true
+
+          - type: custom:mushroom-climate-card
+            entity: climate.living_room_mini_split
+            name: "Living Rm"
+            icon: mdi:sofa
+            show_temperature_control: true
+            collapsible_controls: true
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-climate-card
+            entity: climate.upstairs_hallway_mini_split
+            name: "Upstairs"
+            icon: mdi:stairs
+            show_temperature_control: true
+            collapsible_controls: true
+
+          - type: custom:mushroom-climate-card
+            entity: climate.attic_mini_split
+            name: "Attic"
+            icon: mdi:home-roof
+            show_temperature_control: true
+            collapsible_controls: true
+
+      # --- HEATING STATUS INDICATORS ---
+      - type: custom:mushroom-title-card
+        title: "🔥 Currently Heating"
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: "1st Fl"
+            icon: mdi:fire
+            icon_color: "{{ 'red' if state_attr('climate.1st_floor_thermostat', 'hvac_action') == 'heating' else 'grey' }}"
+          - type: custom:mushroom-template-card
+            primary: "2nd Fl"
+            icon: mdi:fire
+            icon_color: "{{ 'red' if state_attr('climate.master_nest_thermostat', 'hvac_action') == 'heating' else 'grey' }}"
+          - type: custom:mushroom-template-card
+            primary: "Bsmt"
+            icon: mdi:fire
+            icon_color: "{{ 'red' if state_attr('climate.basement_nest_thermostat', 'hvac_action') == 'heating' else 'grey' }}"
+          - type: custom:mushroom-template-card
+            primary: "Garage"
+            icon: mdi:fire
+            icon_color: "{{ 'red' if state_attr('climate.garage_nest_thermostat', 'hvac_action') == 'heating' else 'grey' }}"
+
+      # --- QUICK ACTIONS ---
+      - type: custom:mushroom-title-card
+        title: "⚡ Quick Actions"
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: "All 68°"
+            icon: mdi:thermometer
+            icon_color: red
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              target:
+                entity_id:
+                  - climate.1st_floor_thermostat
+                  - climate.master_nest_thermostat
+                  - climate.basement_nest_thermostat
+              data:
+                temperature: 68
+
+          - type: custom:mushroom-template-card
+            primary: "Away 62°"
+            icon: mdi:home-export-outline
+            icon_color: blue
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              target:
+                entity_id:
+                  - climate.1st_floor_thermostat
+                  - climate.master_nest_thermostat
+                  - climate.basement_nest_thermostat
+              data:
+                temperature: 62
+
+          - type: custom:mushroom-template-card
+            primary: "Night 65°"
+            icon: mdi:weather-night
+            icon_color: purple
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              target:
+                entity_id:
+                  - climate.1st_floor_thermostat
+                  - climate.master_nest_thermostat
+              data:
+                temperature: 65
+
+          - type: custom:mushroom-entity-card
+            entity: switch.upstairs_bathroom_fan
+            name: "Bath Fan"
+            tap_action:
+              action: toggle
+
+  # =========================================================================
+  # VIEW 2: TEMPERATURE GRAPHS
+  # =========================================================================
+  - title: Temperatures
+    path: temps
+    icon: mdi:chart-line
+    cards:
+      - type: custom:mushroom-title-card
+        title: "🌡️ Zone Temperatures"
+        subtitle: "24-Hour History"
+
+      - type: custom:mini-graph-card
+        name: "Main House Zones"
+        entities:
+          - entity: sensor.first_floor_thermostat_temperature
+            name: "1st Floor"
+            color: "#4CAF50"
+          - entity: sensor.master_nest_thermostat_temperature
+            name: "2nd Floor"
+            color: "#2196F3"
+          - entity: sensor.basement_thermostat_temperature
+            name: "Basement"
+            color: "#9C27B0"
+          - entity: sensor.garage_thermostat_temperature
+            name: "Garage"
+            color: "#FF9800"
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        height: 200
+        show:
+          labels: true
+          points: false
+          legend: true
+        lower_bound: 45
+        upper_bound: 80
+
+      - type: custom:mushroom-title-card
+        title: "🏠 Room Temperatures (Aqara)"
+
+      - type: custom:mini-graph-card
+        name: "Bedrooms & Bathrooms"
+        entities:
+          - entity: sensor.aqara_temp_humidity_sensor_temperature_6
+            name: "Alaina's Room"
+            color: "#E91E63"
+          - entity: sensor.aqara_temp_humidity_sensor_temperature_5
+            name: "Ella's Room"
+            color: "#9C27B0"
+          - entity: sensor.aqara_temp_humidity_sensor_temperature_4
+            name: "Upstairs Bath"
+            color: "#00BCD4"
+          - entity: sensor.aqara_temp_humidity_sensor_temperature
+            name: "1st Fl Bath"
+            color: "#4CAF50"
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        height: 180
+        show:
+          labels: true
+          legend: true
+        lower_bound: 65
+        upper_bound: 80
+
+      - type: custom:mushroom-title-card
+        title: "🌡️ Outside vs Inside"
+
+      - type: custom:mini-graph-card
+        name: "Temperature Differential"
+        entities:
+          - entity: sensor.aqara_temp_humidity_sensor_temperature_7
+            name: "Outside (Garage)"
+            color: "#2196F3"
+          - entity: sensor.first_floor_thermostat_temperature
+            name: "Inside (1st Fl)"
+            color: "#FF5722"
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        height: 150
+        show:
+          labels: true
+          legend: true
+
+      - type: custom:mushroom-title-card
+        title: "🏢 PFP Rental Properties"
+
+      - type: custom:mini-graph-card
+        name: "Rental Unit Temps"
+        entities:
+          - entity: sensor.pfp_east_nest_thermostat_sensor_temperature
+            name: "PFP East"
+            color: "#FF9800"
+          - entity: sensor.pfp_west_nest_sensor_temperature
+            name: "PFP West"
+            color: "#795548"
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        height: 150
+        show:
+          labels: true
+          legend: true
+        lower_bound: 45
+        upper_bound: 75
+
+  # =========================================================================
+  # VIEW 3: HUMIDITY
+  # =========================================================================
+  - title: Humidity
+    path: humidity
+    icon: mdi:water-percent
+    cards:
+      - type: custom:mushroom-title-card
+        title: "💧 Humidity Levels"
+        subtitle: "Target: 30-50% | ⚠️ Currently LOW"
+
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.first_floor_thermostat_humidity
+            name: "1st Floor"
+            min: 0
+            max: 60
+            severity:
+              red: 0
+              yellow: 25
+              green: 30
+            needle: true
+          - type: gauge
+            entity: sensor.master_nest_thermostat_humidity
+            name: "2nd Floor"
+            min: 0
+            max: 60
+            severity:
+              red: 0
+              yellow: 25
+              green: 30
+            needle: true
+          - type: gauge
+            entity: sensor.basement_thermostat_humidity
+            name: "Basement"
+            min: 0
+            max: 60
+            severity:
+              red: 0
+              yellow: 25
+              green: 30
+            needle: true
+
+      - type: custom:mini-graph-card
+        name: "Humidity Trend (24hr)"
+        entities:
+          - entity: sensor.first_floor_thermostat_humidity
+            name: "1st Floor"
+            color: "#4CAF50"
+          - entity: sensor.master_nest_thermostat_humidity
+            name: "2nd Floor"
+            color: "#2196F3"
+          - entity: sensor.basement_thermostat_humidity
+            name: "Basement"
+            color: "#9C27B0"
+        hours_to_show: 24
+        points_per_hour: 2
+        line_width: 2
+        height: 180
+        show:
+          labels: true
+          legend: true
+        lower_bound: 15
+        upper_bound: 50
+
+      - type: custom:mushroom-title-card
+        title: "🏠 Room Humidity (Aqara)"
+
+      - type: custom:mini-graph-card
+        name: "Bedrooms & Bathrooms"
+        entities:
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_6
+            name: "Alaina's Room"
+            color: "#E91E63"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_5
+            name: "Ella's Room"
+            color: "#9C27B0"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_4
+            name: "Upstairs Bath"
+            color: "#00BCD4"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity
+            name: "1st Fl Bath"
+            color: "#4CAF50"
+        hours_to_show: 24
+        points_per_hour: 2
+        line_width: 2
+        height: 180
+        show:
+          labels: true
+          legend: true
+        lower_bound: 10
+        upper_bound: 50
+
+      - type: entities
+        title: "Current Readings"
+        entities:
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_6
+            name: "Alaina's Room"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_5
+            name: "Ella's Room"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_4
+            name: "Upstairs Bath"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_3
+            name: "Upstairs Hall"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity_2
+            name: "Basement"
+          - entity: sensor.aqara_temp_humidity_sensor_humidity
+            name: "1st Fl Bath"
+
+  # =========================================================================
+  # VIEW 4: RUNTIME & ANALYTICS
+  # =========================================================================
+  - title: Runtime
+    path: runtime
+    icon: mdi:chart-bar
+    cards:
+      - type: custom:mushroom-title-card
+        title: "⏱️ Heating Runtime Today"
+        subtitle: "Hours each zone has been heating"
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.1st_floor_heating_today
+            name: "1st Floor"
+            icon: mdi:clock-outline
+          - type: entity
+            entity: sensor.2nd_floor_heating_today
+            name: "2nd Floor"
+            icon: mdi:clock-outline
+          - type: entity
+            entity: sensor.basement_heating_today
+            name: "Basement"
+            icon: mdi:clock-outline
+          - type: entity
+            entity: sensor.garage_heating_today
+            name: "Garage"
+            icon: mdi:clock-outline
+
+      - type: custom:mushroom-title-card
+        title: "🏢 PFP Runtime Today"
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.pfp_east_heating_today
+            name: "PFP East"
+            icon: mdi:clock-outline
+          - type: entity
+            entity: sensor.pfp_west_heating_today
+            name: "PFP West"
+            icon: mdi:clock-outline
+
+      - type: custom:mushroom-title-card
+        title: "🔥 Navien Boiler Analytics"
+
+      - type: custom:mini-graph-card
+        name: "Boiler Power Output (24hr)"
+        entities:
+          - entity: sensor.navien_heating_power
+            name: "Heat %"
+            color: "#FF5722"
+        hours_to_show: 24
+        points_per_hour: 6
+        line_width: 2
+        height: 150
+        show:
+          labels: true
+          fill: true
+
+      - type: custom:mini-graph-card
+        name: "Boiler Gas Usage (24hr)"
+        entities:
+          - entity: sensor.navien_current_gas_use
+            name: "BTU/h"
+            color: "#FF9800"
+        hours_to_show: 24
+        points_per_hour: 6
+        line_width: 2
+        height: 150
+        show:
+          labels: true
+          fill: true
+
+      - type: custom:mini-graph-card
+        name: "Electrical Power Draw (24hr)"
+        entities:
+          - entity: sensor.basement_boiler_room_navien_combi_boiler_aqara_smart_plug_power
+            name: "Watts"
+            color: "#FFEB3B"
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        height: 150
+        show:
+          labels: true
+          fill: true
+
+      - type: custom:mushroom-title-card
+        title: "💰 Energy Stats"
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.navien_total_gas_use
+            name: "Total Gas"
+            icon: mdi:gas-burner
+          - type: entity
+            entity: sensor.basement_boiler_room_navien_combi_boiler_aqara_smart_plug_energy
+            name: "Elec kWh"
+            icon: mdi:flash
+
+  # =========================================================================
+  # VIEW 5: WEATHER
+  # =========================================================================
+  - title: Weather
+    path: weather
+    icon: mdi:weather-partly-cloudy
+    cards:
+      - type: weather-forecast
+        entity: weather.forecast_home
+        show_forecast: true
+        forecast_type: daily
+
+      - type: custom:mushroom-title-card
+        title: "🌡️ Outdoor Conditions"
+
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.aqara_temp_humidity_sensor_temperature_7
+            name: "Garage Temp"
+            icon: mdi:thermometer
+          - type: entity
+            entity: sensor.aqara_temp_humidity_sensor_humidity_7
+            name: "Garage Humid"
+            icon: mdi:water-percent
+
+      - type: custom:mini-graph-card
+        name: "Outside Temperature (7 days)"
+        entities:
+          - entity: sensor.aqara_temp_humidity_sensor_temperature_7
+            name: "Garage/Outside"
+            color: "#2196F3"
+        hours_to_show: 168
+        points_per_hour: 1
+        line_width: 2
+        height: 200
+        show:
+          labels: true
+          fill: true

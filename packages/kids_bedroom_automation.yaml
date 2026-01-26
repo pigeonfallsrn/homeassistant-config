@@ -428,3 +428,72 @@ automation:
             - input_boolean.ella_bedroom_override
             - input_boolean.alaina_bedroom_override
     mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - Lights Off Midnight Friday/Saturday (Weekend Nights)
+  # ---------------------------------------------------------------------------
+  - id: alaina_lights_auto_off_midnight_weekend
+    alias: "Alaina - Lights Auto Off Midnight (Fri/Sat)"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      # Only Friday night (Sat 00:00) or Saturday night (Sun 00:00)
+      - condition: time
+        weekday:
+          - sat
+          - sun
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+      # Only if any of her lights are actually on
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.alaina_s_led_light_strip_1
+            state: "on"
+          - condition: state
+            entity_id: light.alaina_s_bedside_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.alaina_s_floor_govee_lamp
+            state: "on"
+    action:
+      - service: script.alaina_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ELLA - Lights Off Midnight Friday/Saturday (Weekend Nights)
+  # ---------------------------------------------------------------------------
+  - id: ella_lights_auto_off_midnight_weekend
+    alias: "Ella - Lights Auto Off Midnight (Fri/Sat)"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      # Only Friday night (Sat 00:00) or Saturday night (Sun 00:00)
+      - condition: time
+        weekday:
+          - sat
+          - sun
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+      # Only if any of her lights are actually on
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.ella_s_led_lights
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_bedside_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_govee_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_wall_light
+            state: "on"
+    action:
+      - service: script.ella_lights_off
+    mode: single

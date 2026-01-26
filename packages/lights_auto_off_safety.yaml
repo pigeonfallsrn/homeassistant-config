@@ -1,0 +1,129 @@
+# ============================================================================
+# Lights Auto-Off Safety Package
+# Created: 2026-01-25
+# 
+# Covers:
+# 1. All lights off when nobody home (5 min delay)
+# 2. Main areas off after 30 min no motion
+# 3. Midnight cutoff for any stragglers
+# ============================================================================
+
+automation:
+  # ===========================================================================
+  # NOBODY HOME - ALL LIGHTS OFF
+  # ===========================================================================
+  - id: safety_all_lights_off_nobody_home
+    alias: "Safety - All Lights Off When Nobody Home"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.anyone_home
+        to: "off"
+        for:
+          minutes: 5
+    action:
+      # Main living areas
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room
+            - light.living_room_lounge
+            - light.entry_room
+            - light.kitchen
+            - light.kitchen_lounge
+            - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
+            - light.kitchen_ceiling_can_led_lights_inovelli
+            - light.upstairs_hallway
+            - light.garage
+            - light.front_driveway
+            - light.back_patio
+            - light.very_front_door
+            - light.basement
+      # Kids rooms (scripts handle their lights)
+      - service: script.alaina_lights_off
+      - service: script.ella_lights_off
+      # Master bedroom
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.master_bedroom
+            - light.master_bedroom_wall_light
+            - light.master_bedroom_behind_tv_aqara_t1_led_strip
+      # Bathrooms
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.1st_floor_bathroom
+            - light.2nd_floor_bathroom
+      # Turn off bathroom fan too
+      - service: switch.turn_off
+        target:
+          entity_id: switch.upstairs_bathroom_fan
+    mode: single
+
+  # ===========================================================================
+  # MAIN AREAS - NO MOTION 30 MIN OFF
+  # ===========================================================================
+  - id: safety_main_areas_no_motion_off
+    alias: "Safety - Main Areas Off After 30 Min No Motion"
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.house_motion_any
+        to: "off"
+        for:
+          minutes: 30
+    condition:
+      # Someone is home (don't double-fire with nobody home)
+      - condition: state
+        entity_id: binary_sensor.anyone_home
+        state: "on"
+      # It's late night (11 PM - 5 AM)
+      - condition: time
+        after: "23:00:00"
+        before: "05:00:00"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room
+            - light.living_room_lounge
+            - light.entry_room
+            - light.kitchen
+            - light.kitchen_lounge
+            - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
+    mode: single
+
+  # ===========================================================================
+  # MIDNIGHT CUTOFF - STRAGGLERS OFF
+  # ===========================================================================
+  - id: safety_midnight_all_lights_off
+    alias: "Safety - Midnight All Main Lights Off"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      # Don't run if party mode or extended evening
+      - condition: state
+        entity_id: input_boolean.party_mode
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.extended_evening
+        state: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.living_room
+            - light.living_room_lounge
+            - light.entry_room
+            - light.kitchen
+            - light.kitchen_lounge
+            - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
+            - light.kitchen_ceiling_can_led_lights_inovelli
+            - light.upstairs_hallway
+            - light.front_driveway
+            - light.back_patio
+            - light.very_front_door
+            - light.garage
+            - light.basement
+    mode: single

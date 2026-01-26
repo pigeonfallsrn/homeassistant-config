@@ -1,47 +1,53 @@
+# ============================================================================
 # Garage Quick Open & Close Options
-# Triggers: Approaching home (away) OR walk-in door opens (at home)
-# Updated: 2026-01-22 - Added South door, faster close, arrival lights
+# Updated: 2026-01-25
+# FIX: Corrected cover entity IDs, improved approaching detection timing
+# ============================================================================
 
 automation:
   # ===========================================================================
   # APPROACHING HOME - QUICK OPEN NOTIFICATION
+  # Fixed: Trigger on zone change OR proximity, removed race condition
   # ===========================================================================
-  - id: garage_quick_open_north_door
-    alias: "Garage - Quick Open North Door Notification"
+  - id: garage_quick_open_approaching
+    alias: "Garage - Approaching Home Open Notification"
     trigger:
+      # Proximity trigger - fires when getting close
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
-        below: 500
-        id: approaching
-      - platform: state
-        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
-        to: "on"
-        id: walkin_door
+        below: 800
+        id: proximity
+      # Zone trigger - backup if proximity misses
+      - platform: zone
+        entity_id: person.john_spencer
+        zone: zone.home
+        event: enter
+        id: zone_enter
     condition:
       - condition: or
         conditions:
+          # Proximity: must be approaching (not already home)
           - condition: and
             conditions:
               - condition: trigger
-                id: approaching
-              - condition: state
-                entity_id: person.john_spencer
-                state: "not_home"
-          - condition: and
-            conditions:
-              - condition: trigger
-                id: walkin_door
-              - condition: state
-                entity_id: input_boolean.john_home
-                state: "on"
+                id: proximity
+              - condition: numeric_state
+                entity_id: sensor.john_distance_to_home
+                above: 50
+              - condition: template
+                value_template: "{{ states('person.john_spencer') != 'home' }}"
+          # Zone enter: just arrived
+          - condition: trigger
+            id: zone_enter
+      # Door must be closed to offer open
       - condition: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         state: "closed"
     action:
       - service: notify.mobile_app_john_s_phone
         data:
-          title: "🚗 Garage"
-          message: "Tap to open North door"
+          title: "🚗 Welcome Home"
+          message: "Open garage door?"
           data:
             tag: "garage_quick_open"
             ttl: 0
@@ -49,24 +55,92 @@ automation:
             importance: high
             channel: alarm_stream
             visibility: public
-            timeout: 120
+            timeout: 180
             notification_icon: "mdi:garage"
             actions:
               - action: "QUICK_OPEN_NORTH"
-                title: "OPEN NORTH DOOR"
+                title: "NORTH"
+              - action: "QUICK_OPEN_SOUTH"
+                title: "SOUTH"
+              - action: "QUICK_OPEN_BOTH"
+                title: "BOTH"
     mode: single
 
-  - id: garage_quick_open_north_action
-    alias: "Garage - Quick Open North Action Handler"
+  # Walk-in door trigger (when home)
+  - id: garage_quick_open_walkin
+    alias: "Garage - Walk-in Door Quick Open"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: person.john_spencer
+        state: "home"
+      - condition: state
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        state: "closed"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "🚗 Garage"
+          message: "Open door?"
+          data:
+            tag: "garage_quick_open"
+            ttl: 0
+            priority: high
+            timeout: 60
+            actions:
+              - action: "QUICK_OPEN_NORTH"
+                title: "NORTH"
+              - action: "QUICK_OPEN_SOUTH" 
+                title: "SOUTH"
+    mode: single
+
+  # === ACTION HANDLERS ===
+  - id: garage_quick_open_action_handler
+    alias: "Garage - Quick Open Action Handler"
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
           action: "QUICK_OPEN_NORTH"
+        id: north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "QUICK_OPEN_SOUTH"
+        id: south
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "QUICK_OPEN_BOTH"
+        id: both
     action:
-      - service: cover.open_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: north
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+          - conditions:
+              - condition: trigger
+                id: south
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+          - conditions:
+              - condition: trigger
+                id: both
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id:
+                    - cover.garage_north_garage_door_ratgdo32disco_door
+                    - cover.garage_south_garage_door_ratgdo32disco_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -74,11 +148,14 @@ automation:
             tag: "garage_quick_open"
     mode: single
 
-  - id: garage_quick_open_clear_on_open
+  # === CLEAR ON OPEN ===
+  - id: garage_quick_open_clear
     alias: "Garage - Clear Quick Open When Door Opens"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: 
+          - cover.garage_north_garage_door_ratgdo32disco_door
+          - cover.garage_south_garage_door_ratgdo32disco_door
         to: "open"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -89,7 +166,7 @@ automation:
     mode: single
 
   # ===========================================================================
-  # APPROACHING HOME - LIGHTS ON (Night Only)
+  # ARRIVAL LIGHTS (Night Only)
   # ===========================================================================
   - id: arrival_lights_approaching
     alias: "Arrival - Driveway & Garage Lights When Approaching"
@@ -98,9 +175,8 @@ automation:
         entity_id: sensor.john_distance_to_home
         below: 500
     condition:
-      - condition: state
-        entity_id: person.john_spencer
-        state: "not_home"
+      - condition: template
+        value_template: "{{ states('person.john_spencer') != 'home' }}"
       - condition: state
         entity_id: sun.sun
         state: "below_horizon"
@@ -115,14 +191,18 @@ automation:
     mode: single
 
   # ===========================================================================
-  # NORTH DOOR - QUICK CLOSE (2 sec delay)
+  # QUICK CLOSE NOTIFICATIONS (when door opens)
   # ===========================================================================
   - id: garage_north_opened_close_option
     alias: "Garage - North Door Opened Close Option"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         to: "open"
+    condition:
+      - condition: state
+        entity_id: person.john_spencer
+        state: "home"
     action:
       - delay:
           seconds: 2
@@ -134,10 +214,7 @@ automation:
             tag: "garage_north_close"
             ttl: 0
             priority: high
-            importance: high
-            channel: alarm_stream
-            visibility: public
-            timeout: 60
+            timeout: 90
             actions:
               - action: "CLOSE_NORTH_NOW"
                 title: "CLOSE DOOR"
@@ -153,7 +230,7 @@ automation:
     action:
       - service: cover.close_cover
         target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
+          entity_id: cover.garage_north_garage_door_ratgdo32disco_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -162,10 +239,10 @@ automation:
     mode: single
 
   - id: garage_north_close_clear
-    alias: "Garage - Clear North Close Notification When Closed"
+    alias: "Garage - Clear North Close When Closed"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         to: "closed"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -180,15 +257,16 @@ automation:
             tag: "garage_quick_open"
     mode: single
 
-  # ===========================================================================
-  # SOUTH DOOR - QUICK CLOSE (2 sec delay)
-  # ===========================================================================
   - id: garage_south_opened_close_option
     alias: "Garage - South Door Opened Close Option"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         to: "open"
+    condition:
+      - condition: state
+        entity_id: person.john_spencer
+        state: "home"
     action:
       - delay:
           seconds: 2
@@ -200,10 +278,7 @@ automation:
             tag: "garage_south_close"
             ttl: 0
             priority: high
-            importance: high
-            channel: alarm_stream
-            visibility: public
-            timeout: 60
+            timeout: 90
             actions:
               - action: "CLOSE_SOUTH_NOW"
                 title: "CLOSE DOOR"
@@ -219,7 +294,7 @@ automation:
     action:
       - service: cover.close_cover
         target:
-          entity_id: cover.ratgdo32disco_5735e8_door
+          entity_id: cover.garage_south_garage_door_ratgdo32disco_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -228,10 +303,10 @@ automation:
     mode: single
 
   - id: garage_south_close_clear
-    alias: "Garage - Clear South Close Notification When Closed"
+    alias: "Garage - Clear South Close When Closed"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         to: "closed"
     action:
       - service: notify.mobile_app_john_s_phone

@@ -1,5 +1,5 @@
-# HA Status - 2026-01-23 13:07 CST
-Version: 2026.1.2 | HAC: v7.3
+# HA Status - 2026-01-24 11:56 CST
+Version: 2026.1.3 | HAC: v7.3
 
 ## People
 john_spencer: home
@@ -36,21 +36,18 @@ both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-01-23 12:28:58 presence_update_someone_home
-2026-01-23 12:28:58 presence_update_occupancy_combinations
-2026-01-23 12:28:58 presence_update_girls_status
-2026-01-23 12:28:58 presence_alaina_home
-2026-01-23 12:28:58 calendar_refresh_school_in_session_now
-2026-01-23 12:28:58 calendar_refresh_school_tomorrow
-2026-01-23 12:28:58 context_apply_on_occupancy_change
-2026-01-23 12:28:58 occupancy_update_mode
-2026-01-23 12:28:58 humidity_alert_2nd_floor_low_or_high
-2026-01-23 12:28:58 arrival_alaina_home
+2026-01-24 10:41:51 calendar_refresh_school_in_session_now
+2026-01-24 10:41:51 calendar_refresh_school_tomorrow
+2026-01-24 10:41:51 humidity_alert_2nd_floor_low_or_high
+2026-01-24 10:41:51 garage_quick_open_north_door_notification
+2026-01-24 10:41:51 garage_all_lights_on
+2026-01-24 10:41:51 living_room_lamps_adaptive_control
+2026-01-24 10:41:51 kitchen_lounge_lamp_off_after_no_motion
+2026-01-24 10:41:51 kitchen_lounge_lamp_dim_after_15min_no_motion
+2026-01-24 10:41:51 kitchen_lounge_lamp_adaptive_lux_control
+2026-01-24 10:41:51 entry_room_lamp_adaptive_lux_control
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ living_room_lamps_adaptive_control: 24x
-⚠ entry_room_lamp_adaptive_lux_control: 16x
-⚠ kitchen_lounge_lamp_adaptive_lux_control: 10x

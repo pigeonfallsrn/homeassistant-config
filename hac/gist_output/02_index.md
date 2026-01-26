@@ -1,4 +1,4 @@
-# Automation Index - 2026-01-23 13:07
+# Automation Index - 2026-01-24 11:57
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -16,6 +16,7 @@ Fetch full YAML: `hac pkg <filename>`
 - **john_proximity.yaml** (0
 0 automations)
 - **kids_bedroom_automation.yaml** (10 automations)
+- **kitchen_tablet_dashboard.yaml** (6 automations)
 - **motion_aggregation.yaml** (0
 0 automations)
 - **notifications_system.yaml** (11 automations)
@@ -104,6 +105,14 @@ Fetch full YAML: `hac pkg <filename>`
 405: kids_lights_off_everyone_away
 419: kids_bedroom_override_reset
 
+### kitchen_tablet_dashboard.yaml
+233: kitchen_tablet_brightness_schedule
+273: kitchen_tablet_doorbell_popup
+306: kitchen_tablet_motion_wake
+327: kitchen_tablet_sleep_inactivity
+351: kitchen_tablet_wake_on_presence
+374: kitchen_tablet_sleep_when_away
+
 ### motion_aggregation.yaml
 
 ### notifications_system.yaml
@@ -150,8 +159,6 @@ Fetch full YAML: `hac pkg <filename>`
 
 
 ### automations.yaml
-105: entry_room_aux_switch
-132: kitchen_lounge_vzm36_fixed
-184: kitchen_lounge_dimmer_fixed
-318: kitchen_chandelier_switch_v2
-353: kitchen_above_sink_inovelli
+1: '1769232141408'
+62: '1769232386253'
+123: '1769232392078'

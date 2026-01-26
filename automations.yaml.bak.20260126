@@ -1,0 +1,183 @@
+- id: '1769232141408'
+  alias: Upstairs Hallway → Motion Lighting
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.upstairs_hallway_motion
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: light.upstairs_hallway
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.time_context
+        state: night
+      sequence:
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          brightness_pct: 3
+          rgb_color:
+          - 255
+          - 20
+          - 0
+        action: light.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.upstairs_hallway_motion
+          to: 'off'
+          for:
+            minutes: 2
+          trigger: state
+        timeout:
+          minutes: 10
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          transition: 3
+        action: light.turn_off
+    default:
+    - target:
+        entity_id: light.upstairs_hallway
+      action: light.turn_on
+    - target:
+        entity_id: switch.adaptive_lighting_sleep_mode_upstairs_hallway
+      action: switch.turn_off
+    - wait_for_trigger:
+      - entity_id: binary_sensor.upstairs_hallway_motion
+        to: 'off'
+        for:
+          minutes: 3
+        trigger: state
+      timeout:
+        minutes: 15
+    - target:
+        entity_id: light.upstairs_hallway
+      data:
+        transition: 5
+      action: light.turn_off
+  mode: restart
+- id: '1769232386253'
+  alias: Upstairs Hallway → Motion Lighting1
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.upstairs_hallway_motion
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: light.upstairs_hallway
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.time_context
+        state: night
+      sequence:
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          brightness_pct: 3
+          rgb_color:
+          - 255
+          - 20
+          - 0
+        action: light.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.upstairs_hallway_motion
+          to: 'off'
+          for:
+            minutes: 2
+          trigger: state
+        timeout:
+          minutes: 10
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          transition: 3
+        action: light.turn_off
+    default:
+    - target:
+        entity_id: light.upstairs_hallway
+      action: light.turn_on
+    - target:
+        entity_id: switch.adaptive_lighting_sleep_mode_upstairs_hallway
+      action: switch.turn_off
+    - wait_for_trigger:
+      - entity_id: binary_sensor.upstairs_hallway_motion
+        to: 'off'
+        for:
+          minutes: 3
+        trigger: state
+      timeout:
+        minutes: 15
+    - target:
+        entity_id: light.upstairs_hallway
+      data:
+        transition: 5
+      action: light.turn_off
+  mode: restart
+- id: '1769232392078'
+  alias: Upstairs Hallway → Motion Lighting1
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.upstairs_hallway_motion
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: light.upstairs_hallway
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.time_context
+        state: night
+      sequence:
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          brightness_pct: 3
+          rgb_color:
+          - 255
+          - 20
+          - 0
+        action: light.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.upstairs_hallway_motion
+          to: 'off'
+          for:
+            minutes: 2
+          trigger: state
+        timeout:
+          minutes: 10
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          transition: 3
+        action: light.turn_off
+    default:
+    - target:
+        entity_id: light.upstairs_hallway
+      action: light.turn_on
+    - target:
+        entity_id: switch.adaptive_lighting_sleep_mode_upstairs_hallway
+      action: switch.turn_off
+    - wait_for_trigger:
+      - entity_id: binary_sensor.upstairs_hallway_motion
+        to: 'off'
+        for:
+          minutes: 3
+        trigger: state
+      timeout:
+        minutes: 15
+    - target:
+        entity_id: light.upstairs_hallway
+      data:
+        transition: 5
+      action: light.turn_off
+  mode: restart

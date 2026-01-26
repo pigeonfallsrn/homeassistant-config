@@ -1,0 +1,377 @@
+- action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.upstairs_bathroom_fan
+  alias: Bathroom Fan – Auto ON (RH ≥ 70% for 1 min)
+  id: bathroom_fan_auto_on_humidity
+  mode: restart
+  trigger:
+  - above: 70
+    entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+    for: 00:01:00
+    platform: numeric_state
+- action:
+  - service: switch.turn_off
+    target:
+      entity_id: switch.upstairs_bathroom_fan
+  alias: Bathroom Fan – Auto OFF (RH ≤ 60% for 10 min)
+  id: bathroom_fan_auto_off_humidity
+  mode: restart
+  trigger:
+  - below: 60
+    entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+    for: 00:10:00
+    platform: numeric_state
+- action:
+  - data:
+      brightness_pct: 20
+      transition: 5
+    service: light.turn_on
+    target:
+      entity_id: light.entry_room_hue_color_lamp
+  alias: First Person Home After Dark → Entry Lights On
+  condition:
+  - after: 06:00:00
+    before: '23:59:59'
+    condition: time
+  - below: 30
+    condition: numeric_state
+    entity_id: sensor.entry_room_east_wall_nightlight_illuminance
+  id: first_person_home_lights_on
+  mode: single
+  trigger:
+  - entity_id:
+    - person.john_spencer
+    - person.alaina_spencer
+    - person.ella_spencer
+    platform: state
+    to: home
+- action:
+  - data:
+      brightness_pct: 8
+      rgb_color:
+      - 255
+      - 20
+      - 0
+      transition: 1
+    service: light.turn_on
+    target:
+      entity_id: light.2nd_floor_bathroom
+  - delay: 00:04:00
+  - data:
+      transition: 10
+    service: light.turn_off
+    target:
+      entity_id: light.2nd_floor_bathroom
+  alias: Bathroom - Red Light (11pm-5:30am)
+  condition:
+  - condition: or
+    conditions:
+    - after: '23:00:00'
+      before: '23:59:59'
+      condition: time
+    - after: 00:00:00
+      before: 05:30:00
+      condition: time
+  id: bathroom_red_light_night
+  trigger:
+  - entity_id: binary_sensor.aqara_motion_sensor_p1_occupancy
+    platform: state
+    to: 'on'
+- action:
+  - service: media_player.turn_off
+    target:
+      entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+  - delay: 00:00:05
+  - service: switch.turn_off
+    target:
+      entity_id: switch.basement_yamaha_av_receiver_plug
+  - service: switch.turn_off
+    target:
+      entity_id: switch.kitchen_echo_show_plug
+  - data:
+      transition: 3
+    service: light.turn_off
+    target:
+      entity_id: light.living_room_tv_smart_light_strip
+  alias: Living Room TV OFF → Full AV System OFF
+  id: living_room_tv_off_trigger_av_system_off
+  mode: restart
+  trigger:
+  - entity_id: switch.living_room_tv_smart_plug
+    for: 00:05:00
+    platform: state
+    to: 'off'
+- id: entry_room_aux_switch
+  alias: Entry Room - AUX Switch Controls
+  description: AUX switch Up=On, Down=Off
+  trigger:
+  - platform: event
+    event_type: zha_event
+  condition: '{{ trigger.event.data.device_id == "d80c7fa6d013f0fd1cbdd6f67c6a1cac"
+    }}'
+  action:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - choose:
+    - conditions: '{{ command == "button_5_press" }}'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+          - light.entry_rm_ceiling_hue_white_1_2
+          - light.entry_rm_ceiling_hue_white_2_2
+    - conditions: '{{ command == "button_4_press" }}'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.entry_rm_ceiling_hue_white_1_2
+          - light.entry_rm_ceiling_hue_white_2_2
+  mode: queued
+- id: kitchen_lounge_vzm36_fixed
+  alias: Kitchen Lounge - VZM36 Fan/Light (Hue Ceiling)
+  description: Up=Hue lights on, Down=Hue lights off, Config=Fan cycle
+  trigger:
+  - platform: event
+    event_type: zha_event
+  condition: '{{ trigger.event.data.device_id == "608cdc81a73355aec629b4a3938fbbaf"
+    }}'
+  action:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - choose:
+    - conditions: '{{ command == "button_3_press" }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            state: 'off'
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 33
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 50
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 66
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 90
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 100
+        default:
+        - service: fan.turn_off
+          target:
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+  mode: queued
+- id: kitchen_lounge_dimmer_fixed
+  alias: Kitchen Lounge - VZM31-SN Dimmer (Hue Ceiling)
+  description: Up=Hue lights on, Down=off, Config=Fan cycle
+  trigger:
+  - platform: event
+    event_type: zha_event
+  condition: '{{ trigger.event.data.device_id == "5e2d477e04d216ab91a0c2f1364ab118"
+    }}'
+  action:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - choose:
+    - conditions: '{{ command == "button_2_press" }}'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+          - light.kitchen_lounge_ceiling_1of2
+          - light.kitchen_lounge_ceiling_2of2
+    - conditions: '{{ command == "button_1_press" }}'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.kitchen_lounge_ceiling_1of2
+          - light.kitchen_lounge_ceiling_2of2
+    - conditions: '{{ command == "button_3_press" }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            state: 'off'
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 33
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 50
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 66
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 90
+          sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 100
+        default:
+        - service: fan.turn_off
+          target:
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+  mode: queued
+- alias: 'Back Patio: Inovelli Control'
+  id: back_patio_inovelli_hue_control
+  description: Up=Bright white, Down=Off, Config=Scene cycle (Bright→Evening→Hot Tub→Off)
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
+  action:
+  - choose:
+    - conditions: '{{ trigger.event.data.command == ''button_2_press'' }}'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.back_patio_steps_light
+        data:
+          brightness_pct: 100
+          color_temp_kelvin: 4000
+    - conditions: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.back_patio_steps_light
+    - conditions: '{{ trigger.event.data.command == ''button_3_press'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.back_patio_steps_light
+            state: 'off'
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: light.back_patio_steps_light
+            data:
+              brightness_pct: 100
+              color_temp_kelvin: 4000
+        - conditions:
+          - condition: numeric_state
+            entity_id: light.back_patio_steps_light
+            attribute: brightness
+            above: 200
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: light.back_patio_steps_light
+            data:
+              brightness_pct: 60
+              color_temp_kelvin: 2700
+        - conditions:
+          - condition: numeric_state
+            entity_id: light.back_patio_steps_light
+            attribute: brightness
+            above: 100
+          sequence:
+          - service: light.turn_on
+            target:
+              entity_id: light.back_patio_steps_light
+            data:
+              brightness_pct: 20
+              xy_color:
+              - 0.5614
+              - 0.4156
+        default:
+        - service: light.turn_off
+          target:
+            entity_id: light.back_patio_steps_light
+  mode: restart
+- id: kitchen_chandelier_switch_v2
+  alias: Kitchen - Chandelier Control (5 Bulbs)
+  description: Up=On, Down=Off, Config=Scene cycle (Bright→Warm→Dim→Off)
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 17a59d3c437c3475f22c29dd2b76777a
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+          - light.kitchen_chandelier_1of5
+          - light.kitchen_chandelier_2of5
+          - light.kitchen_chandelier_3of5
+          - light.kitchen_chandelier_4of5
+          - light.kitchen_chandelier_5of5
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.kitchen_chandelier_1of5
+          - light.kitchen_chandelier_2of5
+          - light.kitchen_chandelier_3of5
+          - light.kitchen_chandelier_4of5
+          - light.kitchen_chandelier_5of5
+  mode: queued
+- id: kitchen_above_sink_inovelli
+  alias: Kitchen Above Sink - Inovelli Control
+  description: Up=On, Down=Off for Hue downlight
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 89ca030d64760ad87512e97d13a2737d
+  action:
+  - choose:
+    - conditions: '{{ trigger.event.data.command == ''button_2_press'' }}'
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_pct: 100
+          color_temp_kelvin: 4000
+    - conditions: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.kitchen_above_sink_light
+  mode: restart
+

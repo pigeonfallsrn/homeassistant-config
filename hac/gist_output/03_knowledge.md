@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-23 13:07
+# System Knowledge - 2026-01-24 11:57
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -26,26 +26,11 @@
 - 2026-01-23: Infrastructure integration: UniFi Protect motion events to HA, Synology automated HA snapshot backups
 
 ## Recent Session Learnings
-- **Tablets:** Kitchen wall tablet (Fully Kiosk), [PERSON]'s Fire tablet
-- **Garage:** ratgdo controllers (2x), Aqara motion sensors
-
-### Automation Patterns Established
-- **Presence:** Multi-method (WiFi AP + GPS + Motion)
-- **Lighting:** Adaptive lighting with manual override detection
-- **Bedtime:** Context-aware wind-down (new family_activities system)
-- **Notifications:** Actionable mobile notifications with response handling
-
-### HAC Workflow Preferences
-- Terminal commands only, no GUI
-- Chain with `&&` for efficiency
-- `hac backup` before any edit
-- Propose → approve → execute pattern
-- `hac learn` to capture insights
-
-- 12:24: Double-fire fix: combined motion sensors need delay_on debounce when OR-ing multiple physical sensors
-- 12:50: HAC status double-fire false positives: HA sqlite stores multiple state rows per automation trigger (start, attribute updates). Query should use DISTINCT on timestamp rounded to seconds, or check last_changed vs last_updated to filter actual trigger events vs attribute updates
-- 12:50: Confirmed: delay_on 150ms on template sensors works - combined sensor fired once at .879 after east sensor at .726 (153ms delta). Double-fires in status were reporting artifact, not actual duplicate automation runs
-- 12:51: Fixing HAC status double-fire query to use last_changed_ts instead of last_updated_ts to avoid counting attribute updates as separate triggers
+- 10:54: Kitchen tablet Spotify playback: Scripts use HA Spotify integration to cast to Kitchen Echo Show (Sonos not in Spotify source list initially). Service flow: media_player.select_source to pick device, 4-second delay, then media_player.play_media with spotify:playlist URI. Fixed tablet_power.yaml - replaced invalid fully_kiosk.load_start_url service with button.press on button.kitchen_wall_a9_tablet_load_start_url.
+- 11:48: Config audit cleanup commands: Stage 1 unavailable entities: hac cmd 'ha state list' | grep unavailable. Stage 2 check Hue integration health for bulk unavailable lights. Stage 3 find duplicate entity_ids with grep patterns. Stage 4 area config via .storage/core.area_registry. Stage 5 delete orphaned scenes via UI bulk delete. Key issues found: 23 unavailable entities (mostly Hue), duplicate names (Anyone Home, Kitchen media, bathroom plugs), Master Bedroom area corruption (empty comma), low humidity (kitchen 11.7%), orphaned 'New scene' entries.
+- 11:50: Config audit 2026-01-24: 23 unavailable entities (mostly Hue lights - 2nd Floor Bath, [PERSON] Echo Glow, Entry/Front Driveway, Garage LiftMaster, Upstairs Hallway Ceiling), duplicate entity names (Anyone Home x2, Kitchen media x2, bathroom plugs x2, VZM36 lights x2), Master Bedroom area corruption (empty comma in 'Master Bedroom, , Dad's Bedroom'), low humidity (Kitchen 11.7%, 1st Bath 19-24%), orphaned scenes (3x 'New scene' unavailable), double-fire issue persists (calendar_refresh automations need mode: single). Cleanup: UI bulk delete unavailable, fix area registry, reconfigure Hue integration, add mode: single to calendar automations.
+- 11:54: Config audit 2026-01-24: 492 total unavailable entities. Breakdown: switch(97), script(75), sensor(68), binary_sensor(47), number(47), button(38), light(23), automation(23), select(20), scene(11), media_player(10). Hue bridge healthy ([IP] reachable) - only 1 Hue light unavailable ([PERSON] ceiling LED). Most unavailable are UniFi PoE buttons (expected), Protect camera motion sensors, and likely orphaned scripts/automations. Area registry has empty alias string in Master Bedroom aliases array. Priority: investigate switch/script bulk unavailable - suggests disabled integration or orphaned config.
+- 11:56: CONFIG AUDIT METHODOLOGY 2026-01-24: (1) Check unavailable entities via REST API: curl -s -H 'Authorization: Bearer $SUPERVISOR_TOKEN' http://supervisor/core/api/states | python3 -c 'import sys,json; [print(e["entity_id"],e["state"]) for e in json.load(sys.stdin) if e["state"]=="unavailable"]' (2) Count by domain: Counter(e.split(".")[0] for e in unavail) (3) Integration configs in .storage/core.config_entries (4) Area registry in .storage/core.area_registry (5) Entity registry in .storage/core.entity_registry. FINDINGS: 492 unavailable - switch(97 UniFi Protect cam settings), script(75 orphaned from deleted definitions), sensor(68), binary_sensor(47 Protect motion), light(23 inc orphaned Hue + Echo Glows + LiftMaster), automation(23). ROOT CAUSES: Scripts exist in entity_registry but definitions deleted (check .storage backups). AI Theta cameras offline. Generic hue_color_lamp_X are unpaired bulbs. Echo Glows cloud issue. Area registry has empty string in Master Bedroom aliases array. FIX PRIORITY: (1) Restore scripts from backup or purge orphaned entities (2) Check AI Theta physical cameras (3) Clean Hue orphans via Hue app (4) Fix area alias via UI
 
 ## Historical Learnings (last 30 lines)
 - hacs: v2.0.5

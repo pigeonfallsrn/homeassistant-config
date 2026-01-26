@@ -42,7 +42,7 @@ template:
         unit_of_measurement: "devices"
 
 # Includes
-automation: !include automations.yaml
+automation: !include_dir_merge_list automations/
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
@@ -98,12 +98,24 @@ input_boolean: !include input_boolean.yaml
 lovelace:
   mode: storage
   dashboards:
+    lovelace-kitchen-tablet:
+      mode: yaml
+      title: Kitchen Tablet
+      filename: dashboards/lovelace-kitchen-tablet.yaml
+      show_in_sidebar: true
+      icon: mdi:tablet
     lovelace-mobile:
       mode: yaml
       title: Mobile
       icon: mdi:cellphone
       show_in_sidebar: true
       filename: dashboards/lovelace-mobile.yaml
+    lovelace-climate:
+      mode: yaml
+      title: Climate Command
+      icon: mdi:thermostat
+      show_in_sidebar: true
+      filename: dashboards/lovelace-climate.yaml
 
 group: !include groups.yaml
 
@@ -117,3 +129,13 @@ light:
       - light.ella_s_ceiling_light_1_of_3
       - light.ella_s_ceiling_light_2_of_3
       - light.ella_s_ceiling_light_3_of_3
+
+# Trusted networks for tablet auto-login
+auth:
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - 192.168.21.0/24
+        - 192.168.1.0/24
+      allow_bypass_login: true
+    - type: homeassistant

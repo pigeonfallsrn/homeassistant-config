@@ -21,7 +21,7 @@ template:
       - name: "Garage North Door Alert Active"
         unique_id: garage_north_door_alert_active
         state: >
-          {{ is_state('cover.ratgdo32disco_fd8d8c_door', 'open') and
+          {{ is_state('cover.garage_north_garage_door_ratgdo32disco_door', 'open') and
              now() > states('input_datetime.garage_north_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
         delay_on:
           minutes: 1
@@ -29,7 +29,7 @@ template:
       - name: "Garage South Door Alert Active"
         unique_id: garage_south_door_alert_active
         state: >
-          {{ is_state('cover.ratgdo32disco_5735e8_door', 'open') and
+          {{ is_state('cover.garage_south_garage_door_ratgdo32disco_door', 'open') and
              now() > states('input_datetime.garage_south_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
         delay_on:
           minutes: 1
@@ -47,7 +47,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     title: "🚗 Garage North Door Open"
-    message: "North garage door has been open for {{ relative_time(states.cover.ratgdo32disco_fd8d8c_door.last_changed) }}"
+    message: "North garage door has been open for {{ relative_time(states.cover.garage_north_garage_door_ratgdo32disco_door.last_changed) }}"
     done_message: "clear_notification"
     notifiers:
       - mobile_app_john_s_phone
@@ -76,7 +76,7 @@ alert:
     can_acknowledge: true
     skip_first: false
     title: "🚗 Garage South Door Open"
-    message: "South garage door has been open for {{ relative_time(states.cover.ratgdo32disco_5735e8_door.last_changed) }}"
+    message: "South garage door has been open for {{ relative_time(states.cover.garage_south_garage_door_ratgdo32disco_door.last_changed) }}"
     done_message: "clear_notification"
     notifiers:
       - mobile_app_john_s_phone
@@ -137,7 +137,7 @@ automation:
             sequence:
               - service: cover.close_cover
                 target:
-                  entity_id: cover.ratgdo32disco_fd8d8c_door
+                  entity_id: cover.garage_north_garage_door_ratgdo32disco_door
               - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
@@ -150,7 +150,7 @@ automation:
             sequence:
               - service: cover.close_cover
                 target:
-                  entity_id: cover.ratgdo32disco_5735e8_door
+                  entity_id: cover.garage_south_garage_door_ratgdo32disco_door
               - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
@@ -224,11 +224,11 @@ automation:
     alias: "Garage Door - Reset Snooze on Close"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         to: "closed"
         id: north
       - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         to: "closed"
         id: south
     action:

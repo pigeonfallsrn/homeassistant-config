@@ -1,19 +1,7 @@
 # ============================================================================
-# Garage Lighting & Door Automation
-# Updated: 2026-01-20
-# 
-# LIGHTS CONTROLLED:
-# - light.garage (Hue ceiling group)
-# - light.ratgdo32disco_fd8d8c_light (North RATGDO opener)
-# - light.ratgdo32disco_5735e8_light (South RATGDO opener)
-# - light.garage_north_lift_master_garage_door_opener_west_light
-# - light.garage_north_lift_master_garage_door_opener_east_light
-# - light.south_west_garage_liftmaster
-# - light.south_east_lift
-# - light.garage_north_wall_nightlight (Third Reality)
-# - light.garage_north_of_east_wall_motion_light_sensor (Third Reality)
-# - light.garage_south_of_east_wall_motion_light_sensor (Third Reality)
-# - light.garage_south_wall_motion_light_sensor (Third Reality)
+# Garage Lighting Automation
+# Updated: 2026-01-25
+# FIX: Changed OFF trigger to use template that checks ALL motion sensors
 # ============================================================================
 
 automation:
@@ -22,36 +10,26 @@ automation:
     alias: "Garage All Lights ON"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         to: 'open'
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         to: 'open'
       - platform: state
         entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
         to: 'on'
       - platform: state
-        entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+        entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motion
         to: 'on'
       - platform: state
-        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
+        entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motion
         to: 'on'
     action:
       - service: light.turn_on
         target:
           entity_id:
-            # Hue ceiling group
             - light.garage
-            # RATGDO opener lights
-            - light.ratgdo32disco_fd8d8c_light
-            - light.ratgdo32disco_5735e8_light
-            # North LiftMaster
-            - light.garage_north_lift_master_garage_door_opener_west_light
-            - light.garage_north_lift_master_garage_door_opener_east_light
-            # South LiftMaster (correct names)
-            - light.south_west_garage_liftmaster
-            - light.south_east_lift
-            # Third Reality nightlights
+            - light.garage_north_garage_door_ratgdo32disco_light
             - light.garage_north_wall_nightlight
             - light.garage_north_of_east_wall_motion_light_sensor
             - light.garage_south_of_east_wall_motion_light_sensor
@@ -60,46 +38,44 @@ automation:
           brightness_pct: 100
     mode: restart
 
-  # === LIGHTS OFF ===
+  # === LIGHTS OFF - Fixed trigger logic ===
   - id: garage_master_lights_off
     alias: "Garage All Lights OFF"
     trigger:
+      # Trigger every minute to check conditions
       - platform: state
         entity_id:
-          - binary_sensor.ratgdo32disco_5735e8_motion
-          - binary_sensor.ratgdo32disco_fd8d8c_motion
+          - binary_sensor.garage_north_garage_door_ratgdo32disco_motion
+          - binary_sensor.garage_south_garage_door_ratgdo32disco_motion
+        to: 'off'
         for:
           minutes: 6
     condition:
+      # ALL conditions must be true
       - condition: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         state: 'closed'
       - condition: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         state: 'closed'
       - condition: state
-        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+        entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motion
         state: 'off'
+        for:
+          minutes: 6
       - condition: state
-        entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+        entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motion
         state: 'off'
-      - condition: state
-        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
-        state: 'off'
+        for:
+          minutes: 6
     action:
       - service: light.turn_off
         target:
           entity_id:
             - light.garage
-            - light.ratgdo32disco_fd8d8c_light
-            - light.ratgdo32disco_5735e8_light
-            - light.garage_north_lift_master_garage_door_opener_west_light
-            - light.garage_north_lift_master_garage_door_opener_east_light
-            - light.south_west_garage_liftmaster
-            - light.south_east_lift
+            - light.garage_north_garage_door_ratgdo32disco_light
             - light.garage_north_wall_nightlight
             - light.garage_north_of_east_wall_motion_light_sensor
             - light.garage_south_of_east_wall_motion_light_sensor
             - light.garage_south_wall_motion_light_sensor
     mode: restart
-
