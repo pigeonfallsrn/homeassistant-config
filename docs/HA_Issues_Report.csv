@@ -1,0 +1,116 @@
+priority,issue_type,entity_id,friendly_name,platform,current_area,recommendation
+LOW,Disable unnecessary,light.1st_floor_ap_led,LED,unifi,Kitchen Lounge,Disable in entity settings
+INFO,Hue group entity,light.1st_floor_bathroom,,hue,1st Floor Bathroom,Use individual bulbs instead
+HIGH,Light missing area,light.1st_floor_bathroom_ceiling_1of2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.1st_floor_bathroom_ceiling_2of2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.1st_floor_moderate_lighting,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.1st_floor_moderate_lighting,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.1st_floor_table_lamps,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.1st_floor_table_lamps,,hue,,Use individual bulbs instead
+LOW,Disable unnecessary,light.2nd_floor_ap_led,LED,unifi,Master Bedroom,Disable in entity settings
+INFO,Hue group entity,light.2nd_floor_bathroom,,hue,2nd Floor Bathroom,Use individual bulbs instead
+LOW,Disable unnecessary,light.40062_hwy_53_ubb_led,LED,unifi,Back Patio,Disable in entity settings
+INFO,Hue group entity,light.alaina_s_bedroom,Alaina's Bedside Lamp Hue Color Bulb,hue,Alaina's Bedroom,Use individual bulbs instead
+LOW,Disable unnecessary,light.alaina_s_bedroom_echo_glow,Alaina's bedroom Echo Glow,alexa_media,,Disable in entity settings
+INFO,Hue group entity,light.back_patio,,hue,Back Patio,Use individual bulbs instead
+HIGH,Light missing area,light.back_patio_steps_light,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.basement,,hue,Basement,Use individual bulbs instead
+INFO,Hue group entity,light.ella_s_bedroom,,hue,Ella's Bedroom,Use individual bulbs instead
+LOW,Disable unnecessary,light.ella_s_bedroom_echo_glow,Ella's Bedroom Echo Glow,alexa_media,,Disable in entity settings
+HIGH,Light missing area,light.ella_s_wall_light_bedside_lamp,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.ella_s_wall_light_bedside_lamp,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.entry_kitchen_all_lights,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.entry_kitchen_all_lights,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.entry_rm_ceiling_hue_white_1_2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.entry_rm_ceiling_hue_white_2_2,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.entry_room,,hue,Entry Room,Use individual bulbs instead
+HIGH,Light missing area,light.entry_room_hue_color_lamp,Entry Room Hue Color Lamp,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.front_driveway,,hue,Front Driveway,Use individual bulbs instead
+INFO,Hue group entity,light.garage,,hue,Garage,Use individual bulbs instead
+LOW,Disable unnecessary,light.garage_ap_led,LED,unifi,Garage,Disable in entity settings
+HIGH,Light missing area,light.hot_tub,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.hot_tub,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.hue_color_candle_1,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_3,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_3_2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_4,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_4_2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_candle_5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_downlight_1_2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_downlight_1_3,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_10,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_11,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_12,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_1_3,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_1_4,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_1_5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_2_3,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_2_4,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_3,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_4,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_6,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.hue_color_lamp_7,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_above_sink_light,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_chandelier,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.kitchen_chandelier,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.kitchen_chandelier_1of5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_chandelier_2of5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_chandelier_3of5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_chandelier_4of5,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_chandelier_5of5,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.kitchen_hue_color_floor_lamp,Kitchen Hue Color Floor Lamp,hue,Kitchen,Use individual bulbs instead
+INFO,Hue group entity,light.kitchen_lounge,,hue,Kitchen Lounge,Use individual bulbs instead
+HIGH,Light missing area,light.kitchen_lounge_ceiling_1of2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.kitchen_lounge_ceiling_2of2,,hue,,Assign to room in HA UI
+HIGH,Light missing area,light.living_rm_lounge_table_lamps,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.living_rm_lounge_table_lamps,,hue,,Use individual bulbs instead
+INFO,Hue group entity,light.living_room,,hue,Living Room,Use individual bulbs instead
+HIGH,Light missing area,light.living_room_floor_lamps,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.living_room_floor_lamps,,hue,,Use individual bulbs instead
+INFO,Hue group entity,light.living_room_lounge,,hue,Sun Room,Use individual bulbs instead
+HIGH,Light missing area,light.living_room_lounge_ceiling_light,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.living_room_lounge_ceiling_light,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.living_room_table_lamps,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.living_room_table_lamps,,hue,,Use individual bulbs instead
+HIGH,Light missing area,light.living_room_west_floor_lamp,,hue,,Assign to room in HA UI
+INFO,Hue group entity,light.master_bedroom,,hue,Master Bedroom,Use individual bulbs instead
+LOW,Disable unnecessary,light.master_bedroom_echo_glow,Master Bedroom Echo Glow,alexa_media,,Disable in entity settings
+LOW,Disable unnecessary,light.p_f_p_ubb_led,LED,unifi,Back Yard Tower,Disable in entity settings
+LOW,Disable unnecessary,light.toy_room_light,Kitchen Lamp,alexa_media,,Disable in entity settings
+INFO,Hue group entity,light.upstairs_hallway,,hue,Upstairs Hallway,Use individual bulbs instead
+INFO,Hue group entity,light.very_front_door,,hue,Very Front Door,Use individual bulbs instead
+INFO,Hue group entity,light.very_front_door_hallway,,hue,Very Front Door Hallway,Use individual bulbs instead
+HIGH,Sensor missing area,binary_sensor.1st_floor_bathroom_hallway_motion,1st Floor Bathroom Hallway Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.1st_floor_bathroom_motion,1st Floor Bathroom Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.ai_theta_motion,Motion,unifiprotect,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.downstairs_motion,Downstairs Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.entry_room_motion,Entry Room Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.front_door_hallway_motion,Front Door Hallway Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.g6_bullet_motion,Motion,unifiprotect,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.garage_north_door_alert_active,Garage North Door Alert Active,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.garage_south_door_alert_active,Garage South Door Alert Active,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.house_motion_active,House Motion Active,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.house_motion_any,House Motion Any,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.kitchen_lounge_motion,Kitchen Lounge Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.kitchen_motion,Kitchen Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.living_room_motion,Living Room Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.upstairs_bathroom_motion,Upstairs Bathroom Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.upstairs_hallway_motion,Upstairs Hallway Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,binary_sensor.upstairs_motion,Upstairs Motion,template,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.ai_theta_last_motion_detected,Last motion detected,unifiprotect,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.aqara_temp_humidity_sensor_temperature_3,Temperature,matter,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.aqara_temp_humidity_sensor_temperature_7,Temperature,matter,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.g6_bullet_last_motion_detected,Last motion detected,unifiprotect,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.house_average_temperature,House Average Temperature,template,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.john_s_phone_battery_temperature,John's Phone Battery temperature,mobile_app,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.kitchen_samsung_tablet_wall_mount_battery_temperature,Kitchen Samsung Tablet Wall Mount Battery temperature,mobile_app,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.lumi_lumi_sensor_wleak_aq1_device_temperature,Device temperature,zha,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.outside_temperature,Outside Temperature,template,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.udm_pro_cpu_temperature,CPU temperature,unifiprotect,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.udm_pro_udm_pro_cpu_temperature,UDM PRO CPU Temperature,unifi,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.udm_pro_udm_pro_local_temperature,UDM PRO Local Temperature,unifi,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.udm_pro_udm_pro_phy_temperature,UDM PRO PHY Temperature,unifi,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.upstairs_bathroom_echo_plus_temperature_2,Upstairs Bathroom Echo Plus Temperature,alexa_media,,Assign to room in HA UI
+HIGH,Sensor missing area,sensor.usw_pro_max_16_poe_temperature,Temperature,unifi,,Assign to room in HA UI
