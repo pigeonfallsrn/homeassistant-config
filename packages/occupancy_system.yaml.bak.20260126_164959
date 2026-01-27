@@ -507,7 +507,7 @@ automation:
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.upstairs_hallway_motion_combined
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "on"
     condition:
       - condition: state
@@ -529,7 +529,7 @@ automation:
                   rgb_color: [255, 20, 0]
               - wait_for_trigger:
                   - platform: state
-                    entity_id: binary_sensor.upstairs_hallway_motion_combined
+                    entity_id: binary_sensor.upstairs_hallway_motion
                     to: "off"
                     for:
                       minutes: 2
@@ -550,7 +550,7 @@ automation:
               entity_id: switch.adaptive_lighting_sleep_mode_upstairs_hallway
           - wait_for_trigger:
               - platform: state
-                entity_id: binary_sensor.upstairs_hallway_motion_combined
+                entity_id: binary_sensor.upstairs_hallway_motion
                 to: "off"
                 for:
                   minutes: 3
@@ -567,12 +567,12 @@ automation:
   # Triggered by hallway P1 (mounted above bathroom door)
   # Night only - day is manual operation with adaptive lighting
   # ─────────────────────────────────────────────────────────
-  - id: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
+  - id: 2nd_floor_bathroom_night_lighting
     alias: "2nd Floor Bathroom → Night Lighting"
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.upstairs_hallway_motion_combined
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "on"
     condition:
       - condition: state
@@ -592,7 +592,7 @@ automation:
       # Someone exiting bathroom MUST pass hallway P1
       - wait_for_trigger:
           - platform: state
-            entity_id: binary_sensor.upstairs_hallway_motion_combined
+            entity_id: binary_sensor.upstairs_hallway_motion
             to: "off"
             for:
               minutes: 10

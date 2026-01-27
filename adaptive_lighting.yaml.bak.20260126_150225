@@ -19,6 +19,3 @@
   sunset_time: "22:00:00"
   sunrise_offset: 0
   sunset_offset: 0
-  separate_turn_on_commands: true
-  take_over_control: true
-  detect_non_ha_changes: false

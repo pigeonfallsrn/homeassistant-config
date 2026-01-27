@@ -83,17 +83,6 @@ template:
           seconds: 30
 
       # -----------------------------------------------------------------
-      # -----------------------------------------------------------------
-      # 1st Floor Bathroom - P1 hallway sensor with debounce
-      # -----------------------------------------------------------------
-      - name: "1st Floor Bathroom Motion"
-        unique_id: 1st_floor_bathroom_motion_combined
-        device_class: motion
-        state: >
-          {{ is_state('binary_sensor.1st_floor_bathroom_hallway_motion', 'on') }}
-        delay_off:
-          seconds: 30
-
       # Upstairs Bathroom - TR only
       # -----------------------------------------------------------------
       - name: "Upstairs Bathroom Motion"

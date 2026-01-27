@@ -4,11 +4,11 @@
   mode: restart
   trigger:
     - platform: state
-      entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+      entity_id: binary_sensor.1st_floor_bathroom_motion_combined
       to: "on"
       id: "on"
     - platform: state
-      entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+      entity_id: binary_sensor.1st_floor_bathroom_motion_combined
       to: "off"
       for:
         minutes: 8

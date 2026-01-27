@@ -1,0 +1,86 @@
+Category,Name,Integration,Type,Area,Entity_ID,IP_MAC,Status,AL_Instance,Smart_Bulb_Mode,Battery,Trigger,Timeout,Conflict,Notes
+DEVICE,Aqara Hub M3,Matter,Hub,Entry Room,N/A,TBD,Online,N/A,N/A,N/A,N/A,N/A,None,Bridge for Aqara via Matter
+DEVICE,Hue Bridge,Hue,Hub,Smart Home AV,N/A,192.168.1.68,Online,N/A,N/A,N/A,N/A,N/A,Time-based vs AL,Zigbee Ch25 - 52 lights 9 switches
+DEVICE,Sonoff ZHA Dongle,ZHA,Coordinator,Smart Home AV,N/A,N/A,Online,N/A,N/A,N/A,N/A,N/A,None,49 devices
+DEVICE,Govee Floor Lamp East,Govee/Matter,Light,Living Room,light.floor_lamp_basic,98:88:E0:F2:32:48,Online,Living Spaces,N/A,N/A,N/A,N/A,None,H6076 - needs rename
+DEVICE,Govee Floor Lamp West,Govee/Matter,Light,Living Room,light.floor_lamp_basic_2,DC:1E:D5:CE:C1:C0,Online,Living Spaces,N/A,N/A,N/A,N/A,None,H6076 - needs rename
+DEVICE,Nest Thermostat Master,Nest,Climate,Master Bedroom,climate.master_nest,TBD,Online,N/A,N/A,N/A,N/A,N/A,None,Primary HVAC
+DEVICE,Nest Thermostat 1st Floor,Nest,Climate,Living Room,climate.first_floor,TBD,Online,N/A,N/A,N/A,N/A,N/A,None,1st floor zone
+DEVICE,Nest Thermostat Basement,Nest,Climate,Basement,climate.basement,TBD,Online,N/A,N/A,N/A,N/A,N/A,None,Basement zone
+DEVICE,Nest Thermostat Garage,Nest,Climate,Garage,climate.garage,TBD,Online,N/A,N/A,N/A,N/A,N/A,None,Garage heat
+LIGHT,Entry Room Lamp,Hue,Color Bulb,Entry Room,light.entry_room_hue_color_lamp,N/A,Online,Living Spaces,N/A,N/A,N/A,N/A,None,Main entry lamp
+LIGHT,Kitchen Lounge Lamp,Hue,Color Bulb,Kitchen Lounge,light.kitchen_lounge_lamp,N/A,Online,Living Spaces,N/A,N/A,N/A,N/A,None,Floor lamp
+LIGHT,Entry Room Ceiling,Hue,White Ambiance,Entry Room,light.entry_room_ceiling,N/A,Online,Entry Room Ceiling,ON,N/A,N/A,N/A,None,4 bulbs via Inovelli
+LIGHT,Kitchen Chandelier,Hue,White Ambiance,Kitchen,light.kitchen_chandelier,N/A,Online,Kitchen Chandelier,ON,N/A,N/A,N/A,None,Via Inovelli
+LIGHT,Kitchen Above Sink,Hue,White Ambiance,Kitchen,light.kitchen_above_sink,N/A,Online,TBD,ON,N/A,N/A,N/A,None,Via Inovelli
+LIGHT,1st Floor Bathroom,Hue,White Ambiance,1st Floor Bathroom,light.1st_floor_bathroom,N/A,Online,TBD,ON,N/A,N/A,N/A,None,Via Inovelli
+LIGHT,Master Bedroom,Hue,Color,Master Bedroom,light.master_bedroom,N/A,Online,Bedroom Test,N/A,N/A,N/A,N/A,None,Hue group
+LIGHT,Upstairs Hallway,Hue,White Ambiance,Upstairs Hallway,light.upstairs_hallway,N/A,Online,TBD,N/A,N/A,N/A,N/A,MotionAware conflict,Hue group
+LIGHT,Garage,Hue,White,Garage,light.garage,N/A,Online,TBD,N/A,N/A,N/A,N/A,None,Hue group
+LIGHT,Back Patio,Hue,White,Back Patio,light.back_patio,N/A,Online,TBD,N/A,N/A,N/A,N/A,None,Outdoor
+LIGHT,Very Front Door,Hue,White,Very Front Door,light.very_front_door,N/A,Online,TBD,N/A,N/A,N/A,N/A,None,Outdoor
+LIGHT,Alaina Bedroom,Hue,Color,Alaina's Bedroom,light.alaina_bedroom,N/A,Online,NONE-Hue Only,N/A,N/A,N/A,N/A,None,Kids room - keep Hue native
+LIGHT,Ella Bedroom,Hue,Color,Ella's Bedroom,light.ella_bedroom,N/A,Online,NONE-Hue Only,N/A,N/A,N/A,N/A,None,Kids room - keep Hue native
+LIGHT,Living Room Lounge,Hue,Color,Living Room Lounge,light.living_room_lounge,N/A,Online,Living Spaces,N/A,N/A,N/A,N/A,MotionAware conflict,Accent
+LIGHT,Living Room Ceiling,ZHA/Inovelli,Dumb LED,Living Room,light.living_room_ceiling,N/A,Online,TBD,N/A,N/A,N/A,N/A,FoH cant control,Via VZM36 fan module
+LIGHT,Kitchen Under Cabinet,Aqara,LED Strip T1,Kitchen,light.kitchen_under_cabinet,N/A,Online,TBD,N/A,N/A,N/A,N/A,None,Matter
+LIGHT,Master Behind TV,Aqara,LED Strip T1,Master Bedroom,light.master_bedroom_behind_tv,N/A,Online,TBD,N/A,N/A,N/A,N/A,None,Matter
+LIGHT,Living Room TV LED,Govee,Strip,Living Room,light.living_room_tv_led,N/A,Online,NONE,N/A,N/A,N/A,N/A,None,Govee only
+LIGHT,Ella LED,Govee,Strip,Ella's Bedroom,light.ella_led,N/A,Online,NONE,N/A,N/A,N/A,N/A,None,Govee only
+LIGHT,Alaina LED 1,Govee,Strip,Alaina's Bedroom,light.alaina_led_1,N/A,Online,NONE,N/A,N/A,N/A,N/A,None,Needs rename
+LIGHT,Alaina LED 2,Govee,Strip,Alaina's Bedroom,light.alaina_led_2,N/A,Online,NONE,N/A,N/A,N/A,N/A,None,Needs rename
+SENSOR,1st Floor Bathroom Temp,Matter/Aqara,Temperature,1st Floor Bathroom,sensor.aqara_temp_humidity_sensor_temperature,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,2nd Floor Bathroom Temp,Matter/Aqara,Temperature,2nd Floor Bathroom,sensor.aqara_temp_humidity_sensor_temperature_2,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Basement Temp,Matter/Aqara,Temperature,Basement,sensor.aqara_temp_humidity_sensor_temperature_3,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Alaina Bedroom Temp,Matter/Aqara,Temperature,Alaina's Bedroom,sensor.aqara_temp_humidity_sensor_temperature_4,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Ella Bedroom Temp,Matter/Aqara,Temperature,Ella's Bedroom,sensor.aqara_temp_humidity_sensor_temperature_5,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,UNNAMED Temp 1,Matter/Aqara,Temperature,NEEDS AREA,sensor.aqara_temp_humidity_sensor_temperature_6,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Likely Garage 53F
+SENSOR,UNNAMED Temp 2,Matter/Aqara,Temperature,NEEDS AREA,sensor.aqara_temp_humidity_sensor_temperature_7,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Likely Upstairs Hallway
+SENSOR,Kitchen Motion P1,Matter/Aqara,Motion,Kitchen,binary_sensor.kitchen_motion_p1,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Main kitchen
+SENSOR,West Kitchen Motion,Matter/Aqara,Motion,Kitchen,binary_sensor.west_kitchen_motion,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Table area
+SENSOR,Entry Room Motion,Matter/Aqara,Motion,Entry Room,binary_sensor.entry_room_motion,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Basement Hallway Motion,Matter/Aqara,Motion,Basement Hallway,binary_sensor.basement_hallway_motion,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Upstairs Hallway Motion,Matter/Aqara,Motion,Upstairs Hallway,binary_sensor.upstairs_hallway_motion,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Very Front Door Motion,Matter/Aqara,Motion,Very Front Door,binary_sensor.very_front_door_motion,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Kitchen Sink Water Leak,Matter/Aqara,Water Leak,Kitchen,binary_sensor.kitchen_sink_water,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Kitchen Dishwasher Water,Matter/Aqara,Water Leak,Kitchen,binary_sensor.kitchen_dishwasher_water,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Kitchen Refrigerator Water,Matter/Aqara,Water Leak,Kitchen,binary_sensor.kitchen_refrigerator_water,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Basement North Water,Matter/Aqara,Water Leak,Basement,binary_sensor.basement_north_water,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Basement Chimney Water,Matter/Aqara,Water Leak,Basement,binary_sensor.basement_chimney_water,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,
+SENSOR,Garage North Door,Matter/Aqara,Door,Garage,binary_sensor.garage_north_door,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Overhead
+SENSOR,Garage South Door,Matter/Aqara,Door,Garage,binary_sensor.garage_south_door,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Overhead
+SENSOR,Very Front Door,Matter/Aqara,Door,Very Front Door,binary_sensor.very_front_door_door,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,Main entry
+SENSOR,Back Door,Matter/Aqara,Door,Entry Room,binary_sensor.back_door,N/A,Active,N/A,N/A,TBD,N/A,N/A,None,To patio
+SENSOR,Kitchen Lux,Matter/Aqara,Illuminance,Kitchen,sensor.kitchen_lux,N/A,NOT USED,N/A,N/A,N/A,N/A,N/A,None,Enable for automation
+SENSOR,Entry Room Lux,Matter/Aqara,Illuminance,Entry Room,sensor.entry_room_lux,N/A,Active,N/A,N/A,N/A,N/A,N/A,None,Used in automations
+SWITCH,Alaina Bedroom Dimmer,Hue,Dimmer v2,Alaina's Bedroom,N/A,N/A,Online,N/A,N/A,TBD,N/A,N/A,None,Btn1=Concentrate Btn2=DimUp Btn3=Off Btn4=DimDown
+SWITCH,Ella Bedroom Dimmer,Hue,Dimmer v2,Ella's Bedroom,N/A,N/A,Online,N/A,N/A,TBD,N/A,N/A,None,Btn1=Time-based Btn2=DimUp Btn3=Off Btn4=DimDown
+SWITCH,Garage Dimmer,Hue,Dimmer v2,Garage,N/A,N/A,Online,N/A,N/A,TBD,N/A,N/A,None,Btn1=Time-based Btn2=DimUp Btn3=Off Btn4=DimDown
+SWITCH,Living Room Lounge Dimmer,Hue,Dimmer v2,IN BOX,N/A,N/A,SPARE,N/A,N/A,TBD,N/A,N/A,None,Not deployed - repurpose
+SWITCH,Entry Room Tap Dial,Hue,Tap Dial,Entry Room,N/A,N/A,Online,N/A,N/A,TBD,N/A,N/A,Unused buttons,Btn1=On Btn2=Off Btn3=UNUSED Btn4=UNUSED
+SWITCH,Master Bedroom Tap Dial,Hue,Tap Dial,Master Bedroom,N/A,N/A,Online,N/A,N/A,TBD,N/A,N/A,Unused buttons,Btn1=On Btn2=Off Btn3=UNUSED Btn4=UNUSED
+SWITCH,Ella Bedroom FoH,Hue,Friends of Hue,Ella's Bedroom,N/A,N/A,Online,N/A,N/A,N/A,N/A,N/A,None,4-button - kids room keep native
+SWITCH,Living Room FoH,Hue,Friends of Hue,Living Room,N/A,N/A,Online,N/A,N/A,N/A,N/A,N/A,RECONFIGURE,Cant control Inovelli - route via HA
+SWITCH,Living Room Lounge FoH,Hue,Friends of Hue,Living Room Lounge,N/A,N/A,Online,N/A,N/A,N/A,N/A,N/A,None,4-button OK
+SWITCH,Entry Room Inovelli,ZHA,VZM31-SN,Entry Room,switch.entry_room_ceiling,N/A,Online,N/A,ON,N/A,N/A,N/A,None,Smart Bulb Mode verified
+SWITCH,Kitchen Chandelier Inovelli,ZHA,VZM31-SN,Kitchen,switch.kitchen_chandelier,N/A,Online,N/A,ON,N/A,N/A,N/A,None,Smart Bulb Mode verified
+SWITCH,Kitchen Above Sink Inovelli,ZHA,VZM31-SN,Kitchen,switch.kitchen_above_sink,N/A,Online,N/A,ON,N/A,N/A,N/A,None,Smart Bulb Mode verified
+SWITCH,1st Floor Bathroom Inovelli,ZHA,VZM31-SN,1st Floor Bathroom,switch.1st_floor_bathroom,N/A,Online,N/A,ON,N/A,N/A,N/A,None,Smart Bulb Mode verified
+SWITCH,Living Room Fan Inovelli,ZHA,VZM36,Living Room,fan.living_room,N/A,Online,N/A,N/A,N/A,N/A,N/A,FoH integration,Right=Light Left=Fan
+AUTOMATION,Extended Evening Auto Set,adaptive_lighting_entry_lamp,Automation,N/A,extended_evening_auto_set,N/A,Active,N/A,N/A,N/A,time,N/A,None,Weekend/holiday auto-enable
+AUTOMATION,Hot Tub Mode Reset,adaptive_lighting_entry_lamp,Automation,N/A,hot_tub_mode_auto_reset,N/A,Active,N/A,N/A,N/A,time 3am,N/A,None,Safety reset
+AUTOMATION,Entry Lamp Adaptive,adaptive_lighting_entry_lamp,Automation,Entry Room,entry_room_lamp_adaptive_control,N/A,Active,N/A,N/A,N/A,motion,N/A,None,Motion-based control
+AUTOMATION,Entry Lamp Dim,adaptive_lighting_entry_lamp,Automation,Entry Room,entry_room_lamp_no_motion_dim,N/A,Active,N/A,N/A,N/A,motion off,5min,None,Dim when vacant
+AUTOMATION,Entry Lamp Off,adaptive_lighting_entry_lamp,Automation,Entry Room,entry_room_lamp_no_motion_off,N/A,Active,N/A,N/A,N/A,motion off,10min,None,Off when vacant
+AUTOMATION,Kitchen Lounge Adaptive,adaptive_lighting_kitchen_lounge_lamp,Automation,Kitchen Lounge,kitchen_lounge_lamp_adaptive_control,N/A,Active,N/A,N/A,N/A,motion,N/A,None,Motion-based control
+AUTOMATION,Kitchen Lounge Dim,adaptive_lighting_kitchen_lounge_lamp,Automation,Kitchen Lounge,kitchen_lounge_lamp_no_motion_dim,N/A,Active,N/A,N/A,N/A,motion off,8min,None,Dim when vacant
+AUTOMATION,Living Room Adaptive,adaptive_lighting_living_room,Automation,Living Room,living_room_lamps_adaptive_control,N/A,Active,N/A,N/A,N/A,motion,N/A,None,Motion-based control
+ISSUE,Hue Time-based vs AL,N/A,Conflict,Multiple,N/A,N/A,HIGH,N/A,N/A,N/A,N/A,N/A,Disable Hue Time-based,Both adjust color temp - competing
+ISSUE,Hue MotionAware vs HA,N/A,Conflict,Living Rm Lounge + Upstairs,N/A,N/A,HIGH,N/A,N/A,N/A,N/A,N/A,Disable MotionAware,Keep only for kids rooms
+ISSUE,Living Room FoH Control,N/A,Conflict,Living Room,N/A,N/A,HIGH,N/A,N/A,N/A,N/A,N/A,Route via HA,Cannot control Inovelli fan/light
+ISSUE,Unnamed Aqara Sensors,N/A,Naming,NEEDS AREA,N/A,N/A,MEDIUM,N/A,N/A,N/A,N/A,N/A,Identify and rename,2 temp sensors unassigned
+ISSUE,Govee Lamp Names,N/A,Naming,Living Room,N/A,N/A,MEDIUM,N/A,N/A,N/A,N/A,N/A,Rename East/West,Both named Floor Lamp Basic
+TODO,Living Room FoH Reconfig,N/A,Project,Living Room,N/A,N/A,HIGH,N/A,N/A,N/A,N/A,N/A,Open,Route via HA hue_event
+TODO,Disable Hue MotionAware,N/A,Project,Multiple,N/A,N/A,HIGH,N/A,N/A,N/A,N/A,N/A,Open,Keep for kids rooms only
+TODO,Hot Tub Tap Dial Button,N/A,Project,Entry Room,N/A,N/A,MEDIUM,N/A,N/A,N/A,N/A,N/A,Open,Button 3 for Hot Tub Mode
+TODO,Enable Lux Sensors,N/A,Project,Kitchen + Upstairs,N/A,N/A,MEDIUM,N/A,N/A,N/A,N/A,N/A,Open,Use for smarter lighting

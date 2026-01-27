@@ -1,4 +1,4 @@
-# HA Status - 2026-01-26 14:03 CST
+# HA Status - 2026-01-26 17:33 CST
 Version: 2026.1.3 | HAC: v7.3
 
 ## People
@@ -36,18 +36,19 @@ both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-01-26 11:41:05 1st_floor_bathroom_motion_lighting
-2026-01-26 11:12:54 calendar_refresh_school_in_session_now
-2026-01-26 11:12:54 calendar_refresh_school_tomorrow
-2026-01-26 11:12:54 context_apply_on_time_change
-2026-01-26 11:12:53 living_room_lamps_adaptive_control
-2026-01-26 11:12:53 entry_room_lamp_adaptive_lux_control
-2026-01-26 11:12:53 kitchen_tablet_wake_on_motion
-2026-01-26 07:21:28 presence_update_someone_home
-2026-01-26 07:21:28 presence_update_occupancy_combinations
-2026-01-26 07:21:28 presence_ella_away
+2026-01-26 17:05:36 presence_ella_away
+2026-01-26 17:05:36 calendar_refresh_school_tomorrow
+2026-01-26 17:05:36 living_room_lamps_dim_after_20min_no_motion
+2026-01-26 17:05:36 living_room_lamps_adaptive_control
+2026-01-26 17:05:36 kitchen_lounge_lamp_dim_after_15min_no_motion
+2026-01-26 17:05:36 kitchen_lounge_lamp_adaptive_lux_control
+2026-01-26 17:05:36 entry_room_lamp_off_after_no_motion
+2026-01-26 17:05:36 entry_room_lamp_dim_after_15min_no_motion
+2026-01-26 17:05:36 entry_room_lamp_adaptive_lux_control
+2026-01-26 17:05:36 kitchen_tablet_wake_on_motion
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
+⚠ living_room_lamps_adaptive_control: 4x

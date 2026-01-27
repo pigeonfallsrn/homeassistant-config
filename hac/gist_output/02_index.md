@@ -1,4 +1,4 @@
-# Automation Index - 2026-01-26 14:03
+# Automation Index - 2026-01-26 17:33
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -161,7 +161,7 @@ Fetch full YAML: `hac pkg <filename>`
 436: refresh_school_tomorrow
 468: refresh_school_in_session_now
 505: upstairs_hallway_motion_lighting
-570: 2nd_floor_bathroom_night_lighting
+570: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
 611: morning_wake_master_bedroom
 
 ### presence_display.yaml
