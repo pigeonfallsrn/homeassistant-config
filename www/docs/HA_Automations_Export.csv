@@ -1,0 +1,145 @@
+entity_id,friendly_name,platform,area,disabled
+automation.1st_floor_bathroom_ceiling_lights,1st Floor Bathroom - Ceiling Lights,automation,None,None
+automation.1st_floor_bathroom_motion_lighting,1st Floor Bathroom → Motion Lighting,automation,None,None
+automation.1st_floor_bathroom_override_auto_reset,1st Floor Bathroom → Override Auto-Reset,automation,None,None
+automation.2nd_floor_bathroom_motion_lighting,2nd Floor Bathroom → Motion Lighting,automation,None,None
+automation.2nd_floor_bathroom_night_lighting,2nd Floor Bathroom → Night Lighting,automation,None,None
+automation.2nd_floor_bathroom_night_lighting_2,2nd Floor Bathroom → Night Lighting,automation,None,None
+automation.2nd_floor_bathroom_override_auto_reset,2nd Floor Bathroom → Override Auto-Reset,automation,None,None
+automation.activity_recent_motion_detected,Activity → Recent Motion Detected,automation,None,None
+automation.adaptive_lighting_off_when_nobody_home_or_late_night,Adaptive Lighting - Off When Nobody Home or Late Night,automation,None,None
+automation.alaina_gentle_wake_before_alarm,Alaina - Gentle Wake Before Alarm,automation,None,None
+automation.alaina_lights_auto_off_midnight_fri_sat,Alaina - Lights Auto Off Midnight (Fri/Sat),automation,None,None
+automation.alaina_lights_off_10_30_pm_school_nights,Alaina - Lights Off 10:30 PM School Nights,automation,None,None
+automation.alaina_lights_off_when_leaving,Alaina - Lights Off When Leaving,automation,None,None
+automation.alaina_school_night_bedtime,Alaina - School Night Bedtime,automation,None,None
+automation.approaching_home_handle_garage_actions,Approaching Home - Handle Garage Actions,automation,None,None
+automation.approaching_home_john,Approaching Home - John,automation,None,None
+automation.arrival_adaptive_lighting_welcome,Arrival - Adaptive Lighting Welcome,automation,None,None
+automation.arrival_alaina_home,Arrival - Alaina Home,automation,None,None
+automation.arrival_driveway_garage_lights_when_approaching,Arrival - Driveway & Garage Lights When Approaching,automation,None,None
+automation.arrival_ella_home,Arrival - Ella Home,automation,None,None
+automation.arrival_handle_notification_actions,Arrival - Handle Notification Actions,automation,None,None
+automation.arrival_john_home,Arrival - John Home,automation,None,None
+automation.arrival_michelle_home,Arrival - Michelle Home,automation,None,None
+automation.back_patio_inovelli_control,Back Patio: Inovelli Control,automation,None,None
+automation.bathroom_fan_auto_off_rh_60_for_10_min,Bathroom Fan – Auto OFF (RH ≤ 60% for 10 min),automation,None,None
+automation.bathroom_fan_auto_on_rh_70_for_1_min,Bathroom Fan – Auto ON (RH ≥ 70% for 1 min),automation,None,None
+automation.bathroom_red_light_11pm_5_30am,Bathroom - Red Light (11pm-5:30am),automation,None,None
+automation.bedtime_handle_light_actions,Humidity - Handle Notification Actions,automation,None,None
+automation.bedtime_prompt_to_turn_off_1st_floor_lights,Bedtime - Prompt to Turn Off 1st Floor Lights,automation,None,None
+automation.calendar_refresh_school_in_session_now,Calendar → Refresh School In Session Now,automation,None,None
+automation.calendar_refresh_school_tomorrow,Calendar → Refresh School Tomorrow,automation,None,None
+automation.context_apply_on_occupancy_change,Context → Apply on Occupancy Change,automation,None,None
+automation.context_apply_on_overlay_change,Context → Apply on Overlay Change,automation,None,None
+automation.context_apply_on_time_change,Context → Apply on Time Change,automation,None,None
+automation.critical_battery_immediate_alert,Critical Battery - Immediate Alert,automation,None,None
+automation.ella_gentle_wake_before_alarm,Ella - Gentle Wake Before Alarm,automation,None,None
+automation.ella_lights_auto_off_midnight_fri_sat,Ella - Lights Auto Off Midnight (Fri/Sat),automation,None,None
+automation.ella_lights_off_10_30_pm_school_nights,Ella - Lights Off 10:30 PM School Nights,automation,None,None
+automation.ella_lights_off_when_leaving,Ella - Lights Off When Leaving,automation,None,None
+automation.ella_school_night_bedtime,Ella - School Night Bedtime,automation,None,None
+automation.entry_room_aux_switch_controls,Entry Room - AUX Switch Controls,automation,None,None
+automation.entry_room_inovelli_ceiling_lights,Entry Room - Inovelli Ceiling Lights,automation,None,None
+automation.entry_room_lamp_activity_boost,Entry Room Lamp - Activity Boost,automation,None,None
+automation.entry_room_lamp_adaptive_lux_control,Entry Room Lamp - Adaptive Control,automation,None,None
+automation.entry_room_lamp_dim_after_15min_no_motion,Entry Room Lamp - Dim After 5min No Motion,automation,None,None
+automation.entry_room_lamp_hard_off_at_evening_end,Entry Room Lamp - Hard Off at Evening End,automation,None,None
+automation.entry_room_lamp_off_after_no_motion,Entry Room Lamp - Off After 10min No Motion,automation,None,None
+automation.entry_room_lamp_off_when_everyone_leaves,Entry Room Lamp - Off When Everyone Leaves,automation,None,None
+automation.everyone_away_all_lights_off,Everyone Away → All Lights Off,automation,None,None
+automation.extended_evening_auto_clear_at_4am,Extended Evening - Auto Clear at 4am,automation,None,None
+automation.extended_evening_auto_set_for_weekends_holidays,Extended Evening - Auto Set for Weekends/Holidays,automation,None,None
+automation.family_alaina_arrived_home,Family → Alaina Arrived Home,automation,None,None
+automation.family_alaina_left_for_activity,Family → Alaina Left for Activity,automation,None,None
+automation.family_daily_reset,Family → Daily Reset,automation,None,None
+automation.family_ella_arrived_home,Family → Ella Arrived Home,automation,None,None
+automation.family_ella_left_for_activity,Family → Ella Left for Activity,automation,None,None
+automation.family_increment_grades_new_school_year,Family → Increment Grades (New School Year),automation,None,None
+automation.first_person_home_after_dark_entry_lights_on,First Person Home After Dark → Entry Lights On,automation,None,None
+automation.garage_all_lights_off,Garage All Lights OFF,automation,None,None
+automation.garage_all_lights_off_2,Garage All Lights OFF,automation,None,None
+automation.garage_all_lights_on,Garage All Lights ON,automation,None,None
+automation.garage_approaching_home_open_notification,Garage - Approaching Home Open Notification,automation,None,None
+automation.garage_clear_close_notification_when_closed,Garage - Clear North Close When Closed,automation,None,None
+automation.garage_clear_quick_open_when_door_opens,Garage - Clear Quick Open When Door Opens,automation,None,None
+automation.garage_clear_quick_open_when_door_opens_2,Garage - Clear Quick Open When Door Opens,automation,None,None
+automation.garage_clear_south_close_notification_when_closed,Garage - Clear South Close When Closed,automation,None,None
+automation.garage_door_alert_action_handler,Garage Door - Alert Action Handler,automation,None,None
+automation.garage_door_closed_clear_notification,Garage Door Closed - Clear Notification,automation,None,None
+automation.garage_door_handle_notification_actions,Garage Door Notification Actions,automation,None,None
+automation.garage_door_left_open_reminder_notification,Garage Door Left Open - Reminder,automation,None,None
+automation.garage_door_opened_close_option,Garage Door Opened - Close Option,automation,None,None
+automation.garage_door_opened_close_prompt,Garage Door Opened - Close Prompt,automation,None,None
+automation.garage_door_opened_handle_actions,Garage Door Opened - Handle Actions,automation,None,None
+automation.garage_door_reset_snooze_on_close,Garage Door - Reset Snooze on Close,automation,None,None
+automation.garage_north_close_action_handler,Garage - North Close Action Handler,automation,None,None
+automation.garage_north_door_opened_close_option,Garage - North Door Opened Close Option,automation,None,None
+automation.garage_quick_open_action_handler,Garage - Quick Open Action Handler,automation,None,None
+automation.garage_quick_open_north_action_handler,Garage - Quick Open North Action Handler,automation,None,None
+automation.garage_quick_open_north_door_notification,Garage - Quick Open North Door Notification,automation,None,None
+automation.garage_south_close_action_handler,Garage - South Close Action Handler,automation,None,None
+automation.garage_south_door_opened_close_option,Garage - South Door Opened Close Option,automation,None,None
+automation.garage_walk_in_door_quick_open,Garage - Walk-in Door Quick Open,automation,None,None
+automation.global_all_adaptive_lamps_off_when_everyone_leaves,Global - All Adaptive Lamps Off When Everyone Leaves,automation,None,None
+automation.hot_tub_mode_auto_off_when_back_inside,Hot Tub Mode - Auto Off When Back Inside,automation,None,None
+automation.hot_tub_mode_auto_reset_at_3am,Hot Tub Mode - Auto Reset at 3am,automation,None,None
+automation.hot_tub_mode_handle_notification_actions,Hot Tub Mode - Handle Notification Actions,automation,None,None
+automation.hot_tub_mode_reminder_notification,Hot Tub Mode - Reminder Notification,automation,None,None
+automation.humidity_alert_2nd_floor_low_or_high,Humidity Alert - 2nd Floor Low or High,automation,None,None
+automation.humidity_block_fan_auto_on_when_paused,Humidity - Block Fan Auto-On When Paused,automation,None,None
+automation.humidity_handle_notification_actions,Humidity - Handle Notification Actions,automation,None,None
+automation.humidity_smart_alert_actions,Humidity - Smart Alert Actions,automation,None,None
+automation.humidity_smart_shower_alert_low_house_humidity,Humidity - Smart Shower Alert (Low House Humidity),automation,None,None
+automation.humidity_unpause_fan_when_time_expires,Humidity - Unpause Fan When Time Expires,automation,None,None
+automation.kids_bedroom_override_reset,Kids - Bedroom Override Reset,automation,None,None
+automation.kids_lights_off_when_everyone_away,Kids - Lights Off When Everyone Away,automation,None,None
+automation.kitchen_above_sink_inovelli_control,Kitchen Above Sink - Inovelli Control,automation,None,None
+automation.kitchen_chandelier_control_5_bulbs,Kitchen - Chandelier Control (5 Bulbs),automation,None,None
+automation.kitchen_lounge_lamp_activity_boost,Kitchen Lounge Lamp - Activity Boost,automation,None,None
+automation.kitchen_lounge_lamp_adaptive_lux_control,Kitchen Lounge Lamp - Adaptive Control,automation,None,None
+automation.kitchen_lounge_lamp_dim_after_15min_no_motion,Kitchen Lounge Lamp - Dim After 8min No Motion,automation,None,None
+automation.kitchen_lounge_lamp_hard_off_at_evening_end,Kitchen Lounge Lamp - Hard Off at Evening End,automation,None,None
+automation.kitchen_lounge_lamp_off_after_no_motion,Kitchen Lounge Lamp - Off After 20min No Motion,automation,None,None
+automation.kitchen_lounge_lamp_off_when_everyone_leaves,Kitchen Lounge Lamp - Off When Everyone Leaves,automation,None,None
+automation.kitchen_lounge_vzm31_sn_dimmer_hue_ceiling,Kitchen Lounge - VZM31-SN Dimmer (Hue Ceiling),automation,None,None
+automation.kitchen_lounge_vzm36_fan_light_hue_ceiling,Kitchen Lounge - VZM36 Fan/Light (Hue Ceiling),automation,None,None
+automation.kitchen_tablet_brightness_schedule,Kitchen Tablet - Brightness Schedule,automation,None,None
+automation.kitchen_tablet_doorbell_camera_popup,Kitchen Tablet - Doorbell Camera Popup,automation,None,None
+automation.kitchen_tablet_power_off_when_everyone_away,Kitchen Tablet - Power Off When Everyone Away,automation,None,None
+automation.kitchen_tablet_sleep_after_inactivity,Kitchen Tablet - Sleep After Inactivity,automation,None,None
+automation.kitchen_tablet_sleep_after_inactivity_2,Kitchen Tablet - Sleep After Inactivity,automation,None,None
+automation.kitchen_tablet_sleep_when_away,Kitchen Tablet - Sleep When Away,automation,None,None
+automation.kitchen_tablet_wake_on_kitchen_motion,Kitchen Tablet - Wake on Kitchen Motion,automation,None,None
+automation.kitchen_tablet_wake_on_motion,Kitchen Tablet - Wake on Motion,automation,None,None
+automation.kitchen_tablet_wake_on_presence,Kitchen Tablet - Wake on Presence,automation,None,None
+automation.kitchen_tablet_wake_when_someone_arrives,Kitchen Tablet - Wake When Someone Arrives,automation,None,None
+automation.living_room_lamps_activity_boost,Living Room Lamps - Activity Boost,automation,None,None
+automation.living_room_lamps_adaptive_control,Living Room Lamps - Adaptive Control,automation,None,None
+automation.living_room_lamps_dim_after_20min_no_motion,Living Room Lamps - Dim After 15min No Motion,automation,None,None
+automation.living_room_lamps_hard_off_at_evening_end,Living Room Lamps - Hard Off at Evening End,automation,None,None
+automation.living_room_lamps_off_after_no_motion,Living Room Lamps - Off After 45min No Motion,automation,None,None
+automation.living_room_lamps_off_when_everyone_leaves,Living Room Lamps - Off When Everyone Leaves,automation,None,None
+automation.living_room_tv_off_full_av_system_off,Living Room TV OFF → Full AV System OFF,automation,None,None
+automation.low_battery_daily_digest,Low Battery - Daily Digest,automation,None,None
+automation.low_battery_handle_notification_actions,Low Battery - Handle Notification Actions,automation,None,None
+automation.morning_wake_master_bedroom,Morning Wake → Master Bedroom,automation,None,None
+automation.morning_wake_upstairs_hallway,Morning Wake → Upstairs Hallway,automation,None,None
+automation.night_path_2nd_floor_bathroom,Night Path → 2nd Floor Bathroom,automation,None,None
+automation.night_path_upstairs_hallway,Night Path → Upstairs Hallway,automation,None,None
+automation.occupancy_update_mode,Occupancy → Update Mode,automation,None,None
+automation.presence_alaina_away,Presence → Alaina Away,automation,None,None
+automation.presence_alaina_home,Presence → Alaina Home,automation,None,None
+automation.presence_ella_away,Presence → Ella Away,automation,None,None
+automation.presence_ella_home,Presence → Ella Home,automation,None,None
+automation.presence_john_away,Presence → John Away,automation,None,None
+automation.presence_john_home,Presence → John Home,automation,None,None
+automation.presence_michelle_away,Presence → Michelle Away,automation,None,None
+automation.presence_michelle_home,Presence → Michelle Home,automation,None,None
+automation.presence_update_girls_status,Presence → Update Girls Status,automation,None,None
+automation.presence_update_occupancy_combinations,Presence → Update Occupancy Combinations,automation,None,None
+automation.presence_update_someone_home,Presence → Update Someone Home,automation,None,None
+automation.safety_all_lights_off_when_nobody_home,Safety - All Lights Off When Nobody Home,automation,None,None
+automation.safety_main_areas_off_after_30_min_no_motion,Safety - Main Areas Off After 30 Min No Motion,automation,None,None
+automation.safety_midnight_all_main_lights_off,Safety - Midnight All Main Lights Off,automation,None,None
+automation.upstairs_hallway_motion_lighting,Upstairs Hallway → Motion Lighting,automation,None,None

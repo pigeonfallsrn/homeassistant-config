@@ -1,0 +1,545 @@
+sheet,priority,category,entity_id,friendly_name,type,platform,manufacturer,area,status,action_needed,notes
+Issues,LOW,Disable unnecessary,light.1st_floor_ap_led,LED,Disable,unifi,N/A,Kitchen Lounge,Action Needed,Disable in entity settings,
+Issues,INFO,Hue group entity,light.1st_floor_bathroom,,Hue,hue,N/A,1st Floor Bathroom,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.1st_floor_bathroom_ceiling_1of2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.1st_floor_bathroom_ceiling_2of2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.1st_floor_moderate_lighting,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.1st_floor_moderate_lighting,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.1st_floor_table_lamps,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.1st_floor_table_lamps,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.2nd_floor_ap_led,LED,Disable,unifi,N/A,Master Bedroom,Action Needed,Disable in entity settings,
+Issues,INFO,Hue group entity,light.2nd_floor_bathroom,,Hue,hue,N/A,2nd Floor Bathroom,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.40062_hwy_53_ubb_led,LED,Disable,unifi,N/A,Back Patio,Action Needed,Disable in entity settings,
+Issues,INFO,Hue group entity,light.alaina_s_bedroom,Alaina's Bedside Lamp Hue Color Bulb,Hue,hue,N/A,Alaina's Bedroom,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.alaina_s_bedroom_echo_glow,Alaina's bedroom Echo Glow,Disable,alexa_media,N/A,,Action Needed,Disable in entity settings,
+Issues,INFO,Hue group entity,light.back_patio,,Hue,hue,N/A,Back Patio,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.back_patio_steps_light,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.basement,,Hue,hue,N/A,Basement,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.ella_s_bedroom,,Hue,hue,N/A,Ella's Bedroom,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.ella_s_bedroom_echo_glow,Ella's Bedroom Echo Glow,Disable,alexa_media,N/A,,Action Needed,Disable in entity settings,
+Issues,HIGH,Light missing area,light.ella_s_wall_light_bedside_lamp,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.ella_s_wall_light_bedside_lamp,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.entry_kitchen_all_lights,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.entry_kitchen_all_lights,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.entry_rm_ceiling_hue_white_1_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.entry_rm_ceiling_hue_white_2_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.entry_room,,Hue,hue,N/A,Entry Room,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.entry_room_hue_color_lamp,Entry Room Hue Color Lamp,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.front_driveway,,Hue,hue,N/A,Front Driveway,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.garage,,Hue,hue,N/A,Garage,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.garage_ap_led,LED,Disable,unifi,N/A,Garage,Action Needed,Disable in entity settings,
+Issues,HIGH,Light missing area,light.hot_tub,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.hot_tub,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.hue_color_candle_1,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_3,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_3_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_4,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_4_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_candle_5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_downlight_1_2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_downlight_1_3,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_10,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_11,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_12,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_1_3,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_1_4,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_1_5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_2_3,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_2_4,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_3,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_4,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_6,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.hue_color_lamp_7,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_above_sink_light,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_chandelier,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.kitchen_chandelier,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.kitchen_chandelier_1of5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_chandelier_2of5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_chandelier_3of5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_chandelier_4of5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_chandelier_5of5,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.kitchen_hue_color_floor_lamp,Kitchen Hue Color Floor Lamp,Hue,hue,N/A,Kitchen,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.kitchen_lounge,,Hue,hue,N/A,Kitchen Lounge,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.kitchen_lounge_ceiling_1of2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.kitchen_lounge_ceiling_2of2,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Light missing area,light.living_rm_lounge_table_lamps,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.living_rm_lounge_table_lamps,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.living_room,,Hue,hue,N/A,Living Room,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.living_room_floor_lamps,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.living_room_floor_lamps,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.living_room_lounge,,Hue,hue,N/A,Sun Room,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.living_room_lounge_ceiling_light,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.living_room_lounge_ceiling_light,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.living_room_table_lamps,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.living_room_table_lamps,,Hue,hue,N/A,,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Light missing area,light.living_room_west_floor_lamp,,Light,hue,N/A,,Action Needed,Assign to room in HA UI,
+Issues,INFO,Hue group entity,light.master_bedroom,,Hue,hue,N/A,Master Bedroom,Action Needed,Use individual bulbs instead,
+Issues,LOW,Disable unnecessary,light.master_bedroom_echo_glow,Master Bedroom Echo Glow,Disable,alexa_media,N/A,,Action Needed,Disable in entity settings,
+Issues,LOW,Disable unnecessary,light.p_f_p_ubb_led,LED,Disable,unifi,N/A,Back Yard Tower,Action Needed,Disable in entity settings,
+Issues,LOW,Disable unnecessary,light.toy_room_light,Kitchen Lamp,Disable,alexa_media,N/A,,Action Needed,Disable in entity settings,
+Issues,INFO,Hue group entity,light.upstairs_hallway,,Hue,hue,N/A,Upstairs Hallway,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.very_front_door,,Hue,hue,N/A,Very Front Door,Action Needed,Use individual bulbs instead,
+Issues,INFO,Hue group entity,light.very_front_door_hallway,,Hue,hue,N/A,Very Front Door Hallway,Action Needed,Use individual bulbs instead,
+Issues,HIGH,Sensor missing area,binary_sensor.1st_floor_bathroom_hallway_motion,1st Floor Bathroom Hallway Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.1st_floor_bathroom_motion,1st Floor Bathroom Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.ai_theta_motion,Motion,Sensor,unifiprotect,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.downstairs_motion,Downstairs Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.entry_room_motion,Entry Room Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.front_door_hallway_motion,Front Door Hallway Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.g6_bullet_motion,Motion,Sensor,unifiprotect,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.garage_north_door_alert_active,Garage North Door Alert Active,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.garage_south_door_alert_active,Garage South Door Alert Active,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.house_motion_active,House Motion Active,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.house_motion_any,House Motion Any,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.kitchen_lounge_motion,Kitchen Lounge Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.kitchen_motion,Kitchen Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.living_room_motion,Living Room Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.upstairs_bathroom_motion,Upstairs Bathroom Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.upstairs_hallway_motion,Upstairs Hallway Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,binary_sensor.upstairs_motion,Upstairs Motion,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.ai_theta_last_motion_detected,Last motion detected,Sensor,unifiprotect,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.aqara_temp_humidity_sensor_temperature_3,Temperature,Sensor,matter,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.aqara_temp_humidity_sensor_temperature_7,Temperature,Sensor,matter,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.g6_bullet_last_motion_detected,Last motion detected,Sensor,unifiprotect,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.house_average_temperature,House Average Temperature,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.john_s_phone_battery_temperature,John's Phone Battery temperature,Sensor,mobile_app,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.kitchen_samsung_tablet_wall_mount_battery_temperature,Kitchen Samsung Tablet Wall Mount Battery temperature,Sensor,mobile_app,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.lumi_lumi_sensor_wleak_aq1_device_temperature,Device temperature,Sensor,zha,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.outside_temperature,Outside Temperature,Sensor,template,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.udm_pro_cpu_temperature,CPU temperature,Sensor,unifiprotect,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.udm_pro_udm_pro_cpu_temperature,UDM PRO CPU Temperature,Sensor,unifi,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.udm_pro_udm_pro_local_temperature,UDM PRO Local Temperature,Sensor,unifi,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.udm_pro_udm_pro_phy_temperature,UDM PRO PHY Temperature,Sensor,unifi,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.upstairs_bathroom_echo_plus_temperature_2,Upstairs Bathroom Echo Plus Temperature,Sensor,alexa_media,N/A,,Action Needed,Assign to room in HA UI,
+Issues,HIGH,Sensor missing area,sensor.usw_pro_max_16_poe_temperature,Temperature,Sensor,unifi,N/A,,Action Needed,Assign to room in HA UI,
+Lights,INFO,Light,light.1st_floor_ap_led,LED,Light,unifi,Ubiquiti Networks,Kitchen Lounge,OK,Consider Disable,UniFi LED - probably disable
+Lights,INFO,Light,light.1st_floor_bathroom,,Light,hue,Signify Netherlands B.V.,1st Floor Bathroom,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.1st_floor_bathroom_ceiling_1of2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.1st_floor_bathroom_ceiling_2of2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn,,Light,zha,Inovelli,1st Floor Bathroom,OK,None,
+Lights,INFO,Light,light.1st_floor_bathroom_vanity_lights,,Light,zha,Inovelli,1st Floor Bathroom,OK,None,
+Lights,INFO,Light,light.1st_floor_moderate_lighting,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.1st_floor_table_lamps,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.2nd_floor_ap_led,LED,Light,unifi,Ubiquiti Networks,Master Bedroom,OK,Consider Disable,UniFi LED - probably disable
+Lights,INFO,Light,light.2nd_floor_bathroom,,Light,hue,Signify Netherlands B.V.,2nd Floor Bathroom,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.40062_hwy_53_ubb_led,LED,Light,unifi,Ubiquiti Networks,Back Patio,OK,Consider Disable,UniFi LED - probably disable
+Lights,INFO,Light,light.above_kitchen_sink_inovelli_switch,,Light,zha,Inovelli,Kitchen,OK,None,
+Lights,INFO,Light,light.alaina_s_bedroom,Alaina's Bedside Lamp Hue Color Bulb,Light,hue,Signify Netherlands B.V.,Alaina's Bedroom,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.alaina_s_bedroom_echo_glow,Alaina's bedroom Echo Glow,Light,alexa_media,,,Needs Area,Consider Disable,Alexa virtual - probably disable
+Lights,INFO,Light,light.alaina_s_bedside_lamp,Alaina's Bedside Lamp,Light,hue,Signify Netherlands B.V.,Alaina's Bedroom,OK,None,
+Lights,INFO,Light,light.alaina_s_ceiling_led_lights,Alaina's Ceiling LED Lights,Light,group,,,Needs Area,Assign Area,
+Lights,INFO,Light,light.alaina_s_floor_govee_lamp,Kitchen Test Govee Lamp,Light,matter,Shenzhen Qianyan Technology,Kitchen,OK,None,
+Lights,INFO,Light,light.alaina_s_led_light_strip_1,Alaina's LED Light Strip 1,Light,tplink,TP-Link,Alaina's Bedroom,OK,None,
+Lights,INFO,Light,light.aqara_led_strip_t1,,Light,matter,Aqara,Master Bedroom,OK,None,
+Lights,INFO,Light,light.aqara_led_strip_t1_2,,Light,matter,Aqara,Kitchen,OK,None,
+Lights,INFO,Light,light.back_door_patio_light_inovelli_switch,,Light,zha,Inovelli,Back Patio,OK,None,
+Lights,INFO,Light,light.back_patio,,Light,hue,Signify Netherlands B.V.,Back Patio,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.back_patio_steps_light,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.basement,,Light,hue,Signify Netherlands B.V.,Basement,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.ella_s_bedroom,,Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.ella_s_bedroom_echo_glow,Ella's Bedroom Echo Glow,Light,alexa_media,,,Needs Area,Consider Disable,Alexa virtual - probably disable
+Lights,INFO,Light,light.ella_s_bedside_lamp,Ella's Bedside Lamp,Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_ceiling_light_1_of_3,Ella's Ceiling Light (1 of 3),Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_ceiling_light_2_of_3,Ella's Ceiling Light (2 of 3),Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_ceiling_light_3_of_3,,Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_ceiling_lights,Ella's Ceiling Lights,Light,group,,,Needs Area,Assign Area,
+Lights,INFO,Light,light.ella_s_govee_floor_lamp,Ella's Govee Floor Lamp,Light,matter,Shenzhen Qianyan Technology,Master Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_led_lights,,Light,tplink,TP-Link,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_wall_light,Ella's Wall Light,Light,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Lights,INFO,Light,light.ella_s_wall_light_bedside_lamp,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.entry_kitchen_all_lights,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.entry_rm_ceiling_hue_white_1_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.entry_rm_ceiling_hue_white_2_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.entry_room,,Light,hue,Signify Netherlands B.V.,Entry Room,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.entry_room_ceiling_hue_white_lights,Entry Room Ceiling Hue White Lights,Light,group,,Entry Room,OK,None,
+Lights,INFO,Light,light.entry_room_ceiling_light_inovelli_smart_dimmer_switch,,Light,zha,Inovelli,Entry Room,OK,None,
+Lights,INFO,Light,light.entry_room_east_wall_nightlight,,Light,zha,Third Reality; Inc,Entry Room,OK,None,
+Lights,INFO,Light,light.entry_room_hue_color_lamp,Entry Room Hue Color Lamp,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.entry_room_west_wall_nightlight,,Light,zha,Third Reality; Inc,Entry Room,OK,None,
+Lights,INFO,Light,light.front_driveway,,Light,hue,Signify Netherlands B.V.,Front Driveway,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.garage,,Light,hue,Signify Netherlands B.V.,Garage,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.garage_ap_led,LED,Light,unifi,Ubiquiti Networks,Garage,OK,Consider Disable,UniFi LED - probably disable
+Lights,INFO,Light,light.garage_north_lift_master_garage_door_opener_east_light,Garage North Lift Master Garage Door Opener East Light,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.garage_north_lift_master_garage_door_opener_west_light,,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.garage_north_of_east_wall_motion_light_sensor,Garage North of East Wall Motion; Light;  Sensor,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.garage_north_wall_nightlight,,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.garage_south_of_east_wall_motion_light_sensor,Garage South of East Wall Motion; Light;  Sensor,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.garage_south_wall_motion_light_sensor,Garage South Wall Motion; Light;  Sensor,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.goetting_wifi_led,LED,Light,unifi,Ubiquiti Networks,,Needs Area,Assign Area,
+Lights,INFO,Light,light.hot_tub,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_1,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_3,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_3_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_4,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_4_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_candle_5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_downlight_1_2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_downlight_1_3,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_10,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_11,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_12,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_1_3,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_1_4,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_1_5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_2_3,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_2_4,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_3,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_4,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_6,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.hue_color_lamp_7,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.inovelli_vzm31_sn_3,,Light,zha,Inovelli,Kitchen,OK,None,
+Lights,INFO,Light,light.inovelli_vzm31_sn_4,,Light,zha,Inovelli,Kitchen,OK,None,
+Lights,INFO,Light,light.inovelli_vzm36_light_3,Light,Light,zha,Inovelli,Living Room,OK,None,
+Lights,INFO,Light,light.inovelli_vzm36_light_4,Light,Light,zha,Inovelli,Living Room,OK,None,
+Lights,INFO,Light,light.kitchen_above_sink_light,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_above_table_chandelier_inovelli,,Light,zha,Inovelli,Kitchen,OK,None,
+Lights,INFO,Light,light.kitchen_ceiling_inovelli_vzm31_sn,,Light,zha,Inovelli,Kitchen,OK,None,
+Lights,INFO,Light,light.kitchen_chandelier,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.kitchen_chandelier_1of5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_chandelier_2of5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_chandelier_3of5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_chandelier_4of5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_chandelier_5of5,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_counter_night_light,,Light,zha,Third Reality; Inc,Stairway Cubby,OK,None,
+Lights,INFO,Light,light.kitchen_hue_color_floor_lamp,Kitchen Hue Color Floor Lamp,Light,hue,Signify Netherlands B.V.,Kitchen,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.kitchen_lounge,,Light,hue,Signify Netherlands B.V.,Kitchen Lounge,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.kitchen_lounge_ceiling_1of2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_lounge_ceiling_2of2,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.kitchen_lounge_inovelli_smart_dimmer,,Light,zha,Inovelli,Kitchen Lounge,OK,None,
+Lights,INFO,Light,light.kitchen_lounge_lamp,Kitchen Lounge Lamp,Light,hue,Signify Netherlands B.V.,Kitchen,OK,None,
+Lights,INFO,Light,light.kitchen_lounge_light_fan_inovelli_vzm36_light,Light,Light,zha,Inovelli,Kitchen Lounge,OK,None,
+Lights,INFO,Light,light.kitchen_lounge_light_fan_inovelli_vzm36_light_2,Light,Light,zha,Inovelli,Kitchen Lounge,OK,None,
+Lights,INFO,Light,light.kitchen_west_wall_nightlight,,Light,zha,Third Reality; Inc,Basement,OK,None,
+Lights,INFO,Light,light.living_rm_lounge_table_lamps,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.living_room,,Light,hue,Signify Netherlands B.V.,Living Room,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.living_room_east_floor_lamp,Living Room East Floor Lamp,Light,hue,Signify Netherlands B.V.,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_floor_lamps,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.living_room_lamp_1_of_2,Living Room Lamp (1 of 2),Light,hue,Signify Netherlands B.V.,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_lamp_2_of_2,Living Room Lamp (2 of 2),Light,hue,Signify Netherlands B.V.,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_lamp_hue_color_lights,Living Room Hue Color Lamps,Light,group,,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_lounge,,Light,hue,Signify Netherlands B.V.,Sun Room,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.living_room_lounge_ceiling_1_of_3,Living Room Lounge Ceiling (1 of 3),Light,hue,Signify Netherlands B.V.,Living Room Lounge,OK,None,
+Lights,INFO,Light,light.living_room_lounge_ceiling_hue_color_lights,Living Room Lounge Ceiling Hue Color Lights,Light,group,,Living Room Lounge,OK,None,
+Lights,INFO,Light,light.living_room_lounge_ceiling_light,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.living_room_lounge_ceiling_light_2_of_3,,Light,hue,Signify Netherlands B.V.,Living Room Lounge,OK,None,
+Lights,INFO,Light,light.living_room_lounge_ceiling_light_3_of_3,Living Room Lounge Ceiling light (3 of 3),Light,hue,Signify Netherlands B.V.,Living Room Lounge,OK,None,
+Lights,INFO,Light,light.living_room_lounge_lamp,Living Room Lounge Lamp,Light,hue,Signify Netherlands B.V.,Living Room Lounge,OK,None,
+Lights,INFO,Light,light.living_room_north_wall_east_nightlight,,Light,zha,Third Reality; Inc,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_north_wall_west_nightlight,,Light,zha,Third Reality; Inc,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_table_lamps,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,Hue group - use individual bulbs; NEEDS AREA
+Lights,INFO,Light,light.living_room_tv_smart_ligjt_strip,,Light,tplink,TP-Link,Living Room,OK,None,
+Lights,INFO,Light,light.living_room_west_floor_lamp,,Light,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,NEEDS AREA
+Lights,INFO,Light,light.master_bedroom,,Light,hue,Signify Netherlands B.V.,Master Bedroom,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.master_bedroom_echo_glow,Master Bedroom Echo Glow,Light,alexa_media,,,Needs Area,Consider Disable,Alexa virtual - probably disable
+Lights,INFO,Light,light.master_bedroom_led_light_strip,,Light,tplink,TP-Link,,Needs Area,Assign Area,
+Lights,INFO,Light,light.master_bedroom_wall_light,Master Bedroom Wall Light,Light,hue,Signify Netherlands B.V.,Master Bedroom,OK,None,
+Lights,INFO,Light,light.p_f_p_ap_ac_pro_led,LED,Light,unifi,Ubiquiti Networks,,Needs Area,Assign Area,
+Lights,INFO,Light,light.p_f_p_ubb_led,LED,Light,unifi,Ubiquiti Networks,Back Yard Tower,OK,Consider Disable,UniFi LED - probably disable
+Lights,INFO,Light,light.ratgdo32disco_5735e8_light,Light,Light,esphome,ratgdo,Garage,OK,None,
+Lights,INFO,Light,light.ratgdo32disco_fd8d8c_light,Light,Light,esphome,ratgdo,Garage,OK,None,
+Lights,INFO,Light,light.south_east_lift,Garage South Lift Master Garage Door Opener East Light,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.south_west_garage_liftmaster,Garage South Lift Master Garage Door Opener West Light,Light,zha,Third Reality; Inc,Garage,OK,None,
+Lights,INFO,Light,light.tower_flex_led,LED,Light,unifi,Ubiquiti Networks,,Needs Area,Assign Area,
+Lights,INFO,Light,light.toy_room_light,Kitchen Lamp,Light,alexa_media,,,Needs Area,Consider Disable,Alexa virtual - probably disable
+Lights,INFO,Light,light.upstairs_hallway,,Light,hue,Signify Netherlands B.V.,Upstairs Hallway,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.upstairs_hallway_east_wall_night_light,,Light,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Lights,INFO,Light,light.upstairs_hallway_night_light,,Light,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Lights,INFO,Light,light.usw_lite_8_poe_led,LED,Light,unifi,Ubiquiti Networks,,Needs Area,Assign Area,
+Lights,INFO,Light,light.very_front_door,,Light,hue,Signify Netherlands B.V.,Very Front Door,OK,None,Hue group - use individual bulbs
+Lights,INFO,Light,light.very_front_door_hallway,,Light,hue,Signify Netherlands B.V.,Very Front Door Hallway,OK,None,Hue group - use individual bulbs
+Sensors,HIGH,motion,binary_sensor.1st_floor_bathroom_hallway_motion,1st Floor Bathroom Hallway Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,motion,binary_sensor.1st_floor_bathroom_motion,1st Floor Bathroom Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.1st_floor_bathroom_night_light_motion,Motion,motion,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,HIGH,motion,binary_sensor.ai_theta_motion,Motion,motion,unifiprotect,Ubiquiti,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.alaina_s_bedroomotionaware_area,Alaina's  BedrooMotionAware area,motion,hue,Signify Netherlands B.V.,Alaina's Bedroom,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door,Door,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door_2,Door,door,matter,Aqara,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door_3,Door,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door_4,Door,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door_5,Garage_North_Door_Aqara_Door_Sensor,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,binary_sensor.aqara_door_and_window_sensor_door_6,Door,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,motion,binary_sensor.aqara_motion_sensor_p1_occupancy,Occupancy,motion,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,motion,binary_sensor.aqara_motion_sensor_p1_occupancy_2,Occupancy,motion,matter,Aqara,Upstairs Hallway,OK,None,
+Sensors,INFO,motion,binary_sensor.aqara_motion_sensor_p1_occupancy_3,Occupancy,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,binary_sensor.aqara_motion_sensor_p1_occupancy_6,Occupancy,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,binary_sensor.aqara_water_leak_sensor_water_leak,Water leak,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,binary_sensor.aqara_water_leak_sensor_water_leak_2,Water leak,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,binary_sensor.aqara_water_leak_sensor_water_leak_3,Water leak,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,binary_sensor.aqara_water_leak_sensor_water_leak_4,Water leak,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,binary_sensor.aqara_water_leak_sensor_water_leak_5,Water leak,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,motion,binary_sensor.back_yard_motion,Motion,motion,unifiprotect,Ubiquiti,Back Yard Tower,OK,None,
+Sensors,INFO,motion,binary_sensor.basement_hallway_motion_sensor_occupancy,Occupancy,motion,matter,Aqara,Basement Hallway,OK,None,
+Sensors,HIGH,motion,binary_sensor.downstairs_motion,Downstairs Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.ella_s_bedroom_motionaware_area,Ella's Bedroom MotionAware area,motion,hue,Signify Netherlands B.V.,Ella's Bedroom,OK,None,
+Sensors,INFO,motion,binary_sensor.entry_room_east_wall_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Entry Room,OK,None,
+Sensors,HIGH,motion,binary_sensor.entry_room_motion,Entry Room Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.entry_room_west_wall_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Entry Room,OK,None,
+Sensors,HIGH,motion,binary_sensor.front_door_hallway_motion,Front Door Hallway Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,door,binary_sensor.front_driveway_door_animal_detected,Animal detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_audio_object_detected,Audio object detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_baby_cry_detected,Baby cry detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_co_alarm_detected,CO alarm detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_doorbell,Doorbell,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_is_dark,Is dark,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,motion,binary_sensor.front_driveway_door_motion,Motion,motion,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_object_detected,Object detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_package_detected,Package detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_person_detected,Person detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_smoke_alarm_detected,Smoke alarm detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_speaking_detected,Speaking detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,binary_sensor.front_driveway_door_vehicle_detected,Vehicle detected,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,motion,binary_sensor.g4_bullet_motion,Motion,motion,unifiprotect,Ubiquiti,Pigeon Falls Properties,OK,None,
+Sensors,HIGH,motion,binary_sensor.g6_bullet_motion,Motion,motion,unifiprotect,Ubiquiti,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,door,binary_sensor.garage_north_door_alert_active,Garage North Door Alert Active,door,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.garage_north_wall_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,HIGH,door,binary_sensor.garage_south_door_alert_active,Garage South Door Alert Active,door,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,motion,binary_sensor.house_motion_active,House Motion Active,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,motion,binary_sensor.house_motion_any,House Motion Any,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.kitchen_ai_theta_motion,Motion,motion,unifiprotect,Ubiquiti,Kitchen,OK,None,
+Sensors,INFO,motion,binary_sensor.kitchen_counter_night_light_motion,Motion,motion,zha,Third Reality; Inc,Stairway Cubby,OK,None,
+Sensors,INFO,motion,binary_sensor.kitchen_counter_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,HIGH,motion,binary_sensor.kitchen_lounge_motion,Kitchen Lounge Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,motion,binary_sensor.kitchen_motion,Kitchen Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.kitchen_west_wall_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Basement,OK,None,
+Sensors,INFO,motion,binary_sensor.living_rm_loungemotionaware_area,Living Rm LoungeMotionAware area,motion,hue,Signify Netherlands B.V.,Sun Room,OK,None,
+Sensors,HIGH,motion,binary_sensor.living_room_motion,Living Room Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.living_room_north_wall_east_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Living Room,OK,None,
+Sensors,INFO,motion,binary_sensor.living_room_north_wall_west_nightlight_motion,Motion,motion,zha,Third Reality; Inc,Living Room,OK,None,
+Sensors,INFO,motion,binary_sensor.ratgdo32disco_5735e8_motion,Motion,motion,esphome,ratgdo,Garage,OK,None,
+Sensors,INFO,motion,binary_sensor.ratgdo32disco_fd8d8c_motion,Motion,motion,esphome,ratgdo,Garage,OK,None,
+Sensors,HIGH,motion,binary_sensor.upstairs_bathroom_motion,Upstairs Bathroom Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.upstairs_bathroom_night_light_motion,Motion,motion,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,INFO,motion,binary_sensor.upstairs_hallway_east_wall_night_light_motion,Motion,motion,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Sensors,HIGH,motion,binary_sensor.upstairs_hallway_motion,Upstairs Hallway Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.upstairs_hallway_night_light_motion,Motion,motion,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Sensors,HIGH,motion,binary_sensor.upstairs_motion,Upstairs Motion,motion,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,motion,binary_sensor.upstairs_motionaware_area,Upstairs  MotionAware area,motion,hue,Signify Netherlands B.V.,Upstairs Hallway,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_animal_detected,Animal detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_audio_object_detected,Audio object detected,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,binary_sensor.very_front_door_baby_cry_detected,Baby cry detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_co_alarm_detected,CO alarm detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_doorbell,Doorbell,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_is_dark,Is dark,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,motion,binary_sensor.very_front_door_motion,Motion,motion,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,motion,binary_sensor.very_front_door_motion_sensor_occupancy,Occupancy,motion,matter,Aqara,Very Front Door Hallway,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_object_detected,Object detected,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,binary_sensor.very_front_door_package_detected,Package detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_person_detected,Person detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_smoke_alarm_detected,Smoke alarm detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_speaking_detected,Speaking detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,binary_sensor.very_front_door_vehicle_detected,Vehicle detected,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,temperature,sensor.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn_internal_temperature,Internal temperature,temperature,zha,Inovelli,1st Floor Bathroom,OK,None,
+Sensors,INFO,illuminance,sensor.1st_floor_bathroom_night_light_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,INFO,humidity,sensor.1st_floor_bathroom_vanity_lights_humidity,Humidity,humidity,zha,Inovelli,1st Floor Bathroom,OK,None,
+Sensors,INFO,temperature,sensor.1st_floor_bathroom_vanity_lights_internal_temperature,Internal temperature,temperature,zha,Inovelli,1st Floor Bathroom,OK,None,
+Sensors,INFO,temperature,sensor.1st_floor_bathroom_vanity_lights_temperature,Temperature,temperature,zha,Inovelli,1st Floor Bathroom,OK,None,
+Sensors,INFO,temperature,sensor.40062_hwy_53_ubb_temperature,Temperature,temperature,unifi,Ubiquiti Networks,Back Patio,OK,None,
+Sensors,INFO,humidity,sensor.above_kitchen_sink_inovelli_switch_humidity,Humidity,humidity,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.above_kitchen_sink_inovelli_switch_internal_temperature,Internal temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.above_kitchen_sink_inovelli_switch_temperature,Temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,HIGH,motion,sensor.ai_theta_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,battery,sensor.alainas_iphone_battery_level,Alaina’s iPhone Battery Level,battery,mobile_app,Apple,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.alainas_iphone_battery_state,Alaina’s iPhone Battery State,battery,mobile_app,Apple,,Needs Area,Assign Area,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery,Battery,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_2,Battery,door,matter,Aqara,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_3,Battery,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_4,Battery,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_5,Battery,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_6,Battery,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type,Battery type,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type_2,Battery type,door,matter,Aqara,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type_3,Battery type,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type_4,Battery type,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type_5,Battery type,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_type_6,Battery type,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage,Battery voltage,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage_2,Battery voltage,door,matter,Aqara,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage_3,Battery voltage,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage_4,Battery voltage,door,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage_5,Battery voltage,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,door,sensor.aqara_door_and_window_sensor_battery_voltage_6,Battery voltage,door,matter,Aqara,Garage,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery,Battery,motion,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_2,Battery,motion,matter,Aqara,Upstairs Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_3,Battery,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_4,Battery,motion,matter,Aqara,Basement Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_5,Battery,motion,matter,Aqara,Very Front Door Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_6,Battery,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type,Battery type,motion,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type_2,Battery type,motion,matter,Aqara,Upstairs Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type_3,Battery type,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type_4,Battery type,motion,matter,Aqara,Basement Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type_5,Battery type,motion,matter,Aqara,Very Front Door Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_type_6,Battery type,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage,Battery voltage,motion,matter,Aqara,Entry Room,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage_2,Battery voltage,motion,matter,Aqara,Upstairs Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage_3,Battery voltage,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage_4,Battery voltage,motion,matter,Aqara,Basement Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage_5,Battery voltage,motion,matter,Aqara,Very Front Door Hallway,OK,None,
+Sensors,INFO,motion,sensor.aqara_motion_sensor_p1_battery_voltage_6,Battery voltage,motion,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,battery,sensor.aqara_retrofit_valves_t1_battery,Battery,battery,matter,Aqara,Basement,OK,None,
+Sensors,INFO,battery,sensor.aqara_retrofit_valves_t1_battery_type,Battery type,battery,matter,Aqara,Basement,OK,None,
+Sensors,INFO,battery,sensor.aqara_retrofit_valves_t1_battery_voltage,Battery voltage,battery,matter,Aqara,Basement,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery,Battery,humidity,matter,Aqara,1st Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_2,Battery,humidity,matter,Aqara,Basement,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_3,Battery,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_4,Battery,humidity,matter,Aqara,2nd Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_5,Battery,humidity,matter,Aqara,Ella's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_6,Battery,humidity,matter,Aqara,Alaina's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_7,Battery,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type,Battery type,humidity,matter,Aqara,1st Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_2,Battery type,humidity,matter,Aqara,Basement,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_3,Battery type,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_4,Battery type,humidity,matter,Aqara,2nd Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_5,Battery type,humidity,matter,Aqara,Ella's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_6,Battery type,humidity,matter,Aqara,Alaina's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_type_7,Battery type,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage,Battery voltage,humidity,matter,Aqara,1st Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_2,Battery voltage,humidity,matter,Aqara,Basement,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_3,Battery voltage,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_4,Battery voltage,humidity,matter,Aqara,2nd Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_5,Battery voltage,humidity,matter,Aqara,Ella's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_6,Battery voltage,humidity,matter,Aqara,Alaina's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_battery_voltage_7,Battery voltage,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity,Humidity,humidity,matter,Aqara,1st Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_2,Humidity,humidity,matter,Aqara,Basement,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_3,Humidity,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_4,Humidity,humidity,matter,Aqara,2nd Floor Bathroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_5,Humidity,humidity,matter,Aqara,Ella's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_6,Humidity,humidity,matter,Aqara,Alaina's Bedroom,OK,None,
+Sensors,INFO,humidity,sensor.aqara_temp_humidity_sensor_humidity_7,Humidity,humidity,matter,Aqara,,Needs Area,Assign Area,Aqara sensor - assign area
+Sensors,INFO,temperature,sensor.aqara_temp_humidity_sensor_temperature,Temperature,temperature,matter,Aqara,1st Floor Bathroom,OK,None,
+Sensors,INFO,temperature,sensor.aqara_temp_humidity_sensor_temperature_2,Temperature,temperature,matter,Aqara,Basement,OK,None,
+Sensors,HIGH,temperature,sensor.aqara_temp_humidity_sensor_temperature_3,Temperature,temperature,matter,Aqara,,Needs Area,Assign Area,CRITICAL: NEEDS AREA; Aqara sensor - assign area
+Sensors,INFO,temperature,sensor.aqara_temp_humidity_sensor_temperature_4,Temperature,temperature,matter,Aqara,2nd Floor Bathroom,OK,None,
+Sensors,INFO,temperature,sensor.aqara_temp_humidity_sensor_temperature_5,Temperature,temperature,matter,Aqara,Ella's Bedroom,OK,None,
+Sensors,INFO,temperature,sensor.aqara_temp_humidity_sensor_temperature_6,Temperature,temperature,matter,Aqara,Alaina's Bedroom,OK,None,
+Sensors,HIGH,temperature,sensor.aqara_temp_humidity_sensor_temperature_7,Temperature,temperature,matter,Aqara,,Needs Area,Assign Area,CRITICAL: NEEDS AREA; Aqara sensor - assign area
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery,Battery,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_2,Battery,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_3,Battery,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_4,Battery,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_5,Battery,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_type,Battery type,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_type_2,Battery type,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_type_3,Battery type,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_type_4,Battery type,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_type_5,Battery type,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_voltage,Battery voltage,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_voltage_2,Battery voltage,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_voltage_3,Battery voltage,water,matter,Aqara,Kitchen,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_voltage_4,Battery voltage,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,water,sensor.aqara_water_leak_sensor_battery_voltage_5,Battery voltage,water,matter,Aqara,Basement,OK,None,
+Sensors,INFO,door,sensor.back_door_patio_light_inovelli_switch_current,Current,door,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,humidity,sensor.back_door_patio_light_inovelli_switch_humidity,Humidity,humidity,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,temperature,sensor.back_door_patio_light_inovelli_switch_internal_temperature,Internal temperature,temperature,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,door,sensor.back_door_patio_light_inovelli_switch_overheat_protection,Overheat protection,door,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,door,sensor.back_door_patio_light_inovelli_switch_power,Power,door,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,door,sensor.back_door_patio_light_inovelli_switch_summation_delivered,Summation delivered,door,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,temperature,sensor.back_door_patio_light_inovelli_switch_temperature,Temperature,temperature,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,door,sensor.back_door_patio_light_inovelli_switch_voltage,Voltage,door,zha,Inovelli,Back Patio,OK,None,
+Sensors,INFO,motion,sensor.back_yard_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,Back Yard Tower,Disabled,Assign Area,
+Sensors,INFO,humidity,sensor.basement_thermostat_humidity,Humidity,humidity,nest,Google Nest,Laundry Area,OK,None,
+Sensors,INFO,temperature,sensor.basement_thermostat_temperature,Temperature,temperature,nest,Google Nest,Laundry Area,OK,None,
+Sensors,INFO,battery,sensor.ellas_iphone_battery_level,Ella’s iPhone Battery Level,battery,mobile_app,Apple,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.ellas_iphone_battery_state,Ella’s iPhone Battery State,battery,mobile_app,Apple,,Needs Area,Assign Area,
+Sensors,INFO,illuminance,sensor.entry_room_east_wall_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Entry Room,OK,None,
+Sensors,INFO,illuminance,sensor.entry_room_west_wall_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Entry Room,OK,None,
+Sensors,INFO,humidity,sensor.first_floor_thermostat_humidity,Humidity,humidity,nest,Google Nest,Entry Room,OK,None,
+Sensors,INFO,temperature,sensor.first_floor_thermostat_temperature,Temperature,temperature,nest,Google Nest,Entry Room,OK,None,
+Sensors,INFO,door,sensor.front_driveway_door_chime_type,Chime type,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.front_driveway_door_disk_write_rate,Disk write rate,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,sensor.front_driveway_door_last_doorbell_ring,Last doorbell ring,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,motion,sensor.front_driveway_door_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,sensor.front_driveway_door_oldest_recording,Oldest recording,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.front_driveway_door_received_data,Received data,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.front_driveway_door_storage_used,Storage used,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,sensor.front_driveway_door_transferred_data,Transferred data,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.front_driveway_door_uptime,Uptime,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.front_driveway_door_voltage,Voltage,door,unifiprotect,Ubiquiti,Front door,OK,None,
+Sensors,INFO,door,sensor.front_driveway_door_wi_fi_signal_strength,Wi-Fi signal strength,door,unifiprotect,Ubiquiti,Front door,Disabled,Assign Area,
+Sensors,INFO,motion,sensor.g4_bullet_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,Pigeon Falls Properties,Disabled,Assign Area,
+Sensors,HIGH,motion,sensor.g6_bullet_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,illuminance,sensor.garage_north_wall_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,INFO,humidity,sensor.garage_thermostat_humidity,Humidity,humidity,nest,Google Nest,Garage,OK,None,
+Sensors,INFO,temperature,sensor.garage_thermostat_temperature,Temperature,temperature,nest,Google Nest,Garage,OK,None,
+Sensors,INFO,humidity,sensor.house_average_humidity,House Average Humidity,humidity,template,,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.house_average_temperature,House Average Temperature,temperature,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,battery,sensor.hue_dimmer_switch_1_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.hue_dimmer_switch_2_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.hue_dimmer_switch_3_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.hue_dimmer_switch_4_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.hue_tap_dial_switch_1_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.hue_tap_dial_switch_3_battery,Battery,battery,hue,Signify Netherlands B.V.,,Needs Area,Assign Area,
+Sensors,INFO,temperature,sensor.inovelli_vzm31_sn_internal_temperature_2,Internal temperature,temperature,zha,Inovelli,Entry Room,OK,None,
+Sensors,INFO,temperature,sensor.inovelli_vzm31_sn_internal_temperature_3,Internal temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.inovelli_vzm31_sn_internal_temperature_4,Internal temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.inovelli_vzm36_internal_temperature_3,Internal temperature,temperature,zha,Inovelli,Living Room,OK,None,
+Sensors,INFO,temperature,sensor.inovelli_vzm36_internal_temperature_4,Internal temperature,temperature,zha,Inovelli,Living Room,OK,None,
+Sensors,INFO,battery,sensor.john_s_phone_battery_cycle_count,John's Phone Battery cycle count,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.john_s_phone_battery_health,John's Phone Battery health,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.john_s_phone_battery_level,John's Phone Battery level,battery,mobile_app,samsung,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.john_s_phone_battery_power,John's Phone Battery power,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.john_s_phone_battery_state,John's Phone Battery state,battery,mobile_app,samsung,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.john_s_phone_battery_temperature,John's Phone Battery temperature,temperature,mobile_app,samsung,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,battery,sensor.john_s_phone_car_battery,John's Phone Car battery,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,humidity,sensor.kitchen_above_table_chandelier_inovelli_humidity,Humidity,humidity,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.kitchen_above_table_chandelier_inovelli_internal_temperature,Internal temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,temperature,sensor.kitchen_above_table_chandelier_inovelli_temperature,Temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,motion,sensor.kitchen_ai_theta_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,Kitchen,Disabled,Assign Area,
+Sensors,INFO,temperature,sensor.kitchen_ceiling_inovelli_vzm31_sn_internal_temperature,Internal temperature,temperature,zha,Inovelli,Kitchen,OK,None,
+Sensors,INFO,illuminance,sensor.kitchen_counter_night_light_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Stairway Cubby,OK,None,
+Sensors,INFO,illuminance,sensor.kitchen_counter_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,INFO,temperature,sensor.kitchen_lounge_inovelli_smart_dimmer_internal_temperature,Internal temperature,temperature,zha,Inovelli,Kitchen Lounge,OK,None,
+Sensors,INFO,temperature,sensor.kitchen_lounge_light_fan_inovelli_vzm36_internal_temperature,Internal temperature,temperature,zha,Inovelli,Kitchen Lounge,OK,None,
+Sensors,INFO,temperature,sensor.kitchen_lounge_light_fan_inovelli_vzm36_internal_temperature_2,Internal temperature,temperature,zha,Inovelli,Kitchen Lounge,OK,None,
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_battery_cycle_count,Kitchen Samsung Tablet Wall Mount Battery cycle count,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_battery_health,Kitchen Samsung Tablet Wall Mount Battery health,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_battery_level,Kitchen Samsung Tablet Wall Mount Battery level,battery,mobile_app,samsung,,Needs Area,Assign Area,
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_battery_power,Kitchen Samsung Tablet Wall Mount Battery power,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_battery_state,Kitchen Samsung Tablet Wall Mount Battery state,battery,mobile_app,samsung,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.kitchen_samsung_tablet_wall_mount_battery_temperature,Kitchen Samsung Tablet Wall Mount Battery temperature,temperature,mobile_app,samsung,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,battery,sensor.kitchen_samsung_tablet_wall_mount_car_battery,Kitchen Samsung Tablet Wall Mount Car battery,battery,mobile_app,samsung,,Disabled,Assign Area,
+Sensors,INFO,battery,sensor.kitchen_wall_a9_tablet_battery,Battery,battery,fully_kiosk,samsung,Kitchen,OK,None,
+Sensors,INFO,illuminance,sensor.kitchen_west_wall_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Basement,OK,None,
+Sensors,INFO,illuminance,sensor.living_room_north_wall_east_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Living Room,OK,None,
+Sensors,INFO,illuminance,sensor.living_room_north_wall_west_nightlight_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Living Room,OK,None,
+Sensors,INFO,battery,sensor.lumi_lumi_sensor_wleak_aq1_battery,Battery,battery,zha,LUMI,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.lumi_lumi_sensor_wleak_aq1_device_temperature,Device temperature,temperature,zha,LUMI,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,humidity,sensor.master_nest_thermostat_humidity,Humidity,humidity,nest,Google Nest,Master Bedroom,OK,None,
+Sensors,INFO,temperature,sensor.master_nest_thermostat_temperature,Temperature,temperature,nest,Google Nest,Master Bedroom,OK,None,
+Sensors,INFO,water,sensor.navien_hot_water_temp,Navien Hot Water Temp,water,navien_water_heater,Navien,Boiler Room,OK,None,
+Sensors,INFO,water,sensor.navien_water_flow,Navien Water Flow,water,navien_water_heater,Navien,Boiler Room,OK,None,
+Sensors,INFO,humidity,sensor.outside_humidity,Outside Humidity,humidity,template,,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.outside_temperature,Outside Temperature,temperature,template,,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,temperature,sensor.p_f_p_ubb_temperature,Temperature,temperature,unifi,Ubiquiti Networks,Back Yard Tower,OK,None,
+Sensors,INFO,humidity,sensor.pfp_east_nest_thermostat_sensor_humidity,PFP East Nest Thermostat Humidity Sensor,humidity,nest,Google Nest,Pigeon Falls Properties,OK,None,
+Sensors,INFO,temperature,sensor.pfp_east_nest_thermostat_sensor_temperature,PFP East Nest Thermostat Temperature Sensor,temperature,nest,Google Nest,Pigeon Falls Properties,OK,None,
+Sensors,INFO,temperature,sensor.pfp_west_nest_sensor_temperature,PFP West Nest Thermostat Temperature Sensor,temperature,nest,Google Nest,Pigeon Falls Properties,OK,None,
+Sensors,INFO,humidity,sensor.pfp_west_nest_thermostat_sensor_humidity,PFP West Nest Thermostat Humidity Sensor,humidity,nest,Google Nest,Pigeon Falls Properties,OK,None,
+Sensors,HIGH,temperature,sensor.udm_pro_cpu_temperature,CPU temperature,temperature,unifiprotect,Ubiquiti Networks,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,temperature,sensor.udm_pro_udm_pro_cpu_temperature,UDM PRO CPU Temperature,temperature,unifi,Ubiquiti Networks,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,temperature,sensor.udm_pro_udm_pro_local_temperature,UDM PRO Local Temperature,temperature,unifi,Ubiquiti Networks,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,HIGH,temperature,sensor.udm_pro_udm_pro_phy_temperature,UDM PRO PHY Temperature,temperature,unifi,Ubiquiti Networks,,Disabled,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,humidity,sensor.upstairs_average_humidity,Upstairs Average Humidity,humidity,template,,,Needs Area,Assign Area,
+Sensors,HIGH,temperature,sensor.upstairs_bathroom_echo_plus_temperature_2,Upstairs Bathroom Echo Plus Temperature,temperature,alexa_media,Amazon,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,temperature,sensor.upstairs_bathroom_fan_temperature,Temperature,temperature,shelly,Shelly,2nd Floor Bathroom,Disabled,Assign Area,
+Sensors,INFO,humidity,sensor.upstairs_bathroom_humidity_trend,Upstairs Bathroom Humidity Trend,humidity,template,,,Needs Area,Assign Area,
+Sensors,INFO,illuminance,sensor.upstairs_bathroom_night_light_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Garage,OK,None,
+Sensors,INFO,illuminance,sensor.upstairs_hallway_east_wall_night_light_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Sensors,INFO,illuminance,sensor.upstairs_hallway_night_light_illuminance,Illuminance,illuminance,zha,Third Reality; Inc,Upstairs Hallway,OK,None,
+Sensors,HIGH,temperature,sensor.usw_pro_max_16_poe_temperature,Temperature,temperature,unifi,Ubiquiti Networks,,Needs Area,Assign Area,CRITICAL: NEEDS AREA
+Sensors,INFO,door,sensor.very_front_door_chime_type,Chime type,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.very_front_door_disk_write_rate,Disk write rate,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.very_front_door_last_doorbell_ring,Last doorbell ring,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,motion,sensor.very_front_door_last_motion_detected,Last motion detected,motion,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.very_front_door_oldest_recording,Oldest recording,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.very_front_door_received_data,Received data,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.very_front_door_storage_used,Storage used,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.very_front_door_transferred_data,Transferred data,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.very_front_door_uptime,Uptime,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
+Sensors,INFO,door,sensor.very_front_door_voltage,Voltage,door,unifiprotect,Ubiquiti,Very Front Door,OK,None,
+Sensors,INFO,door,sensor.very_front_door_wi_fi_signal_strength,Wi-Fi signal strength,door,unifiprotect,Ubiquiti,Very Front Door,Disabled,Assign Area,
