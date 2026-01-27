@@ -54,3 +54,37 @@ Use: Settings → Devices & Services → Entities → filter "unavailable" autom
 - `automations/`: 13 automations (merge_list format `- id:`)
 - `packages/`: 99 automations (named format `  - id:`)
 - `automations.yaml`: 1 automation (legacy)
+
+## Final Automation Audit (2026-01-27)
+
+### Accurate Counts
+- YAML automations: 119
+- Registry entities: 144  
+- Orphaned registry entries: 26
+
+### Orphan Categories
+1. **Replaced with new ID** (have similar automation in packages):
+   - approaching_home_john → john_proximity.yaml
+   - morning_wake_upstairs_hallway → occupancy_system.yaml
+
+2. **Truly orphaned** (automation deleted, no replacement):
+   - garage_door_* series (6 entries)
+   - night_path_* (2 entries)
+   - *_everyone_left (3 entries) 
+   - humidity/arrival notifications
+   - 2nd floor bathroom night lighting
+   - Entry room inovelli/ceiling entries
+
+### Cleanup Command
+In HA UI: Settings → Automations → filter for "unavailable" → delete orphaned entries
+
+### Storage Locations (FINAL)
+```
+automations.yaml          → 1 automation (legacy)
+automations/*.yaml        → 19 automations (- id: and   id: formats mixed)
+packages/*.yaml           → 99 automations (  - id: format)
+TOTAL                     → 119 automations
+```
+
+### 5 True Duplicate Pairs (same name, 2 registry entries)
+Run cleanup to remove the older/disabled variant of each pair.
