@@ -35,7 +35,7 @@ automation:
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.downstairs_motion
+        entity_id: binary_sensor.living_room_motion
         to: "on"
         id: motion
       - platform: state
@@ -146,7 +146,7 @@ automation:
     description: "Restore full brightness when motion detected while dimmed"
     trigger:
       - platform: state
-        entity_id: binary_sensor.downstairs_motion
+        entity_id: binary_sensor.living_room_motion
         to: "on"
     condition:
       - condition: state
@@ -182,7 +182,7 @@ automation:
     alias: "Living Room Lamps - Dim After 15min No Motion"
     trigger:
       - platform: state
-        entity_id: binary_sensor.downstairs_motion
+        entity_id: binary_sensor.living_room_motion
         to: "off"
         for:
           minutes: 15
@@ -223,10 +223,10 @@ automation:
     alias: "Living Room Lamps - Off After 45min No Motion"
     trigger:
       - platform: state
-        entity_id: binary_sensor.downstairs_motion
+        entity_id: binary_sensor.living_room_motion
         to: "off"
         for:
-          minutes: 90
+          minutes: 45
     condition:
       - condition: state
         entity_id: input_boolean.living_room_manual_override
