@@ -138,3 +138,28 @@ Run cleanup to remove the older/disabled variant of each pair.
 1. What defines "downstairs presence" vs "upstairs"?
 2. Hot tub mode exception - entry lamp stays off?
 3. Kitchen lounge lamp - same logic as living room lounge?
+
+## First Floor Lighting Architecture (2026-01-27)
+
+### Zone Model (not room-based):
+1. **Transition/Arrival Zone**: Entry room, Front hallway, Kitchen-lounge hallway
+2. **Active Living Zone**: Kitchen, Kitchen lounge, Living room lounge + living room
+3. **Momentary Zone**: 1st floor bathroom (hallway-triggered)
+
+### Key Principle: Motion ACTIVATES, Presence RETAINS
+- Motion sensors trigger lights ON
+- Phone Wi-Fi presence PREVENTS premature off
+- No flicker while seated watching TV
+
+### Sensors Available:
+- Entry room: Aqara P1
+- Front hallway/stairs: Aqara P1  
+- Kitchen: Aqara P1
+- Kitchen lounge: Aqara P1
+- 1st floor bathroom: NO sensor (uses hallway motion)
+
+### Pain Points to Solve:
+- Flicker/cycling while seated
+- Dim useless lighting
+- Motion-only killing lights too fast
+- Hot tub mode exception
