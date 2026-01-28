@@ -42,11 +42,11 @@ automation:
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.upstairs_bathroom_motion
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "on"
         id: motion_on
       - platform: state
-        entity_id: binary_sensor.upstairs_bathroom_motion
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "off"
         for:
           minutes: 3
@@ -129,11 +129,11 @@ automation:
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.upstairs_bathroom_motion
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "on"
         id: motion_on
       - platform: state
-        entity_id: binary_sensor.upstairs_bathroom_motion
+        entity_id: binary_sensor.upstairs_hallway_motion
         to: "off"
         for:
           minutes: 8

@@ -1,4 +1,4 @@
-# System Knowledge - 2026-01-27 22:14
+# System Knowledge - 2026-01-28 06:53
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -30,9 +30,7 @@
 - 2026-01-23: Infrastructure integration: UniFi Protect motion events to HA, Synology automated HA snapshot backups
 
 ## Recent Session Learnings
-- 22:02: Handoff docs can become stale - always verify current state via entity registry before acting
-- 22:02: ui_automations.yaml uses unconventional YAML key ordering (action before id) - valid but confusing
-- 22:02: 134/137 lights still need area assignment via UI bulk edit
+
 
 ## Historical Learnings (last 30 lines)
 - Climate controls (kitchen_mini_split, 1st_floor_thermostat)

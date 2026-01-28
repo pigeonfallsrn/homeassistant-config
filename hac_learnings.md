@@ -279,3 +279,15 @@ automations.yaml: [] (cleared - now uses packages)
 automations/: 4 files, ~20 automations
 packages/: 23 files, ~100 automations
 ```
+- 2026-01-28: Fixed 2nd floor bathroom quad-fire - v2 automation was using upstairs_hallway_motion instead of upstairs_bathroom_motion. Removed redundant fallback automation and 2 orphan registry entries.
+- 2026-01-28: Comprehensive AL restructure - functional zones (lamps vs ceiling):
+  - "Living Spaces" (lamps): Added kitchen_hue_color_floor_lamp, kitchen_lounge_lamp, living_room_west_floor_lamp. sunset 21:00
+  - "Kitchen & Entry Ceiling" (renamed from Kitchen Chandelier): kitchen_chandelier, kitchen_above_sink_light, kitchen_lounge, very_front_door_hallway. sunset 22:00, min_brightness 40%
+  - "Living Room Ceiling" (NEW): living_room_lounge_ceiling_light. sunset 22:00, min_brightness 40%
+  - Best practice: Separate AL by function (ambient lamps vs task ceiling), not just location. Ceiling task lights stay brighter/cooler longer.
+- 2026-01-28: AL storage edits revert on restart - AL integration maintains internal state that overwrites storage changes. For light list changes, must use:
+  1. UI: Settings > Devices & Services > Adaptive Lighting > Configure
+  2. Or delete/recreate the entry
+  Successfully created: Kitchen & Entry Ceiling (4 lights), Living Room Ceiling (1 light)
+  TODO via UI: Add to Living Spaces: light.living_room_west_floor_lamp, light.kitchen_hue_color_floor_lamp, light.kitchen_lounge_lamp
+  TODO: Clean up orphan switch.adaptive_lighting_kitchen_chandelier (unavailable)
