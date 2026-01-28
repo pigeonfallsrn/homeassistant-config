@@ -115,3 +115,26 @@ Run cleanup to remove the older/disabled variant of each pair.
 - arrival_lights_approaching → driveway + garage (distance sensor issue)
 - first_person_home_lights_on → DISABLED
 - arrival_notification_john → DISABLED
+
+## Whole-Home Lighting Strategy Session (2026-01-27)
+
+### User Requirements Summary:
+1. **All lights OFF when nobody home** (5 min delay)
+2. **All lights OFF at midnight** (except party/extended evening modes)
+3. **Lux-aware** - only turn on when actually dark enough
+4. **Room-specific behavior** with adaptive lighting
+5. **Motion-based** where appropriate
+6. **Security lighting** - entry room lamp can stay on (brightness boost, lux aware)
+
+### Room-by-Room Analysis Needed:
+- Entry Room: Security lamp always on (lux-aware), brightness boost on motion
+- Living Room Lounge: Less on/off - stay on when downstairs, off when upstairs/away
+- 1st Floor Bathroom: Motion-based like upstairs
+- Kitchen areas: TBD
+- Bedrooms: Kids have separate logic already
+- Garage/Exterior: TBD
+
+### Key Questions:
+1. What defines "downstairs presence" vs "upstairs"?
+2. Hot tub mode exception - entry lamp stays off?
+3. Kitchen lounge lamp - same logic as living room lounge?
