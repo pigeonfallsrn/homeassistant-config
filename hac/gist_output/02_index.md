@@ -1,4 +1,4 @@
-# Automation Index - 2026-01-26 17:33
+# Automation Index - 2026-01-27 22:14
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -34,6 +34,7 @@ Fetch full YAML: `hac pkg <filename>`
 - **presence_system.yaml** (12 automations)
 - **sun_follow_entry_room.yaml** (0
 0 automations)
+- **upstairs_lighting.yaml** (2 automations)
 
 ## All Automation IDs
 
@@ -138,8 +139,8 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### lights_auto_off_safety.yaml
 15: safety_all_lights_off_nobody_home
-66: safety_main_areas_no_motion_off
-99: safety_midnight_all_lights_off
+67: safety_main_areas_no_motion_off
+100: safety_midnight_all_lights_off
 
 ### motion_aggregation.yaml
 
@@ -160,7 +161,7 @@ Fetch full YAML: `hac pkg <filename>`
 420: apply_context_on_overlay_change
 436: refresh_school_tomorrow
 468: refresh_school_in_session_now
-505: upstairs_hallway_motion_lighting
+505: upstairs_hallway_motion_lighting_OLD_DISABLED
 570: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
 611: morning_wake_master_bedroom
 
@@ -182,6 +183,9 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### sun_follow_entry_room.yaml
 
+### upstairs_lighting.yaml
+39: upstairs_hallway_motion_lighting_v2
+126: 2nd_floor_bathroom_motion_lighting_v2
+
 
 ### automations.yaml
-1: '1769232141408'
