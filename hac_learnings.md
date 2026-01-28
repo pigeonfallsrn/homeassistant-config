@@ -88,3 +88,30 @@ TOTAL                     → 119 automations
 
 ### 5 True Duplicate Pairs (same name, 2 registry entries)
 Run cleanup to remove the older/disabled variant of each pair.
+
+## Arrival Lighting Debug Session (2026-01-27)
+
+### Issue: Entry room adaptive lights & driveway lights didn't come on at arrival
+
+### Root Causes Found:
+1. **sensor.john_distance_to_home stuck at 4810m** - never dropped below 500m threshold
+   - binary_sensor.john_approaching_home = off
+   - Driveway lights automation never triggered
+
+2. **Two automations DISABLED:**
+   - `automation.first_person_home_after_dark_entry_lights_on` - state: OFF since Dec 31
+   - `automation.arrival_john_home` - state: OFF since Jan 20
+
+3. **arrival_adaptive_lighting_welcome DID trigger** at 8:06 PM
+   - Entry lamp came on (confirmed on at brightness 255)
+
+### Action Items:
+1. Enable disabled automations in HA UI
+2. Debug john_distance_to_home sensor (check Companion App GPS settings)
+3. Consider adding garage door open as backup trigger for driveway lights
+
+### Key Automations for Arrival:
+- arrival_adaptive_lighting_on → entry lamp (working)
+- arrival_lights_approaching → driveway + garage (distance sensor issue)
+- first_person_home_lights_on → DISABLED
+- arrival_notification_john → DISABLED
