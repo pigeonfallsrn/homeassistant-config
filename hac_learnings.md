@@ -163,3 +163,66 @@ Run cleanup to remove the older/disabled variant of each pair.
 - Dim useless lighting
 - Motion-only killing lights too fast
 - Hot tub mode exception
+
+## Whole-Home Lighting - Answers from Context (2026-01-27)
+
+### Q1: Floor Layout - CONFIRMED from area_registry
+**1st Floor**: Entry Room, Kitchen, Kitchen Lounge, Living Room, Living Room Lounge, 1st Floor Bathroom, Garage, Stairway Cubby, Sun Room
+**2nd Floor**: Upstairs Hallway, 2nd Floor Bathroom, Alaina's Bedroom, Ella's Bedroom, Master Bedroom
+**Basement**: Basement, Laundry Area, Boiler Room, Workout Area
+**Exterior**: Front Driveway, Back Patio, Very Front Door, Back Yard Tower
+
+### Q2: Presence Detection - ALREADY EXISTS
+- `binary_sensor.downstairs_motion` - combined 1st floor motion
+- `binary_sensor.anyone_home` - person-based presence
+- `binary_sensor.house_motion_any` - whole house motion
+
+### Q3: Living Room Lounge Lamp - From "Zone Model"
+Based on HAC learnings: "Active Living Zone" - should stay ON when downstairs presence, OFF after extended no-motion (30 min?)
+
+### Q4: Hot Tub Mode - Need confirmation
+Entry lamp behavior when hot_tub_mode ON?
+
+### Q5: 1st Floor Bathroom - From learnings
+"Momentary Zone" - uses hallway motion trigger, no dedicated sensor
+Vanity light: likely night mode option (warm dim)
+
+### Existing Infrastructure:
+- `switch.adaptive_lighting_living_spaces` - controls entry lamp + floor lamps
+- Motion aggregation in packages/motion_aggregation.yaml
+- Presence system in packages/presence_system.yaml
+
+## Lighting System Audit - Current State (2026-01-27)
+
+### WORKING WELL:
+- Entry lamp: Lux-aware, motion boost, hard off time, hot tub mode ✓
+- Kitchen lounge lamp: Same pattern as entry ✓  
+- Living room lamps: Adaptive + motion ✓
+- Upstairs hallway + bathroom: NEW - motion + AL ✓
+- Safety off: Nobody home + midnight ✓
+
+### ISSUES TO FIX:
+1. **Living room lounge lamp "too on/off"** - motion timeout too aggressive
+   - Current: 45 min no motion → off
+   - Fix: Use `binary_sensor.downstairs_motion` (combined) instead of room-specific
+   - Or: Extend timeout to 60+ min when someone is home
+
+2. **1st Floor Bathroom** - inconsistent with upstairs pattern
+   - Current: Uses `binary_sensor.1st_floor_bathroom_motion_combined`
+   - Has `input_boolean.bathroom_manual_override` shared with upstairs
+   - Missing: Night red mode, AL integration
+
+3. **Kitchen chandelier/ceiling** - no adaptive control
+   - Manual Inovelli switches only
+   - Could add to "Living Spaces" AL or separate zone
+
+### RECOMMENDED FIXES (Priority Order):
+1. Extend living room lamp timeouts + use downstairs_motion
+2. Align 1st floor bathroom with upstairs pattern (night red, AL)
+3. Add kitchen ceiling to adaptive lighting (optional)
+
+### HOT TUB MODE - Already Handled:
+- Entry lamp → red dim (5%)
+- Living room lamps → red dim (5%)
+- Kitchen lounge → red dim (5%)
+- AL switch turns OFF
