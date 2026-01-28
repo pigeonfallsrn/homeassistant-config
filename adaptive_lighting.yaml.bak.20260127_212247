@@ -22,24 +22,3 @@
   separate_turn_on_commands: true
   take_over_control: true
   detect_non_ha_changes: false
-
-- name: "Upstairs Zone"
-  lights:
-    - light.upstairs_hallway
-    - light.2nd_floor_bathroom
-  prefer_rgb_color: true
-  initial_transition: 1
-  sleep_transition: 1
-  transition: 30
-  interval: 60
-  min_brightness: 3
-  max_brightness: 80
-  min_color_temp: 2000
-  max_color_temp: 4500
-  sleep_brightness: 3
-  sleep_rgb_color: [255, 20, 0]
-  sunrise_time: "06:30:00"
-  sunset_time: "21:00:00"
-  separate_turn_on_commands: true
-  take_over_control: true
-  detect_non_ha_changes: false

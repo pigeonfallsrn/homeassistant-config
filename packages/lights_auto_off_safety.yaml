@@ -33,6 +33,7 @@ automation:
             - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
             - light.kitchen_ceiling_can_led_lights_inovelli
             - light.upstairs_hallway
+            - light.2nd_floor_bathroom
             - light.garage
             - light.front_driveway
             - light.back_patio
@@ -121,6 +122,7 @@ automation:
             - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
             - light.kitchen_ceiling_can_led_lights_inovelli
             - light.upstairs_hallway
+            - light.2nd_floor_bathroom
             - light.front_driveway
             - light.back_patio
             - light.very_front_door

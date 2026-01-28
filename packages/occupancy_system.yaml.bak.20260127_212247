@@ -502,7 +502,7 @@ automation:
   # UPSTAIRS HALLWAY - Motion-Activated Lighting
   # Single automation handles all time contexts
   # ─────────────────────────────────────────────────────────
-  - id: upstairs_hallway_motion_lighting_OLD_DISABLED
+  - id: upstairs_hallway_motion_lighting
     alias: "Upstairs Hallway → Motion Lighting"
     mode: restart
     trigger:
