@@ -226,3 +226,56 @@ Vanity light: likely night mode option (warm dim)
 - Living room lamps → red dim (5%)
 - Kitchen lounge → red dim (5%)
 - AL switch turns OFF
+
+## Session Summary - Whole-Home Lighting Overhaul (2026-01-27)
+
+### COMPLETED THIS SESSION:
+
+#### 1. Automation Registry Cleanup
+- Identified 144 registry vs 119 YAML automations
+- Removed 26 orphaned registry entries
+- Registry now clean: 118 entries matching YAML
+
+#### 2. Upstairs Lighting (NEW)
+- Created `packages/upstairs_lighting.yaml`
+- Added Adaptive Lighting "Upstairs Zone" (hallway + 2nd floor bathroom)
+- Motion-activated: night=dim red, evening=60%, day=full adaptive
+- Timeouts: hallway 3min, bathroom 8min
+
+#### 3. Living Room Lamps Fix
+- Changed motion sensor: `living_room_motion` → `downstairs_motion`
+- Extended timeout: 45min → 90min
+- Prevents premature off when seated watching TV
+
+#### 4. 1st Floor Bathroom Aligned
+- Added night red mode (8%, RGB 255,30,0)
+- Aligned with upstairs pattern
+- Uses `1st_floor_bathroom_motion_combined`
+
+#### 5. Arrival Lighting Debug
+- Found `john_distance_to_home` sensor stuck at 4810m
+- Found 2 disabled automations: first_person_home, arrival_john_home
+- arrival_adaptive_lighting DID trigger correctly
+
+### STILL TODO (Next Session):
+1. Enable disabled automations in HA UI
+2. Debug john_distance_to_home GPS sensor
+3. Kitchen chandelier adaptive lighting (optional)
+4. Assign areas to 134 lights with NO AREA
+5. Test upstairs lighting behavior
+
+### KEY FILES MODIFIED:
+- `adaptive_lighting.yaml` - Added "Upstairs Zone"
+- `packages/upstairs_lighting.yaml` - NEW
+- `packages/adaptive_lighting_living_room.yaml` - timeout + sensor fix
+- `automations/bathroom_motion_lighting.yaml` - night red mode
+- `packages/lights_auto_off_safety.yaml` - added 2nd floor bathroom
+- `.storage/core.entity_registry` - cleaned 26 orphans
+
+### AUTOMATION STORAGE LOCATIONS:
+```
+configuration.yaml: packages: !include_dir_named packages
+automations.yaml: [] (cleared - now uses packages)
+automations/: 4 files, ~20 automations
+packages/: 23 files, ~100 automations
+```
