@@ -1,10 +1,10 @@
-# HA Status - 2026-01-28 06:53 CST
+# HA Status - 2026-02-02 20:14 CST
 Version: 2026.1.3 | HAC: v7.3
 
 ## People
 john_spencer: home
-alaina_spencer: home
-ella_spencer: home
+alaina_spencer: not_home
+ella_spencer: not_home
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -27,27 +27,28 @@ school_tomorrow: on
 guest_present: off
 kids_bedtime_override: off
 john_home: on
-alaina_home: on
-ella_home: on
+alaina_home: off
+ella_home: off
 michelle_home: off
 someone_home: on
-girls_home: on
-both_girls_home: on
+girls_home: off
+both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-01-27 22:22:30 2nd_floor_bathroom_motion_lighting_v2
-2026-01-27 22:22:30 upstairs_hallway_motion_lighting_v2
-2026-01-27 22:22:30 presence_john_home
-2026-01-27 22:22:30 calendar_refresh_school_in_session_now
-2026-01-27 22:22:30 calendar_refresh_school_tomorrow
-2026-01-27 22:22:30 context_apply_on_time_change
-2026-01-27 22:22:30 safety_midnight_all_main_lights_off
-2026-01-27 22:22:30 safety_main_areas_off_after_30_min_no_motion
-2026-01-27 22:22:30 kids_bedroom_override_reset
-2026-01-27 22:22:30 alaina_lights_off_10_30_pm_school_nights
+2026-02-02 20:04:37 calendar_refresh_school_tomorrow
+2026-02-02 20:04:37 entry_room_lamp_dim_after_15min_no_motion
+2026-02-02 20:04:37 entry_room_lamp_adaptive_lux_control
+2026-02-02 20:04:37 kitchen_tablet_wake_on_motion
+2026-02-02 19:39:04 calendar_refresh_school_in_session_now
+2026-02-02 19:39:04 calendar_refresh_school_tomorrow
+2026-02-02 10:46:52 presence_ella_away
+2026-02-02 10:46:52 calendar_refresh_school_in_session_now
+2026-02-02 10:46:52 calendar_refresh_school_tomorrow
+2026-02-02 10:46:52 context_apply_on_time_change
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
+⚠ calendar_refresh_school_tomorrow: 4x

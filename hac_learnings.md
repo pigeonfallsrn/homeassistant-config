@@ -291,3 +291,68 @@ packages/: 23 files, ~100 automations
   Successfully created: Kitchen & Entry Ceiling (4 lights), Living Room Ceiling (1 light)
   TODO via UI: Add to Living Spaces: light.living_room_west_floor_lamp, light.kitchen_hue_color_floor_lamp, light.kitchen_lounge_lamp
   TODO: Clean up orphan switch.adaptive_lighting_kitchen_chandelier (unavailable)
+
+## Blueprint Audit (2026-02-02)
+
+### Inventory: 6 blueprints (down from 7)
+- automation/panhans/advanced_heating_control.yaml → KEEP (gold standard, 3100+ forum posts)
+- automation/Blackshome/sensor-light.yaml → KEEP (community standard, 8 lighting modes, weekly updates)
+- automation/fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml → KEEP (essential for Blue switches, mode: queued)
+- automation/homeassistant/notify_leaving_zone.yaml → EVALUATE (case-sensitivity bug, consider panhans Extended)
+- script/homeassistant/confirmable_notification.yaml → EVALUATE (no timeout, consider samuelthng fork)
+- template/homeassistant/inverted_binary_sensor.yaml → EVALUATE (unused, keep for now)
+
+### Deleted
+- automation/homeassistant/motion_light.yaml → DELETED (teaching tool only, Blackshome replaces it)
+
+### Key Findings
+- ZERO blueprints were actively referenced by any automation or script
+- No use_blueprint in: automations.yaml, automations/, packages/, scripts.yaml
+- Official HA blueprints = teaching tools, not production quality
+- Blackshome + panhans = trusted community authors
+- Never use overlapping blueprints on same entity
+- Check last_triggered before deleting blueprint-based automations
+- Blueprint count doesn't matter; quality does
+
+### Quality Indicators for Blueprints
+✅ Active forum threads, responsive author, version numbers, recent updates
+❌ No updates in 6+ months, unresolved bug reports, author non-responsive
+
+## TABLED: Entry Room Tap Dial → HA Hot Tub Mode Integration (2026-02-02)
+
+### Current State (WORKING - DO NOT CHANGE)
+- Button 1: 1st Floor Table Lamps → Scene cycle (Energize) / Hold: Off
+- Button 2: Entry + Kitchen Area → Dimmed / Hold: Off
+- Button 3: Exterior (Very Front Door, Driveway, Back Patio) → Scene cycle (5 scenes) / Hold: Off
+- Button 4: Hot Tub zone → Lights off / Hold: Entire Home off
+
+### Gap
+- Button 4 turns Hot Tub Hue lights OFF but does NOT toggle input_boolean.hot_tub_mode in HA
+- Need: Physical button that fires HA hot_tub_mode toggle (triggers red dim scenes, AL disable, etc.)
+- Options: (A) Reroute Tap Dial btn 4 to HA, (B) Use Master Bedroom Tap Dial unused button, (C) Dashboard only
+
+### Action
+- Evaluate during Master Bedroom Tap Dial config
+- Requires: hue_event automation listening for button press → toggle input_boolean.hot_tub_mode
+
+## Hue Scene Cleanup Session (2026-02-02)
+
+### Summary
+- Started with 179 scenes in HA entity registry
+- Registry ballooned to 448 Hue scenes (zones auto-create defaults)
+- Cleaned rooms in Hue app: Entry Room, Living Room Lounge, Kitchen Chandelier, Kitchen Lounge, Alaina's Bedroom, Ella's Bedroom, Master Bedroom
+- Pattern: Keep only Energize + Nightlight + Concentrate per room
+- Deleted 11 unavailable HA-native scenes (ella/dad reading/chill/rainbow/bedtime + new_scene x3)
+
+### Tap Dial Configs
+- Entry Room: 4 buttons all configured (Table Lamps, Entry+Kitchen, Exterior, Hot Tub zone)
+- Master Bedroom: Button 1=Energize, 2=Dimmed, 3=Nightlight, 4=Lights off (hold=Entire Home off)
+
+### Tabled for Next Session
+- Create Hue groups: Alaina's Bedroom Ceiling (2 bulbs), Ella's Bedroom Ceiling (3 bulbs)
+- Configure Living Room Lounge FoH switch for HA Hot Tub Mode integration
+- Replace Entry Room ceiling bulbs (LWB014 white-only) with Ambiance for AL color temp
+- Route Master Bedroom Tap Dial button 4 to HA for Hot Tub Mode toggle
+
+### Power On Settings
+- Set all Hue bulbs behind Inovelli Smart Bulb Mode switches to "Last on" for AL recovery

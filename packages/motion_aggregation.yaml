@@ -12,7 +12,8 @@ template:
         unique_id: entry_room_motion_combined
         device_class: motion
         state: >
-          {{ is_state('binary_sensor.entry_room_east_wall_nightlight_motion', 'on')
+          {{ is_state('binary_sensor.aqara_motion_sensor_p1_occupancy', 'on')
+             or is_state('binary_sensor.entry_room_east_wall_nightlight_motion', 'on')
              or is_state('binary_sensor.entry_room_west_wall_nightlight_motion', 'on') }}
         delay_off:
           seconds: 30
@@ -132,6 +133,8 @@ template:
              or is_state('binary_sensor.1st_floor_bathroom_hallway_motion', 'on')
              or is_state('binary_sensor.front_door_hallway_motion', 'on')
              or is_state('binary_sensor.living_room_motion', 'on') }}
+        delay_off:
+          seconds: 60
 
       # -----------------------------------------------------------------
       # Upstairs - Any motion on second floor
@@ -143,6 +146,8 @@ template:
           {{ is_state('binary_sensor.upstairs_hallway_motion', 'on')
              or is_state('binary_sensor.upstairs_bathroom_motion', 'on')
              or is_state('binary_sensor.upstairs_motionaware_area', 'on') }}
+        delay_off:
+          seconds: 60
 
       # -----------------------------------------------------------------
       # Whole House - Any motion anywhere
@@ -154,6 +159,8 @@ template:
           {{ is_state('binary_sensor.downstairs_motion', 'on')
              or is_state('binary_sensor.upstairs_motion', 'on')
              or is_state('binary_sensor.basement_hallway_motion_sensor_occupancy', 'on') }}
+        delay_off:
+          seconds: 90
 
   # ===================================================================
   # LUX SENSORS - Room Averages
