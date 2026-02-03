@@ -1,10 +1,10 @@
-# HA Status - 2026-02-02 20:14 CST
+# HA Status - 2026-02-03 15:21 CST
 Version: 2026.1.3 | HAC: v7.3
 
 ## People
 john_spencer: home
 alaina_spencer: not_home
-ella_spencer: not_home
+ella_spencer: Whitehall School
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -36,19 +36,18 @@ both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-02 20:04:37 calendar_refresh_school_tomorrow
-2026-02-02 20:04:37 entry_room_lamp_dim_after_15min_no_motion
-2026-02-02 20:04:37 entry_room_lamp_adaptive_lux_control
-2026-02-02 20:04:37 kitchen_tablet_wake_on_motion
-2026-02-02 19:39:04 calendar_refresh_school_in_session_now
-2026-02-02 19:39:04 calendar_refresh_school_tomorrow
-2026-02-02 10:46:52 presence_ella_away
-2026-02-02 10:46:52 calendar_refresh_school_in_session_now
-2026-02-02 10:46:52 calendar_refresh_school_tomorrow
-2026-02-02 10:46:52 context_apply_on_time_change
+2026-02-02 21:32:27 2nd_floor_bathroom_motion_lighting_v2
+2026-02-02 21:32:27 upstairs_hallway_motion_lighting_v2
+2026-02-02 21:32:27 presence_update_someone_home
+2026-02-02 21:32:27 presence_update_occupancy_combinations
+2026-02-02 21:32:27 presence_ella_away
+2026-02-02 21:32:27 presence_alaina_away
+2026-02-02 21:32:27 presence_john_away
+2026-02-02 21:32:27 presence_john_home
+2026-02-02 21:32:27 calendar_refresh_school_in_session_now
+2026-02-02 21:32:27 calendar_refresh_school_tomorrow
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ calendar_refresh_school_tomorrow: 4x

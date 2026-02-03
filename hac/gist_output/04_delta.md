@@ -1,7 +1,7 @@
-# Delta - 2026-02-02 20:14
+# Delta - 2026-02-03 15:21
 
 ## Changed Since Last Push
-_None_
+- motion_aggregation.yaml
 
 ## Recent Errors (last 3)
 
