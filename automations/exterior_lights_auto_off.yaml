@@ -43,12 +43,9 @@
   trigger:
     - platform: template
       value_template: >
-        {{ is_state('binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion', 'off') and
-           is_state('binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion', 'off') and
-           is_state('binary_sensor.garage_south_wall_motion_light_sensor_motion', 'off') and
-           is_state('binary_sensor.garage_north_wall_nightlight_motion', 'off') and
-           is_state('binary_sensor.garage_north_garage_door_ratgdo32disco_motion', 'off') and
-           is_state('binary_sensor.garage_south_garage_door_ratgdo32disco_motion', 'off') }}
+        {{ is_state('binary_sensor.garage_north_wall_nightlight_motion', 'off') and
+           is_state('binary_sensor.ratgdo32disco_fd8d8c_motion', 'off') and
+           is_state('binary_sensor.ratgdo32disco_5735e8_motion', 'off') }}
       for:
         minutes: 5
   condition:
