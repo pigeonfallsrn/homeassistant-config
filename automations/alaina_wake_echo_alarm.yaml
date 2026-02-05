@@ -1,0 +1,64 @@
+- alias: "Alaina - Wake With Echo Alarm"
+  id: alaina_wake_echo_alarm
+  description: "Gradual sunrise fade starting 10 min before Echo alarm"
+  trigger:
+    - platform: time_pattern
+      minutes: "/1"
+  condition:
+    - condition: state
+      entity_id: person.alaina_spencer
+      state: "home"
+    - condition: template
+      value_template: >
+        {% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2') %}
+        {% if alarm not in ['unknown', 'unavailable', 'None', ''] %}
+          {% set alarm_time = as_datetime(alarm).astimezone(now().tzinfo) %}
+          {% set diff = (alarm_time - now()).total_seconds() / 60 %}
+          {{ 9 <= diff <= 10 }}
+        {% else %}
+          false
+        {% endif %}
+    - condition: time
+      after: "05:00:00"
+      before: "10:00:00"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.alaina_s_bedroom
+      data:
+        brightness_pct: 1
+        color_temp_kelvin: 2000
+        transition: 5
+    - delay:
+        minutes: 2
+    - service: light.turn_on
+      target:
+        entity_id: light.alaina_s_bedroom
+      data:
+        brightness_pct: 10
+        color_temp_kelvin: 2200
+        transition: 90
+    - delay:
+        minutes: 2
+    - service: light.turn_on
+      target:
+        entity_id: light.alaina_s_bedroom
+      data:
+        brightness_pct: 30
+        color_temp_kelvin: 2700
+        transition: 90
+    - delay:
+        minutes: 2
+    - service: light.turn_on
+      target:
+        entity_id: light.alaina_s_bedroom
+      data:
+        brightness_pct: 60
+        color_temp_kelvin: 3200
+        transition: 90
+    - delay:
+        minutes: 2
+    - service: scene.turn_on
+      target:
+        entity_id: scene.alaina_s_bedroom_energize
+  mode: single
