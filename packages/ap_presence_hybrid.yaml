@@ -48,15 +48,15 @@ template:
         unique_id: ella_ap_location_hybrid
         icon: mdi:map-marker-account
         state: >
-          {% set bssid = states('sensor.ellas_iphone_bssid') | default('') %}
-          {% set ssid = states('sensor.ellas_iphone_ssid') | default('') %}
+          {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
+          {% set ssid = states('sensor.ellas_iphone_ssid') | default('', true) %}
           {% set icloud_state = states('device_tracker.ellas_iphone') %}
           {% set icloud_addr = state_attr('device_tracker.ellas_iphone', 'address') | default('') %}
           {% set home = is_state('input_boolean.ella_home', 'on') %}
           {% set upstairs_motion = is_state('binary_sensor.upstairs_motion', 'on') %}
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
           {# BSSID detection first #}
-          {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
+          {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
           {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
           {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
           {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
@@ -77,11 +77,11 @@ template:
           bssid: "{{ states('sensor.ellas_iphone_bssid') }}"
           ssid: "{{ states('sensor.ellas_iphone_ssid') }}"
           floor: >
-            {% set bssid = states('sensor.ellas_iphone_bssid') | default('') %}
+            {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
             {% set home = is_state('input_boolean.ella_home', 'on') %}
             {% set upstairs = is_state('binary_sensor.upstairs_motion', 'on') %}
             {% set downstairs = is_state('binary_sensor.downstairs_motion', 'on') %}
-            {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
+            {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
             {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
             {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
             {% elif home and upstairs and not downstairs %}2nd
@@ -96,15 +96,15 @@ template:
         unique_id: alaina_ap_location_hybrid
         icon: mdi:map-marker-account
         state: >
-          {% set bssid = states('sensor.alainas_iphone_bssid') | default('') %}
-          {% set ssid = states('sensor.alainas_iphone_ssid') | default('') %}
+          {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
+          {% set ssid = states('sensor.alainas_iphone_ssid') | default('', true) %}
           {% set icloud_state = states('device_tracker.alaina_s_iphone_17') %}
           {% set icloud_addr = state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('') %}
           {% set home = is_state('input_boolean.alaina_home', 'on') %}
           {% set upstairs_motion = is_state('binary_sensor.upstairs_motion', 'on') %}
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
           {# BSSID detection first #}
-          {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
+          {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
           {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
           {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
           {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
@@ -125,11 +125,11 @@ template:
           bssid: "{{ states('sensor.alainas_iphone_bssid') }}"
           ssid: "{{ states('sensor.alainas_iphone_ssid') }}"
           floor: >
-            {% set bssid = states('sensor.alainas_iphone_bssid') | default('') %}
+            {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
             {% set home = is_state('input_boolean.alaina_home', 'on') %}
             {% set upstairs = is_state('binary_sensor.upstairs_motion', 'on') %}
             {% set downstairs = is_state('binary_sensor.downstairs_motion', 'on') %}
-            {% if bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
+            {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
             {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
             {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
             {% elif home and upstairs and not downstairs %}2nd

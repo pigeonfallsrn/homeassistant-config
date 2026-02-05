@@ -6,7 +6,7 @@
       to: "off"
       for: "00:00:02"
   action:
-    - service: notify.mobile_app_johns_galaxy_s24_ultra
+    - service: notify.mobile_app_john_s_phone
       data:
         message: "North garage door closed"
         data:
@@ -22,7 +22,7 @@
       to: "off"
       for: "00:00:02"
   action:
-    - service: notify.mobile_app_johns_galaxy_s24_ultra
+    - service: notify.mobile_app_john_s_phone
       data:
         message: "South garage door closed"
         data:
