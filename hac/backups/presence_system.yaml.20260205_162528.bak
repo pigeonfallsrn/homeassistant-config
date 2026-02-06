@@ -423,8 +423,6 @@ automation:
 
 # =============================================================================
 
-
-template:
   - binary_sensor:
       # John sleeping/in bed detection
       - name: "John Sleeping"

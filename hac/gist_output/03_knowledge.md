@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-03 15:34
+# System Knowledge - 2026-02-05 10:52
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -31,10 +31,29 @@
 - 2026-01-28: Add 3 lights to Living Spaces AL via UI: living_room_west_floor_lamp, kitchen_hue_color_floor_lamp, kitchen_lounge_lamp (storage edits revert - must use UI)
 
 ## Recent Session Learnings
-- 15:21: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
-- 15:34: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
+- 502 Bad Gateway from supervisor API = HA core is down/restarting
+- Template reload: `curl -X POST ... /api/services/template/reload`
+
+## Automation File Organization
+- `!include_dir_merge_list automations/` auto-includes all .yaml files in automations/
+- New files are picked up on automation reload without config changes
+- File naming: descriptive (e.g., `garage_door_notifications.yaml`, `exterior_lights_auto_off.yaml`)
+
+## Aqara Door Sensors
+- `binary_sensor.aqara_door_and_window_sensor_door_5` = North garage door (device_class: garage_door)
+- `binary_sensor.aqara_door_and_window_sensor_door_6` = South garage door
+- State: `off` = closed, `on` = open
+- Faster/more reliable than ratgdo tilt sensor for "closed" detection
+
+## Git Maintenance
+- `git fsck --full && git gc --prune=now` fixes "confused by unstable object source" errors
+- Always exclude: `zigbee.db*`, `.ha_run.lock`
+- 09:20: QUICK WINS COMPLETE: (1) Gist pushed, (2) Verified 5 orphan automations - 4 already gone, removed 2 garage_all_lights_off from entity registry, (3) Tabled projects cleaned. Next priority: legacy template audit for 2026.6 deprecation.
+- 09:59: Orphan cleanup complete: removed 2 true orphans. Remaining garage_all_lights_off is legit (unique_id: garage_master_lights_off from garage_lighting_automation.yaml). HA regenerated it on restart.
+- 10:47: PHASE 2-4 COMPLETE: Fixed duplicate YAML keys in kitchen_tablet_dashboard.yaml, presence_system.yaml, configuration.yaml. Removed duplicate unique_ids (alaina_at_moms etc). Added round() defaults. Moved 29 old .bak files to hac/backups/old_package_baks/. All configs validated.
 
 ## Historical Learnings (last 30 lines)
+- 16:49: System Review 2026-01-26: 112 automations across 23 packages. Lighting: 4 AL instances (Living Spaces fixed today, Kitchen Chandelier correct, Entry Room Ceiling disabled, Bedroom test). Motion rooms: both bathrooms 8min/10%/2200K night, entry 5/10min, kitchen lounge 8/20min, living room 15/45min. All use combined sensors. Inovelli+Hue SBM verified on 5 switches. Tabled: Phase 2 family_activities, 1st floor vanity TP-Link swap, 2nd floor bathroom smart upgrade.
 - 16:49: Unavailable entities to clean: Front Driveway North/South lights, Garage LiftMaster lights x4 (ratgdo replaced), Living Room Hue Color Lamps group, Living Room Lounge Ceiling Hue Color group, Entry Room Ceiling Hue White group, Very Front Door Motion sensor.
 - 16:49: Rec priorities: (1) Check/recreate unavailable Hue groups in Hue app, (2) Verify upstairs hallway motion automation, (3) Consider consolidating activity boost into main adaptive control, (4) Enable or remove Entry Room Ceiling AL, (5) Delete stale entities via UI
 - 16:53: Disabled old 2nd_floor_bathroom_night_lighting in occupancy_system.yaml - replaced by bathroom_motion_lighting.yaml. Fixed upstairs_hallway_motion_lighting to use combined sensor.
@@ -64,4 +83,3 @@
 - 22:05: HUE APP CHANGES COMPLETED: (1) Entry Room Tap Dial - changed First press from Time-based to Single scene. (2) Master Bedroom Tap Dial - changed First press from Time-based to Single scene. Both now compatible with HA Adaptive Lighting - no competing color temp adjustments. STILL TODO: Disable MotionAware on Living Rm Lounge and Upstairs areas in Hue app.
 - 22:10: HUE MOTIONAWARE DISABLED: Living Rm Lounge and Upstairs areas - HA now has sole control of motion-triggered lighting in these zones. Kids rooms ([PERSON], [PERSON]) retain Hue MotionAware for reliability. All Hue vs HA conflicts now resolved except Living Room FoH switch automation (TODO).
 - 22:15: SESSION COMPLETE - Hue vs HA integration cleanup. DONE: (1) Entry Room Tap Dial changed to Single scene, (2) Master Bedroom Tap Dial changed to Single scene, (3) MotionAware disabled on Living Rm Lounge + Upstairs. REMAINING UI TASKS: Assign areas to 6 Hue bulbs via HA UI (terminal edits don't persist for Hue entities), delete stale entities, create Living Room FoH hue_event automation. HAC path confirmed: /homeassistant/hac (not ~/hac or /root/hac).
-- 22:11: Entity purge requires UI: REST API homeassistant/remove_entity returns 400. Orphaned entities must be deleted via Settings → Entities → filter unavailable + domain → bulk delete. No CLI method for entity registry cleanup.

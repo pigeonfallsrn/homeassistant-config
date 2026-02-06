@@ -33,7 +33,7 @@ template:
         state: >
           {% set east = states('sensor.entry_room_east_wall_nightlight_illuminance') | float(0) %}
           {% set west = states('sensor.entry_room_west_wall_nightlight_illuminance') | float(0) %}
-          {{ ((east + west) / 2) | round(1) }}
+          {{ ((east + west) / 2) | round(1, default=0) }}
 
       # Dynamic evening off time based on conditions
       - name: "Evening Lamp Off Time"

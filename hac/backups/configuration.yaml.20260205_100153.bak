@@ -2,7 +2,6 @@
 default_config:
 homeassistant:
   customize: !include customize.yaml
-  packages: !include_dir_named packages
 frontend:
 history:
 logbook:
@@ -54,6 +53,10 @@ http:
     - 172.30.33.0/24
 
 # Homeassistant Configuration
+homeassistant:
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+
 # Adaptive Lighting
 adaptive_lighting: !include adaptive_lighting.yaml
 

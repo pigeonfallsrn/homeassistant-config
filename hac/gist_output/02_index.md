@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-03 15:34
+# Automation Index - 2026-02-05 10:52
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -130,12 +130,12 @@ Fetch full YAML: `hac pkg <filename>`
 468: ella_lights_auto_off_midnight_weekend
 
 ### kitchen_tablet_dashboard.yaml
-233: kitchen_tablet_brightness_schedule
-273: kitchen_tablet_doorbell_popup
-306: kitchen_tablet_motion_wake
-327: kitchen_tablet_sleep_inactivity
-351: kitchen_tablet_wake_on_presence
-374: kitchen_tablet_sleep_when_away
+236: kitchen_tablet_brightness_schedule
+276: kitchen_tablet_doorbell_popup
+309: kitchen_tablet_motion_wake
+330: kitchen_tablet_sleep_inactivity
+353: kitchen_tablet_wake_on_presence
+376: kitchen_tablet_sleep_when_away
 
 ### lights_auto_off_safety.yaml
 15: safety_all_lights_off_nobody_home

@@ -1,10 +1,10 @@
-# HA Status - 2026-02-03 15:34 CST
-Version: 2026.1.3 | HAC: v7.3
+# HA Status - 2026-02-05 10:52 CST
+Version: 2026.2.0 | HAC: v7.3
 
 ## People
 john_spencer: home
-alaina_spencer: not_home
-ella_spencer: not_home
+alaina_spencer: Whitehall School
+ella_spencer: Whitehall School
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -28,26 +28,28 @@ guest_present: off
 kids_bedtime_override: off
 john_home: on
 alaina_home: off
-ella_home: on
+ella_home: off
 michelle_home: off
 someone_home: on
-girls_home: on
+girls_home: off
 both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-02 21:32:27 2nd_floor_bathroom_motion_lighting_v2
-2026-02-02 21:32:27 upstairs_hallway_motion_lighting_v2
-2026-02-02 21:32:27 presence_update_someone_home
-2026-02-02 21:32:27 presence_update_occupancy_combinations
-2026-02-02 21:32:27 presence_update_girls_status
-2026-02-02 21:32:27 presence_ella_away
-2026-02-02 21:32:27 presence_ella_home
-2026-02-02 21:32:27 presence_alaina_away
-2026-02-02 21:32:27 presence_john_away
-2026-02-02 21:32:27 presence_john_home
+2026-02-05 09:57:27 calendar_refresh_school_in_session_now
+2026-02-05 09:57:27 calendar_refresh_school_tomorrow
+2026-02-05 09:57:27 living_room_lamps_adaptive_control
+2026-02-05 09:57:27 kitchen_lounge_lamp_off_after_no_motion
+2026-02-05 09:57:27 kitchen_lounge_lamp_dim_after_15min_no_motion
+2026-02-05 09:57:27 kitchen_lounge_lamp_adaptive_lux_control
+2026-02-05 09:57:27 entry_room_lamp_adaptive_lux_control
+2026-02-05 09:18:37 calendar_refresh_school_tomorrow
+2026-02-05 09:18:37 living_room_lamps_adaptive_control
+2026-02-05 09:18:37 kitchen_lounge_lamp_adaptive_lux_control
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
+⚠ living_room_lamps_adaptive_control: 12x
+⚠ entry_room_lamp_adaptive_lux_control: 8x

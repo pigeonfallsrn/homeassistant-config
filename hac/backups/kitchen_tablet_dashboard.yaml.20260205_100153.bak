@@ -81,9 +81,6 @@ input_boolean:
     name: Kitchen Tablet Doorbell Popup Active
     icon: mdi:bell-ring
 
-  kitchen_tablet_screen_control:
-    name: "Kitchen Tablet Screen Control"
-    icon: mdi:tablet
 input_select:
   kitchen_lighting_scene:
     name: Kitchen Lighting Scene
@@ -350,6 +347,7 @@ automation:
 # ============================================================================
 # TABLET WAKE AUTOMATION
 # ============================================================================
+automation:
   - id: kitchen_tablet_wake_on_presence
     alias: "Kitchen Tablet - Wake on Presence"
     description: "Wake tablet when someone is home"
@@ -401,3 +399,7 @@ automation:
           message: "command_screen_off"
     mode: single
 
+input_boolean:
+  kitchen_tablet_screen_control:
+    name: "Kitchen Tablet Screen Control"
+    icon: mdi:tablet

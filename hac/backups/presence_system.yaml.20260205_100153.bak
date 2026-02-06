@@ -421,10 +421,10 @@ automation:
         target:
           entity_id: input_boolean.recent_motion
 
+template:
+
 # =============================================================================
 
-
-template:
   - binary_sensor:
       # John sleeping/in bed detection
       - name: "John Sleeping"
@@ -536,6 +536,39 @@ template:
             {{ 'Alaina: ' ~ alaina ~ ', Ella: ' ~ ella }}
           {% endif %}
         icon: mdi:map-marker-multiple
+
+# =============================================================================
+# GIRLS AT MOM'S HOUSE DETECTION
+# =============================================================================
+
+  - binary_sensor:
+      - name: "Alaina at Mom's"
+        unique_id: alaina_at_moms
+        state: >
+          {{ is_state('person.alaina_spencer', "Traci's House") }}
+        device_class: presence
+        icon: mdi:home-account
+
+      - name: "Ella at Mom's"
+        unique_id: ella_at_moms
+        state: >
+          {{ is_state('person.ella_spencer', "Traci's House") }}
+        device_class: presence
+        icon: mdi:home-account
+
+      - name: "Both Girls at Mom's"
+        unique_id: both_girls_at_moms
+        state: >
+          {{ is_state('person.alaina_spencer', "Traci's House") and is_state('person.ella_spencer', "Traci's House") }}
+        device_class: presence
+        icon: mdi:home-group
+
+      - name: "Any Girl at Mom's"
+        unique_id: any_girl_at_moms
+        state: >
+          {{ is_state('person.alaina_spencer', "Traci's House") or is_state('person.ella_spencer', "Traci's House") }}
+        device_class: presence
+        icon: mdi:home-group
 
       - name: "Girls Location Summary"
         unique_id: girls_location_summary
