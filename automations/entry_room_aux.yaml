@@ -1,27 +1,87 @@
-# Entry Room AUX Switch Control
+# =============================================================================
+# ENTRY ROOM - AUX SWITCH AUTOMATIONS
+# =============================================================================
+# AUX Switch (d80c7fa6d013f0fd1cbdd6f67c6a1cac)
+# Controls: light.entry_room_ceiling_hue_white_lights
+# 
+# Time-based scenes, manual override blocks motion automation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# AUX SWITCH CONTROL
+# -----------------------------------------------------------------------------
 - id: entry_room_aux_switch
-  alias: Entry Room - AUX Switch Controls
-  description: AUX switch Up=On, Down=Off
+  alias: Entry Room - AUX Switch Time-Based Control
+  description: 'Up=On with time-based scenes, Down=Off, respects manual override'
+  mode: restart
   trigger:
     - platform: event
       event_type: zha_event
-  condition: '{{ trigger.event.data.device_id == "d80c7fa6d013f0fd1cbdd6f67c6a1cac" }}'
+      event_data:
+        device_id: d80c7fa6d013f0fd1cbdd6f67c6a1cac
   action:
     - variables:
         command: '{{ trigger.event.data.command }}'
     - choose:
+        # BUTTON UP (5) - Turn on with time-based scene
         - conditions: '{{ command == "button_5_press" }}'
           sequence:
-            - service: light.turn_on
+            - action: input_boolean.turn_on
               target:
-                entity_id:
-                  - light.entry_rm_ceiling_hue_white_1_2
-                  - light.entry_rm_ceiling_hue_white_2_2
+                entity_id: input_boolean.entry_room_manual_override
+            - choose:
+                # NIGHT (11pm-6am) - Arctic Aurora (dim/cool)
+                - conditions:
+                    - condition: time
+                      after: "23:00:00"
+                      before: "06:00:00"
+                  sequence:
+                    - action: scene.turn_on
+                      target:
+                        entity_id: scene.entry_room_arctic_aurora
+                # EVENING (8pm-11pm) - Dim energize
+                - conditions:
+                    - condition: time
+                      after: "20:00:00"
+                      before: "23:00:00"
+                  sequence:
+                    - action: light.turn_on
+                      target:
+                        entity_id: light.entry_room_ceiling_hue_white_lights
+                      data:
+                        brightness_pct: 60
+                        color_temp_kelvin: 2700
+                        transition: 1
+              # DAY - Full energize
+              default:
+                - action: scene.turn_on
+                  target:
+                    entity_id: scene.entry_room_energize
+        # BUTTON DOWN (4) - Turn off and clear override
         - conditions: '{{ command == "button_4_press" }}'
           sequence:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
-                entity_id:
-                  - light.entry_rm_ceiling_hue_white_1_2
-                  - light.entry_rm_ceiling_hue_white_2_2
-  mode: queued
+                entity_id: light.entry_room_ceiling_hue_white_lights
+              data:
+                transition: 2
+            - action: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.entry_room_manual_override
+
+# -----------------------------------------------------------------------------
+# OVERRIDE RESET
+# -----------------------------------------------------------------------------
+- id: 'entry_room_light_override_reset'
+  alias: Entry Room - Reset Light Override (30 min)
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.entry_room_manual_override
+      to: 'on'
+      for:
+        minutes: 30
+  action:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.entry_room_manual_override
