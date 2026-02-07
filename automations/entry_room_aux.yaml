@@ -1,0 +1,27 @@
+# Entry Room AUX Switch Control
+- id: entry_room_aux_switch
+  alias: Entry Room - AUX Switch Controls
+  description: AUX switch Up=On, Down=Off
+  trigger:
+    - platform: event
+      event_type: zha_event
+  condition: '{{ trigger.event.data.device_id == "d80c7fa6d013f0fd1cbdd6f67c6a1cac" }}'
+  action:
+    - variables:
+        command: '{{ trigger.event.data.command }}'
+    - choose:
+        - conditions: '{{ command == "button_5_press" }}'
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.entry_rm_ceiling_hue_white_1_2
+                  - light.entry_rm_ceiling_hue_white_2_2
+        - conditions: '{{ command == "button_4_press" }}'
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.entry_rm_ceiling_hue_white_1_2
+                  - light.entry_rm_ceiling_hue_white_2_2
+  mode: queued
