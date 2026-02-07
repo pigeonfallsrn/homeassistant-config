@@ -1,6 +1,18 @@
-- id: '1770321793470'
-  alias: 1st Floor Bathroom - Inovelli Switch Control
-  description: 'Control Hue bathroom lights via Inovelli switch'
+# =============================================================================
+# 1ST FLOOR BATHROOM - INOVELLI SWITCH AUTOMATIONS
+# =============================================================================
+# Ceiling Lights: VZM31-SN (0600639e50d4e1ed71fdaa1ef789e678)
+# Controls entire bathroom group: light.1st_floor_bathroom
+# 
+# Time-based scenes, manual override blocks motion automation
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CEILING SWITCH - Controls All Bathroom Lights
+# -----------------------------------------------------------------------------
+- id: '1st_floor_bathroom_ceiling_inovelli'
+  alias: 1st Floor Bathroom - Ceiling Switch Controls All Lights
+  description: 'Time-based Hue scenes with manual override'
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -8,22 +20,63 @@
       button_1:
       - action: light.turn_off
         target:
-          device_id: e7676dc3510bdf22440f69bd946c03d7
-        data: {}
-      button_2:
-      - action: light.turn_on
+          entity_id: light.1st_floor_bathroom
+        data:
+          transition: 2
+      - action: input_boolean.turn_off
         target:
-          device_id: e7676dc3510bdf22440f69bd946c03d7
-        data: {}
+          entity_id: input_boolean.bathroom_manual_override
+      button_2:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_manual_override
+      - choose:
+        - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "06:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.1st_floor_ceiling_lights_nightlight
+        - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "23:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.1st_floor_ceiling_lights_relax
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.1st_floor_ceiling_lights_energize
       button_1_hold:
       - action: light.turn_on
         target:
-          device_id: e7676dc3510bdf22440f69bd946c03d7
+          entity_id: light.1st_floor_bathroom
         data:
           brightness_step_pct: -10
       button_2_hold:
       - action: light.turn_on
         target:
-          device_id: e7676dc3510bdf22440f69bd946c03d7
+          entity_id: light.1st_floor_bathroom
         data:
           brightness_step_pct: 10
+
+# -----------------------------------------------------------------------------
+# OVERRIDE RESET
+# -----------------------------------------------------------------------------
+- id: '1st_floor_bathroom_light_override_reset'
+  alias: 1st Floor Bathroom - Reset Light Override (30 min)
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.bathroom_manual_override
+      to: 'on'
+      for:
+        minutes: 30
+  action:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.bathroom_manual_override
