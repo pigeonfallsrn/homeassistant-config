@@ -4,14 +4,19 @@
 # Ceiling Lights: VZM30-SN (0489781ef8d00419ecf1929bd865b2de) -> light.2nd_fl_bathroom_ceiling_lights
 # Vanity Lights: VZM30-SN (602bdb2b4675a5e364853ac1e53ed689) -> light.2nd_floor_vanity_lights
 # Exhaust Fan: VZM35-SN (3eed85f7ca546a7ed7e24b0cfc6c818b) -> switch.upstairs_bathroom_fan
+# 
+# BEST PRACTICE: Time-based scenes + adaptive lighting manual override
+# - DAY (6am-8pm): Energize scene
+# - EVENING (8pm-11pm): Relax scene  
+# - NIGHT (11pm-6am): Nightlight scene (dim red)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# CEILING LIGHTS - Inovelli controls Hue ceiling zone
+# CEILING LIGHTS - Time-based scenes with AL override
 # -----------------------------------------------------------------------------
 - id: '2nd_floor_bathroom_ceiling_inovelli'
   alias: 2nd Floor Bathroom - Ceiling Lights Inovelli Control
-  description: 'Inovelli ceiling switch controls Hue ceiling lights'
+  description: 'Time-based Hue scenes with adaptive lighting override'
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -20,18 +25,51 @@
       - action: light.turn_off
         target:
           entity_id: light.2nd_fl_bathroom_ceiling_lights
-        data: {}
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+        data:
+          transition: 2
+      - action: adaptive_lighting.set_manual_control
+        data:
+          entity_id: switch.adaptive_lighting_upstairs_zone
+          lights: light.2nd_fl_bathroom_ceiling_lights
+          manual_control: false
       button_2:
-      - action: light.turn_on
-        target:
-          entity_id: light.2nd_fl_bathroom_ceiling_lights
-        data: {}
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      - action: adaptive_lighting.set_manual_control
+        data:
+          entity_id: switch.adaptive_lighting_upstairs_zone
+          lights: light.2nd_fl_bathroom_ceiling_lights
+          manual_control: true
+      - choose:
+        # NIGHT (11pm-6am) - Nightlight
+        - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "06:00:00"
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.2nd_fl_bathroom_ceiling_lights
+            data:
+              brightness_pct: 5
+              rgb_color: [255, 30, 0]
+              transition: 1
+        # EVENING (8pm-11pm) - Relax/warm
+        - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "23:00:00"
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.2nd_fl_bathroom_ceiling_lights
+            data:
+              brightness_pct: 60
+              color_temp_kelvin: 2700
+              transition: 1
+        # DAY (6am-8pm) - Energize
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.2nd_fl_bathroom_ceiling_lights_energize
       button_1_hold:
       - action: light.turn_on
         target:
@@ -46,11 +84,11 @@
           brightness_step_pct: 10
 
 # -----------------------------------------------------------------------------
-# VANITY LIGHTS - Inovelli controls Hue vanity zone
+# VANITY LIGHTS - Time-based scenes with AL override
 # -----------------------------------------------------------------------------
 - id: '2nd_floor_bathroom_vanity_inovelli'
   alias: 2nd Floor Bathroom - Vanity Lights Inovelli Control
-  description: 'Inovelli vanity switch controls Hue vanity lights'
+  description: 'Time-based Hue scenes with adaptive lighting override'
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -59,18 +97,43 @@
       - action: light.turn_off
         target:
           entity_id: light.2nd_floor_vanity_lights
-        data: {}
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+        data:
+          transition: 2
+      - action: adaptive_lighting.set_manual_control
+        data:
+          entity_id: switch.adaptive_lighting_upstairs_zone
+          lights: light.2nd_floor_vanity_lights
+          manual_control: false
       button_2:
-      - action: light.turn_on
-        target:
-          entity_id: light.2nd_floor_vanity_lights
-        data: {}
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      - action: adaptive_lighting.set_manual_control
+        data:
+          entity_id: switch.adaptive_lighting_upstairs_zone
+          lights: light.2nd_floor_vanity_lights
+          manual_control: true
+      - choose:
+        # NIGHT (11pm-6am) - Nightlight
+        - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "06:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_nightlight
+        # EVENING (8pm-11pm) - Relax
+        - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "23:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_relax
+        # DAY (6am-8pm) - Energize
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.2nd_floor_vanity_lights_energize
       button_1_hold:
       - action: light.turn_on
         target:
@@ -126,11 +189,11 @@
         entity_id: switch.upstairs_bathroom_fan
 
 # -----------------------------------------------------------------------------
-# EXHAUST FAN - Inovelli switch manual control (sets override)
+# EXHAUST FAN - Inovelli switch manual control
 # -----------------------------------------------------------------------------
 - id: '2nd_floor_bathroom_fan_inovelli'
   alias: 2nd Floor Bathroom - Fan Inovelli Manual Control
-  description: 'Inovelli fan switch manual control with override flag'
+  description: 'Inovelli fan switch - up/down control fan, config clears override'
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -155,18 +218,13 @@
           entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
 
 # -----------------------------------------------------------------------------
-# MANUAL OVERRIDE RESET - Clear override after 30 minutes
+# MANUAL OVERRIDE RESET - Clear fan override after 30 minutes
 # -----------------------------------------------------------------------------
-- id: '2nd_floor_bathroom_override_reset'
-  alias: 2nd Floor Bathroom - Reset Manual Override
-  description: 'Reset manual override flags after 30 minutes'
+- id: '2nd_floor_bathroom_fan_override_reset'
+  alias: 2nd Floor Bathroom - Reset Fan Manual Override
+  description: 'Reset fan manual override after 30 minutes'
   mode: restart
   trigger:
-    - platform: state
-      entity_id: input_boolean.2nd_floor_bathroom_manual_override
-      to: 'on'
-      for:
-        minutes: 30
     - platform: state
       entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
       to: 'on'
@@ -175,6 +233,4 @@
   action:
     - action: input_boolean.turn_off
       target:
-        entity_id:
-          - input_boolean.2nd_floor_bathroom_manual_override
-          - input_boolean.2nd_floor_bathroom_fan_manual_override
+        entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
