@@ -1,0 +1,56 @@
+# HAC Session Log - 2026-01-25/26 Night Session
+# ==============================================
+
+# ISSUES FIXED:
+# 1. Garage lights not turning off - fixed entity IDs (ratgdo32disco_* → garage_*_garage_door_ratgdo32disco_*), fixed OFF trigger logic
+# 2. Approaching home notification - added zone.enter backup, 800m proximity, NORTH/SOUTH/BOTH options
+# 3. Garage door open/close buttons - corrected all cover entity IDs
+# 4. Humidity notifications - replaced hourly spam with smart shower detection (humidity_smart_alerts.yaml)
+# 5. Alaina home notification - disabled mobile alert
+# 6. Alaina ceiling LEDs - fixed broken group (was light.2, light.12), added Fri/Sat midnight auto-off
+# 7. All lights auto-off - created lights_auto_off_safety.yaml (nobody home + midnight cutoff)
+
+# FILES CREATED:
+# - /config/packages/humidity_smart_alerts.yaml
+# - /config/packages/lights_auto_off_safety.yaml
+# - /config/packages/climate_analytics.yaml (runtime tracking sensors)
+# - /config/packages/aqara_sensor_names.yaml (friendly names)
+# - /config/dashboards/lovelace-climate.yaml (5-view Climate Command Center)
+
+# FILES MODIFIED:
+# - garage_lighting_automation.yaml
+# - garage_quick_open.yaml
+# - garage_door_alerts.yaml
+# - notifications_system.yaml
+# - kids_bedroom_automation.yaml (added Alaina/Ella midnight Fri/Sat auto-off)
+# - configuration.yaml (added lovelace-climate dashboard)
+# - core.config_entries (fixed Alaina LED group)
+
+# AQARA SENSOR MAPPING:
+# sensor.aqara_temp_humidity_sensor_* = 1st Floor Bathroom
+# sensor.aqara_temp_humidity_sensor_*_2 = Basement
+# sensor.aqara_temp_humidity_sensor_*_3 = Upstairs Hallway
+# sensor.aqara_temp_humidity_sensor_*_4 = Upstairs Bathroom
+# sensor.aqara_temp_humidity_sensor_*_5 = Ella's Bedroom
+# sensor.aqara_temp_humidity_sensor_*_6 = Alaina's Bedroom
+# sensor.aqara_temp_humidity_sensor_*_7 = Garage
+
+# NEW SENSORS CREATED:
+# - binary_sensor.1st_floor_heating, 2nd_floor_heating, basement_heating, garage_heating, pfp_east/west_heating
+# - sensor.*_heating_today (runtime hours)
+# - sensor.house_average_temperature, house_average_humidity
+# - sensor.outside_temperature, outside_humidity
+
+# CLIMATE DASHBOARD VIEWS:
+# 1. Overview - Navien boiler, all thermostats, mini-splits, quick actions
+# 2. Temperatures - Zone graphs, room temps, outside vs inside, PFP
+# 3. Humidity - Gauges, trends, room-by-room
+# 4. Runtime - Heating hours today, Navien analytics, energy stats
+# 5. Weather - Forecast, outdoor conditions, 7-day history
+
+# RECOMMENDATIONS DISCUSSED:
+# - Humidifier integration (humidity critically low 14-27%)
+# - UniFi room presence detection
+# - Energy cost tracking
+# - Seasonal automation profiles
+# - Notification consolidation

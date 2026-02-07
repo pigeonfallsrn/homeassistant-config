@@ -1,0 +1,31 @@
+- alias: "Garage - North Door Closed Notification"
+  id: garage_north_door_closed_notify
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.aqara_door_and_window_sensor_door_5
+      to: "off"
+      for: "00:00:02"
+  action:
+    - service: notify.mobile_app_john_s_phone
+      data:
+        message: "North garage door closed"
+        data:
+          ttl: 0
+          priority: high
+  mode: single
+
+- alias: "Garage - South Door Closed Notification"
+  id: garage_south_door_closed_notify
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.aqara_door_and_window_sensor_door_6
+      to: "off"
+      for: "00:00:02"
+  action:
+    - service: notify.mobile_app_john_s_phone
+      data:
+        message: "South garage door closed"
+        data:
+          ttl: 0
+          priority: high
+  mode: single

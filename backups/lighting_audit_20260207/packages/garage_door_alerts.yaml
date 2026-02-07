@@ -1,0 +1,254 @@
+# ============================================================================
+# Garage Door Alerts - Native Alert Integration
+# Created: 2026-01-22
+# 
+# Uses HA native alert: for reliable repeating notifications
+# Uses input_datetime for snooze that survives restarts
+# ============================================================================
+
+input_datetime:
+  garage_north_snooze_until:
+    name: "Garage North Snooze Until"
+    has_date: true
+    has_time: true
+  garage_south_snooze_until:
+    name: "Garage South Snooze Until"
+    has_date: true
+    has_time: true
+
+template:
+  - binary_sensor:
+      - name: "Garage North Door Alert Active"
+        unique_id: garage_north_door_alert_active
+        state: >
+          {{ is_state('cover.garage_north_garage_door_ratgdo32disco_door', 'open') and
+             now() > states('input_datetime.garage_north_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
+        delay_on:
+          minutes: 1
+          
+      - name: "Garage South Door Alert Active"
+        unique_id: garage_south_door_alert_active
+        state: >
+          {{ is_state('cover.garage_south_garage_door_ratgdo32disco_door', 'open') and
+             now() > states('input_datetime.garage_south_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
+        delay_on:
+          minutes: 1
+
+alert:
+  garage_north_door_open:
+    name: "Garage North Door Open"
+    entity_id: binary_sensor.garage_north_door_alert_active
+    state: "on"
+    repeat:
+      - 5
+      - 15
+      - 30
+      - 60
+    can_acknowledge: true
+    skip_first: false
+    title: "🚗 Garage North Door Open"
+    message: "North garage door has been open for {{ relative_time(states.cover.garage_north_garage_door_ratgdo32disco_door.last_changed) }}"
+    done_message: "clear_notification"
+    notifiers:
+      - mobile_app_john_s_phone
+    data:
+      tag: "garage_door_north"
+      ttl: 0
+      priority: high
+      persistent: true
+      actions:
+        - action: "GARAGE_CLOSE_NORTH"
+          title: "Close"
+        - action: "GARAGE_SNOOZE_15_NORTH"
+          title: "15m"
+        - action: "GARAGE_SNOOZE_60_NORTH"
+          title: "1hr"
+
+  garage_south_door_open:
+    name: "Garage South Door Open"
+    entity_id: binary_sensor.garage_south_door_alert_active
+    state: "on"
+    repeat:
+      - 5
+      - 15
+      - 30
+      - 60
+    can_acknowledge: true
+    skip_first: false
+    title: "🚗 Garage South Door Open"
+    message: "South garage door has been open for {{ relative_time(states.cover.garage_south_garage_door_ratgdo32disco_door.last_changed) }}"
+    done_message: "clear_notification"
+    notifiers:
+      - mobile_app_john_s_phone
+    data:
+      tag: "garage_door_south"
+      ttl: 0
+      priority: high
+      persistent: true
+      actions:
+        - action: "GARAGE_CLOSE_SOUTH"
+          title: "Close"
+        - action: "GARAGE_SNOOZE_15_SOUTH"
+          title: "15m"
+        - action: "GARAGE_SNOOZE_60_SOUTH"
+          title: "1hr"
+
+automation:
+  # === ACTION HANDLER ===
+  - id: garage_door_alert_actions
+    alias: "Garage Door - Alert Action Handler"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_CLOSE_NORTH"
+        id: close_north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_CLOSE_SOUTH"
+        id: close_south
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_SNOOZE_15_NORTH"
+        id: snooze_15_north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_SNOOZE_15_SOUTH"
+        id: snooze_15_south
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_SNOOZE_60_NORTH"
+        id: snooze_60_north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_SNOOZE_60_SOUTH"
+        id: snooze_60_south
+    action:
+      - choose:
+          # CLOSE NORTH
+          - conditions:
+              - condition: trigger
+                id: close_north
+            sequence:
+              - service: cover.close_cover
+                target:
+                  entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_north"
+          # CLOSE SOUTH
+          - conditions:
+              - condition: trigger
+                id: close_south
+            sequence:
+              - service: cover.close_cover
+                target:
+                  entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_south"
+          # SNOOZE 15 NORTH
+          - conditions:
+              - condition: trigger
+                id: snooze_15_north
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_north_snooze_until
+                data:
+                  datetime: "{{ now() + timedelta(minutes=15) }}"
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_north"
+          # SNOOZE 15 SOUTH
+          - conditions:
+              - condition: trigger
+                id: snooze_15_south
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_south_snooze_until
+                data:
+                  datetime: "{{ now() + timedelta(minutes=15) }}"
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_south"
+          # SNOOZE 60 NORTH
+          - conditions:
+              - condition: trigger
+                id: snooze_60_north
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_north_snooze_until
+                data:
+                  datetime: "{{ now() + timedelta(minutes=60) }}"
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_north"
+          # SNOOZE 60 SOUTH
+          - conditions:
+              - condition: trigger
+                id: snooze_60_south
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_south_snooze_until
+                data:
+                  datetime: "{{ now() + timedelta(minutes=60) }}"
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_door_south"
+    mode: parallel
+    max: 6
+
+  # === RESET SNOOZE WHEN DOOR CLOSES ===
+  - id: garage_door_reset_snooze_on_close
+    alias: "Garage Door - Reset Snooze on Close"
+    trigger:
+      - platform: state
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        to: "closed"
+        id: north
+      - platform: state
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+        to: "closed"
+        id: south
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: north
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_north_snooze_until
+                data:
+                  datetime: "{{ now() - timedelta(days=1) }}"
+          - conditions:
+              - condition: trigger
+                id: south
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.garage_south_snooze_until
+                data:
+                  datetime: "{{ now() - timedelta(days=1) }}"
+    mode: parallel

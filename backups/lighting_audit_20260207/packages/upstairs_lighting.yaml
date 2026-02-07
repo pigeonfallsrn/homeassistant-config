@@ -1,0 +1,203 @@
+# ===========================================================================
+# UPSTAIRS LIGHTING PACKAGE
+# Upstairs Hallway + 2nd Floor Bathroom
+# Motion-activated with Adaptive Lighting integration
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# ADAPTIVE LIGHTING - Upstairs Zone
+# ---------------------------------------------------------------------------
+# NOTE: Add to adaptive_lighting.yaml:
+#
+# - name: "Upstairs Zone"
+#   lights:
+#     - light.upstairs_hallway
+#     - light.2nd_floor_bathroom
+#   prefer_rgb_color: true
+#   initial_transition: 1
+#   sleep_transition: 1
+#   transition: 30
+#   interval: 60
+#   min_brightness: 3
+#   max_brightness: 80
+#   min_color_temp: 2000
+#   max_color_temp: 4500
+#   sleep_brightness: 3
+#   sleep_rgb_color: [255, 20, 0]
+#   sunrise_time: "06:30:00"
+#   sunset_time: "21:00:00"
+#   sunrise_offset: 0
+#   sunset_offset: 0
+#   separate_turn_on_commands: true
+#   take_over_control: true
+#   detect_non_ha_changes: false
+
+automation:
+  # ===========================================================================
+  # UPSTAIRS HALLWAY - Motion Lighting
+  # ===========================================================================
+  - id: upstairs_hallway_motion_lighting_v2
+    alias: "Upstairs Hallway → Motion Lighting v2"
+    description: "Adaptive motion lighting - bright boost on motion, fade when clear"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        to: "on"
+        id: motion_on
+      - platform: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        to: "off"
+        for:
+          minutes: 3
+        id: motion_off
+    action:
+      - choose:
+          # ── MOTION ON ──
+          - conditions:
+              - condition: trigger
+                id: motion_on
+            sequence:
+              - choose:
+                  # NIGHT (10pm-6am) - Dim red, don't wake anyone
+                  - conditions:
+                      - condition: state
+                        entity_id: sensor.time_context
+                        state: "night"
+                    sequence:
+                      - service: light.turn_on
+                        target:
+                          entity_id: light.upstairs_hallway
+                        data:
+                          brightness_pct: 5
+                          rgb_color: [255, 30, 0]
+                          transition: 1
+                # EVENING (6pm-10pm) - Warm adaptive, moderate brightness
+                  - conditions:
+                      - condition: state
+                        entity_id: sensor.time_context
+                        state: "evening"
+                    sequence:
+                      - service: switch.turn_on
+                        target:
+                          entity_id: switch.adaptive_lighting_upstairs_zone
+                      - service: light.turn_on
+                        target:
+                          entity_id: light.upstairs_hallway
+                        data:
+                          brightness_pct: 60
+                          transition: 1
+                # DAY/MORNING - Full adaptive lighting
+                default:
+                  - service: switch.turn_on
+                    target:
+                      entity_id: switch.adaptive_lighting_upstairs_zone
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.upstairs_hallway
+          # ── MOTION OFF (3 min clear) ──
+          - conditions:
+              - condition: trigger
+                id: motion_off
+            sequence:
+              - choose:
+                  # NIGHT - Quick fade off
+                  - conditions:
+                      - condition: state
+                        entity_id: sensor.time_context
+                        state: "night"
+                    sequence:
+                      - service: light.turn_off
+                        target:
+                          entity_id: light.upstairs_hallway
+                        data:
+                          transition: 3
+                # DAY/EVENING - Gradual fade off
+                default:
+                  - service: light.turn_off
+                    target:
+                      entity_id: light.upstairs_hallway
+                    data:
+                      transition: 10
+
+  # ===========================================================================
+  # 2ND FLOOR BATHROOM - Motion Lighting
+  # ===========================================================================
+  - id: 2nd_floor_bathroom_motion_lighting_v2
+    alias: "2nd Floor Bathroom → Motion Lighting v2"
+    description: "Adaptive motion lighting for bathroom"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        to: "on"
+        id: motion_on
+      - platform: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        to: "off"
+        for:
+          minutes: 8
+        id: motion_off
+    condition:
+      # Only auto-control if light is off (respect manual control)
+      - condition: or
+        conditions:
+          - condition: trigger
+            id: motion_off
+          - condition: state
+            entity_id: light.2nd_floor_bathroom
+            state: "off"
+    action:
+      - choose:
+          # ── MOTION ON ──
+          - conditions:
+              - condition: trigger
+                id: motion_on
+            sequence:
+              - choose:
+                  # NIGHT - Dim red for night vision
+                  - conditions:
+                      - condition: state
+                        entity_id: sensor.time_context
+                        state: "night"
+                    sequence:
+                      - service: light.turn_on
+                        target:
+                          entity_id: light.2nd_floor_bathroom
+                        data:
+                          brightness_pct: 8
+                          rgb_color: [255, 30, 0]
+                          transition: 1
+                # EVENING - Warm moderate
+                  - conditions:
+                      - condition: state
+                        entity_id: sensor.time_context
+                        state: "evening"
+                    sequence:
+                      - service: switch.turn_on
+                        target:
+                          entity_id: switch.adaptive_lighting_upstairs_zone
+                      - service: light.turn_on
+                        target:
+                          entity_id: light.2nd_floor_bathroom
+                        data:
+                          brightness_pct: 50
+                          transition: 1
+                # DAY - Full brightness adaptive
+                default:
+                  - service: switch.turn_on
+                    target:
+                      entity_id: switch.adaptive_lighting_upstairs_zone
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.2nd_floor_bathroom
+          # ── MOTION OFF ──
+          - conditions:
+              - condition: trigger
+                id: motion_off
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id: light.2nd_floor_bathroom
+                data:
+                  transition: 5

@@ -1,0 +1,141 @@
+# ============================================================================
+# Climate Analytics Package
+# Created: 2026-01-25
+# Tracks HVAC runtime, creates sensors for dashboard graphs
+# ============================================================================
+
+# -----------------------------------------------------------------------------
+# TEMPLATE SENSORS - Heating State Binary
+# -----------------------------------------------------------------------------
+template:
+  - binary_sensor:
+      - name: "1st Floor Heating"
+        unique_id: 1st_floor_heating_active
+        state: "{{ state_attr('climate.1st_floor_thermostat', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+        
+      - name: "2nd Floor Heating"
+        unique_id: 2nd_floor_heating_active
+        state: "{{ state_attr('climate.master_nest_thermostat', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+        
+      - name: "Basement Heating"
+        unique_id: basement_heating_active
+        state: "{{ state_attr('climate.basement_nest_thermostat', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+        
+      - name: "Garage Heating"
+        unique_id: garage_heating_active
+        state: "{{ state_attr('climate.garage_nest_thermostat', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+
+      - name: "PFP East Heating"
+        unique_id: pfp_east_heating_active
+        state: "{{ state_attr('climate.pfp_east_nest_thermostat_control', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+
+      - name: "PFP West Heating"
+        unique_id: pfp_west_heating_active
+        state: "{{ state_attr('climate.pfp_west_nest_thermostat_control', 'hvac_action') == 'heating' }}"
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+
+      - name: "Any Zone Heating"
+        unique_id: any_zone_heating
+        state: >
+          {{ is_state('binary_sensor.1st_floor_heating', 'on') or
+             is_state('binary_sensor.2nd_floor_heating', 'on') or
+             is_state('binary_sensor.basement_heating', 'on') or
+             is_state('binary_sensor.garage_heating', 'on') }}
+        icon: "{{ 'mdi:fire' if this.state == 'on' else 'mdi:fire-off' }}"
+
+  - sensor:
+      # Outside temperature from weather
+      - name: "Outside Temperature"
+        unique_id: outside_temperature
+        unit_of_measurement: "°F"
+        state: "{{ state_attr('weather.forecast_home', 'temperature') }}"
+        icon: mdi:thermometer
+        
+      - name: "Outside Humidity"
+        unique_id: outside_humidity
+        unit_of_measurement: "%"
+        state: "{{ state_attr('weather.forecast_home', 'humidity') }}"
+        icon: mdi:water-percent
+
+      # House average temperature
+      - name: "House Average Temperature"
+        unique_id: house_avg_temp
+        unit_of_measurement: "°F"
+        state: >
+          {% set temps = [
+            states('sensor.first_floor_thermostat_temperature') | float(0),
+            states('sensor.master_nest_thermostat_temperature') | float(0),
+            states('sensor.basement_thermostat_temperature') | float(0)
+          ] | select('gt', 0) | list %}
+          {{ (temps | sum / temps | length) | round(1) if temps else 'unknown' }}
+        icon: mdi:home-thermometer
+
+      # House average humidity
+      - name: "House Average Humidity"
+        unique_id: house_avg_humidity
+        unit_of_measurement: "%"
+        state: >
+          {% set humids = [
+            states('sensor.first_floor_thermostat_humidity') | float(0),
+            states('sensor.master_nest_thermostat_humidity') | float(0),
+            states('sensor.basement_thermostat_humidity') | float(0)
+          ] | select('gt', 0) | list %}
+          {{ (humids | sum / humids | length) | round(0) if humids else 'unknown' }}
+        icon: mdi:water-percent
+
+# -----------------------------------------------------------------------------
+# HISTORY STATS - Runtime Tracking (Today)
+# -----------------------------------------------------------------------------
+sensor:
+  - platform: history_stats
+    name: "1st Floor Heating Today"
+    entity_id: binary_sensor.1st_floor_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "2nd Floor Heating Today"
+    entity_id: binary_sensor.2nd_floor_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Basement Heating Today"
+    entity_id: binary_sensor.basement_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "Garage Heating Today"
+    entity_id: binary_sensor.garage_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "PFP East Heating Today"
+    entity_id: binary_sensor.pfp_east_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+  - platform: history_stats
+    name: "PFP West Heating Today"
+    entity_id: binary_sensor.pfp_west_heating
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"

@@ -1,0 +1,378 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# FAMILY ACTIVITIES SYSTEM
+# packages/family_activities.yaml
+# 
+# Context-aware activity tracking for lighting and automation decisions
+# Uses calendar + location fusion for reliable activity detection
+# 
+# Created: 2026-01-23
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ZONES - Activity Locations
+# ─────────────────────────────────────────────────────────────────────────────
+zone:
+  - name: "BAGC Gymnastics"
+    latitude: 43.9761
+    longitude: -91.3587
+    radius: 150
+    icon: mdi:gymnastics
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INPUT NUMBERS - Grade Tracking (update August 15 annually, or auto-increments)
+# ─────────────────────────────────────────────────────────────────────────────
+input_number:
+  ella_grade:
+    name: "Ella - Current Grade"
+    min: 1
+    max: 12
+    step: 1
+    initial: 6
+    mode: box
+    icon: mdi:school
+
+  alaina_grade:
+    name: "Alaina - Current Grade"
+    min: 1
+    max: 12
+    step: 1
+    initial: 8
+    mode: box
+    icon: mdi:school
+
+  jarrett_grade:
+    name: "Jarrett - Current Grade"
+    min: 1
+    max: 12
+    step: 1
+    initial: 3
+    mode: box
+    icon: mdi:school
+
+  owen_grade:
+    name: "Owen - Current Grade"
+    min: 1
+    max: 12
+    step: 1
+    initial: 1
+    mode: box
+    icon: mdi:school
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INPUT DATETIME - Arrival Time Tracking
+# ─────────────────────────────────────────────────────────────────────────────
+input_datetime:
+  ella_last_arrived_home:
+    name: "Ella - Last Arrived Home"
+    has_date: true
+    has_time: true
+    icon: mdi:home-clock
+
+  alaina_last_arrived_home:
+    name: "Alaina - Last Arrived Home"
+    has_date: true
+    has_time: true
+    icon: mdi:home-clock
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INPUT BOOLEAN - Activity State Flags
+# ─────────────────────────────────────────────────────────────────────────────
+input_boolean:
+  ella_had_activity_today:
+    name: "Ella - Had Activity Today"
+    icon: mdi:calendar-check
+
+  alaina_had_activity_today:
+    name: "Alaina - Had Activity Today"
+    icon: mdi:calendar-check
+
+  ella_winddown_override:
+    name: "Ella - Skip Wind-down Tonight"
+    icon: mdi:sleep-off
+
+  alaina_winddown_override:
+    name: "Alaina - Skip Wind-down Tonight"
+    icon: mdi:sleep-off
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INPUT TEXT - Calendar URL Storage (for easy updates when leagues change)
+# ─────────────────────────────────────────────────────────────────────────────
+input_text:
+  ella_waya_softball_calendar_id:
+    name: "Ella - WAYA Softball Calendar ID"
+    initial: ""
+    icon: mdi:baseball
+
+  alaina_waya_softball_calendar_id:
+    name: "Alaina - WAYA Softball Calendar ID"
+    initial: ""
+    icon: mdi:baseball
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TEMPLATE SENSORS
+# ═══════════════════════════════════════════════════════════════════════════════
+template:
+  - sensor:
+      - name: "Ella School Level"
+        unique_id: ella_school_level
+        state: >
+          {% set grade = states('input_number.ella_grade') | int(0) %}
+          {% if grade <= 5 %}elementary
+          {% elif grade <= 8 %}middle
+          {% else %}high{% endif %}
+        icon: mdi:school
+
+      - name: "Alaina School Level"
+        unique_id: alaina_school_level
+        state: >
+          {% set grade = states('input_number.alaina_grade') | int(0) %}
+          {% if grade <= 5 %}elementary
+          {% elif grade <= 8 %}middle
+          {% else %}high{% endif %}
+        icon: mdi:school
+
+      - name: "Ella Softball Age Division"
+        unique_id: ella_softball_age_division
+        state: >
+          {% set grade = states('input_number.ella_grade') | int(0) %}
+          {% if grade <= 6 %}12U
+          {% elif grade <= 8 %}14U
+          {% else %}HS{% endif %}
+        icon: mdi:baseball
+
+      - name: "Alaina Softball Age Division"
+        unique_id: alaina_softball_age_division
+        state: >
+          {% set grade = states('input_number.alaina_grade') | int(0) %}
+          {% if grade <= 6 %}12U
+          {% elif grade <= 8 %}14U
+          {% else %}HS{% endif %}
+        icon: mdi:baseball
+
+      - name: "Ella Minutes Since Home"
+        unique_id: ella_minutes_since_home
+        unit_of_measurement: "min"
+        state: >
+          {% set arrived = states('input_datetime.ella_last_arrived_home') %}
+          {% if arrived in ['unknown', 'unavailable', ''] %}
+            0
+          {% else %}
+            {% set arrived_dt = strptime(arrived, '%Y-%m-%d %H:%M:%S') %}
+            {% set diff = (now().replace(tzinfo=None) - arrived_dt).total_seconds() / 60 %}
+            {{ diff | int if diff > 0 else 0 }}
+          {% endif %}
+        icon: mdi:clock-outline
+
+      - name: "Alaina Minutes Since Home"
+        unique_id: alaina_minutes_since_home
+        unit_of_measurement: "min"
+        state: >
+          {% set arrived = states('input_datetime.alaina_last_arrived_home') %}
+          {% if arrived in ['unknown', 'unavailable', ''] %}
+            0
+          {% else %}
+            {% set arrived_dt = strptime(arrived, '%Y-%m-%d %H:%M:%S') %}
+            {% set diff = (now().replace(tzinfo=None) - arrived_dt).total_seconds() / 60 %}
+            {{ diff | int if diff > 0 else 0 }}
+          {% endif %}
+        icon: mdi:clock-outline
+
+  - binary_sensor:
+      - name: "Ella at Activity"
+        unique_id: ella_at_activity
+        device_class: presence
+        state: >
+          {% set at_home = is_state('input_boolean.ella_home', 'on') %}
+          {% set at_school = is_state('binary_sensor.ella_at_school', 'on') %}
+          {% set tenacity_active = is_state('calendar.12s_1', 'on') %}
+          {% set school_vball = is_state('calendar.whitehall_6th_grade_volleyball', 'on') %}
+          {% set school_bball = is_state('calendar.6th_grade_girls_basketball', 'on') %}
+          {% set any_calendar_active = tenacity_active or school_vball or school_bball %}
+          {{ not at_home and not at_school and any_calendar_active }}
+        icon: mdi:calendar-star
+
+      - name: "Alaina at Activity"
+        unique_id: alaina_at_activity
+        device_class: presence
+        state: >
+          {% set at_home = is_state('input_boolean.alaina_home', 'on') %}
+          {% set at_school = is_state('binary_sensor.alaina_at_school', 'on') %}
+          {% set at_bagc = is_state('person.alaina_spencer', 'BAGC Gymnastics') %}
+          {% set tenacity_active = is_state('calendar.14s_2', 'on') %}
+          {% set school_vball = is_state('calendar.whitehall_middle_school_volleyball_calendar', 'on') %}
+          {% set gymnastics = is_state('calendar.bagc_maga_team_1_2_calendar', 'on') %}
+          {% set any_calendar_active = tenacity_active or school_vball or gymnastics %}
+          {{ at_bagc or (not at_home and not at_school and any_calendar_active) }}
+        icon: mdi:calendar-star
+
+      - name: "Ella Had Late Activity"
+        unique_id: ella_had_late_activity
+        state: >
+          {% set had_activity = is_state('input_boolean.ella_had_activity_today', 'on') %}
+          {% set arrived = states('input_datetime.ella_last_arrived_home') %}
+          {% if arrived in ['unknown', 'unavailable', ''] %}
+            false
+          {% else %}
+            {% set arrived_dt = strptime(arrived, '%Y-%m-%d %H:%M:%S') %}
+            {% set arrived_hour = arrived_dt.hour %}
+            {% set today = now().date() == arrived_dt.date() %}
+            {{ had_activity and today and arrived_hour >= 19 }}
+          {% endif %}
+        icon: mdi:clock-alert
+
+      - name: "Alaina Had Late Activity"
+        unique_id: alaina_had_late_activity
+        state: >
+          {% set had_activity = is_state('input_boolean.alaina_had_activity_today', 'on') %}
+          {% set arrived = states('input_datetime.alaina_last_arrived_home') %}
+          {% if arrived in ['unknown', 'unavailable', ''] %}
+            false
+          {% else %}
+            {% set arrived_dt = strptime(arrived, '%Y-%m-%d %H:%M:%S') %}
+            {% set arrived_hour = arrived_dt.hour %}
+            {% set today = now().date() == arrived_dt.date() %}
+            {{ had_activity and today and arrived_hour >= 19 }}
+          {% endif %}
+        icon: mdi:clock-alert
+
+      - name: "Ella Winddown Active"
+        unique_id: ella_winddown_active
+        state: >
+          {% set school_tomorrow = is_state('input_boolean.school_tomorrow', 'on') %}
+          {% set override = is_state('input_boolean.ella_winddown_override', 'on') %}
+          {% set at_home = is_state('input_boolean.ella_home', 'on') %}
+          {% set late_activity = is_state('binary_sensor.ella_had_late_activity', 'on') %}
+          {% set minutes_home = states('sensor.ella_minutes_since_home') | int(0) %}
+          {% set current_hour = now().hour %}
+          {% if not school_tomorrow or override or not at_home %}
+            false
+          {% elif late_activity %}
+            {{ minutes_home >= 90 }}
+          {% else %}
+            {{ current_hour >= 21 }}
+          {% endif %}
+        icon: mdi:weather-night
+
+      - name: "Alaina Winddown Active"
+        unique_id: alaina_winddown_active
+        state: >
+          {% set school_tomorrow = is_state('input_boolean.school_tomorrow', 'on') %}
+          {% set override = is_state('input_boolean.alaina_winddown_override', 'on') %}
+          {% set at_home = is_state('input_boolean.alaina_home', 'on') %}
+          {% set late_activity = is_state('binary_sensor.alaina_had_late_activity', 'on') %}
+          {% set minutes_home = states('sensor.alaina_minutes_since_home') | int(0) %}
+          {% set current_hour = now().hour %}
+          {% if not school_tomorrow or override or not at_home %}
+            false
+          {% elif late_activity %}
+            {{ minutes_home >= 90 }}
+          {% else %}
+            {{ current_hour >= 21 }}
+          {% endif %}
+        icon: mdi:weather-night
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AUTOMATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+automation:
+  - id: family_ella_arrived_home
+    alias: "Family → Ella Arrived Home"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.ella_home
+        to: "on"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.ella_last_arrived_home
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+  - id: family_alaina_arrived_home
+    alias: "Family → Alaina Arrived Home"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.alaina_home
+        to: "on"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.alaina_last_arrived_home
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+  - id: family_ella_left_for_activity
+    alias: "Family → Ella Left for Activity"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.ella_at_activity
+        to: "on"
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.ella_had_activity_today
+
+  - id: family_alaina_left_for_activity
+    alias: "Family → Alaina Left for Activity"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.alaina_at_activity
+        to: "on"
+    action:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.alaina_had_activity_today
+
+  - id: family_daily_reset
+    alias: "Family → Daily Reset"
+    mode: single
+    trigger:
+      - platform: time
+        at: "04:00:00"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id:
+            - input_boolean.ella_had_activity_today
+            - input_boolean.alaina_had_activity_today
+            - input_boolean.ella_winddown_override
+            - input_boolean.alaina_winddown_override
+
+  - id: family_increment_grades
+    alias: "Family → Increment Grades (New School Year)"
+    mode: single
+    trigger:
+      - platform: time
+        at: "08:00:00"
+    condition:
+      - condition: template
+        value_template: "{{ now().month == 8 and now().day == 15 }}"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.ella_grade
+        data:
+          value: "{{ states('input_number.ella_grade') | int + 1 }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.alaina_grade
+        data:
+          value: "{{ states('input_number.alaina_grade') | int + 1 }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.jarrett_grade
+        data:
+          value: "{{ states('input_number.jarrett_grade') | int + 1 }}"
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.owen_grade
+        data:
+          value: "{{ states('input_number.owen_grade') | int + 1 }}"
+      - service: persistent_notification.create
+        data:
+          title: "🎒 New School Year"
+          message: "Grades auto-incremented. Verify and update sport calendars if needed."

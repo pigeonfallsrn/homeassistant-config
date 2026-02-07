@@ -1,0 +1,57 @@
+# Kitchen Tablet - Power Off When Everyone Away
+- id: kitchen_tablet_power_off_away
+  alias: "Kitchen Tablet - Power Off When Everyone Away"
+  description: "Turn off tablet when no one home"
+  trigger:
+    - platform: state
+      entity_id: 
+        - person.john_spencer
+        - person.michelle
+        - person.alaina_spencer
+        - person.ella_spencer
+      to: "not_home"
+  condition:
+    - condition: state
+      entity_id: person.john_spencer
+      state: "not_home"
+    - condition: state
+      entity_id: person.michelle
+      state: "not_home"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+    - service: logbook.log
+      data:
+        name: Kitchen Tablet
+        message: "Screen off - no one home"
+
+# Kitchen Tablet - Wake on Arrival
+- id: kitchen_tablet_wake_arrival
+  alias: "Kitchen Tablet - Wake When Someone Arrives"
+  description: "Turn on tablet when someone arrives"
+  trigger:
+    - platform: state
+      entity_id: 
+        - person.john_spencer
+        - person.michelle
+        - person.alaina_spencer
+        - person.ella_spencer
+      to: "home"
+  condition:
+    - condition: state
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+      state: "off"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+    - delay:
+        seconds: 3
+    - service: button.press
+      target:
+        entity_id: button.kitchen_wall_a9_tablet_load_start_url
+    - service: logbook.log
+      data:
+        name: Kitchen Tablet
+        message: "Screen on - someone arrived home"

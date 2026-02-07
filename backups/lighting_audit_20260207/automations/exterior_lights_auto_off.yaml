@@ -1,0 +1,76 @@
+- alias: "Front Driveway - Auto Off After No Motion"
+  id: front_driveway_auto_off
+  description: "Turn off driveway lights 5 minutes after no motion"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_driveway_door_motion
+      to: "off"
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: light.front_driveway
+      state: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.front_driveway
+      data:
+        transition: 5
+  mode: single
+
+- alias: "Front Driveway - Lights On When Motion (Dark)"
+  id: front_driveway_motion_lights_on
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_driveway_door_motion
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.front_driveway_door_is_dark
+      state: "on"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.front_driveway
+      data:
+        brightness_pct: 100
+  mode: single
+
+- alias: "Garage - Auto Off After No Motion"
+  id: garage_lights_auto_off
+  description: "Turn off garage lights 5 minutes after no motion"
+  trigger:
+    - platform: template
+      value_template: >
+        {{ is_state('binary_sensor.garage_north_wall_nightlight_motion', 'off') and
+           is_state('binary_sensor.ratgdo32disco_fd8d8c_motion', 'off') and
+           is_state('binary_sensor.ratgdo32disco_5735e8_motion', 'off') }}
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: light.garage
+      state: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.garage
+      data:
+        transition: 5
+  mode: single
+
+- alias: "Garage - Lights On When Walk-in Door Opens"
+  id: garage_walkin_door_lights_on
+  description: "Turn on garage lights when walk-in door opens"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.garage_walk_in_door
+      to: "on"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.garage
+      data:
+        brightness_pct: 100
+  mode: single

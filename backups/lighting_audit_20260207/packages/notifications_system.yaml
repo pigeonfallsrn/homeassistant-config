@@ -1,0 +1,524 @@
+# =============================================================================
+# NOTIFICATIONS SYSTEM
+# Arrival alerts, low battery digest, actionable notifications
+# =============================================================================
+
+automation:
+  # ---------------------------------------------------------------------------
+  # Arrival Notifications
+  # ---------------------------------------------------------------------------
+  - id: arrival_notification_john
+    alias: "Arrival - John Home"
+    trigger:
+      - platform: state
+        entity_id: person.john_spencer
+        to: "home"
+    condition:
+      - condition: state
+        entity_id: input_boolean.someone_home
+        state: "on"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "Welcome Home"
+          message: "You arrived home at {{ now().strftime('%I:%M %p') }}"
+          data:
+            tag: "arrival_john"
+            actions:
+              - action: "ARRIVAL_LIGHTS_ON"
+                title: "Lights On"
+              - action: "ARRIVAL_DISARM"
+                title: "Disarm"
+              - action: "ARRIVAL_DISMISS"
+                title: "Dismiss"
+    mode: single
+# DISABLED - 
+# DISABLED -   - id: arrival_notification_alaina
+# DISABLED -     alias: "Arrival - Alaina Home"
+# DISABLED -     trigger:
+# DISABLED -       - platform: state
+# DISABLED -         entity_id: person.alaina_spencer
+# DISABLED -         to: "home"
+# DISABLED -     action:
+# DISABLED -       - service: notify.mobile_app_john_s_phone
+# DISABLED -         data:
+# DISABLED -           title: "Alaina Arrived"
+# DISABLED -           message: "Alaina arrived home at {{ now().strftime('%I:%M %p') }}"
+# DISABLED -           data:
+# DISABLED -             tag: "arrival_alaina"
+    mode: single
+
+  - id: arrival_notification_ella
+    alias: "Arrival - Ella Home"
+    trigger:
+      - platform: state
+        entity_id: person.ella_spencer
+        to: "home"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "Ella Arrived"
+          message: "Ella arrived home at {{ now().strftime('%I:%M %p') }}"
+          data:
+            tag: "arrival_ella"
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Arrival Action Handlers
+  # ---------------------------------------------------------------------------
+  - id: arrival_notification_actions
+    alias: "Arrival - Handle Notification Actions"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "ARRIVAL_LIGHTS_ON"
+        id: lights_on
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "ARRIVAL_DISARM"
+        id: disarm
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: lights_on
+            sequence:
+              - service: light.turn_on
+                target:
+                  entity_id:
+                    - light.entry_room_hue_color_lamp
+                    - light.living_room_east_floor_lamp
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "arrival_john"
+
+          - conditions:
+              - condition: trigger
+                id: disarm
+            sequence:
+              # Add your alarm disarm service here if you have one
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "arrival_john"
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Low Battery Daily Digest - 9 AM
+  # ---------------------------------------------------------------------------
+  - id: low_battery_daily_digest
+    alias: "Low Battery - Daily Digest"
+    trigger:
+      - platform: time
+        at: "09:00:00"
+    action:
+      - variables:
+          low_batteries: >
+            {% set threshold = 20 %}
+            {% set ns = namespace(devices=[]) %}
+            {% for state in states.sensor 
+               if 'battery' in state.entity_id 
+               and 'voltage' not in state.entity_id 
+               and 'type' not in state.entity_id 
+               and 'state' not in state.entity_id
+               and state.state not in ['unknown', 'unavailable', 'None']
+               and state.state | int(100) < threshold %}
+              {% set ns.devices = ns.devices + [state.name ~ ': ' ~ state.state ~ '%'] %}
+            {% endfor %}
+            {{ ns.devices }}
+      - condition: template
+        value_template: "{{ low_batteries | length > 0 }}"
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "🔋 Low Battery Alert"
+          message: "{{ low_batteries | length }} device(s) need attention:\n{{ low_batteries | join('\n') }}"
+          data:
+            tag: "low_battery_digest"
+            persistent: true
+            actions:
+              - action: "BATTERY_DISMISS"
+                title: "Dismiss"
+              - action: "BATTERY_SNOOZE_24H"
+                title: "Remind Tomorrow"
+    mode: single
+
+  - id: low_battery_notification_actions
+    alias: "Low Battery - Handle Notification Actions"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BATTERY_DISMISS"
+        id: dismiss
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BATTERY_SNOOZE_24H"
+        id: snooze
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: dismiss
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "low_battery_digest"
+
+          - conditions:
+              - condition: trigger
+                id: snooze
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "low_battery_digest"
+              # Snooze just clears - tomorrow's 9 AM trigger will fire again
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Critical Battery Alert (Below 10%) - Immediate
+  # ---------------------------------------------------------------------------
+  - id: critical_battery_alert
+    alias: "Critical Battery - Immediate Alert"
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.aqara_water_leak_sensor_battery_5
+          - sensor.aqara_water_leak_sensor_battery
+          - sensor.aqara_water_leak_sensor_battery_3
+          - sensor.aqara_water_leak_sensor_battery_4
+          - sensor.aqara_water_leak_sensor_battery_2
+          - sensor.aqara_door_and_window_sensor_battery_5
+          - sensor.aqara_door_and_window_sensor_battery_4
+          - sensor.aqara_door_and_window_sensor_battery_6
+          - sensor.aqara_door_and_window_sensor_battery
+          - sensor.aqara_door_and_window_sensor_battery_3
+          - sensor.aqara_door_and_window_sensor_battery_2
+          - sensor.aqara_motion_sensor_p1_battery
+          - sensor.aqara_motion_sensor_p1_battery_3
+          - sensor.aqara_motion_sensor_p1_battery_2
+          - sensor.aqara_motion_sensor_p1_battery_6
+          - sensor.aqara_motion_sensor_p1_battery_4
+          - sensor.aqara_motion_sensor_p1_battery_5
+          - sensor.hue_tap_dial_switch_3_battery
+          - sensor.hue_dimmer_switch_3_battery
+          - sensor.hue_dimmer_switch_2_battery
+          - sensor.hue_dimmer_switch_4_battery
+          - sensor.hue_tap_dial_switch_1_battery
+          - sensor.hue_dimmer_switch_1_battery
+          - sensor.lumi_lumi_sensor_wleak_aq1_battery
+        below: 10
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "⚠️ Critical Battery"
+          message: "{{ trigger.to_state.name }} is at {{ trigger.to_state.state }}%"
+          data:
+            tag: "critical_battery_{{ trigger.entity_id }}"
+            persistent: true
+            importance: high
+            channel: "critical_alerts"
+    mode: parallel
+
+  # ---------------------------------------------------------------------------
+  # Approaching Home - Lights + Garage Notification
+  # ---------------------------------------------------------------------------
+  # Bedtime - John Connected to 2nd Floor AP After 7 PM
+  # ---------------------------------------------------------------------------
+  - id: bedtime_first_floor_lights_off_prompt
+    alias: "Bedtime - Prompt to Turn Off 1st Floor Lights"
+    trigger:
+      - platform: template
+        value_template: >
+          {{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == '70:a7:41:c6:1e:6c' }}
+    condition:
+      - condition: time
+        after: "19:00:00"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.entry_room
+            state: "on"
+          - condition: state
+            entity_id: light.living_room
+            state: "on"
+          - condition: state
+            entity_id: light.kitchen_lounge
+            state: "on"
+          - condition: state
+            entity_id: light.front_driveway
+            state: "on"
+          - condition: state
+            entity_id: light.back_patio
+            state: "on"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "Heading to Bed?"
+          message: "1st floor or outside lights are still on."
+          data:
+            tag: "bedtime_lights"
+            actions:
+              - action: "BEDTIME_ALL_OFF"
+                title: "All Off"
+              - action: "BEDTIME_1ST_FLOOR_OFF"
+                title: "1st Floor"
+              - action: "BEDTIME_OUTSIDE_OFF"
+                title: "Outside"
+              - action: "BEDTIME_DISMISS"
+                title: "Dismiss"
+    mode: single
+
+  - id: bedtime_lights_notification_actions
+    alias: "Bedtime - Handle Light Actions"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BEDTIME_ALL_OFF"
+        id: all_off
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BEDTIME_1ST_FLOOR_OFF"
+        id: first_floor
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BEDTIME_OUTSIDE_OFF"
+        id: outside
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "BEDTIME_DISMISS"
+        id: dismiss
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: all_off
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id:
+                    - light.entry_room
+                    - light.living_room
+                    - light.kitchen_lounge
+                    - light.1st_floor_bathroom
+                    - light.front_driveway
+                    - light.back_patio
+                    - light.very_front_door
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "bedtime_lights"
+
+          - conditions:
+              - condition: trigger
+                id: first_floor
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id:
+                    - light.entry_room
+                    - light.living_room
+                    - light.kitchen_lounge
+                    - light.1st_floor_bathroom
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "bedtime_lights"
+
+          - conditions:
+              - condition: trigger
+                id: outside
+            sequence:
+              - service: light.turn_off
+                target:
+                  entity_id:
+                    - light.front_driveway
+                    - light.back_patio
+                    - light.very_front_door
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "bedtime_lights"
+
+          - conditions:
+              - condition: trigger
+                id: dismiss
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "bedtime_lights"
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Humidity Alert - 2nd Floor Average
+  # ---------------------------------------------------------------------------
+#DISABLED   - id: humidity_alert_2nd_floor
+#DISABLED     alias: "Humidity Alert - 2nd Floor Low or High"
+#DISABLED     trigger:
+#DISABLED       # Low humidity check every hour
+#DISABLED       - platform: time_pattern
+#DISABLED         minutes: 0
+#DISABLED     condition:
+#DISABLED       - condition: state
+#DISABLED         entity_id: input_boolean.john_home
+#DISABLED         state: "on"
+#DISABLED     action:
+#DISABLED       - variables:
+#DISABLED           avg_humidity: >
+#DISABLED             {% set h1 = states('sensor.aqara_temp_humidity_sensor_humidity_4') | float(0) %}
+#DISABLED             {% set h2 = states('sensor.aqara_temp_humidity_sensor_humidity_5') | float(0) %}
+#DISABLED             {% set h3 = states('sensor.aqara_temp_humidity_sensor_humidity_6') | float(0) %}
+#DISABLED             {% set count = (1 if h1 > 0 else 0) + (1 if h2 > 0 else 0) + (1 if h3 > 0 else 0) %}
+#DISABLED             {% if count > 0 %}
+#DISABLED               {{ ((h1 + h2 + h3) / count) | round(1) }}
+#DISABLED             {% else %}
+#DISABLED               0
+#DISABLED             {% endif %}
+#DISABLED           is_summer: >
+#DISABLED             {{ now().month in [5, 6, 7, 8, 9] }}
+#DISABLED       - choose:
+#DISABLED           # LOW HUMIDITY (below 30%)
+#DISABLED           - conditions:
+#DISABLED               - condition: template
+#DISABLED                 value_template: "{{ avg_humidity < 30 }}"
+#DISABLED             sequence:
+#DISABLED               - service: notify.mobile_app_john_s_phone
+#DISABLED                 data:
+#DISABLED                   title: "🏜️ Low Humidity Alert"
+#DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Pause bathroom fan?"
+#DISABLED                   data:
+#DISABLED                     tag: "humidity_alert"
+#DISABLED                     persistent: true
+#DISABLED                     actions:
+#DISABLED                       - action: "HUMIDITY_PAUSE_15M"
+#DISABLED                         title: "Pause 15m"
+#DISABLED                       - action: "HUMIDITY_PAUSE_12H"
+#DISABLED                         title: "Pause 12hr"
+#DISABLED                       - action: "HUMIDITY_DISMISS"
+#DISABLED                         title: "Dismiss"
+#DISABLED 
+#DISABLED           # HIGH HUMIDITY (above 55%) - Summer only
+#DISABLED           - conditions:
+#DISABLED               - condition: template
+#DISABLED                 value_template: "{{ avg_humidity > 55 and is_summer }}"
+#DISABLED             sequence:
+#DISABLED               - service: notify.mobile_app_john_s_phone
+#DISABLED                 data:
+#DISABLED                   title: "💧 High Humidity Alert"
+#DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Turn on AC?"
+#DISABLED                   data:
+#DISABLED                     tag: "humidity_alert"
+#DISABLED                     persistent: true
+#DISABLED                     actions:
+#DISABLED                       - action: "HUMIDITY_AC_ON"
+#DISABLED                         title: "AC 74°"
+#DISABLED                       - action: "HUMIDITY_PAUSE_15M"
+#DISABLED                         title: "Pause Fan 15m"
+#DISABLED                       - action: "HUMIDITY_DISMISS"
+#DISABLED                         title: "Dismiss"
+#DISABLED 
+#DISABLED   - id: humidity_notification_actions
+    alias: "Humidity - Handle Notification Actions"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HUMIDITY_PAUSE_15M"
+        id: pause_15m
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HUMIDITY_PAUSE_12H"
+        id: pause_12h
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HUMIDITY_AC_ON"
+        id: ac_on
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "HUMIDITY_DISMISS"
+        id: dismiss
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: pause_15m
+            sequence:
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.upstairs_bathroom_fan
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "humidity_alert"
+              - delay:
+                  minutes: 15
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.upstairs_bathroom_fan
+
+          - conditions:
+              - condition: trigger
+                id: pause_12h
+            sequence:
+              - service: switch.turn_off
+                target:
+                  entity_id: switch.upstairs_bathroom_fan
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "humidity_alert"
+              - delay:
+                  hours: 12
+              - service: switch.turn_on
+                target:
+                  entity_id: switch.upstairs_bathroom_fan
+
+          - conditions:
+              - condition: trigger
+                id: ac_on
+            sequence:
+              - service: climate.set_temperature
+                target:
+                  entity_id: climate.upstairs_hallway_mini_split
+                data:
+                  temperature: 74
+                  hvac_mode: cool
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "humidity_alert"
+
+          - conditions:
+              - condition: trigger
+                id: dismiss
+            sequence:
+              - service: notify.mobile_app_john_s_phone
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "humidity_alert"
+    mode: restart

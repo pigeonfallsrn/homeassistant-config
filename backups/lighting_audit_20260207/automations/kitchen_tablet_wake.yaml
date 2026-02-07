@@ -1,0 +1,54 @@
+# Kitchen Tablet - Wake on Motion
+- id: kitchen_tablet_wake_on_motion
+  alias: "Kitchen Tablet - Wake on Motion"
+  description: "Turn on tablet screen when kitchen motion detected and someone home"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.kitchen_motion
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: person.john_spencer
+          state: home
+        - condition: state
+          entity_id: person.alaina_spencer
+          state: home
+        - condition: state
+          entity_id: person.ella_spencer
+          state: home
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+    - service: logbook.log
+      data:
+        name: Kitchen Tablet
+        message: "Screen woke - kitchen motion detected"
+
+# Kitchen Tablet - Sleep after inactivity
+- id: kitchen_tablet_sleep_on_inactivity
+  alias: "Kitchen Tablet - Sleep After Inactivity"
+  description: "Turn off screen after 5 minutes of no motion"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.kitchen_motion
+      to: "off"
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+      state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.kitchen_wall_a9_tablet_screen
+    - service: logbook.log
+      data:
+        name: Kitchen Tablet
+        message: "Screen sleep - 5min no motion"

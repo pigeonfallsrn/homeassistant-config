@@ -1,0 +1,25 @@
+# First Person Home - Entry Lights
+- id: first_person_home_lights_on
+  alias: First Person Home After Dark → Entry Lights On
+  mode: single
+  trigger:
+    - platform: state
+      entity_id:
+        - person.john_spencer
+        - person.alaina_spencer
+        - person.ella_spencer
+      to: home
+  condition:
+    - condition: time
+      after: "06:00:00"
+      before: "23:59:59"
+    - condition: numeric_state
+      entity_id: sensor.entry_room_east_wall_nightlight_illuminance
+      below: 30
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.entry_room_hue_color_lamp
+      data:
+        brightness_pct: 20
+        transition: 5

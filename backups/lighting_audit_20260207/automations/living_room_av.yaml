@@ -1,0 +1,24 @@
+# Living Room AV System Automation
+- id: living_room_tv_off_trigger_av_system_off
+  alias: Living Room TV OFF → Full AV System OFF
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: media_player.living_room_tv
+      to: 'off'
+  action:
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    - delay: 00:00:05
+    - service: switch.turn_off
+      target:
+        entity_id: switch.basement_yamaha_av_receiver_plug
+    - service: switch.turn_off
+      target:
+        entity_id: switch.kitchen_echo_show_plug
+    - service: light.turn_off
+      target:
+        entity_id: light.living_room_tv_smart_light_strip
+      data:
+        transition: 3
