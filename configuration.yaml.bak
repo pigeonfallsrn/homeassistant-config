@@ -43,11 +43,7 @@ template:
         unit_of_measurement: "devices"
 
 # Includes
-# Handmade YAML automations
-automation manual: !include_dir_merge_list automations/
-
-# UI-created automations (blueprints work here)
-automation ui: !include automations.yaml
+automation: !include_dir_merge_list automations/
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
