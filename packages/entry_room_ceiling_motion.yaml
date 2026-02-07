@@ -1,0 +1,66 @@
+# =============================================================================
+# ENTRY ROOM CEILING - MOTION AUTOMATION
+# =============================================================================
+# Motion sensors: Aqara P1 + ThirdReality (aggregated)
+# Controls: light.entry_room_ceiling_hue_white_lights
+# Adaptive Lighting: switch.adaptive_lighting_entry_room_ceiling
+# 
+# Lux-aware, manual override support, Wisconsin-optimized
+# =============================================================================
+
+automation:
+  - id: entry_room_ceiling_motion_lighting
+    alias: Entry Room - Ceiling Motion Lighting
+    description: 'Motion-activated with AL circadian control and lux awareness'
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.entry_room_motion  # Your aggregated motion
+        to: 'on'
+        id: motion_on
+      - platform: state
+        entity_id: binary_sensor.entry_room_motion
+        to: 'off'
+        for:
+          minutes: 4  # Extended timeout for 3-door transition zone
+        id: motion_off
+    
+    condition:
+      # Don't auto-control if manual override active
+      - condition: state
+        entity_id: input_boolean.entry_room_manual_override
+        state: 'off'
+    
+    action:
+      - choose:
+          # ── MOTION ON ──
+          - conditions:
+              - condition: trigger
+                id: motion_on
+            sequence:
+              # Optional: Check lux before turning on
+              - choose:
+                  - conditions:
+                      - condition: numeric_state
+                        entity_id: sensor.entry_room_lux  # Your ThirdReality lux
+                        below: 20  # Skip if sunny
+                    sequence:
+                      - action: light.turn_on
+                        target:
+                          entity_id: light.entry_room_ceiling_hue_white_lights
+                      - action: adaptive_lighting.apply
+                        target:
+                          entity_id: switch.adaptive_lighting_entry_room_ceiling
+                # If too bright outside, skip
+                default: []
+          
+          # ── MOTION OFF ──
+          - conditions:
+              - condition: trigger
+                id: motion_off
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.entry_room_ceiling_hue_white_lights
+                data:
+                  transition: 5
