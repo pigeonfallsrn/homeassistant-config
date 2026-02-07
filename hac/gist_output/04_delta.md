@@ -1,9 +1,6 @@
-# Delta - 2026-02-05 10:52
+# Delta - 2026-02-07 12:07
 
 ## Changed Since Last Push
-- adaptive_lighting_entry_lamp.yaml
-- john_proximity.yaml
-- kitchen_tablet_dashboard.yaml
 - presence_system.yaml
 
 ## Recent Errors (last 3)

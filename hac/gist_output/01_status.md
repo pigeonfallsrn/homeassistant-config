@@ -1,10 +1,10 @@
-# HA Status - 2026-02-05 10:52 CST
-Version: 2026.2.0 | HAC: v7.3
+# HA Status - 2026-02-07 12:06 CST
+Version: 2026.2.1 | HAC: v7.3
 
 ## People
 john_spencer: home
-alaina_spencer: Whitehall School
-ella_spencer: Whitehall School
+alaina_spencer: not_home
+ella_spencer: not_home
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -16,6 +16,8 @@ party_mode: off
 entry_room_manual_override: off
 bathroom_manual_override: off
 kitchen_lounge_manual_override: off
+2nd_floor_bathroom_manual_override: off
+2nd_floor_bathroom_fan_manual_override: off
 hot_tub_mode: off
 extended_evening: off
 living_room_manual_override: off
@@ -23,7 +25,7 @@ ella_winddown_override: off
 alaina_winddown_override: off
 ella_bedroom_override: off
 alaina_bedroom_override: off
-school_tomorrow: on
+school_tomorrow: off
 guest_present: off
 kids_bedtime_override: off
 john_home: on
@@ -36,20 +38,18 @@ both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-05 09:57:27 calendar_refresh_school_in_session_now
-2026-02-05 09:57:27 calendar_refresh_school_tomorrow
-2026-02-05 09:57:27 living_room_lamps_adaptive_control
-2026-02-05 09:57:27 kitchen_lounge_lamp_off_after_no_motion
-2026-02-05 09:57:27 kitchen_lounge_lamp_dim_after_15min_no_motion
-2026-02-05 09:57:27 kitchen_lounge_lamp_adaptive_lux_control
-2026-02-05 09:57:27 entry_room_lamp_adaptive_lux_control
-2026-02-05 09:18:37 calendar_refresh_school_tomorrow
-2026-02-05 09:18:37 living_room_lamps_adaptive_control
-2026-02-05 09:18:37 kitchen_lounge_lamp_adaptive_lux_control
+2026-02-07 11:51:36 calendar_refresh_school_in_session_now
+2026-02-07 11:51:36 calendar_refresh_school_tomorrow
+2026-02-07 11:51:36 context_apply_on_time_change
+2026-02-07 11:51:36 kitchen_tablet_brightness_schedule
+2026-02-07 09:28:34 presence_alaina_away
+2026-02-07 09:28:34 calendar_refresh_school_in_session_now
+2026-02-07 09:28:34 calendar_refresh_school_tomorrow
+2026-02-07 09:28:31 kitchen_tablet_wake_on_kitchen_motion
+2026-02-07 09:28:31 kitchen_tablet_brightness_schedule
+2026-02-07 09:28:31 living_room_lamps_dim_after_20min_no_motion
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ living_room_lamps_adaptive_control: 12x
-⚠ entry_room_lamp_adaptive_lux_control: 8x

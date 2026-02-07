@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-05 10:52
+# System Knowledge - 2026-02-07 12:07
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -31,55 +31,55 @@
 - 2026-01-28: Add 3 lights to Living Spaces AL via UI: living_room_west_floor_lamp, kitchen_hue_color_floor_lamp, kitchen_lounge_lamp (storage edits revert - must use UI)
 
 ## Recent Session Learnings
+Phase 2: Standardize 1st Floor Bathroom (time-based scenes + override)
+Phase 3: Standardize Entry Room AUX (time-based scenes)
+Phase 4: Kitchen Chandelier + Lounge Dimmer (time-based scenes, keep Above Sink basic)
+Phase 5: Audit all 6 Adaptive Lighting instances
+Phase 6: Test + document
+
+BACKUPS: /homeassistant/backups/lighting_audit_20260207/
+
+KEY FILES:
+- automations/2nd_floor_bathroom_inovelli.yaml (GOOD TEMPLATE - copy pattern)
+- automations/1st_floor_bathroom_inovelli.yaml (NEEDS UPGRADE)
+- automations/kitchen_inovelli.yaml (NEEDS UPGRADE for chandelier/dimmer)
+- automations/entry_room_aux.yaml (NEEDS UPGRADE)
+- packages/upstairs_lighting.yaml (DELETE bathroom section, keep hallway)
+
+HUE SCENES AVAILABLE:
+- scene.2nd_fl_bathroom_ceiling_lights_energize
+- scene.2nd_floor_vanity_lights_energize/relax/nightlight
+- scene.1st_floor_ceiling_lights_energize/relax/read/nightlight
+- Check for kitchen/entry scenes in .storage/core.entity_registry
+
+## Historical Learnings (last 30 lines)
 - 502 Bad Gateway from supervisor API = HA core is down/restarting
 - Template reload: `curl -X POST ... /api/services/template/reload`
-
-## Automation File Organization
 - `!include_dir_merge_list automations/` auto-includes all .yaml files in automations/
 - New files are picked up on automation reload without config changes
 - File naming: descriptive (e.g., `garage_door_notifications.yaml`, `exterior_lights_auto_off.yaml`)
-
-## Aqara Door Sensors
 - `binary_sensor.aqara_door_and_window_sensor_door_5` = North garage door (device_class: garage_door)
 - `binary_sensor.aqara_door_and_window_sensor_door_6` = South garage door
 - State: `off` = closed, `on` = open
 - Faster/more reliable than ratgdo tilt sensor for "closed" detection
-
-## Git Maintenance
 - `git fsck --full && git gc --prune=now` fixes "confused by unstable object source" errors
 - Always exclude: `zigbee.db*`, `.ha_run.lock`
 - 09:20: QUICK WINS COMPLETE: (1) Gist pushed, (2) Verified 5 orphan automations - 4 already gone, removed 2 garage_all_lights_off from entity registry, (3) Tabled projects cleaned. Next priority: legacy template audit for 2026.6 deprecation.
 - 09:59: Orphan cleanup complete: removed 2 true orphans. Remaining garage_all_lights_off is legit (unique_id: garage_master_lights_off from garage_lighting_automation.yaml). HA regenerated it on restart.
 - 10:47: PHASE 2-4 COMPLETE: Fixed duplicate YAML keys in kitchen_tablet_dashboard.yaml, presence_system.yaml, configuration.yaml. Removed duplicate unique_ids (alaina_at_moms etc). Added round() defaults. Moved 29 old .bak files to hac/backups/old_package_baks/. All configs validated.
-
-## Historical Learnings (last 30 lines)
-- 16:49: System Review 2026-01-26: 112 automations across 23 packages. Lighting: 4 AL instances (Living Spaces fixed today, Kitchen Chandelier correct, Entry Room Ceiling disabled, Bedroom test). Motion rooms: both bathrooms 8min/10%/2200K night, entry 5/10min, kitchen lounge 8/20min, living room 15/45min. All use combined sensors. Inovelli+Hue SBM verified on 5 switches. Tabled: Phase 2 family_activities, 1st floor vanity TP-Link swap, 2nd floor bathroom smart upgrade.
-- 16:49: Unavailable entities to clean: Front Driveway North/South lights, Garage LiftMaster lights x4 (ratgdo replaced), Living Room Hue Color Lamps group, Living Room Lounge Ceiling Hue Color group, Entry Room Ceiling Hue White group, Very Front Door Motion sensor.
-- 16:49: Rec priorities: (1) Check/recreate unavailable Hue groups in Hue app, (2) Verify upstairs hallway motion automation, (3) Consider consolidating activity boost into main adaptive control, (4) Enable or remove Entry Room Ceiling AL, (5) Delete stale entities via UI
-- 16:53: Disabled old 2nd_floor_bathroom_night_lighting in occupancy_system.yaml - replaced by bathroom_motion_lighting.yaml. Fixed upstairs_hallway_motion_lighting to use combined sensor.
-- 16:57: Disabled old 2nd_floor_bathroom_night_lighting in occupancy_system.yaml - replaced by bathroom_motion_lighting.yaml. Fixed upstairs_hallway_motion_lighting to use combined sensor.
-- 17:00: Fixed Entry Room Ceiling AL: separate_turn_on_commands=true (was false). Updated via .storage/core.config_entries.
-- 17:07: Session complete: 5 config fixes applied (2 AL separate_turn_on_commands, 2 combined motion sensors, 1 disabled duplicate). Remaining UI tasks: recreate 3 Hue groups, delete 6+ stale entities, enable Entry Room Ceiling AL if desired.
-- 17:16: Front Driveway North/South Hue bulbs: controlled by TP-Link 3-way switch (not always hot). Shows unavailable in HA when switch is off. Not a bug - working as designed. Same pattern as 2nd floor bathroom (SPST). These are NOT smart bulb mode setups - physical switch controls power to bulbs.
-- 17:16: Front Driveway North/South Hue bulbs: controlled by TP-Link 3-way switch (not always hot). Shows unavailable in HA when switch is off. Not a bug - working as designed. Same pattern as 2nd floor bathroom (SPST). These are NOT smart bulb mode setups - physical switch controls power to bulbs.
-- 17:17: Hue switches inventory: DIMMER SWITCHES: [PERSON] Bedroom, [PERSON] Bedroom, Garage, Living Room Lounge (not configured). TAP DIAL SWITCHES: Entry Room, Master Bedroom. WORKS WITH HUE (Friends of Hue): [PERSON] Bedroom Hue Light Switch, Living Room Hue Switch, Living Room Lounge Hue Switch. Note: Living Room Lounge Dimmer shows "Not configured in this app" - may need setup or is orphaned.
-- 17:26: Hue Bridge: IP [IP], Zigbee Ch25, 52 lights, 9 switches. MotionAware areas (4): [PERSON] Bedroom, Living Rm Lounge, Upstairs, [PERSON] Bedroom - these are Hue-native motion-triggered lighting zones that may conflict with HA automations. Smart home integrations: not configured (Alexa/Google/Matter available but unused).
-- 17:26: Hue switch config summary: DIMMER SWITCHES (4): [PERSON] Bedroom (Concentrate scene), [PERSON] Bedroom (Time-based), Garage (Time-based), Living Room Lounge (SPARE in box). TAP DIALS (2): Entry Room (1st Floor Table Lamps, Time-based, buttons 2-4 unused - candidate for Hot Tub Mode), Master Bedroom (Master Bedroom room, Time-based). FRIENDS OF HUE (3): [PERSON] Bedroom (4-btn), Living Room (4-btn - needs reconfigured for Inovelli fan/light), Living Room Lounge (4-btn).
-- 17:26: Hue/HA conflict analysis: (1) Hue Time-based light competes with HA Adaptive Lighting - both adjust color temp by time. (2) Hue MotionAware areas may conflict with HA motion automations. (3) Friends of Hue switches controlling Hue rooms cannot natively control ZHA devices like Inovelli. RECOMMENDATION: For rooms with HA AL control, disable Hue Time-based and MotionAware. Route button events through HA for unified control. Keep Hue direct control only for kids rooms (reliability when HA down).
-- 17:28: Govee LED strips (separate from Hue, WiFi-based): [PERSON] Bedroom has 2 strips named "1" and "2" (need renaming), [PERSON] Bedroom has "[PERSON] LED lights", Living Room has "Living Room TV LED" strip, Master Bedroom LED strip exists but shows in Living Room (wrong room assignment in Govee app). These are NOT in Hue ecosystem - controlled via Govee integration or local API.
-- 17:32: Govee LED strips (separate from Hue, WiFi-based): [PERSON] Bedroom has 2 strips named "1" and "2" (need renaming), [PERSON] Bedroom has "[PERSON] LED lights", Living Room has "Living Room TV LED" strip, Master Bedroom LED strip exists but shows in Living Room (wrong room assignment in Govee app). These are NOT in Hue ecosystem - controlled via Govee integration or local API.
-- 17:32: Multi-ecosystem inventory: (1) HUE: 52 lights, 9 switches, Zigbee Ch25, Bridge at [IP]. (2) GOVEE: 2x Floor Lamp Basic (H6076, LAN Control ON, Living Room), LED strips for kids rooms + Living Room TV + Master Bedroom. (3) AQARA: Light strips (Kitchen_Under_Cabinet, Master_Bedroom_Behind_TV), Outlet in Basement. (4) KASA/TP-LINK: Basement_Hallway switch, Kitchen_Above_Sink_Light switch, 1st Floor Bathroom Vanity (all showing Offline in Govee favorites - wrong app). (5) ZHA: Inovelli switches, Aqara sensors, Third Reality nightlights on Sonoff coordinator.
-- 17:32: Govee Floor Lamps (H6076): LAN Control enabled, Matter-capable, FW 1.04.05. Both named "Floor Lamp Basic" (need renaming to Living Room East/West Floor Lamp). These are the AL-controlled lamps in Living Spaces instance.
-- 17:32: Aqara ecosystem (via Aqara Home app, likely also in ZHA): SECURITY: 2x Door/Window (Default Room), Water Leak x5 (Kitchen Sink, Dishwasher, Refrigerator + Basement x2), Motion x6 (Kitchen x2, Upstairs Hallway, Basement Hallway, Very Front Door Hallway, Entry Room). Door sensors at: Very Front Door, Entry Room Front, Entry Room (back?), Garage. ENVIRONMENT: Temp/Humidity/Pressure sensors in 1st Fl Bathroom, 2nd Fl Bathroom, Basement, Upstairs Hallway, [PERSON] Bedroom, [PERSON] Bedroom, Garage. Illumination sensors in Kitchen x2, Upstairs Hallway, Basement Hallway, Very Front Door Hallway, Entry Room (all OFF in overview - not displayed on dashboard). OUTLET: 1x Basement.
-- 17:32: Aqara illumination sensors (lux) exist but not enabled in Aqara overview: Kitchen_Motion, Kitchen Table, Upstairs_Hallway, Basement Hallway, Very Front Door Hallway, Entry_Room. These SHOULD be used for lux-based lighting triggers in HA - verify they are exposed in ZHA and used in automations.
-- 17:33: Current environment readings (2026-01-26 ~18:30): Bathrooms 70-77F/18-20%, Basement 66F/27%, Hallway 74F/19%, [PERSON] Bedroom 73F/20%, [PERSON] Bedroom 75F/19%, Garage 53F/25%. All humidity low (winter). Aqara sensors showing LAN mode (local, not cloud).
-- 17:37: Integration audit 2026-01-26: Hue 90 devices, ZHA 49 devices, Matter 31 devices (Aqara Hub M3), UniFi Network 62 devices, UniFi Protect 10 devices, Alexa 22 devices, Nest 6 devices, Mitsubishi 4 devices. FAILED: TP-Link Smart Home (7 devices offline - Kasa switches), Android Debug Bridge (tablet). Discovered but not added: 3x Roomba, Synology, openWakeWord, Tuya, Vizio.
-- 17:37: ZHA device list shows: Inovelli VZM31-SN and VZM36 switches throughout (1st floor bathroom, entry room, kitchen chandelier, kitchen above sink, kitchen bar pendant, kitchen lounge, living room fan, back patio, kitchen under cabinet). Third Reality nightlights (basement, entry room east/west, garage north, living room north east/west, stairwell, upstairs hallway x2). Smart plugs (basement x7, kitchen x4, living room x5, kitchen lounge x3, garage x1). One LUMI lumi.sensor_wleak.aq1 visible in ZHA.
-- 17:38: CRITICAL GAP: All 7 Aqara temp/humidity sensors have no area_id in HA. Need to: (1) Assign areas via HA UI, or (2) Rename entities to include room name. Current mapping unknown - need to cross-reference Aqara app values with HA states to identify which _2 _3 etc corresponds to which room.
-- 17:59: Created HA_Master_Inventory.csv with 86 rows covering: 10 devices, 22 lights, 24 sensors, 14 switches, 8 automations, 5 issues, 4 TODOs. Saved to /homeassistant/docs/ and /homeassistant/www/docs/ for web access. Key findings: 3 HIGH priority conflicts (Hue vs HA), Living Room FoH needs reconfiguration, 2 unnamed Aqara sensors need area assignment.
-- 18:19: Created comprehensive analysis exports: Issues (79 HIGH), Lights (137 total, 47 need areas), Sensors (292 key sensors, 32 need areas). Files at /homeassistant/www/docs/. Template sensors flagged but dont need areas - theyre logical aggregations.
-- 19:48: MASTER INVENTORY SESSION COMPLETE: Created HA_Master_Comprehensive.csv (389 rows) with full system audit. Structure: 4 HUBs, 137 LIGHTs, 223 SENSORs, 14 SWITCHes, 5 ISSUEs, 5 TODOs. Google Sheet: https://docs.google.com/spreadsheets/d/1oNSBAAyWreVV2-8cwqefiS9qCrUi2QUt00j2wji29NI/ - File syncs via Synology to G:\HAC. HIGH priority: 30 Hue bulbs need area assignments, 3 Hue vs HA conflicts (Time-based, MotionAware, FoH control), 2 unnamed Aqara sensors. Key TODOs: Living Room FoH reconfig via hue_event, disable Hue MotionAware except kids rooms, Hot Tub Tap Dial button 3 config.
-- 21:45: HUE vs HA CONTROL STRATEGY FINALIZED: (1) KIDS ROOMS ([PERSON], [PERSON]): Keep Hue Time-based + MotionAware + Dimmer control - HA hands off, reliability priority. (2) COMMON AREAS (Living Room, Kitchen, Entry, Master Bedroom): Disable Hue Time-based in Hue app, HA Adaptive Lighting controls. (3) GARAGE: Hue Time-based OK (no AL there). (4) FRIENDS OF HUE SWITCHES: Living Room FoH cannot control Inovelli natively - create HA automation using hue_event to trigger Inovelli fan/light. (5) TAP DIAL unused buttons: Entry Room btn 2-4 available for Hot Tub mode or scenes. (6) ENTITY AREA ASSIGNMENTS: Must be done via HA UI for Hue-managed entities - terminal edits get overwritten on restart.
-- 22:05: HUE APP CHANGES COMPLETED: (1) Entry Room Tap Dial - changed First press from Time-based to Single scene. (2) Master Bedroom Tap Dial - changed First press from Time-based to Single scene. Both now compatible with HA Adaptive Lighting - no competing color temp adjustments. STILL TODO: Disable MotionAware on Living Rm Lounge and Upstairs areas in Hue app.
-- 22:10: HUE MOTIONAWARE DISABLED: Living Rm Lounge and Upstairs areas - HA now has sole control of motion-triggered lighting in these zones. Kids rooms ([PERSON], [PERSON]) retain Hue MotionAware for reliability. All Hue vs HA conflicts now resolved except Living Room FoH switch automation (TODO).
-- 22:15: SESSION COMPLETE - Hue vs HA integration cleanup. DONE: (1) Entry Room Tap Dial changed to Single scene, (2) Master Bedroom Tap Dial changed to Single scene, (3) MotionAware disabled on Living Rm Lounge + Upstairs. REMAINING UI TASKS: Assign areas to 6 Hue bulbs via HA UI (terminal edits don't persist for Hue entities), delete stale entities, create Living Room FoH hue_event automation. HAC path confirmed: /homeassistant/hac (not ~/hac or /root/hac).
+- 11:47: HARDWARE CHANGE 2026-02-05: 1st Floor Bathroom - TP-Link dimmer installed for vanity lights, replaces Inovelli. Old Inovelli will move to 2nd Floor Bathroom (smart bulb mode). ISSUE: Remaining 1st FL Bathroom Inovelli (ceiling) not controlling Hue lights properly - needs Smart Bulb Mode check.
+- 12:02: 1ST FL BATHROOM INOVELLI+HUE SETUP: (1) Enable Smart Bulb Mode via ZHA Manage Clusters → Inovelli_VZM31SN_Cluster → attribute 'Smart Bulb Mode' = 1. (2) Create automation using fxlt blueprint 'Inovelli VZM31-SN Blue Series 2-1 Switch (ZHA)'. (3) Map paddle presses to light.1st_floor_bathroom (Hue group). (4) Set automation mode: queued. This routes Inovelli→ZHA→HA→Hue Bridge→Hue Bulbs since direct Zigbee binding not possible across different coordinators.
+- 21:02: 1ST FL BATHROOM INOVELLI WORKING: Key issue was automations.yaml being ignored - config uses include_dir_merge_list automations/ so automations must go in automations/ directory. Created automations/1st_floor_bathroom_inovelli.yaml using fxlt blueprint.
+- 15:21: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
+- 15:34: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
+- 20:11: list
+- 20:16: Created garage_arrival.yaml: 3 automations using person.john_spencer trigger (not proximity sensor). notify.mobile_app_john_s_phone + ratgdo covers.
+- 21:38: Garage arrival system complete: cover.ratgdo32disco_fd8d8c_door (North), cover.ratgdo32disco_5735e8_door (South), 15sec delay before close prompt
+- 21:41: [PERSON] wake automation: sensor.alaina_s_bedroom_echo_show_next_alarm triggers 10min sunrise fade. Conditions: home + 5am-10am. Phases: 1%/2000K → 10%/2200K → 30%/2700K → 60%/3200K → Energize scene
+- 21:44: [PERSON] wake: sensor.alaina_s_bedroom_echo_show_next_alarm_2 (UTC format). Triggers 10min before alarm, 5-phase sunrise fade to Energize scene. Conditions: home + 5am-10am
+- 21:57: Exterior auto-off: front_driveway_auto_off (5min no motion), garage_lights_auto_off (5min all 6 motion sensors off). Both use transition: 5 for smooth fade.
+- 19:59: Hue scene cleanup: Keep only Energize+Nightlight+Concentrate per room. 448 registry scenes after zones auto-created defaults. Tap Dial configs: Entry Room 4-button, Master Bedroom B1=Energize B2=Dimmed B3=Nightlight B4=Off (hold=Entire Home). Tabled: Create Hue groups for [PERSON]/[PERSON] ceiling bulbs, FoH Hot Tub Mode, Entry ceiling bulb swap to Ambiance.
+- 20:22: MOTION LIGHTING BEST PRACTICES (researched 2026-02-02): (1) DEBOUNCING: Use 'for:' on off triggers (60-120s) to prevent bounce. (2) MODE: Use 'mode: restart' for single automation with choose blocks - ensures immediate response to new motion while resetting timers. Use 'mode: single' for separate on/off automations. (3) AGGREGATION: Template binary sensors combining multiple motion sensors MUST have delay_off to prevent cascading triggers. (4) PATTERN: Dual-trigger with IDs (motion_on/motion_off) in single automation with choose block is cleanest. (5) CONDITIONS: Check lux/sun before turning on, not just in action. (6) RACE CONDITION FIX: Ensure aggregated motion sensor has delay_off >= individual sensor clear time.
+- 20:51: MOTION AGGREGATION FIXES (2026-02-02): (1) Added Entry Room P1 (binary_sensor.aqara_motion_sensor_p1_occupancy) to entry_room_motion_combined - now has 3 sensors (P1 + 2x Third Reality). (2) Added delay_off: 60s to downstairs_motion_any and upstairs_motion_any aggregates. (3) Added delay_off: 90s to house_motion_any aggregate. (4) P1 SENSOR MAPPING: aqara_motion_sensor_p1_occupancy=Entry Room, _2=Upstairs Hallway, _3=1st Floor Bath Hallway, _6=Very Front Door. This prevents double-fire race conditions on Living Room and global automations.
+- 20:51: MOTION AGGREGATION PATTERN: Room-level sensors get 30s delay_off + 150ms delay_on. Floor-level aggregates (downstairs/upstairs) get 60s delay_off. House-level aggregate gets 90s delay_off. This creates a debounce cascade that prevents automation double-fires.
+- 21:26: ORPHAN AUTOMATION CLEANUP (2026-02-02): Removed 4 ghost automations from entity registry that were causing double-fires: calendar_refresh_school_in_session_now, calendar_refresh_school_tomorrow, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control. These existed in registry but not in YAML (renamed/deleted). Root cause: HA keeps entity registry entries even when YAML is removed. Fix: Direct registry edit to remove orphans.
