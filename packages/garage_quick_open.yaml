@@ -28,7 +28,7 @@ automation:
         entity_id: sensor.john_distance_to_home
         above: 50
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "closed"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -79,7 +79,7 @@ automation:
         then:
           - service: cover.open_cover
             target:
-              entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+              entity_id: cover.ratgdo32disco_fd8d8c_door
           - service: notify.mobile_app_john_s_phone
             data:
               title: "\U0001F697 Garage"
@@ -101,11 +101,11 @@ automation:
             entity_id: person.john_spencer
             state: "home"
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "closed"
       - service: cover.open_cover
         target:
-          entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+          entity_id: cover.ratgdo32disco_fd8d8c_door
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F697 Garage"
@@ -129,13 +129,13 @@ automation:
         to: "home"
     condition:
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "closed"
     action:
       - delay:
           seconds: 5
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "closed"
       - service: notify.mobile_app_john_s_phone
         data:
@@ -179,7 +179,7 @@ automation:
         id: wifi_disconnect
     condition:
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "open"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -246,7 +246,7 @@ automation:
         then:
           - service: cover.close_cover
             target:
-              entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+              entity_id: cover.ratgdo32disco_fd8d8c_door
           - service: notify.mobile_app_john_s_phone
             data:
               message: "clear_notification"
@@ -254,11 +254,11 @@ automation:
                 tag: "garage_auto_close"
           - stop: "User requested immediate close"
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "open"
       - service: cover.close_cover
         target:
-          entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+          entity_id: cover.ratgdo32disco_fd8d8c_door
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F512 Garage"
@@ -284,7 +284,7 @@ automation:
         entity_id: person.john_spencer
         state: "home"
       - condition: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "closed"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -332,14 +332,14 @@ automation:
             sequence:
               - service: cover.open_cover
                 target:
-                  entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+                  entity_id: cover.ratgdo32disco_fd8d8c_door
           - conditions:
               - condition: trigger
                 id: south
             sequence:
               - service: cover.open_cover
                 target:
-                  entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+                  entity_id: cover.ratgdo32disco_5735e8_door
           - conditions:
               - condition: trigger
                 id: both
@@ -347,8 +347,8 @@ automation:
               - service: cover.open_cover
                 target:
                   entity_id:
-                    - cover.garage_north_garage_door_ratgdo32disco_door
-                    - cover.garage_south_garage_door_ratgdo32disco_door
+                    - cover.ratgdo32disco_fd8d8c_door
+                    - cover.ratgdo32disco_5735e8_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -364,8 +364,8 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - cover.garage_north_garage_door_ratgdo32disco_door
-          - cover.garage_south_garage_door_ratgdo32disco_door
+          - cover.ratgdo32disco_fd8d8c_door
+          - cover.ratgdo32disco_5735e8_door
         to: "open"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -412,7 +412,7 @@ automation:
     alias: "Garage - North Door Opened Close Option"
     trigger:
       - platform: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         to: "open"
     condition:
       - condition: state
@@ -445,7 +445,7 @@ automation:
     action:
       - service: cover.close_cover
         target:
-          entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+          entity_id: cover.ratgdo32disco_fd8d8c_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -457,7 +457,7 @@ automation:
     alias: "Garage - Clear North Close When Closed"
     trigger:
       - platform: state
-        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_fd8d8c_door
         to: "closed"
     action:
       - service: notify.mobile_app_john_s_phone
@@ -481,7 +481,7 @@ automation:
     alias: "Garage - South Door Opened Close Option"
     trigger:
       - platform: state
-        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_5735e8_door
         to: "open"
     condition:
       - condition: state
@@ -514,7 +514,7 @@ automation:
     action:
       - service: cover.close_cover
         target:
-          entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+          entity_id: cover.ratgdo32disco_5735e8_door
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
@@ -526,7 +526,7 @@ automation:
     alias: "Garage - Clear South Close When Closed"
     trigger:
       - platform: state
-        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+        entity_id: cover.ratgdo32disco_5735e8_door
         to: "closed"
     action:
       - service: notify.mobile_app_john_s_phone

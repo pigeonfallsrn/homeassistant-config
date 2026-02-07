@@ -10,26 +10,26 @@ automation:
     alias: "Garage All Lights ON"
     trigger:
       - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         to: 'open'
       - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         to: 'open'
       - platform: state
         entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
         to: 'on'
       - platform: state
-        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
+        entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motion
         to: 'on'
       - platform: state
-        entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+        entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motion
         to: 'on'
     action:
       - service: light.turn_on
         target:
           entity_id:
             - light.garage
-            - light.ratgdo32disco_fd8d8c_light
+            - light.garage_north_garage_door_ratgdo32disco_light
             - light.garage_north_wall_nightlight
             - light.garage_north_of_east_wall_motion_light_sensor
             - light.garage_south_of_east_wall_motion_light_sensor
@@ -45,26 +45,26 @@ automation:
       # Trigger every minute to check conditions
       - platform: state
         entity_id:
-          - binary_sensor.ratgdo32disco_fd8d8c_motion
-          - binary_sensor.ratgdo32disco_5735e8_motion
+          - binary_sensor.garage_north_garage_door_ratgdo32disco_motion
+          - binary_sensor.garage_south_garage_door_ratgdo32disco_motion
         to: 'off'
         for:
           minutes: 6
     condition:
       # ALL conditions must be true
       - condition: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
         state: 'closed'
       - condition: state
-        entity_id: cover.ratgdo32disco_5735e8_door
+        entity_id: cover.garage_south_garage_door_ratgdo32disco_door
         state: 'closed'
       - condition: state
-        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
+        entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motion
         state: 'off'
         for:
           minutes: 6
       - condition: state
-        entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+        entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motion
         state: 'off'
         for:
           minutes: 6
@@ -73,7 +73,7 @@ automation:
         target:
           entity_id:
             - light.garage
-            - light.ratgdo32disco_fd8d8c_light
+            - light.garage_north_garage_door_ratgdo32disco_light
             - light.garage_north_wall_nightlight
             - light.garage_north_of_east_wall_motion_light_sensor
             - light.garage_south_of_east_wall_motion_light_sensor
