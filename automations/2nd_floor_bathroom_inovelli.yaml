@@ -1,0 +1,180 @@
+# =============================================================================
+# 2ND FLOOR BATHROOM - INOVELLI SWITCH AUTOMATIONS
+# =============================================================================
+# Ceiling Lights: VZM30-SN (0489781ef8d00419ecf1929bd865b2de) -> light.2nd_fl_bathroom_ceiling_lights
+# Vanity Lights: VZM30-SN (602bdb2b4675a5e364853ac1e53ed689) -> light.2nd_floor_vanity_lights
+# Exhaust Fan: VZM35-SN (3eed85f7ca546a7ed7e24b0cfc6c818b) -> switch.upstairs_bathroom_fan
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CEILING LIGHTS - Inovelli controls Hue ceiling zone
+# -----------------------------------------------------------------------------
+- id: '2nd_floor_bathroom_ceiling_inovelli'
+  alias: 2nd Floor Bathroom - Ceiling Lights Inovelli Control
+  description: 'Inovelli ceiling switch controls Hue ceiling lights'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.2nd_fl_bathroom_ceiling_lights
+        data: {}
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_fl_bathroom_ceiling_lights
+        data: {}
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_fl_bathroom_ceiling_lights
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_fl_bathroom_ceiling_lights
+        data:
+          brightness_step_pct: 10
+
+# -----------------------------------------------------------------------------
+# VANITY LIGHTS - Inovelli controls Hue vanity zone
+# -----------------------------------------------------------------------------
+- id: '2nd_floor_bathroom_vanity_inovelli'
+  alias: 2nd Floor Bathroom - Vanity Lights Inovelli Control
+  description: 'Inovelli vanity switch controls Hue vanity lights'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 602bdb2b4675a5e364853ac1e53ed689
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.2nd_floor_vanity_lights
+        data: {}
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_floor_vanity_lights
+        data: {}
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_floor_vanity_lights
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.2nd_floor_vanity_lights
+        data:
+          brightness_step_pct: 10
+
+# -----------------------------------------------------------------------------
+# EXHAUST FAN - Humidity-based auto control with manual override
+# -----------------------------------------------------------------------------
+- id: '2nd_floor_bathroom_fan_humidity_on'
+  alias: 2nd Floor Bathroom - Fan On (High Humidity)
+  description: 'Turn on exhaust fan when humidity rises above threshold'
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+      above: 65
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      state: 'off'
+  action:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.upstairs_bathroom_fan
+
+- id: '2nd_floor_bathroom_fan_humidity_off'
+  alias: 2nd Floor Bathroom - Fan Off (Normal Humidity)
+  description: 'Turn off exhaust fan when humidity drops below threshold'
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
+      below: 55
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      state: 'off'
+  action:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.upstairs_bathroom_fan
+
+# -----------------------------------------------------------------------------
+# EXHAUST FAN - Inovelli switch manual control (sets override)
+# -----------------------------------------------------------------------------
+- id: '2nd_floor_bathroom_fan_inovelli'
+  alias: 2nd Floor Bathroom - Fan Inovelli Manual Control
+  description: 'Inovelli fan switch manual control with override flag'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      button_1:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.upstairs_bathroom_fan
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      button_2:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.upstairs_bathroom_fan
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      button_3:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+
+# -----------------------------------------------------------------------------
+# MANUAL OVERRIDE RESET - Clear override after 30 minutes
+# -----------------------------------------------------------------------------
+- id: '2nd_floor_bathroom_override_reset'
+  alias: 2nd Floor Bathroom - Reset Manual Override
+  description: 'Reset manual override flags after 30 minutes'
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.2nd_floor_bathroom_manual_override
+      to: 'on'
+      for:
+        minutes: 30
+    - platform: state
+      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      to: 'on'
+      for:
+        minutes: 30
+  action:
+    - action: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.2nd_floor_bathroom_manual_override
+          - input_boolean.2nd_floor_bathroom_fan_manual_override

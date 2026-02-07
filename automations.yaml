@@ -1,0 +1,1599 @@
+- id: '1770351129962'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770351152449'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352625248'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352627276'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352628006'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352628592'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352628794'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352628990'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352629173'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352629351'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352629733'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352629546'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1770352629931'
+  alias: 1st Floor Bathroom - Inovelli Switch Control
+  description: Control Hue bathroom lights via Inovelli switch
+  triggers:
+  - event_type: zha_event
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.event.data.device_id == device_id }}'
+  actions:
+  - variables:
+      command: '{{ trigger.event.data.command }}'
+  - data:
+      name: ZHA
+      message: 'received event: {{ command }}'
+    action: logbook.log
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data: {}
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          device_id: e7676dc3510bdf22440f69bd946c03d7
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_quintuple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_release'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_double'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_triple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quadruple'' }}'
+      sequence: []
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_quintuple'' }}'
+      sequence: []
+  mode: queued
+  max_exceeded: silent
+  variables:
+    device_id: 0600639e50d4e1ed71fdaa1ef789e678

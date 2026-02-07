@@ -38,3 +38,21 @@ bathroom_manual_override:
 kitchen_lounge_manual_override:
   name: Kitchen Lounge Manual Override
   initial: false
+
+# 2nd Floor Bathroom Manual Override Flags
+2nd_floor_bathroom_manual_override:
+  name: "2nd Floor Bathroom Manual Override"
+  icon: mdi:hand-back-right
+  
+2nd_floor_bathroom_fan_manual_override:
+  name: "2nd Floor Bathroom Fan Manual Override"
+  icon: mdi:fan-alert
+
+# 2nd Floor Bathroom Manual Override Flags
+2nd_floor_bathroom_manual_override:
+  name: "2nd Floor Bathroom Manual Override"
+  icon: mdi:hand-back-right
+  
+2nd_floor_bathroom_fan_manual_override:
+  name: "2nd Floor Bathroom Fan Manual Override"
+  icon: mdi:fan-alert
