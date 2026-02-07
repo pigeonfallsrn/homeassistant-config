@@ -1,27 +1,191 @@
-# Kitchen Inovelli Switch Automations
-# Consolidated from ui_automations.yaml
+# =============================================================================
+# KITCHEN - INOVELLI SWITCH AUTOMATIONS
+# =============================================================================
+# Chandelier: VZM31-SN (17a59d3c437c3475f22c29dd2b76777a)
+# Lounge Dimmer: VZM31-SN (5e2d477e04d216ab91a0c2f1364ab118)
+# Lounge Fan/Light: VZM36 (608cdc81a73355aec629b4a3938fbbaf)
+# Above Sink: VZM31-SN (89ca030d64760ad87512e97d13a2737d)
+# 
+# Time-based scenes, manual override blocks motion automation
+# =============================================================================
 
-# Kitchen Lounge - VZM36 Fan/Light Controller
+# -----------------------------------------------------------------------------
+# CHANDELIER - Time-based scenes
+# -----------------------------------------------------------------------------
+- id: kitchen_chandelier_switch_v3
+  alias: Kitchen - Chandelier Time-Based Control
+  description: 'Time-based Hue scenes with manual override'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          transition: 2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.kitchen_table_manual_override
+      button_2:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.kitchen_table_manual_override
+      - choose:
+        - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "06:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.kitchen_chandelier_nighttime
+        - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "23:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.kitchen_chandelier_relax
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.kitchen_chandelier_energize
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_step_pct: 10
+
+# -----------------------------------------------------------------------------
+# LOUNGE DIMMER - Time-based scenes
+# -----------------------------------------------------------------------------
+- id: kitchen_lounge_dimmer_v3
+  alias: Kitchen Lounge - Dimmer Time-Based Control
+  description: 'Time-based Hue scenes with manual override, config button cycles fan'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 5e2d477e04d216ab91a0c2f1364ab118
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.kitchen_lounge_celleiling_lts
+        data:
+          transition: 2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.kitchen_lounge_manual_override
+      button_2:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.kitchen_lounge_manual_override
+      - choose:
+        - conditions:
+          - condition: time
+            after: "23:00:00"
+            before: "06:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.kitchen_lounge_celleiling_lts_rest
+        - conditions:
+          - condition: time
+            after: "20:00:00"
+            before: "23:00:00"
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.kitchen_lounge_celleiling_lts_relax
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.kitchen_lounge_celleiling_lts_energize
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge_celleiling_lts
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge_celleiling_lts
+        data:
+          brightness_step_pct: 10
+      button_3:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            state: "off"
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 33
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 50
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 66
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 90
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 100
+        default:
+        - action: fan.turn_off
+          target:
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+
+# -----------------------------------------------------------------------------
+# LOUNGE VZM36 FAN/LIGHT COMBO (keep existing - controls fan)
+# -----------------------------------------------------------------------------
 - id: kitchen_lounge_vzm36_fixed
   alias: Kitchen Lounge - VZM36 Fan/Light (Hue Ceiling)
-  description: Up=Hue lights on, Down=Hue lights off, Config=Fan cycle
+  description: Config button cycles fan speeds
+  mode: queued
   trigger:
     - platform: event
       event_type: zha_event
-  condition: '{{ trigger.event.data.device_id == "608cdc81a73355aec629b4a3938fbbaf" }}'
+      event_data:
+        device_id: 608cdc81a73355aec629b4a3938fbbaf
   action:
     - variables:
-        command: '{{ trigger.event.data.command }}'
+        command: "{{ trigger.event.data.command }}"
     - choose:
-        - conditions: '{{ command == "button_3_press" }}'
+        - conditions: "{{ command == 'button_3_press' }}"
           sequence:
             - choose:
                 - conditions:
                     - condition: state
                       entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      state: 'off'
+                      state: "off"
                   sequence:
-                    - service: fan.set_percentage
+                    - action: fan.set_percentage
                       target:
                         entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
                       data:
@@ -32,7 +196,7 @@
                       attribute: percentage
                       below: 50
                   sequence:
-                    - service: fan.set_percentage
+                    - action: fan.set_percentage
                       target:
                         entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
                       data:
@@ -43,138 +207,70 @@
                       attribute: percentage
                       below: 90
                   sequence:
-                    - service: fan.set_percentage
+                    - action: fan.set_percentage
                       target:
                         entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
                       data:
                         percentage: 100
               default:
-                - service: fan.turn_off
+                - action: fan.turn_off
                   target:
                     entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-  mode: queued
 
-# Kitchen Lounge - VZM31-SN Dimmer
-- id: kitchen_lounge_dimmer_fixed
-  alias: Kitchen Lounge - VZM31-SN Dimmer (Hue Ceiling)
-  description: Up=Hue lights on, Down=off, Config=Fan cycle
-  trigger:
-    - platform: event
-      event_type: zha_event
-  condition: '{{ trigger.event.data.device_id == "5e2d477e04d216ab91a0c2f1364ab118" }}'
-  action:
-    - variables:
-        command: '{{ trigger.event.data.command }}'
-    - choose:
-        - conditions: '{{ command == "button_2_press" }}'
-          sequence:
-            - service: light.turn_on
-              target:
-                entity_id:
-                  - light.kitchen_lounge_ceiling_1of2
-                  - light.kitchen_lounge_ceiling_2of2
-        - conditions: '{{ command == "button_1_press" }}'
-          sequence:
-            - service: light.turn_off
-              target:
-                entity_id:
-                  - light.kitchen_lounge_ceiling_1of2
-                  - light.kitchen_lounge_ceiling_2of2
-        - conditions: '{{ command == "button_3_press" }}'
-          sequence:
-            - choose:
-                - conditions:
-                    - condition: state
-                      entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      state: 'off'
-                  sequence:
-                    - service: fan.set_percentage
-                      target:
-                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      data:
-                        percentage: 33
-                - conditions:
-                    - condition: numeric_state
-                      entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      attribute: percentage
-                      below: 50
-                  sequence:
-                    - service: fan.set_percentage
-                      target:
-                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      data:
-                        percentage: 66
-                - conditions:
-                    - condition: numeric_state
-                      entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      attribute: percentage
-                      below: 90
-                  sequence:
-                    - service: fan.set_percentage
-                      target:
-                        entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-                      data:
-                        percentage: 100
-              default:
-                - service: fan.turn_off
-                  target:
-                    entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-  mode: queued
-
-# Kitchen Chandelier Control (5 bulbs)
-- id: kitchen_chandelier_switch_v2
-  alias: Kitchen - Chandelier Control (5 Bulbs)
-  description: Inovelli controls 5-bulb chandelier
-  trigger:
-    - platform: event
-      event_type: zha_event
-  condition: '{{ trigger.event.data.device_id == "17a59d3c437c3475f22c29dd2b76777a" }}'
-  action:
-    - variables:
-        command: '{{ trigger.event.data.command }}'
-    - choose:
-        - conditions: '{{ command == "button_2_press" }}'
-          sequence:
-            - service: light.turn_on
-              target:
-                entity_id:
-                  - light.kitchen_chandelier_1of5
-                  - light.kitchen_chandelier_2of5
-                  - light.kitchen_chandelier_3of5
-                  - light.kitchen_chandelier_4of5
-                  - light.hue_color_candle_5
-        - conditions: '{{ command == "button_1_press" }}'
-          sequence:
-            - service: light.turn_off
-              target:
-                entity_id:
-                  - light.kitchen_chandelier_1of5
-                  - light.kitchen_chandelier_2of5
-                  - light.kitchen_chandelier_3of5
-                  - light.kitchen_chandelier_4of5
-                  - light.hue_color_candle_5
-  mode: queued
-
-# Kitchen Above Sink Inovelli
+# -----------------------------------------------------------------------------
+# ABOVE SINK (keep simple on/off)
+# -----------------------------------------------------------------------------
 - id: kitchen_above_sink_inovelli
   alias: Kitchen Above Sink - Inovelli Control
-  description: Inovelli controls above-sink light
+  description: Simple on/off control
+  mode: queued
   trigger:
     - platform: event
       event_type: zha_event
-  condition: '{{ trigger.event.data.device_id == "89ca030d64760ad87512e97d13a2737d" }}'
+      event_data:
+        device_id: 89ca030d64760ad87512e97d13a2737d
   action:
     - variables:
-        command: '{{ trigger.event.data.command }}'
+        command: "{{ trigger.event.data.command }}"
     - choose:
-        - conditions: '{{ command == "button_2_press" }}'
+        - conditions: "{{ command == 'button_2_press' }}"
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.hue_color_downlight_1_3
-        - conditions: '{{ command == "button_1_press" }}'
+        - conditions: "{{ command == 'button_1_press' }}"
           sequence:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
                 entity_id: light.hue_color_downlight_1_3
-  mode: queued
+
+# -----------------------------------------------------------------------------
+# OVERRIDE RESETS
+# -----------------------------------------------------------------------------
+- id: kitchen_table_light_override_reset
+  alias: Kitchen Table - Reset Light Override (30 min)
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.kitchen_table_manual_override
+      to: "on"
+      for:
+        minutes: 30
+  action:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.kitchen_table_manual_override
+
+- id: kitchen_lounge_light_override_reset
+  alias: Kitchen Lounge - Reset Light Override (30 min)
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id: input_boolean.kitchen_lounge_manual_override
+      to: "on"
+      for:
+        minutes: 30
+  action:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.kitchen_lounge_manual_override
