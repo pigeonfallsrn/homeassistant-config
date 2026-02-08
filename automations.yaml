@@ -265,3 +265,14 @@
   max_exceeded: silent
   variables:
     device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+
+- alias: "Alaina's LED Strip Lights Button"
+  id: alaina_led_strip_lights_button
+  trigger:
+    - platform: state
+      entity_id: input_button.alaina_led_strip_lights
+  action:
+    - service: light.toggle
+      target:
+        entity_id: light.alaina_s_led_strips
+  mode: single
