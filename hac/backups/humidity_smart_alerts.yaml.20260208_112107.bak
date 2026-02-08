@@ -153,9 +153,9 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=10) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: switch.upstairs_bathroom_fan
           - conditions:
               - condition: trigger
                 id: skip_30
@@ -168,9 +168,9 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=30) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: switch.upstairs_bathroom_fan
           - conditions:
               - condition: or
                 conditions:
@@ -187,9 +187,9 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(hours=12) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: switch.upstairs_bathroom_fan
           - conditions:
               - condition: trigger
                 id: pause_15
@@ -202,9 +202,9 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: switch.upstairs_bathroom_fan
       # Clear notification
       - service: notify.mobile_app_john_s_phone
         data:
@@ -246,14 +246,14 @@ automation:
     alias: "Humidity - Block Fan Auto-On When Paused"
     trigger:
       - platform: state
-        entity_id: fan.inovelli_vzm35_sn_fan
+        entity_id: switch.upstairs_bathroom_fan
         to: "on"
     condition:
       - condition: state
         entity_id: input_boolean.bathroom_fan_paused
         state: "on"
     action:
-      - service: fan.turn_off
+      - service: switch.turn_off
         target:
-          entity_id: fan.inovelli_vzm35_sn_fan
+          entity_id: switch.upstairs_bathroom_fan
     mode: single

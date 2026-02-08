@@ -147,9 +147,9 @@
       entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
       state: 'off'
   action:
-    - action: fan.turn_on
+    - action: switch.turn_on
       target:
-        entity_id: fan.inovelli_vzm35_sn_fan
+        entity_id: switch.upstairs_bathroom_fan
 
 - id: '2nd_floor_bathroom_fan_humidity_off'
   alias: 2nd Floor Bathroom - Fan Off (Normal Humidity)
@@ -165,9 +165,9 @@
       entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
       state: 'off'
   action:
-    - action: fan.turn_off
+    - action: switch.turn_off
       target:
-        entity_id: fan.inovelli_vzm35_sn_fan
+        entity_id: switch.upstairs_bathroom_fan
 
 # -----------------------------------------------------------------------------
 # EXHAUST FAN - Inovelli manual control
@@ -179,16 +179,16 @@
     input:
       inovelli_switch: 3eed85f7ca546a7ed7e24b0cfc6c818b
       button_1:
-      - action: fan.turn_off
+      - action: switch.turn_off
         target:
-          entity_id: fan.inovelli_vzm35_sn_fan
+          entity_id: switch.upstairs_bathroom_fan
       - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
       button_2:
-      - action: fan.turn_on
+      - action: switch.turn_on
         target:
-          entity_id: fan.inovelli_vzm35_sn_fan
+          entity_id: switch.upstairs_bathroom_fan
       - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
@@ -227,28 +227,3 @@
     - action: input_boolean.turn_off
       target:
         entity_id: input_boolean.2nd_floor_bathroom_manual_override
-
-# -----------------------------------------------------------------------------
-# EXHAUST FAN - Navien hot water flow pre-trigger
-# -----------------------------------------------------------------------------
-- id: '2nd_floor_bathroom_fan_navien_pretrigger'
-  alias: 2nd Floor Bathroom - Fan Pre-trigger (Hot Water Flow)
-  description: 'Turn fan on proactively when sustained hot water use detected'
-  mode: restart
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.navien_water_flow
-      above: 0.5
-      for:
-        minutes: 2
-  condition:
-    - condition: state
-      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-      state: 'off'
-    - condition: state
-      entity_id: fan.inovelli_vzm35_sn_fan
-      state: 'off'
-  action:
-    - action: fan.turn_on
-      target:
-        entity_id: fan.inovelli_vzm35_sn_fan

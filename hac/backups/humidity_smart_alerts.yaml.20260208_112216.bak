@@ -153,7 +153,7 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=10) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
@@ -168,7 +168,7 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=30) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
@@ -187,7 +187,7 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(hours=12) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
@@ -202,7 +202,7 @@ automation:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: fan.turn_off
+              - service: switch.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
       # Clear notification
@@ -253,7 +253,7 @@ automation:
         entity_id: input_boolean.bathroom_fan_paused
         state: "on"
     action:
-      - service: fan.turn_off
+      - service: switch.turn_off
         target:
           entity_id: fan.inovelli_vzm35_sn_fan
     mode: single
