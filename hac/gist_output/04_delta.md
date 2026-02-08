@@ -1,7 +1,11 @@
-# Delta - 2026-02-07 12:07
+# Delta - 2026-02-07 13:34
 
 ## Changed Since Last Push
-- presence_system.yaml
+- upstairs_lighting.yaml
+- garage_door_alerts.yaml
+- entry_room_ceiling_motion.yaml
+- garage_quick_open.yaml
+- garage_lighting_automation.yaml
 
 ## Recent Errors (last 3)
 

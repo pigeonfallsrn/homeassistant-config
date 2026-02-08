@@ -1,4 +1,4 @@
-# HA Status - 2026-02-07 12:06 CST
+# HA Status - 2026-02-07 13:34 CST
 Version: 2026.2.1 | HAC: v7.3
 
 ## People
@@ -38,16 +38,16 @@ both_girls_home: off
 kitchen_table_manual_override: unavailable
 
 ## Recent Triggers (last 10)
+2026-02-07 13:25:41 entry_room_ceiling_motion_lighting
+2026-02-07 11:51:36 presence_update_someone_home
+2026-02-07 11:51:36 presence_update_occupancy_combinations
+2026-02-07 11:51:36 presence_john_away
+2026-02-07 11:51:36 presence_john_home
 2026-02-07 11:51:36 calendar_refresh_school_in_session_now
 2026-02-07 11:51:36 calendar_refresh_school_tomorrow
 2026-02-07 11:51:36 context_apply_on_time_change
-2026-02-07 11:51:36 kitchen_tablet_brightness_schedule
-2026-02-07 09:28:34 presence_alaina_away
-2026-02-07 09:28:34 calendar_refresh_school_in_session_now
-2026-02-07 09:28:34 calendar_refresh_school_tomorrow
-2026-02-07 09:28:31 kitchen_tablet_wake_on_kitchen_motion
-2026-02-07 09:28:31 kitchen_tablet_brightness_schedule
-2026-02-07 09:28:31 living_room_lamps_dim_after_20min_no_motion
+2026-02-07 11:51:36 context_apply_on_occupancy_change
+2026-02-07 11:51:36 occupancy_update_mode
 
 ## Errors (last 5)
 

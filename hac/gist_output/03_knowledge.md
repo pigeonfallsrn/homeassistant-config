@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-07 12:07
+# System Knowledge - 2026-02-07 13:34
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -31,7 +31,6 @@
 - 2026-01-28: Add 3 lights to Living Spaces AL via UI: living_room_west_floor_lamp, kitchen_hue_color_floor_lamp, kitchen_lounge_lamp (storage edits revert - must use UI)
 
 ## Recent Session Learnings
-Phase 2: Standardize 1st Floor Bathroom (time-based scenes + override)
 Phase 3: Standardize Entry Room AUX (time-based scenes)
 Phase 4: Kitchen Chandelier + Lounge Dimmer (time-based scenes, keep Above Sink basic)
 Phase 5: Audit all 6 Adaptive Lighting instances
@@ -51,6 +50,7 @@ HUE SCENES AVAILABLE:
 - scene.2nd_floor_vanity_lights_energize/relax/nightlight
 - scene.1st_floor_ceiling_lights_energize/relax/read/nightlight
 - Check for kitchen/entry scenes in .storage/core.entity_registry
+- 12:36: Completed lighting audit 2026-02-07: Upgraded 4 Inovelli automations (1st floor bathroom, entry room AUX, kitchen chandelier, kitchen lounge) with time-based Hue scenes + manual override. Fixed AL config: enabled auto sunrise/sunset for Wisconsin seasonal tracking, added Entry Room Ceiling dedicated AL instance for motion-activated circadian health, consolidated all AL definitions to main config. Key insight: Motion-activated primary lights NEED dedicated AL instances for circadian health benefits.
 
 ## Historical Learnings (last 30 lines)
 - 502 Bad Gateway from supervisor API = HA core is down/restarting

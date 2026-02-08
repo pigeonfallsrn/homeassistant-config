@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-07 12:07
+# Automation Index - 2026-02-07 13:34
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -13,10 +13,11 @@ Fetch full YAML: `hac pkg <filename>`
 0 automations)
 - **ella_bedroom.yaml** (0
 0 automations)
+- **entry_room_ceiling_motion.yaml** (1 automations)
 - **family_activities.yaml** (6 automations)
 - **garage_door_alerts.yaml** (2 automations)
 - **garage_lighting_automation.yaml** (2 automations)
-- **garage_quick_open.yaml** (11 automations)
+- **garage_quick_open.yaml** (13 automations)
 - **hac_session_log.yaml** (0
 0 automations)
 - **humidity_smart_alerts.yaml** (4 automations)
@@ -32,9 +33,7 @@ Fetch full YAML: `hac pkg <filename>`
 - **presence_display.yaml** (0
 0 automations)
 - **presence_system.yaml** (12 automations)
-- **sun_follow_entry_room.yaml** (0
-0 automations)
-- **upstairs_lighting.yaml** (2 automations)
+- **upstairs_lighting.yaml** (1 automations)
 
 ## All Automation IDs
 
@@ -76,6 +75,9 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### ella_bedroom.yaml
 
+### entry_room_ceiling_motion.yaml
+12: entry_room_ceiling_motion_lighting
+
 ### family_activities.yaml
 278: family_ella_arrived_home
 292: family_alaina_arrived_home
@@ -93,17 +95,19 @@ Fetch full YAML: `hac pkg <filename>`
 42: garage_master_lights_off
 
 ### garage_quick_open.yaml
-12: garage_quick_open_approaching
-70: garage_quick_open_walkin
-101: garage_quick_open_action_handler
-152: garage_quick_open_clear
-171: arrival_lights_approaching
-196: garage_north_opened_close_option
-223: garage_north_close_action
-241: garage_north_close_clear
-260: garage_south_opened_close_option
-287: garage_south_close_action
-305: garage_south_close_clear
+14: garage_auto_open_approaching
+124: garage_open_fallback_notification
+165: garage_auto_close_departure
+276: garage_quick_open_walkin
+309: garage_quick_open_action_handler
+362: garage_quick_open_clear
+386: arrival_lights_approaching
+411: garage_north_opened_close_option
+438: garage_north_close_action
+456: garage_north_close_clear
+480: garage_south_opened_close_option
+507: garage_south_close_action
+525: garage_south_close_clear
 
 ### hac_session_log.yaml
 
@@ -181,11 +185,8 @@ Fetch full YAML: `hac pkg <filename>`
 369: update_someone_home
 407: recent_motion_detected
 
-### sun_follow_entry_room.yaml
-
 ### upstairs_lighting.yaml
 39: upstairs_hallway_motion_lighting_v2
-126: 2nd_floor_bathroom_motion_lighting_v2
 
 
 ### automations.yaml
