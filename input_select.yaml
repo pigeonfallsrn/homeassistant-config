@@ -1,0 +1,34 @@
+house_mode:
+  name: House Mode
+  options:
+    - Normal
+    - Sleep
+    - Away
+    - Vacation
+    - Guest
+    - Party
+    - Cleaning
+    - Maintenance
+  icon: mdi:home-variant
+  initial: Normal
+
+alarm_mode:
+  name: Alarm Mode
+  options:
+    - Disarmed
+    - Armed Home
+    - Armed Away
+    - Armed Night
+  icon: mdi:shield-home
+  initial: Disarmed
+
+adaptive_lighting_mode:
+  name: Adaptive Lighting Mode
+  options:
+    - Auto
+    - Manual
+    - Sleep
+    - Bright
+    - Circadian
+  icon: mdi:lightbulb-auto
+  initial: Auto

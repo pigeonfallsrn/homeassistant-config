@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-07 13:34
+# System Knowledge - 2026-02-08 12:32
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -31,28 +31,15 @@
 - 2026-01-28: Add 3 lights to Living Spaces AL via UI: living_room_west_floor_lamp, kitchen_hue_color_floor_lamp, kitchen_lounge_lamp (storage edits revert - must use UI)
 
 ## Recent Session Learnings
-Phase 3: Standardize Entry Room AUX (time-based scenes)
-Phase 4: Kitchen Chandelier + Lounge Dimmer (time-based scenes, keep Above Sink basic)
-Phase 5: Audit all 6 Adaptive Lighting instances
-Phase 6: Test + document
-
-BACKUPS: /homeassistant/backups/lighting_audit_20260207/
-
-KEY FILES:
-- automations/2nd_floor_bathroom_inovelli.yaml (GOOD TEMPLATE - copy pattern)
-- automations/1st_floor_bathroom_inovelli.yaml (NEEDS UPGRADE)
-- automations/kitchen_inovelli.yaml (NEEDS UPGRADE for chandelier/dimmer)
-- automations/entry_room_aux.yaml (NEEDS UPGRADE)
-- packages/upstairs_lighting.yaml (DELETE bathroom section, keep hallway)
-
-HUE SCENES AVAILABLE:
-- scene.2nd_fl_bathroom_ceiling_lights_energize
-- scene.2nd_floor_vanity_lights_energize/relax/nightlight
-- scene.1st_floor_ceiling_lights_energize/relax/read/nightlight
-- Check for kitchen/entry scenes in .storage/core.entity_registry
-- 12:36: Completed lighting audit 2026-02-07: Upgraded 4 Inovelli automations (1st floor bathroom, entry room AUX, kitchen chandelier, kitchen lounge) with time-based Hue scenes + manual override. Fixed AL config: enabled auto sunrise/sunset for Wisconsin seasonal tracking, added Entry Room Ceiling dedicated AL instance for motion-activated circadian health, consolidated all AL definitions to main config. Key insight: Motion-activated primary lights NEED dedicated AL instances for circadian health benefits.
+- 09:30: Garage notification mess: 3 overlapping automation sets were all active. Single source of truth is now packages/garage_quick_open.yaml only. Removed automations/garage_arrival.yaml and garage_door_notifications.yaml plus 17 orphaned entity registry entries.
+- 11:51: Fixed 2nd floor bathroom fan Shelly to Inovelli VZM35-SN, added Navien flow pretrigger, purged 52 ghost automations, installed 9 new hac workflow commands
 
 ## Historical Learnings (last 30 lines)
+- **Single Accurate Location** - precise on-demand location
+- **High Accuracy Mode** - faster updates
+- Set **Sensor Update Frequency** to "Fast Always" (1 min vs 15 min)
+- Android: Settings → Apps → Home Assistant → Battery → Unrestricted
+- `ha automation reload` doesn't exist - use REST API: `curl -X POST ... /api/services/automation/reload`
 - 502 Bad Gateway from supervisor API = HA core is down/restarting
 - Template reload: `curl -X POST ... /api/services/template/reload`
 - `!include_dir_merge_list automations/` auto-includes all .yaml files in automations/
@@ -78,8 +65,3 @@ HUE SCENES AVAILABLE:
 - 21:41: [PERSON] wake automation: sensor.alaina_s_bedroom_echo_show_next_alarm triggers 10min sunrise fade. Conditions: home + 5am-10am. Phases: 1%/2000K → 10%/2200K → 30%/2700K → 60%/3200K → Energize scene
 - 21:44: [PERSON] wake: sensor.alaina_s_bedroom_echo_show_next_alarm_2 (UTC format). Triggers 10min before alarm, 5-phase sunrise fade to Energize scene. Conditions: home + 5am-10am
 - 21:57: Exterior auto-off: front_driveway_auto_off (5min no motion), garage_lights_auto_off (5min all 6 motion sensors off). Both use transition: 5 for smooth fade.
-- 19:59: Hue scene cleanup: Keep only Energize+Nightlight+Concentrate per room. 448 registry scenes after zones auto-created defaults. Tap Dial configs: Entry Room 4-button, Master Bedroom B1=Energize B2=Dimmed B3=Nightlight B4=Off (hold=Entire Home). Tabled: Create Hue groups for [PERSON]/[PERSON] ceiling bulbs, FoH Hot Tub Mode, Entry ceiling bulb swap to Ambiance.
-- 20:22: MOTION LIGHTING BEST PRACTICES (researched 2026-02-02): (1) DEBOUNCING: Use 'for:' on off triggers (60-120s) to prevent bounce. (2) MODE: Use 'mode: restart' for single automation with choose blocks - ensures immediate response to new motion while resetting timers. Use 'mode: single' for separate on/off automations. (3) AGGREGATION: Template binary sensors combining multiple motion sensors MUST have delay_off to prevent cascading triggers. (4) PATTERN: Dual-trigger with IDs (motion_on/motion_off) in single automation with choose block is cleanest. (5) CONDITIONS: Check lux/sun before turning on, not just in action. (6) RACE CONDITION FIX: Ensure aggregated motion sensor has delay_off >= individual sensor clear time.
-- 20:51: MOTION AGGREGATION FIXES (2026-02-02): (1) Added Entry Room P1 (binary_sensor.aqara_motion_sensor_p1_occupancy) to entry_room_motion_combined - now has 3 sensors (P1 + 2x Third Reality). (2) Added delay_off: 60s to downstairs_motion_any and upstairs_motion_any aggregates. (3) Added delay_off: 90s to house_motion_any aggregate. (4) P1 SENSOR MAPPING: aqara_motion_sensor_p1_occupancy=Entry Room, _2=Upstairs Hallway, _3=1st Floor Bath Hallway, _6=Very Front Door. This prevents double-fire race conditions on Living Room and global automations.
-- 20:51: MOTION AGGREGATION PATTERN: Room-level sensors get 30s delay_off + 150ms delay_on. Floor-level aggregates (downstairs/upstairs) get 60s delay_off. House-level aggregate gets 90s delay_off. This creates a debounce cascade that prevents automation double-fires.
-- 21:26: ORPHAN AUTOMATION CLEANUP (2026-02-02): Removed 4 ghost automations from entity registry that were causing double-fires: calendar_refresh_school_in_session_now, calendar_refresh_school_tomorrow, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control. These existed in registry but not in YAML (renamed/deleted). Root cause: HA keeps entity registry entries even when YAML is removed. Fix: Direct registry edit to remove orphans.

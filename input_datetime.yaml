@@ -1,0 +1,53 @@
+last_good_morning_routine:
+  name: Last Good Morning Routine
+  has_date: true
+  has_time: true
+  icon: mdi:weather-sunset-up
+
+last_good_night_routine:
+  name: Last Good Night Routine
+  has_date: true
+  has_time: true
+  icon: mdi:weather-sunset-down
+
+last_garage_open_time:
+  name: Last Garage Opened
+  has_date: true
+  has_time: true
+  icon: mdi:garage-open
+
+last_garage_close_time:
+  name: Last Garage Closed
+  has_date: true
+  has_time: true
+  icon: mdi:garage
+
+last_critical_alert_sent:
+  name: Last Critical Alert
+  has_date: true
+  has_time: true
+  icon: mdi:alert
+
+last_garage_alert_sent:
+  name: Last Garage Alert
+  has_date: true
+  has_time: true
+  icon: mdi:garage-alert
+
+last_manual_override_entry_room:
+  name: Entry Room Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit
+
+last_manual_override_kitchen:
+  name: Kitchen Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit
+
+last_manual_override_living_room:
+  name: Living Room Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit

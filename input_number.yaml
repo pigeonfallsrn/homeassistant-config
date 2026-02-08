@@ -1,9 +1,71 @@
+notification_cooldown_minutes:
+  name: Notification Cooldown
+  min: 0
+  max: 120
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+  initial: 15
 
-# Humidity Management Controls
+manual_override_timeout_minutes:
+  name: Manual Override Auto-Release Timeout
+  min: 15
+  max: 480
+  step: 15
+  unit_of_measurement: "min"
+  icon: mdi:timer
+  initial: 60
+
+adaptive_lighting_transition_seconds:
+  name: Adaptive Lighting Transition Time
+  min: 0
+  max: 60
+  step: 1
+  unit_of_measurement: "s"
+  icon: mdi:transition
+  initial: 1
+
 bathroom_fan_pause_hours:
-  name: "Bathroom Fan Pause Duration"
+  name: Bathroom Fan Pause Duration
   min: 1
   max: 12
   step: 1
   unit_of_measurement: "hours"
+  icon: mdi:fan-clock
   initial: 4
+
+bathroom_fan_runtime_minutes:
+  name: Bathroom Fan Auto-Off Timer
+  min: 5
+  max: 60
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:fan-clock
+  initial: 20
+
+garage_auto_close_delay_minutes:
+  name: Garage Auto-Close Delay
+  min: 1
+  max: 30
+  step: 1
+  unit_of_measurement: "min"
+  icon: mdi:garage-variant
+  initial: 10
+
+garage_open_alert_delay_minutes:
+  name: Garage Open Alert Delay
+  min: 5
+  max: 60
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:garage-alert
+  initial: 15
+
+guest_mode_auto_disable_hours:
+  name: Guest Mode Auto-Disable After
+  min: 4
+  max: 72
+  step: 4
+  unit_of_measurement: "hours"
+  icon: mdi:account-clock
+  initial: 24

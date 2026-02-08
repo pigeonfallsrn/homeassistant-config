@@ -1,0 +1,24 @@
+bathroom_1st_floor_fan:
+  name: 1st Floor Bathroom Fan Timer
+  duration: "00:20:00"
+  icon: mdi:fan-clock
+  
+bathroom_2nd_floor_fan:
+  name: 2nd Floor Bathroom Fan Timer
+  duration: "00:20:00"
+  icon: mdi:fan-clock
+  
+garage_light:
+  name: Garage Light Timer
+  duration: "00:15:00"
+  icon: mdi:lightbulb-outline
+  
+guest_mode_auto_disable:
+  name: Guest Mode Auto-Disable Timer
+  duration: "24:00:00"
+  icon: mdi:account-clock
+  
+manual_override_timeout:
+  name: Manual Override Timeout
+  duration: "01:00:00"
+  icon: mdi:timer-off

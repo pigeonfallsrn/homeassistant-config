@@ -1,0 +1,23 @@
+garage_opens_today:
+  name: Garage Opens Today
+  icon: mdi:garage-variant
+  initial: 0
+  step: 1
+  
+doorbell_rings_today:
+  name: Doorbell Rings Today
+  icon: mdi:doorbell
+  initial: 0
+  step: 1
+  
+motion_events_today:
+  name: Motion Events Today
+  icon: mdi:motion-sensor
+  initial: 0
+  step: 1
+  
+critical_alerts_today:
+  name: Critical Alerts Today
+  icon: mdi:alert
+  initial: 0
+  step: 1

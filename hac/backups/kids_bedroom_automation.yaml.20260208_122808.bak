@@ -1,0 +1,499 @@
+# =============================================================================
+# Kids Bedroom Automation - Ella & Alaina
+# Created: 2026-01-21
+# 
+# Features:
+# - Gentle wake lights triggered 15min before Echo alarm
+# - School night bedtime routine (auto-dim then off)
+# - Lights off when leaving / everyone away
+# - Manual override support
+# =============================================================================
+
+# =============================================================================
+# HELPERS
+# =============================================================================
+input_boolean:
+  ella_bedroom_override:
+    name: "Ella Bedroom Override"
+    icon: mdi:lightbulb-auto-outline
+  alaina_bedroom_override:
+    name: "Alaina Bedroom Override"
+    icon: mdi:lightbulb-auto-outline
+  kids_wake_lights_enabled:
+    name: "Kids Wake Lights Enabled"
+    icon: mdi:alarm-light
+    initial: true
+
+input_datetime:
+  ella_wake_time_override:
+    name: "Ella Wake Override"
+    has_date: false
+    has_time: true
+  alaina_wake_time_override:
+    name: "Alaina Wake Override"
+    has_date: false
+    has_time: true
+
+# =============================================================================
+# TEMPLATE SENSORS - Next Wake Time
+# =============================================================================
+template:
+  - sensor:
+      - name: "Ella Next Wake Time"
+        unique_id: ella_next_wake_time
+        icon: mdi:alarm
+        state: >
+          {% set echo_alarm = states('sensor.ella_s_bedroom_echo_show_next_alarm_2') %}
+          {% set override = states('input_datetime.ella_wake_time_override') %}
+          {% if echo_alarm not in ['unknown', 'unavailable', 'None', ''] %}
+            {{ echo_alarm }}
+          {% elif override not in ['unknown', 'unavailable', 'None', ''] %}
+            {{ override }}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          source: >
+            {% set echo_alarm = states('sensor.ella_s_bedroom_echo_show_next_alarm_2') %}
+            {% if echo_alarm not in ['unknown', 'unavailable', 'None', ''] %}echo
+            {% else %}override{% endif %}
+
+      - name: "Alaina Next Wake Time"
+        unique_id: alaina_next_wake_time
+        icon: mdi:alarm
+        state: >
+          {% set echo_alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2') %}
+          {% set override = states('input_datetime.alaina_wake_time_override') %}
+          {% if echo_alarm not in ['unknown', 'unavailable', 'None', ''] %}
+            {{ echo_alarm }}
+          {% elif override not in ['unknown', 'unavailable', 'None', ''] %}
+            {{ override }}
+          {% else %}
+            unknown
+          {% endif %}
+        attributes:
+          source: >
+            {% set echo_alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2') %}
+            {% if echo_alarm not in ['unknown', 'unavailable', 'None', ''] %}echo
+            {% else %}override{% endif %}
+
+      # Time until wake (for triggering 15min before)
+      - name: "Ella Minutes Until Wake"
+        unique_id: ella_minutes_until_wake
+        unit_of_measurement: "min"
+        state: >
+          {% set wake = states('sensor.ella_next_wake_time') %}
+          {% if wake in ['unknown', 'unavailable', 'None', ''] %}
+            -1
+          {% else %}
+            {% set wake_dt = wake | as_datetime %}
+            {% if wake_dt %}
+              {% set diff = (wake_dt - now()).total_seconds() / 60 %}
+              {{ diff | round(0) }}
+            {% else %}
+              -1
+            {% endif %}
+          {% endif %}
+
+      - name: "Alaina Minutes Until Wake"
+        unique_id: alaina_minutes_until_wake
+        unit_of_measurement: "min"
+        state: >
+          {% set wake = states('sensor.alaina_next_wake_time') %}
+          {% if wake in ['unknown', 'unavailable', 'None', ''] %}
+            -1
+          {% else %}
+            {% set wake_dt = wake | as_datetime %}
+            {% if wake_dt %}
+              {% set diff = (wake_dt - now()).total_seconds() / 60 %}
+              {{ diff | round(0) }}
+            {% else %}
+              -1
+            {% endif %}
+          {% endif %}
+
+# =============================================================================
+# ALAINA SCRIPTS (mirror Ella's)
+# =============================================================================
+script:
+  alaina_lights_off:
+    alias: "Alaina Lights Off"
+    icon: mdi:lightbulb-off
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.alaina_s_bedroom
+            - light.alaina_s_bedside_lamp
+            - light.alaina_s_ceiling_led_lights
+            - light.alaina_s_floor_govee_lamp
+            - light.alaina_s_led_light_strip_1
+            - light.alaina_s_bedroom_echo_glow
+
+  alaina_school_night:
+    alias: "Alaina School Night"
+    icon: mdi:bed-clock
+    sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.alaina_s_ceiling_led_lights
+            - light.alaina_s_led_light_strip_1
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedside_lamp
+        data:
+          brightness_pct: 5
+          color_temp_kelvin: 2000
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedroom_echo_glow
+        data:
+          brightness_pct: 3
+          rgb_color: [255, 100, 50]
+      - delay:
+          minutes: 30
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.alaina_s_bedside_lamp
+            - light.alaina_s_bedroom_echo_glow
+
+  alaina_gentle_wake:
+    alias: "Alaina Gentle Wake"
+    icon: mdi:weather-sunset-up
+    sequence:
+      # Phase 1: Very dim warm (5%)
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          brightness_pct: 5
+          color_temp_kelvin: 2200
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedroom_echo_glow
+        data:
+          brightness_pct: 10
+          rgb_color: [255, 150, 50]
+      - delay:
+          seconds: 30
+      # Phase 2: Warmer, brighter (30%)
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          brightness_pct: 30
+          color_temp_kelvin: 3500
+          transition: 60
+      - delay:
+          seconds: 90
+      # Phase 3: Full brightness (80%)
+      - service: light.turn_on
+        target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          brightness_pct: 80
+          color_temp_kelvin: 5000
+          transition: 90
+
+# =============================================================================
+# AUTOMATIONS
+# =============================================================================
+automation:
+  # ---------------------------------------------------------------------------
+  # ELLA - Gentle Wake 15min Before Alarm
+  # ---------------------------------------------------------------------------
+  - id: ella_gentle_wake_automation
+    alias: "Ella - Gentle Wake Before Alarm"
+    description: "Start gentle wake lights 15 minutes before Echo alarm"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ella_minutes_until_wake
+        below: 16
+        above: 14
+    condition:
+      - condition: state
+        entity_id: input_boolean.kids_wake_lights_enabled
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.ella_home
+        state: "on"
+      - condition: time
+        after: "05:00:00"
+        before: "09:00:00"
+    action:
+      - service: script.ella_gentle_wake
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - Gentle Wake 15min Before Alarm
+  # ---------------------------------------------------------------------------
+  - id: alaina_gentle_wake_automation
+    alias: "Alaina - Gentle Wake Before Alarm"
+    description: "Start gentle wake lights 15 minutes before Echo alarm"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.alaina_minutes_until_wake
+        below: 16
+        above: 14
+    condition:
+      - condition: state
+        entity_id: input_boolean.kids_wake_lights_enabled
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.alaina_home
+        state: "on"
+      - condition: time
+        after: "05:00:00"
+        before: "09:00:00"
+    action:
+      - service: script.alaina_gentle_wake
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ELLA - School Night Bedtime (9:30 PM)
+  # ---------------------------------------------------------------------------
+  - id: ella_school_night_bedtime
+    alias: "Ella - School Night Bedtime"
+    description: "Dim lights on school nights at 9:30 PM"
+    trigger:
+      - platform: time
+        at: "21:30:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.school_tomorrow
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.ella_home
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+      # Only if lights are on
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.ella_s_bedroom
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_ceiling_light_1_of_3
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_led_lights
+            state: "on"
+    action:
+      - service: script.ella_school_night
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - School Night Bedtime (9:30 PM)
+  # ---------------------------------------------------------------------------
+  - id: alaina_school_night_bedtime
+    alias: "Alaina - School Night Bedtime"
+    description: "Dim lights on school nights at 9:30 PM"
+    trigger:
+      - platform: time
+        at: "21:30:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.school_tomorrow
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.alaina_home
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.alaina_s_bedroom
+            state: "on"
+          - condition: state
+            entity_id: light.alaina_s_ceiling_led_lights
+            state: "on"
+    action:
+      - service: script.alaina_school_night
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ELLA - Hard Off at 10:30 PM (School Nights)
+  # ---------------------------------------------------------------------------
+  - id: ella_lights_hard_off_school
+    alias: "Ella - Lights Off 10:30 PM School Nights"
+    trigger:
+      - platform: time
+        at: "22:30:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.school_tomorrow
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+    action:
+      - service: script.ella_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - Hard Off at 10:30 PM (School Nights)
+  # ---------------------------------------------------------------------------
+  - id: alaina_lights_hard_off_school
+    alias: "Alaina - Lights Off 10:30 PM School Nights"
+    trigger:
+      - platform: time
+        at: "22:30:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.school_tomorrow
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+    action:
+      - service: script.alaina_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ELLA - Lights Off When Leaving
+  # ---------------------------------------------------------------------------
+  - id: ella_lights_off_when_leaving
+    alias: "Ella - Lights Off When Leaving"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.ella_home
+        to: "off"
+        for:
+          minutes: 5
+    condition:
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+    action:
+      - service: script.ella_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - Lights Off When Leaving
+  # ---------------------------------------------------------------------------
+  - id: alaina_lights_off_when_leaving
+    alias: "Alaina - Lights Off When Leaving"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.alaina_home
+        to: "off"
+        for:
+          minutes: 5
+    condition:
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+    action:
+      - service: script.alaina_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # BOTH - Lights Off When Everyone Leaves
+  # ---------------------------------------------------------------------------
+  - id: kids_lights_off_everyone_away
+    alias: "Kids - Lights Off When Everyone Away"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+    action:
+      - service: script.ella_lights_off
+      - service: script.alaina_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # Override Clear - Auto-reset at 4 AM
+  # ---------------------------------------------------------------------------
+  - id: kids_bedroom_override_reset
+    alias: "Kids - Bedroom Override Reset"
+    trigger:
+      - platform: time
+        at: "04:00:00"
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id:
+            - input_boolean.ella_bedroom_override
+            - input_boolean.alaina_bedroom_override
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ALAINA - Lights Off Midnight Friday/Saturday (Weekend Nights)
+  # ---------------------------------------------------------------------------
+  - id: alaina_lights_auto_off_midnight_weekend
+    alias: "Alaina - Lights Auto Off Midnight (Fri/Sat)"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      # Only Friday night (Sat 00:00) or Saturday night (Sun 00:00)
+      - condition: time
+        weekday:
+          - sat
+          - sun
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: "off"
+      # Only if any of her lights are actually on
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.alaina_s_led_light_strip_1
+            state: "on"
+          - condition: state
+            entity_id: light.alaina_s_bedside_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.alaina_s_floor_govee_lamp
+            state: "on"
+    action:
+      - service: script.alaina_lights_off
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # ELLA - Lights Off Midnight Friday/Saturday (Weekend Nights)
+  # ---------------------------------------------------------------------------
+  - id: ella_lights_auto_off_midnight_weekend
+    alias: "Ella - Lights Auto Off Midnight (Fri/Sat)"
+    trigger:
+      - platform: time
+        at: "00:00:00"
+    condition:
+      # Only Friday night (Sat 00:00) or Saturday night (Sun 00:00)
+      - condition: time
+        weekday:
+          - sat
+          - sun
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: "off"
+      # Only if any of her lights are actually on
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.ella_s_led_lights
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_bedside_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_govee_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.ella_s_wall_light
+            state: "on"
+    action:
+      - service: script.ella_lights_off
+    mode: single

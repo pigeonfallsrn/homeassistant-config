@@ -1,58 +1,167 @@
-dad_awake:
-  name: Dad Awake
-  icon: mdi:account-check
-  initial: off
-
-dad_bedtime_mode:
-  name: Dad Bedtime Mode
+# ============================================================================
+# INPUT BOOLEAN HELPERS - GOLD STANDARD CONFIGURATION
+# ============================================================================
+house_sleep_mode:
+  name: Sleep Mode
   icon: mdi:sleep
-  initial: off
+  initial: false
+
+house_guest_mode:
+  name: Guest Mode
+  icon: mdi:account-multiple
+  initial: false
+
+house_vacation_mode:
+  name: Vacation Mode
+  icon: mdi:airplane
+  initial: false
+
+house_cleaning_mode:
+  name: Cleaning Mode
+  icon: mdi:broom
+  initial: false
 
 party_mode:
   name: Party Mode
   icon: mdi:party-popper
-  initial: off
-# Humidity Management Controls
-bathroom_fan_pause_low_humidity:
-  name: "Pause Bathroom Fan (Low Humidity)"
-  icon: mdi:fan-off
+  initial: false
 
-# Water Leak Protection
-water_valve_auto_shutoff:
-  name: "Auto Shutoff Water Valve on Leak"
-  icon: mdi:water-off
+dad_awake:
+  name: Dad Awake
+  icon: mdi:account-check
+  initial: false
+
+dad_bedtime_mode:
+  name: Dad Bedtime Mode
+  icon: mdi:sleep
+  initial: false
+
+notification_quiet_hours:
+  name: Quiet Hours Active
+  icon: mdi:volume-off
+  initial: false
+
+notification_critical_only:
+  name: Critical Alerts Only
+  icon: mdi:alert-octagon
+  initial: false
+
+routine_good_morning_active:
+  name: Good Morning Routine Active
+  icon: mdi:weather-sunset-up
+  initial: false
+
+routine_good_night_active:
+  name: Good Night Routine Active
+  icon: mdi:weather-sunset-down
+  initial: false
+
+routine_leaving_home_active:
+  name: Leaving Home Routine Active
+  icon: mdi:exit-run
+  initial: false
+
+routine_arriving_home_active:
+  name: Arriving Home Routine Active
+  icon: mdi:home-import-outline
+  initial: false
+
+garage_auto_close_enabled:
+  name: Garage Auto-Close Enabled
+  icon: mdi:garage
   initial: true
 
-# AI Context System
-ai_context_pending:
-  name: "AI Context Update Pending"
-  icon: mdi:brain
+garage_auto_open_enabled:
+  name: Garage Auto-Open Enabled
+  icon: mdi:garage-open
+  initial: true
+
+garage_alert_acknowledged:
+  name: Garage Alert Acknowledged
+  icon: mdi:bell-off
   initial: false
 
 entry_room_manual_override:
   name: Entry Room Manual Override
+  icon: mdi:hand-back-right
   initial: false
-bathroom_manual_override:
-  name: Bathroom Manual Override
+
+bathroom_1st_floor_manual_override:
+  name: 1st Floor Bathroom Manual Override
+  icon: mdi:hand-back-right
   initial: false
+
+bathroom_2nd_floor_manual_override:
+  name: 2nd Floor Bathroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+kitchen_manual_override:
+  name: Kitchen Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
 kitchen_lounge_manual_override:
   name: Kitchen Lounge Manual Override
+  icon: mdi:hand-back-right
   initial: false
 
-# 2nd Floor Bathroom Manual Override Flags
-2nd_floor_bathroom_manual_override:
-  name: "2nd Floor Bathroom Manual Override"
+living_room_manual_override:
+  name: Living Room Manual Override
   icon: mdi:hand-back-right
-  
-2nd_floor_bathroom_fan_manual_override:
-  name: "2nd Floor Bathroom Fan Manual Override"
-  icon: mdi:fan-alert
+  initial: false
 
-# 2nd Floor Bathroom Manual Override Flags
-2nd_floor_bathroom_manual_override:
-  name: "2nd Floor Bathroom Manual Override"
+master_bedroom_manual_override:
+  name: Master Bedroom Manual Override
   icon: mdi:hand-back-right
-  
-2nd_floor_bathroom_fan_manual_override:
-  name: "2nd Floor Bathroom Fan Manual Override"
+  initial: false
+
+kids_bedroom_manual_override:
+  name: Kids Bedroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+garage_manual_override:
+  name: Garage Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+bathroom_fan_pause_low_humidity:
+  name: Pause Bathroom Fan (Low Humidity)
+  icon: mdi:fan-off
+  initial: false
+
+bathroom_1st_floor_fan_manual_override:
+  name: 1st Floor Bathroom Fan Manual Override
   icon: mdi:fan-alert
+  initial: false
+
+bathroom_2nd_floor_fan_manual_override:
+  name: 2nd Floor Bathroom Fan Manual Override
+  icon: mdi:fan-alert
+  initial: false
+
+water_valve_auto_shutoff:
+  name: Auto Shutoff Water Valve on Leak
+  icon: mdi:water-off
+  initial: true
+
+security_alerts_enabled:
+  name: Security Alerts Enabled
+  icon: mdi:shield-home
+  initial: true
+
+door_open_alerts_enabled:
+  name: Door Open Alerts Enabled
+  icon: mdi:door-open
+  initial: true
+
+ai_context_pending:
+  name: AI Context Update Pending
+  icon: mdi:brain
+  initial: false
+
+maintenance_mode:
+  name: Maintenance Mode
+  icon: mdi:tools
+  initial: false

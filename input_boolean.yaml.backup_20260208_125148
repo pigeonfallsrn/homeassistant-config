@@ -1,0 +1,58 @@
+dad_awake:
+  name: Dad Awake
+  icon: mdi:account-check
+  initial: off
+
+dad_bedtime_mode:
+  name: Dad Bedtime Mode
+  icon: mdi:sleep
+  initial: off
+
+party_mode:
+  name: Party Mode
+  icon: mdi:party-popper
+  initial: off
+# Humidity Management Controls
+bathroom_fan_pause_low_humidity:
+  name: "Pause Bathroom Fan (Low Humidity)"
+  icon: mdi:fan-off
+
+# Water Leak Protection
+water_valve_auto_shutoff:
+  name: "Auto Shutoff Water Valve on Leak"
+  icon: mdi:water-off
+  initial: true
+
+# AI Context System
+ai_context_pending:
+  name: "AI Context Update Pending"
+  icon: mdi:brain
+  initial: false
+
+entry_room_manual_override:
+  name: Entry Room Manual Override
+  initial: false
+bathroom_manual_override:
+  name: Bathroom Manual Override
+  initial: false
+kitchen_lounge_manual_override:
+  name: Kitchen Lounge Manual Override
+  initial: false
+
+# 2nd Floor Bathroom Manual Override Flags
+2nd_floor_bathroom_manual_override:
+  name: "2nd Floor Bathroom Manual Override"
+  icon: mdi:hand-back-right
+  
+2nd_floor_bathroom_fan_manual_override:
+  name: "2nd Floor Bathroom Fan Manual Override"
+  icon: mdi:fan-alert
+
+# 2nd Floor Bathroom Manual Override Flags
+2nd_floor_bathroom_manual_override:
+  name: "2nd Floor Bathroom Manual Override"
+  icon: mdi:hand-back-right
+  
+2nd_floor_bathroom_fan_manual_override:
+  name: "2nd Floor Bathroom Fan Manual Override"
+  icon: mdi:fan-alert

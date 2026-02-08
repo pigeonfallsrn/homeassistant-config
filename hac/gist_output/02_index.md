@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-07 13:34
+# Automation Index - 2026-02-08 12:32
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -92,7 +92,7 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### garage_lighting_automation.yaml
 9: garage_master_lights_on
-42: garage_master_lights_off
+48: garage_master_lights_off
 
 ### garage_quick_open.yaml
 14: garage_auto_open_approaching
@@ -190,3 +190,5 @@ Fetch full YAML: `hac pkg <filename>`
 
 
 ### automations.yaml
+1: '1770558776705'
+148: '1770564792613'
