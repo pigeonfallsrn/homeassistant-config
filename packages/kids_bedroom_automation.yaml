@@ -125,7 +125,7 @@ script:
           entity_id:
             - light.alaina_s_bedroom
             - light.alaina_s_bedside_lamp
-            - light.alaina_s_ceiling_led_lights
+            - light.alaina_s_ceiling_lights
             - light.alaina_s_floor_govee_lamp
             - light.alaina_s_led_light_strip_1
             - light.alaina_s_bedroom_echo_glow
@@ -137,7 +137,7 @@ script:
       - service: light.turn_off
         target:
           entity_id:
-            - light.alaina_s_ceiling_led_lights
+            - light.alaina_s_ceiling_lights
             - light.alaina_s_led_light_strip_1
       - service: light.turn_on
         target:
@@ -317,7 +317,7 @@ automation:
             entity_id: light.alaina_s_bedroom
             state: "on"
           - condition: state
-            entity_id: light.alaina_s_ceiling_led_lights
+            entity_id: light.alaina_s_ceiling_lights
             state: "on"
     action:
       - service: script.alaina_school_night
