@@ -10,12 +10,6 @@ automation:
     alias: "Garage All Lights ON"
     trigger:
       - platform: state
-        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motor
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.ratgdo32disco_5735e8_motor
-        to: 'on'
-      - platform: state
         entity_id: cover.ratgdo32disco_fd8d8c_door
         to: 'open'
       - platform: state

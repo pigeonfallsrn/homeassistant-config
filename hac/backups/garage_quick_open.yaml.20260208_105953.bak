@@ -20,7 +20,7 @@ automation:
     trigger:
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
-        below: 2000
+        below: 800
     condition:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
@@ -34,7 +34,7 @@ automation:
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F697 Welcome Home"
-          message: "North garage opening in 30s \u2014 tap to cancel"
+          message: "North garage opening in 60s \u2014 tap to cancel"
           data:
             tag: "garage_auto_open"
             ttl: 0
@@ -61,7 +61,7 @@ automation:
               action: "OPEN_NOW"
             id: open_now
         timeout:
-          seconds: 30
+          seconds: 60
         continue_on_timeout: true
       - if:
           - condition: template
@@ -96,7 +96,7 @@ automation:
             state: "Spencer"
           - condition: numeric_state
             entity_id: sensor.john_distance_to_home
-            below: 1200
+            below: 400
           - condition: state
             entity_id: person.john_spencer
             state: "home"
@@ -185,7 +185,7 @@ automation:
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F6AA Garage Still Open"
-          message: "North door closing in 60s \u2014 tap to cancel"
+          message: "North door closing in 3 min \u2014 tap to cancel"
           data:
             tag: "garage_auto_close"
             ttl: 0
@@ -215,7 +215,7 @@ automation:
             to: "home"
             id: returned
         timeout:
-          seconds: 60
+          minutes: 3
         continue_on_timeout: true
       - if:
           - condition: template
