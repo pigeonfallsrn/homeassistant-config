@@ -492,6 +492,58 @@ def format_automation_analysis(data):
 def format_sessions(data):
     return [['Date', 'File', 'Lines', 'Preview']] + [[s['date'], s['file'], s['lines'], s['preview']] for s in data['sessions']]
 
+
+# ============================================================================
+# LEARNINGS EXPORT INTEGRATION
+# ============================================================================
+
+def export_learnings_to_sheets(service, spreadsheet_id):
+    """Export HAC learnings to Google Sheets"""
+    print("\n=== LEARNINGS TAB ===")
+    
+    # Import the parser
+    import sys
+    sys.path.append('/config/python_scripts')
+    from parse_learnings import parse_all_learnings
+    
+    # Parse all learnings
+    learnings = parse_all_learnings()
+    
+    if not learnings:
+        print("  ⚠ No learnings found")
+        return
+    
+    # Prepare data for sheets
+    headers = ['Timestamp', 'Date', 'Time', 'Category', 'Learning', 'Tags', 'Source']
+    rows = [headers]
+    
+    for learning in learnings:
+        rows.append([
+            learning['timestamp'],
+            learning['date'],
+            learning['time'],
+            learning['category'],
+            learning['learning'],
+            learning['tags'],
+            learning['source']
+        ])
+    
+    # Write to sheet
+    try:
+        body = {'values': rows}
+        service.spreadsheets().values().update(
+            spreadsheetId=spreadsheet_id,
+            range='Learnings!A1',
+            valueInputOption='RAW',
+            body=body
+        ).execute()
+        
+        print(f"  ✓ Learnings: {len(rows)-1} rows")
+        
+    except Exception as e:
+        print(f"  ✗ Learnings export failed: {e}")
+
+
 def main():
     print("=" * 70)
     print("HA Dual Export v4.0")
@@ -506,6 +558,7 @@ def main():
           f"{len(data['areas'])} areas, {len(data['integrations'])} integrations, {len(data['devices'])} devices")
     
     write_master_workbook(svc, data)
+    export_learnings_to_sheets(svc, MASTER_WORKBOOK_ID)
     write_llm_index_workbook(svc, data)
     
     print(f"\n✓ COMPLETE")
