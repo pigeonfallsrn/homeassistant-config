@@ -1187,3 +1187,16 @@ case "${1:-}" in
 esac
 
 
+
+# AI Insight Tracking
+hac_track_insight() {
+    if [ $# -lt 3 ]; then
+        echo "Usage: hac track 'Query Type' 'Question' 'Response'"
+        return 1
+    fi
+    
+    python3 /config/python_scripts/track_ai_insight.py "$1" "$2" "$3"
+}
+
+# Alias
+alias hac_track='hac_track_insight'
