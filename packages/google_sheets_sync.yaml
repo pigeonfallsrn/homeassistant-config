@@ -1,0 +1,60 @@
+# Google Sheets Direct Sync Package
+# Version: 2.0.0
+
+homeassistant:
+  customize:
+    sensor.sheet_export_status:
+      friendly_name: "Google Sheets Export Status"
+      icon: mdi:google-spreadsheet
+
+# Shell command to run Python script
+shell_command:
+  export_to_google_sheets: >
+    python3 /config/python_scripts/export_to_sheets.py 
+    --spreadsheet-id "11quLdO56rqI8GAPq-KnKtJoBs7cH6QAVgHs8W6UC_8w"
+
+# Manual export button
+input_button:
+  export_to_google_sheets:
+    name: "Export to Google Sheets"
+    icon: mdi:upload
+
+# Automations
+automation:
+  # Daily export at 11 PM
+  - id: 'google_sheets_export_daily'
+    alias: "Google Sheets - Daily Export"
+    description: "Export HA data every night at 11 PM"
+    mode: single
+    trigger:
+      - platform: time
+        at: "23:00:00"
+    action:
+      - service: shell_command.export_to_google_sheets
+
+  # Export on HA startup
+  - id: 'google_sheets_export_startup'
+    alias: "Google Sheets - Export on Startup"
+    description: "Export when HA starts"
+    mode: single
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay: '00:02:00'
+      - service: shell_command.export_to_google_sheets
+
+  # Manual export button
+  - id: 'google_sheets_export_manual'
+    alias: "Google Sheets - Manual Export"
+    description: "Trigger export when button pressed"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_button.export_to_google_sheets
+    action:
+      - service: shell_command.export_to_google_sheets
+      - service: persistent_notification.create
+        data:
+          title: "✅ Export Complete"
+          message: "Google Sheets export finished at {{ now().strftime('%I:%M %p') }}"

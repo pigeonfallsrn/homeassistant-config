@@ -20,7 +20,7 @@ automation:
     trigger:
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
-        below: 2000
+        below: 400
     condition:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
@@ -61,7 +61,7 @@ automation:
               action: "OPEN_NOW"
             id: open_now
         timeout:
-          seconds: 30
+          seconds: 45
         continue_on_timeout: true
       - if:
           - condition: template
@@ -96,7 +96,7 @@ automation:
             state: "Spencer"
           - condition: numeric_state
             entity_id: sensor.john_distance_to_home
-            below: 1200
+            below: 200
           - condition: state
             entity_id: person.john_spencer
             state: "home"
@@ -392,8 +392,6 @@ automation:
     condition:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
-      - condition: state
-    action:
       - service: light.turn_on
         target:
           entity_id:
@@ -529,3 +527,5 @@ automation:
           data:
             tag: "garage_south_close"
     mode: single
+
+  # ===========================================================================

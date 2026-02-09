@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""Home Assistant to Google Sheets Direct Export v2.0"""
+import argparse, json, sys, yaml, requests
+from datetime import datetime
+from pathlib import Path
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+SERVICE_ACCOUNT_FILE = '/config/ha-service-account.json'
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+def get_ha_data():
+    with open('/config/secrets.yaml', 'r') as f:
+        token = yaml.safe_load(f).get('ha_api_token', '')
+    if not token:
+        return {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'entities': [], 'automations': [], 'action_items': [], 'sessions': []}
+    
+    headers = {"Authorization": f"Bearer {token}"}
+    resp = requests.get("http://localhost:8123/api/states", headers=headers, timeout=10)
+    data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'entities': [], 'automations': [], 'action_items': [], 'sessions': []}
+    
+    if resp.status_code == 200:
+        for state in resp.json():
+            entity_id = state.get('entity_id', '')
+            domain = entity_id.split('.')[0]
+            attrs = state.get('attributes', {})
+            data['entities'].append({'entity_id': entity_id, 'domain': domain, 'state': state.get('state'), 'friendly_name': attrs.get('friendly_name', entity_id), 'area': attrs.get('area', 'UNASSIGNED')})
+            if domain == 'automation':
+                data['automations'].append({'entity_id': entity_id, 'friendly_name': attrs.get('friendly_name', entity_id), 'state': state.get('state')})
+        for e in data['entities']:
+            if e['area'] == 'UNASSIGNED' and e['domain'] in ['light','switch','sensor']:
+                data['action_items'].append({'entity_id': e['entity_id'], 'domain': e['domain'], 'friendly_name': e['friendly_name'], 'issue_type': 'NO_AREA', 'priority': 'HIGH', 'recommendation': 'Assign to area'})
+    
+    # Get session files from both locations
+    try:
+        # Check /config/hac/ for session_*.md files
+        hac_dir = Path('/config/hac')
+        if hac_dir.exists():
+            for file in sorted(hac_dir.glob('session_*.md'), reverse=True)[:10]:
+                date = file.stem.replace('session_', '')
+                formatted_date = f"{date[:4]}-{date[4:6]}-{date[6:]}" if len(date) == 8 else date
+                content = file.read_text()[:500]
+                data['sessions'].append({'date': formatted_date, 'file': file.name, 'lines': len(file.read_text().split('\n')), 'preview': content.replace('\n', ' ')[:300]})
+        
+        # Also check /config/hac/learnings/ for date format files
+        learnings_dir = Path('/config/hac/learnings')
+        if learnings_dir.exists():
+            for file in sorted(learnings_dir.glob('202*.md'), reverse=True)[:10]:
+                date = file.stem
+                formatted_date = f"{date[:4]}-{date[4:6]}-{date[6:]}" if len(date) == 8 else date
+                content = file.read_text()[:500]
+                data['sessions'].append({'date': formatted_date, 'file': file.name, 'lines': len(file.read_text().split('\n')), 'preview': content.replace('\n', ' ')[:300]})
+    except Exception as e:
+        print(f"  Note: Could not read sessions: {e}")
+    
+    return data
+
+def write_sheets(svc, sid, data):
+    sheets = {
+        'Dashboard': [['HA MASTER CONTEXT v2.0'], [''], ['Generated:', data['timestamp']], [''], ['Total Entities', len(data['entities'])], ['Total Automations', len(data['automations'])], ['Action Items', len(data['action_items'])], ['Sessions Logged', len(data['sessions'])]],
+        'Entities': [['entity_id','domain','state','friendly_name','area']] + [[e['entity_id'],e['domain'],e['state'],e['friendly_name'],e['area']] for e in sorted(data['entities'], key=lambda x: (x['area'],x['domain']))],
+        'Automations': [['entity_id','friendly_name','state']] + [[a['entity_id'],a['friendly_name'],a['state']] for a in data['automations']],
+        'Action Items': [['Priority','Entity','Domain','Name','Issue','Recommendation']] + [[i['priority'],i['entity_id'],i['domain'],i['friendly_name'],i['issue_type'],i['recommendation']] for i in data['action_items']],
+        'Sessions': [['Date','File','Lines','Preview']] + [[s['date'],s['file'],s['lines'],s['preview']] for s in data['sessions']]
+    }
+    for name, rows in sheets.items():
+        try:
+            svc.spreadsheets().values().clear(spreadsheetId=sid, range=f"{name}!A:Z").execute()
+            svc.spreadsheets().values().update(spreadsheetId=sid, range=f"{name}!A1", valueInputOption='RAW', body={'values': rows}).execute()
+            print(f"  ✓ {name}: {len(rows)} rows")
+        except Exception as e:
+            print(f"  ⚠ {name}: {e}")
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--spreadsheet-id', required=True)
+    args = parser.parse_args()
+    print("="*70 + "\nStarting Export\n" + "="*70)
+    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    svc = build('sheets', 'v4', credentials=creds)
+    print("✓ Auth successful")
+    data = get_ha_data()
+    print(f"✓ Found {len(data['entities'])} entities, {len(data['automations'])} automations, {len(data['sessions'])} sessions")
+    write_sheets(svc, args.spreadsheet_id, data)
+    print(f"✓ Complete: https://docs.google.com/spreadsheets/d/{args.spreadsheet_id}\n" + "="*70)
+
+if __name__ == '__main__': main()
