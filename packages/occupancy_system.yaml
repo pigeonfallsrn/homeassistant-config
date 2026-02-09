@@ -568,7 +568,7 @@ automation:
   # Night only - day is manual operation with adaptive lighting
   # ─────────────────────────────────────────────────────────
   - id: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
-    alias: "2nd Floor Bathroom → Night Lighting"
+    alias: "Upstairs Bathroom → Night Lighting"
     mode: restart
     trigger:
       - platform: state
