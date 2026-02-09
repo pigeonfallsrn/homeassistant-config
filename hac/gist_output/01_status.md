@@ -1,10 +1,10 @@
-# HA Status - 2026-02-08 22:47 CST
+# HA Status - 2026-02-09 09:42 CST
 Version: 2026.2.1 | HAC: v7.3
 
 ## People
 john_spencer: home
-alaina_spencer: [PERSON]'s House
-ella_spencer: [PERSON]'s House
+alaina_spencer: not_home
+ella_spencer: Whitehall School
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -53,18 +53,21 @@ kitchen_table_manual_override: unavailable
 2nd_floor_bathroom_fan_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-08 22:45:56 calendar_refresh_school_tomorrow
-2026-02-08 22:45:56 kitchen_tablet_brightness_schedule
-2026-02-08 12:57:02 upstairs_hallway_motion_lighting_v2
-2026-02-08 12:57:02 presence_update_someone_home
-2026-02-08 12:57:02 presence_update_occupancy_combinations
-2026-02-08 12:57:02 presence_ella_away
-2026-02-08 12:57:02 presence_john_away
-2026-02-08 12:57:02 presence_john_home
-2026-02-08 12:57:02 calendar_refresh_school_in_session_now
-2026-02-08 12:57:02 calendar_refresh_school_tomorrow
+2026-02-09 09:36:37 calendar_refresh_school_tomorrow
+2026-02-09 09:36:37 kitchen_tablet_brightness_schedule
+2026-02-09 09:29:36 calendar_refresh_school_tomorrow
+2026-02-09 09:29:36 kitchen_tablet_brightness_schedule
+2026-02-09 09:20:05 upstairs_hallway_motion_lighting_v2
+2026-02-09 09:20:05 calendar_refresh_school_tomorrow
+2026-02-09 09:20:05 kitchen_tablet_wake_on_kitchen_motion
+2026-02-09 09:20:05 kitchen_tablet_brightness_schedule
+2026-02-09 09:20:05 living_room_lamps_adaptive_control
+2026-02-09 09:20:05 kitchen_tablet_wake_on_motion
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
+⚠ calendar_refresh_school_tomorrow: 12x
+⚠ kitchen_tablet_brightness_schedule: 12x
+⚠ living_room_lamps_adaptive_control: 8x

@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-08 22:47
+# System Knowledge - 2026-02-09 09:42
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -31,38 +31,36 @@
 - 2026-01-28: Add 3 lights to Living Spaces AL via UI: living_room_west_floor_lamp, kitchen_hue_color_floor_lamp, kitchen_lounge_lamp (storage edits revert - must use UI)
 
 ## Recent Session Learnings
-- 09:30: Garage notification mess: 3 overlapping automation sets were all active. Single source of truth is now packages/garage_quick_open.yaml only. Removed automations/garage_arrival.yaml and garage_door_notifications.yaml plus 17 orphaned entity registry entries.
-- 11:51: Fixed 2nd floor bathroom fan Shelly to Inovelli VZM35-SN, added Navien flow pretrigger, purged 52 ghost automations, installed 9 new hac workflow commands
-- 22:41: Master Context Excel export system complete: v2.0 with Action Items tab, automated Synology/GDrive sync via hac export command
+- 09:41: Garage arrival automation complete: 400m trigger, Bluetooth van detection, instant notifications, auto-restart on hac check, dashboard auto-open on van BT connect to /lovelace/arriving
 
 ## Historical Learnings (last 30 lines)
-- Use `| default('', true)` for stricter default, OR add explicit null check before operations
-- For string slicing: `{% if bssid and bssid[:8] in [...] %}` prevents TypeError on None
-- GPS-based presence (`person.john_spencer`) requires phone companion app to actively report location changes
-- If phone goes to sleep or battery optimization kicks in, departure may not register
-- UniFi device_tracker shows connection but doesn't track GPS location
-- Alternative triggers: garage door state, vehicle detection, WiFi BSSID changes
-- **Background Location** - core presence tracking (1-3 min updates)
-- **Location Zone** - triggers on zone enter/leave
-- **Single Accurate Location** - precise on-demand location
-- **High Accuracy Mode** - faster updates
-- Set **Sensor Update Frequency** to "Fast Always" (1 min vs 15 min)
-- Android: Settings → Apps → Home Assistant → Battery → Unrestricted
-- `ha automation reload` doesn't exist - use REST API: `curl -X POST ... /api/services/automation/reload`
-- 502 Bad Gateway from supervisor API = HA core is down/restarting
-- Template reload: `curl -X POST ... /api/services/template/reload`
-- `!include_dir_merge_list automations/` auto-includes all .yaml files in automations/
-- New files are picked up on automation reload without config changes
-- File naming: descriptive (e.g., `garage_door_notifications.yaml`, `exterior_lights_auto_off.yaml`)
-- `binary_sensor.aqara_door_and_window_sensor_door_5` = North garage door (device_class: garage_door)
-- `binary_sensor.aqara_door_and_window_sensor_door_6` = South garage door
-- State: `off` = closed, `on` = open
-- Faster/more reliable than ratgdo tilt sensor for "closed" detection
-- `git fsck --full && git gc --prune=now` fixes "confused by unstable object source" errors
-- Always exclude: `zigbee.db*`, `.ha_run.lock`
-- 09:20: QUICK WINS COMPLETE: (1) Gist pushed, (2) Verified 5 orphan automations - 4 already gone, removed 2 garage_all_lights_off from entity registry, (3) Tabled projects cleaned. Next priority: legacy template audit for 2026.6 deprecation.
-- 09:59: Orphan cleanup complete: removed 2 true orphans. Remaining garage_all_lights_off is legit (unique_id: garage_master_lights_off from garage_lighting_automation.yaml). HA regenerated it on restart.
-- 10:47: PHASE 2-4 COMPLETE: Fixed duplicate YAML keys in kitchen_tablet_dashboard.yaml, presence_system.yaml, configuration.yaml. Removed duplicate unique_ids (alaina_at_moms etc). Added round() defaults. Moved 29 old .bak files to hac/backups/old_package_baks/. All configs validated.
-- 11:47: HARDWARE CHANGE 2026-02-05: 1st Floor Bathroom - TP-Link dimmer installed for vanity lights, replaces Inovelli. Old Inovelli will move to 2nd Floor Bathroom (smart bulb mode). ISSUE: Remaining 1st FL Bathroom Inovelli (ceiling) not controlling Hue lights properly - needs Smart Bulb Mode check.
-- 12:02: 1ST FL BATHROOM INOVELLI+HUE SETUP: (1) Enable Smart Bulb Mode via ZHA Manage Clusters → Inovelli_VZM31SN_Cluster → attribute 'Smart Bulb Mode' = 1. (2) Create automation using fxlt blueprint 'Inovelli VZM31-SN Blue Series 2-1 Switch (ZHA)'. (3) Map paddle presses to light.1st_floor_bathroom (Hue group). (4) Set automation mode: queued. This routes Inovelli→ZHA→HA→Hue Bridge→Hue Bulbs since direct Zigbee binding not possible across different coordinators.
-- 21:02: 1ST FL BATHROOM INOVELLI WORKING: Key issue was automations.yaml being ignored - config uses include_dir_merge_list automations/ so automations must go in automations/ directory. Created automations/1st_floor_bathroom_inovelli.yaml using fxlt blueprint.
+- Vanity switch (602bdb2b4675a5e364853ac1e53ed689) -> light.2nd_floor_vanity_lights
+- Fan switch (3eed85f7ca546a7ed7e24b0cfc6c818b) -> switch.upstairs_bathroom_fan
+- Humidity auto: >65% on, <55% off with manual override
+- Key: Use Hue ZONE entities not Room entity for separate control
+- 20:16: HYBRID AUTOMATION SETUP (Best Practice):
+- automation manual: include_dir_merge_list automations/ (YAML)
+- automation ui: include automations.yaml (UI-created)
+- Blueprints now work from UI and save to automations.yaml
+- Existing YAML automations preserved in automations/ dir
+- Source: Official HA docs splitting_configuration
+- 20:35: AUTOMATION CLEANUP SESSION:
+- ui_automations.yaml - old UI automations duplicated in dedicated files
+- bathroom_motion_lighting.yaml - duplicates 1st/2nd floor bathroom
+- All .bak files in automations/
+- 1st_floor_bathroom_inovelli.yaml
+- 2nd_floor_bathroom_inovelli.yaml (new humidity/fan setup)
+- upstairs_bathroom_motion.yaml (2nd floor motion)
+- alaina_wake_echo_alarm.yaml
+- exterior_lights_auto_off.yaml
+- garage_arrival.yaml
+- garage_door_notifications.yaml
+- kitchen_tablet_wake.yaml
+- tablet_power.yaml
+- entry_room_aux_switch
+- kitchen_lounge_vzm36_fixed
+- kitchen_lounge_dimmer_fixed
+- kitchen_chandelier_switch_v2
+- kitchen_above_sink_inovelli
+- living_room_tv_off_trigger_av_system_off
+- first_person_home_lights_on

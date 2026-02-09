@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-08 22:47
+# Automation Index - 2026-02-09 09:42
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -102,12 +102,12 @@ Fetch full YAML: `hac pkg <filename>`
 309: garage_quick_open_action_handler
 362: garage_quick_open_clear
 386: arrival_lights_approaching
-411: garage_north_opened_close_option
-438: garage_north_close_action
-456: garage_north_close_clear
-480: garage_south_opened_close_option
-507: garage_south_close_action
-525: garage_south_close_clear
+407: garage_north_opened_close_option
+432: garage_north_close_action
+450: garage_north_close_clear
+474: garage_south_opened_close_option
+499: garage_south_close_action
+517: garage_south_close_clear
 
 ### hac_session_log.yaml
 

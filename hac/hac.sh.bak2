@@ -435,7 +435,7 @@ cmd_check() {
     if ha core check; then
         log_ok "Configuration valid"
         echo ""
-        confirm="y"
+        read -p "Restart Home Assistant? [y/N] " confirm
         if [[ "$confirm" =~ ^[Yy] ]]; then
             ha core restart
             log_ok "Restart initiated"
@@ -916,7 +916,7 @@ cmd_do_restart() {
         return 1
     fi
     echo "  ✓ Valid"
-    confirm="y"
+    read -p "Restart Home Assistant? [y/N] " confirm
     [ "$confirm" != "y" ] && echo "Aborted" && return 0
     echo "[2/4] Restarting..."
     ha core restart 2>&1 | grep -v "Processing"
