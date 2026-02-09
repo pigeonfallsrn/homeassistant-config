@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Home Assistant to Google Sheets Direct Export v3.0 - Complete System Export"""
+"""Home Assistant to Google Sheets Direct Export v3.1 - Complete System Export with Registry Data"""
 import argparse, json, sys, yaml, requests, subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -9,6 +9,53 @@ from googleapiclient.discovery import build
 
 SERVICE_ACCOUNT_FILE = '/config/ha-service-account.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+def load_registries():
+    """Load entity, device, and area registries"""
+    registries = {'entities': {}, 'devices': {}, 'areas': {}}
+    
+    # Load entity registry
+    try:
+        with open('/config/.storage/core.entity_registry', 'r') as f:
+            entity_reg = json.load(f)
+            for entity in entity_reg.get('data', {}).get('entities', []):
+                registries['entities'][entity['entity_id']] = {
+                    'area_id': entity.get('area_id'),
+                    'device_id': entity.get('device_id'),
+                    'platform': entity.get('platform'),
+                    'disabled': entity.get('disabled_by') is not None
+                }
+    except Exception as e:
+        print(f"  Note: Could not load entity registry: {e}")
+    
+    # Load device registry
+    try:
+        with open('/config/.storage/core.device_registry', 'r') as f:
+            device_reg = json.load(f)
+            for device in device_reg.get('data', {}).get('devices', []):
+                registries['devices'][device['id']] = {
+                    'area_id': device.get('area_id'),
+                    'name': device.get('name_by_user') or device.get('name', 'Unknown'),
+                    'manufacturer': device.get('manufacturer', ''),
+                    'model': device.get('model', ''),
+                    'disabled': device.get('disabled_by') is not None
+                }
+    except Exception as e:
+        print(f"  Note: Could not load device registry: {e}")
+    
+    # Load area registry
+    try:
+        with open('/config/.storage/core.area_registry', 'r') as f:
+            area_reg = json.load(f)
+            for area in area_reg.get('data', {}).get('areas', []):
+                registries['areas'][area['id']] = {
+                    'name': area.get('name', 'Unknown'),
+                    'aliases': area.get('aliases', [])
+                }
+    except Exception as e:
+        print(f"  Note: Could not load area registry: {e}")
+    
+    return registries
 
 def get_ha_data():
     """Gather all HA data from API and filesystem"""
@@ -20,6 +67,9 @@ def get_ha_data():
     
     headers = {"Authorization": f"Bearer {token}"}
     
+    # Load registries first
+    registries = load_registries()
+    
     # Initialize data structure
     data = init_empty_data()
     
@@ -28,7 +78,7 @@ def get_ha_data():
         resp = requests.get("http://localhost:8123/api/states", headers=headers, timeout=10)
         if resp.status_code == 200:
             states = resp.json()
-            process_states(data, states)
+            process_states(data, states, registries)
         else:
             print(f"  ⚠ API returned status {resp.status_code}")
     except Exception as e:
@@ -42,6 +92,9 @@ def get_ha_data():
             data['config'] = config
     except Exception as e:
         print(f"  ⚠ Error fetching config: {e}")
+    
+    # Process integrations from registries
+    process_integrations_from_registry(data, registries)
     
     # Get error log
     get_error_log(data)
@@ -78,10 +131,9 @@ def init_empty_data():
         'config': {}
     }
 
-def process_states(data, states):
+def process_states(data, states, registries):
     """Process entity states and build device/area lists"""
     area_stats = defaultdict(lambda: {'entities': 0, 'devices': set(), 'automations': 0, 'temp': None, 'humidity': None, 'motion': False})
-    device_map = defaultdict(lambda: {'entities': [], 'area': 'UNASSIGNED', 'manufacturer': '', 'model': '', 'status': 'available'})
     
     for state in states:
         entity_id = state.get('entity_id', '')
@@ -89,12 +141,21 @@ def process_states(data, states):
         attrs = state.get('attributes', {})
         current_state = state.get('state', '')
         
-        # Extract area - try multiple methods
-        area = 'UNASSIGNED'
-        if 'area_id' in attrs:
-            area = attrs['area_id']
-        elif 'area' in attrs:
-            area = attrs['area']
+        # Get area from registry
+        entity_reg = registries['entities'].get(entity_id, {})
+        area_id = entity_reg.get('area_id')
+        device_id = entity_reg.get('device_id')
+        
+        # If entity doesn't have area, check its device
+        if not area_id and device_id:
+            device_reg = registries['devices'].get(device_id, {})
+            area_id = device_reg.get('area_id')
+        
+        # Get area name
+        area_name = 'UNASSIGNED'
+        if area_id:
+            area_info = registries['areas'].get(area_id, {})
+            area_name = area_info.get('name', area_id)
         
         # Build entities list
         entity_data = {
@@ -102,10 +163,11 @@ def process_states(data, states):
             'domain': domain,
             'state': current_state,
             'friendly_name': attrs.get('friendly_name', entity_id),
-            'area': area,
+            'area': area_name,
             'device_class': attrs.get('device_class', ''),
             'last_changed': state.get('last_changed', ''),
-            'last_updated': state.get('last_updated', '')
+            'platform': entity_reg.get('platform', ''),
+            'disabled': entity_reg.get('disabled', False)
         }
         data['entities'].append(entity_data)
         
@@ -120,42 +182,36 @@ def process_states(data, states):
                 'current': attrs.get('current', 0),
                 'max': attrs.get('max', 10)
             })
-            area_stats[area]['automations'] += 1
+            area_stats[area_name]['automations'] += 1
         
         # Build area statistics
-        area_stats[area]['entities'] += 1
+        area_stats[area_name]['entities'] += 1
+        if device_id:
+            area_stats[area_name]['devices'].add(device_id)
         
         # Track temperature/humidity by area
         if attrs.get('device_class') == 'temperature' and attrs.get('unit_of_measurement') in ['°F', '°C']:
             try:
                 temp = float(current_state)
-                if area_stats[area]['temp'] is None:
-                    area_stats[area]['temp'] = temp
+                if area_stats[area_name]['temp'] is None:
+                    area_stats[area_name]['temp'] = temp
             except:
                 pass
         
         if attrs.get('device_class') == 'humidity':
             try:
                 humidity = float(current_state)
-                if area_stats[area]['humidity'] is None:
-                    area_stats[area]['humidity'] = humidity
+                if area_stats[area_name]['humidity'] is None:
+                    area_stats[area_name]['humidity'] = humidity
             except:
                 pass
         
         # Track motion
         if attrs.get('device_class') == 'motion' and current_state == 'on':
-            area_stats[area]['motion'] = True
-        
-        # Build device tracking
-        device_id = attrs.get('device_id', '')
-        if device_id:
-            device_map[device_id]['entities'].append(entity_id)
-            device_map[device_id]['area'] = area
-            if current_state == 'unavailable':
-                device_map[device_id]['status'] = 'unavailable'
+            area_stats[area_name]['motion'] = True
         
         # Action items - unassigned entities
-        if area == 'UNASSIGNED' and domain in ['light', 'switch', 'sensor', 'binary_sensor', 'climate']:
+        if area_name == 'UNASSIGNED' and domain in ['light', 'switch', 'sensor', 'binary_sensor', 'climate']:
             data['action_items'].append({
                 'priority': 'HIGH',
                 'entity_id': entity_id,
@@ -188,15 +244,44 @@ def process_states(data, states):
             'motion_active': 'Yes' if stats['motion'] else 'No'
         })
     
-    # Build devices list (simplified - we don't have full device registry access via API)
-    domain_counts = Counter(e['domain'] for e in data['entities'])
-    for domain, count in domain_counts.most_common(20):
-        unavailable_count = len([e for e in data['entities'] if e['domain'] == domain and e['state'] == 'unavailable'])
-        data['devices'].append({
-            'device_type': domain.title(),
-            'count': count,
-            'unavailable': unavailable_count,
-            'status': 'OK' if unavailable_count == 0 else f'{unavailable_count} unavailable'
+    # Build devices list from registry
+    device_area_map = defaultdict(list)
+    for entity_id, entity_reg in registries['entities'].items():
+        device_id = entity_reg.get('device_id')
+        if device_id:
+            device_area_map[device_id].append(entity_id)
+    
+    for device_id, device_info in registries['devices'].items():
+        entity_count = len(device_area_map.get(device_id, []))
+        if entity_count > 0:  # Only include devices with entities
+            area_id = device_info.get('area_id')
+            area_name = 'UNASSIGNED'
+            if area_id:
+                area_info = registries['areas'].get(area_id, {})
+                area_name = area_info.get('name', area_id)
+            
+            data['devices'].append({
+                'device_name': device_info['name'],
+                'manufacturer': device_info['manufacturer'],
+                'model': device_info['model'],
+                'area': area_name,
+                'entity_count': entity_count,
+                'disabled': device_info['disabled']
+            })
+
+def process_integrations_from_registry(data, registries):
+    """Process integrations from entity registry platforms"""
+    platform_counts = Counter()
+    for entity_reg in registries['entities'].values():
+        platform = entity_reg.get('platform')
+        if platform:
+            platform_counts[platform] += 1
+    
+    for platform, count in platform_counts.most_common(30):
+        data['integrations'].append({
+            'integration': platform,
+            'entity_count': count,
+            'status': 'active'
         })
 
 def get_error_log(data):
@@ -207,16 +292,16 @@ def get_error_log(data):
             errors = []
             with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
                 for line in f:
-                    if 'ERROR' in line or 'WARNING' in line:
+                    if 'ERROR' in line:
                         errors.append(line.strip())
             
-            # Get last 50 errors
+            # Get last 50 errors (excluding warnings for cleaner list)
             for error in errors[-50:]:
-                parts = error.split(None, 3)  # Split on first 3 spaces
+                parts = error.split(None, 3)
                 if len(parts) >= 4:
                     timestamp = f"{parts[0]} {parts[1]}"
                     level = parts[2]
-                    message = parts[3][:500]  # Truncate long messages
+                    message = parts[3][:500]
                     data['errors'].append({
                         'timestamp': timestamp,
                         'level': level,
@@ -249,7 +334,6 @@ def get_git_history(data):
 def get_sessions(data):
     """Get HAC session files"""
     try:
-        # Check /config/hac/learnings/ for session files
         learnings_dir = Path('/config/hac/learnings')
         if learnings_dir.exists():
             for file in sorted(learnings_dir.glob('session_*.md'), reverse=True)[:20]:
@@ -257,7 +341,6 @@ def get_sessions(data):
                     content = file.read_text()
                     lines = content.split('\n')
                     
-                    # Extract date from filename
                     date_str = file.stem.replace('session_', '')
                     if len(date_str) >= 8:
                         formatted_date = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
@@ -277,7 +360,6 @@ def get_sessions(data):
 
 def calculate_automation_analysis(data):
     """Analyze automation coverage and patterns"""
-    # Domain coverage analysis
     domain_counts = Counter(e['domain'] for e in data['entities'])
     
     for domain, count in domain_counts.most_common(15):
@@ -293,7 +375,6 @@ def calculate_automation_analysis(data):
 
 def calculate_token_efficiency(data):
     """Calculate estimated token usage"""
-    # Rough token estimation: 1 token ≈ 4 characters
     entities_size = sum(len(str(e)) for e in data['entities']) // 4
     automations_size = sum(len(str(a)) for a in data['automations']) // 4
     sessions_size = sum(len(s['preview']) for s in data['sessions']) // 4
@@ -341,7 +422,6 @@ def create_historical_snapshot(data):
 
 def write_sheets(svc, sid, data):
     """Write all data to Google Sheets"""
-    # Map display names to actual sheet names (use exact tab names from Google Sheets)
     sheet_mapping = {
         'Dashboard': 'Dashboard',
         'Historical Snapshots': 'Historical_Snapshots - Daily entity/automation cou',
@@ -377,13 +457,11 @@ def write_sheets(svc, sid, data):
     for display_name, rows in sheets_data.items():
         sheet_name = sheet_mapping.get(display_name, display_name)
         try:
-            # Clear existing data
             svc.spreadsheets().values().clear(
                 spreadsheetId=sid,
                 range=f"'{sheet_name}'!A:Z"
             ).execute()
             
-            # Write new data
             svc.spreadsheets().values().update(
                 spreadsheetId=sid,
                 range=f"'{sheet_name}'!A1",
@@ -397,7 +475,7 @@ def write_sheets(svc, sid, data):
 
 def format_dashboard(data):
     return [
-        ['HA MASTER CONTEXT v3.0'],
+        ['HA MASTER CONTEXT v3.1'],
         [''],
         ['Generated:', data['timestamp']],
         [''],
@@ -406,6 +484,7 @@ def format_dashboard(data):
         ['Total Automations', len(data['automations'])],
         ['Total Areas', len(data['areas'])],
         ['Total Integrations', len(data['integrations'])],
+        ['Total Devices', len(data['devices'])],
         ['Action Items', len(data['action_items'])],
         ['Sessions Logged', len(data['sessions'])],
         [''],
@@ -450,19 +529,19 @@ def format_token_efficiency(data):
 
 def format_entities(data):
     return [
-        ['entity_id', 'domain', 'state', 'friendly_name', 'area', 'device_class', 'last_changed']
+        ['entity_id', 'domain', 'state', 'friendly_name', 'area', 'device_class', 'platform', 'last_changed']
     ] + [
         [e['entity_id'], e['domain'], e['state'], e['friendly_name'], e['area'], 
-         e['device_class'], e['last_changed']]
+         e['device_class'], e['platform'], e['last_changed']]
         for e in sorted(data['entities'], key=lambda x: (x['area'], x['domain']))
     ]
 
 def format_devices(data):
     return [
-        ['Device Type', 'Count', 'Unavailable', 'Status']
+        ['Device Name', 'Manufacturer', 'Model', 'Area', 'Entity Count', 'Disabled']
     ] + [
-        [d['device_type'], d['count'], d['unavailable'], d['status']]
-        for d in data['devices']
+        [d['device_name'], d['manufacturer'], d['model'], d['area'], d['entity_count'], d['disabled']]
+        for d in sorted(data['devices'], key=lambda x: x['area'])
     ]
 
 def format_areas(data):
@@ -485,10 +564,10 @@ def format_automations(data):
 
 def format_integrations(data):
     return [
-        ['Domain', 'Entity Count', 'Service Count', 'Status']
+        ['Integration', 'Entity Count', 'Status']
     ] + [
-        [i['domain'], i['entity_count'], i['service_count'], i['status']]
-        for i in sorted(data['integrations'], key=lambda x: -x['entity_count'])
+        [i['integration'], i['entity_count'], i['status']]
+        for i in data['integrations']
     ]
 
 def format_action_items(data):
@@ -522,10 +601,9 @@ def main():
     args = parser.parse_args()
     
     print("=" * 70)
-    print("HA Master Context Export v3.0")
+    print("HA Master Context Export v3.1")
     print("=" * 70)
     
-    # Authenticate
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, 
         scopes=SCOPES
@@ -533,12 +611,10 @@ def main():
     svc = build('sheets', 'v4', credentials=creds)
     print("✓ Auth successful")
     
-    # Gather data
     data = get_ha_data()
     print(f"✓ Gathered: {len(data['entities'])} entities, {len(data['automations'])} automations, "
-          f"{len(data['areas'])} areas, {len(data['integrations'])} integrations")
+          f"{len(data['areas'])} areas, {len(data['integrations'])} integrations, {len(data['devices'])} devices")
     
-    # Write to sheets
     write_sheets(svc, args.spreadsheet_id, data)
     
     print(f"✓ Complete: https://docs.google.com/spreadsheets/d/{args.spreadsheet_id}")
