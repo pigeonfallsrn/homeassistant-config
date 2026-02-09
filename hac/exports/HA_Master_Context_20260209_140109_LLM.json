@@ -1,0 +1,419 @@
+{
+  "generated": "20260209_140109",
+  "version": "3.0",
+  "statistics": {
+    "total_entities": 4163,
+    "total_devices": 369,
+    "total_areas": 35,
+    "total_action_items": 13
+  },
+  "areas": [
+    {
+      "id": "1st_floor_bathroom",
+      "name": "1st Floor Bathroom",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "2nd_floor_bathroom",
+      "name": "2nd Floor Bathroom",
+      "floor_id": "2nd_floor_home",
+      "aliases": "Upstairs Bathroom"
+    },
+    {
+      "id": "alaina_s_bedroom",
+      "name": "Alaina's Bedroom",
+      "floor_id": "2nd_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "attic",
+      "name": "Attic",
+      "floor_id": "attic",
+      "aliases": ""
+    },
+    {
+      "id": "back_patio",
+      "name": "Back Patio",
+      "floor_id": "outdoors",
+      "aliases": ""
+    },
+    {
+      "id": "back_yard_tower",
+      "name": "Back Yard Tower",
+      "floor_id": "outdoors",
+      "aliases": ""
+    },
+    {
+      "id": "basement",
+      "name": "Basement",
+      "floor_id": "basement",
+      "aliases": ""
+    },
+    {
+      "id": "basement_hallway",
+      "name": "Basement Hallway",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "boiler_room",
+      "name": "Boiler Room",
+      "floor_id": "basement",
+      "aliases": ""
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "cloud_wifi_sync_module",
+      "name": "Cloud wifi sync module",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "ella_s_bedroom",
+      "name": "Ella's Bedroom",
+      "floor_id": "2nd_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "entry_room",
+      "name": "Entry Room",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "entry_way",
+      "name": "Entry Way",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "front_door",
+      "name": "Front door",
+      "floor_id": "outdoors",
+      "aliases": ""
+    },
+    {
+      "id": "front_driveway",
+      "name": "Front Driveway",
+      "floor_id": "outdoors",
+      "aliases": ""
+    },
+    {
+      "id": "garage",
+      "name": "Garage",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "kitchen_lounge",
+      "name": "Kitchen Lounge",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "laundry_area",
+      "name": "Laundry Area",
+      "floor_id": "basement",
+      "aliases": ""
+    },
+    {
+      "id": "living_room",
+      "name": "Living Room",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "living_room_lounge",
+      "name": "Living Room Lounge",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "master_bedroom",
+      "name": "Master Bedroom",
+      "floor_id": "2nd_floor_home",
+      "aliases": ";Dad's Bedroom"
+    },
+    {
+      "id": "pigeon_falls_properties",
+      "name": "Pigeon Falls Properties",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "smart_home_av",
+      "name": "Smart Home AV",
+      "floor_id": "basement",
+      "aliases": ""
+    },
+    {
+      "id": "stairway_cubby",
+      "name": "Stairway Cubby",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "sun_room",
+      "name": "Sun Room",
+      "floor_id": "1st_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "upstairs",
+      "name": "Upstairs Hallway",
+      "floor_id": "2nd_floor_home",
+      "aliases": ""
+    },
+    {
+      "id": "very_front_door",
+      "name": "Very Front Door",
+      "floor_id": "outdoors",
+      "aliases": ""
+    },
+    {
+      "id": "workout_area",
+      "name": "Workout Area",
+      "floor_id": "basement",
+      "aliases": ""
+    },
+    {
+      "id": "yard_sheds",
+      "name": "Yard Sheds",
+      "floor_id": "outdoors",
+      "aliases": "Yard Barn"
+    },
+    {
+      "id": "very_front_door_hallway",
+      "name": "Very Front Door Hallway",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "basement_stairs",
+      "name": "Basement stairs",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "floor_id": "NO_FLOOR",
+      "aliases": ""
+    }
+  ],
+  "action_items_by_priority": {
+    "HIGH": [
+      {
+        "entity_id": "switch.kitchen_lounge_samsung_tv_plug",
+        "domain": "switch",
+        "friendly_name": "Kitchen Lounge Samsung TV Plug",
+        "platform": "alexa_media",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "HIGH",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "light.master_bedroom_echo_glow",
+        "domain": "light",
+        "friendly_name": "Master Bedroom Echo Glow",
+        "platform": "alexa_media",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "HIGH",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "light.alaina_s_bedroom_echo_glow",
+        "domain": "light",
+        "friendly_name": "Alaina's bedroom Echo Glow",
+        "platform": "alexa_media",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "HIGH",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "light.toy_room_light",
+        "domain": "light",
+        "friendly_name": "Kitchen Lamp",
+        "platform": "alexa_media",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "HIGH",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "light.ella_s_bedroom_echo_glow",
+        "domain": "light",
+        "friendly_name": "Ella's Bedroom Echo Glow",
+        "platform": "alexa_media",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "HIGH",
+        "recommendation": "Assign to appropriate area for organization"
+      }
+    ],
+    "MEDIUM": [
+      {
+        "entity_id": "sensor.current_electricity_rate",
+        "domain": "sensor",
+        "friendly_name": "Current Electricity Rate",
+        "platform": "template",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "MEDIUM",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "binary_sensor.navien_running_2",
+        "domain": "binary_sensor",
+        "friendly_name": "Navien Running",
+        "platform": "template",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "MEDIUM",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "binary_sensor.anyone_home",
+        "domain": "binary_sensor",
+        "friendly_name": "Anyone Home",
+        "platform": "template",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "MEDIUM",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "sensor.2nd_floor_ap_clients_2",
+        "domain": "sensor",
+        "friendly_name": "2nd Floor AP Clients",
+        "platform": "template",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "MEDIUM",
+        "recommendation": "Assign to appropriate area for organization"
+      },
+      {
+        "entity_id": "sensor.backup_backup_manager_state",
+        "domain": "sensor",
+        "friendly_name": "Backup Manager state",
+        "platform": "backup",
+        "issue_type": "NO_AREA_ASSIGNED",
+        "priority": "MEDIUM",
+        "recommendation": "Assign to appropriate area for organization"
+      }
+    ],
+    "LOW": [
+      {
+        "entity_id": "light.living_room_lounge_ceiling_hue_color_lights",
+        "domain": "light",
+        "friendly_name": "Living Room Lounge Ceiling Hue Color Lights",
+        "platform": "group",
+        "issue_type": "NO_DEVICE",
+        "priority": "LOW",
+        "recommendation": "Review if this entity is still needed"
+      },
+      {
+        "entity_id": "light.entry_room_ceiling_hue_white_lights",
+        "domain": "light",
+        "friendly_name": "Entry Room Ceiling Hue White Lights",
+        "platform": "group",
+        "issue_type": "NO_DEVICE",
+        "priority": "LOW",
+        "recommendation": "Review if this entity is still needed"
+      },
+      {
+        "entity_id": "light.living_room_lamp_hue_color_lights",
+        "domain": "light",
+        "friendly_name": "Living Room Lamp Hue Color Lights",
+        "platform": "group",
+        "issue_type": "NO_DEVICE",
+        "priority": "LOW",
+        "recommendation": "Review if this entity is still needed"
+      }
+    ]
+  },
+  "recent_learnings": [
+    {
+      "date": "20260209",
+      "filename": "20260209.md",
+      "project": "- 09:41: Garage arrival automation complete: 400m trigger, Bluetooth van detection, instant notifica",
+      "file_path": "/homeassistant/hac/learnings/20260209.md",
+      "size_kb": "4.34"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "CLEANUP_COMPLETE.md",
+      "project": "System Cleanup & Organization - Complete",
+      "file_path": "/homeassistant/hac/learnings/CLEANUP_COMPLETE.md",
+      "size_kb": "2.46"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "KITCHEN_TABLET_COMPLETE.md",
+      "project": "Kitchen Tablet Deployment - COMPLETE \u2713",
+      "file_path": "/homeassistant/hac/learnings/KITCHEN_TABLET_COMPLETE.md",
+      "size_kb": "1.24"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "ORGANIZATION_PLAN.md",
+      "project": "Home Assistant Organization Plan",
+      "file_path": "/homeassistant/hac/learnings/ORGANIZATION_PLAN.md",
+      "size_kb": "3.89"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "learn_20260117_223116.md",
+      "project": "Kitchen Tablet Project Learning",
+      "file_path": "/homeassistant/hac/learnings/learn_20260117_223116.md",
+      "size_kb": "0.89"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "session_20260209_part2.md",
+      "project": "HAC Master Workbook v2.0 - Enhancement Session",
+      "file_path": "/homeassistant/hac/learnings/session_20260209_part2.md",
+      "size_kb": "1.20"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "system_audit_20260117_230813.md",
+      "project": "Home Assistant System Audit",
+      "file_path": "/homeassistant/hac/learnings/system_audit_20260117_230813.md",
+      "size_kb": "237.41"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "system_audit_20260117_234130.md",
+      "project": "Home Assistant System Audit",
+      "file_path": "/homeassistant/hac/learnings/system_audit_20260117_234130.md",
+      "size_kb": "237.46"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "system_audit_20260117_234219.md",
+      "project": "Home Assistant System Audit",
+      "file_path": "/homeassistant/hac/learnings/system_audit_20260117_234219.md",
+      "size_kb": "237.51"
+    },
+    {
+      "date": "UNKNOWN",
+      "filename": "tablet_wake_automation_20260117_195323.md",
+      "project": "Kitchen Tablet Wake Automation - Deployment Log",
+      "file_path": "/homeassistant/hac/learnings/tablet_wake_automation_20260117_195323.md",
+      "size_kb": "1.15"
+    }
+  ]
+}

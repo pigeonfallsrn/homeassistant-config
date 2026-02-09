@@ -678,7 +678,6 @@ SYNC & SESSION
   gem           Gemini session prompt
   gdrive        Sync to Google Drive via Synology
   export        Master Context Excel export + sync
-  sheets        Direct Google Sheets export (both workbooks)
   mcp           Claude Desktop + MCP (rich context)
   research      Deep research mode (full history)
   init          Initialize new secret gist
@@ -1122,19 +1121,6 @@ sync_to_gdrive() {
     [ -f "$LEARNINGS_DIR/$today.md" ] && cat "$LEARNINGS_DIR/$today.md" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" "cat > $GDRIVE_BASE/learnings/$today.md" 2>/dev/null
     log_ok "Google Drive sync complete"
 }
-cmd_sheets() {
-    echo "Exporting to Google Sheets..."
-    python3 /config/python_scripts/export_to_sheets.py
-    if [ $? -eq 0 ]; then
-        echo ""
-        echo "✓ Export complete!"
-        echo "  Master: https://docs.google.com/spreadsheets/d/11quLdO56rqI8GAPq-KnKtJoBs7cH6QAVgHs8W6UC_8w"
-        echo "  LLM Index: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk"
-    else
-        echo "✗ Export failed"
-    fi
-}
-
 cmd_gdrive() {
     ensure_dirs
     generate_readme
@@ -1151,7 +1137,6 @@ case "${1:-}" in
     gpt) cmd_gpt;;
     gem) cmd_gem;;
     gdrive) cmd_gdrive;;
-    sheets) cmd_sheets;;
     export) cmd_export;;
     mcp) cmd_mcp;;
     research) cmd_research;;
