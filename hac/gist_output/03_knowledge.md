@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-08 12:32
+# System Knowledge - 2026-02-08 22:33
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -35,6 +35,14 @@
 - 11:51: Fixed 2nd floor bathroom fan Shelly to Inovelli VZM35-SN, added Navien flow pretrigger, purged 52 ghost automations, installed 9 new hac workflow commands
 
 ## Historical Learnings (last 30 lines)
+- Use `| default('', true)` for stricter default, OR add explicit null check before operations
+- For string slicing: `{% if bssid and bssid[:8] in [...] %}` prevents TypeError on None
+- GPS-based presence (`person.john_spencer`) requires phone companion app to actively report location changes
+- If phone goes to sleep or battery optimization kicks in, departure may not register
+- UniFi device_tracker shows connection but doesn't track GPS location
+- Alternative triggers: garage door state, vehicle detection, WiFi BSSID changes
+- **Background Location** - core presence tracking (1-3 min updates)
+- **Location Zone** - triggers on zone enter/leave
 - **Single Accurate Location** - precise on-demand location
 - **High Accuracy Mode** - faster updates
 - Set **Sensor Update Frequency** to "Fast Always" (1 min vs 15 min)
@@ -57,11 +65,3 @@
 - 11:47: HARDWARE CHANGE 2026-02-05: 1st Floor Bathroom - TP-Link dimmer installed for vanity lights, replaces Inovelli. Old Inovelli will move to 2nd Floor Bathroom (smart bulb mode). ISSUE: Remaining 1st FL Bathroom Inovelli (ceiling) not controlling Hue lights properly - needs Smart Bulb Mode check.
 - 12:02: 1ST FL BATHROOM INOVELLI+HUE SETUP: (1) Enable Smart Bulb Mode via ZHA Manage Clusters → Inovelli_VZM31SN_Cluster → attribute 'Smart Bulb Mode' = 1. (2) Create automation using fxlt blueprint 'Inovelli VZM31-SN Blue Series 2-1 Switch (ZHA)'. (3) Map paddle presses to light.1st_floor_bathroom (Hue group). (4) Set automation mode: queued. This routes Inovelli→ZHA→HA→Hue Bridge→Hue Bulbs since direct Zigbee binding not possible across different coordinators.
 - 21:02: 1ST FL BATHROOM INOVELLI WORKING: Key issue was automations.yaml being ignored - config uses include_dir_merge_list automations/ so automations must go in automations/ directory. Created automations/1st_floor_bathroom_inovelli.yaml using fxlt blueprint.
-- 15:21: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
-- 15:34: DOUBLE-FIRE ROOT CAUSES FIXED (2026-02-02): (1) Motion aggregation sensors (downstairs_motion, upstairs_motion, house_motion) had NO delay_off - added 60s/60s/90s respectively. (2) Six orphan automation entities in registry were triggering alongside current automations - removed calendar_refresh_school_tomorrow, calendar_refresh_school_in_session_now, entry_room_lamp_adaptive_lux_control, kitchen_lounge_lamp_adaptive_lux_control (these had old entity_ids but same unique_ids as current automations). (3) Entry Room P1 motion sensor added to aggregation. RESULT: No double-fires in past hour per hac health.
-- 20:11: list
-- 20:16: Created garage_arrival.yaml: 3 automations using person.john_spencer trigger (not proximity sensor). notify.mobile_app_john_s_phone + ratgdo covers.
-- 21:38: Garage arrival system complete: cover.ratgdo32disco_fd8d8c_door (North), cover.ratgdo32disco_5735e8_door (South), 15sec delay before close prompt
-- 21:41: [PERSON] wake automation: sensor.alaina_s_bedroom_echo_show_next_alarm triggers 10min sunrise fade. Conditions: home + 5am-10am. Phases: 1%/2000K → 10%/2200K → 30%/2700K → 60%/3200K → Energize scene
-- 21:44: [PERSON] wake: sensor.alaina_s_bedroom_echo_show_next_alarm_2 (UTC format). Triggers 10min before alarm, 5-phase sunrise fade to Energize scene. Conditions: home + 5am-10am
-- 21:57: Exterior auto-off: front_driveway_auto_off (5min no motion), garage_lights_auto_off (5min all 6 motion sensors off). Both use transition: 5 for smooth fade.

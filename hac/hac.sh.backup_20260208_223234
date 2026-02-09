@@ -677,7 +677,6 @@ SYNC & SESSION
   gpt           ChatGPT session prompt
   gem           Gemini session prompt
   gdrive        Sync to Google Drive via Synology
-  export        Master Context Excel export + sync
   mcp           Claude Desktop + MCP (rich context)
   research      Deep research mode (full history)
   init          Initialize new secret gist
@@ -1072,21 +1071,6 @@ cmd_pre() {
 # === MAIN ===
 
 # Google Drive sync via Synology
-cmd_export() {
-    echo "═══════════════════════════════════════════════════════"
-    echo "HAC EXPORT - Generating Master Context Excel Files"
-    echo "═══════════════════════════════════════════════════════"
-    bash /homeassistant/hac/scripts/export_master_context.sh
-    log_ok "Syncing to Google Drive..."
-    sync_master_context_excel
-    echo "═══════════════════════════════════════════════════════"
-    echo "✅ Export complete! Files available:"
-    echo "   Local: /homeassistant/hac/exports/"
-    echo "   Samba: \\\\homeassistant.local\\\\config\\\\hac\\\\exports\\\\"
-    echo "   GDrive: HAC/MasterContext/"
-    echo "═══════════════════════════════════════════════════════"
-}
-
 sync_master_context_excel() {
     local SYNOLOGY_USER="admin"
     local SYNOLOGY_HOST="192.168.1.52"
@@ -1100,12 +1084,11 @@ sync_master_context_excel() {
     # Sync latest AI_SAFE Excel file
     local latest_safe=$(ls -t "$EXPORTS_DIR"/*_AI_SAFE.xlsx 2>/dev/null | head -1)
     if [ -f "$latest_safe" ]; then
-        cat "$latest_safe" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" \
-            "cat > $GDRIVE_EXCEL/HA_Master_Context_Latest_AI_SAFE.xlsx" 2>/dev/null
+        scp -i "$SYNOLOGY_KEY" "$latest_safe" \
+            "$SYNOLOGY_USER@$SYNOLOGY_HOST:$GDRIVE_EXCEL/HA_Master_Context_Latest_AI_SAFE.xlsx" 2>/dev/null
         log_ok "Synced Master Context Excel to Google Drive"
     fi
 }
-
 
 sync_to_gdrive() {
     local SYNOLOGY_USER="admin"
@@ -1129,7 +1112,6 @@ cmd_gdrive() {
     generate_knowledge
     generate_delta
     sync_to_gdrive
-    sync_master_context_excel
 }
 case "${1:-}" in
     push) cmd_push;;
@@ -1137,7 +1119,6 @@ case "${1:-}" in
     gpt) cmd_gpt;;
     gem) cmd_gem;;
     gdrive) cmd_gdrive;;
-    export) cmd_export;;
     mcp) cmd_mcp;;
     research) cmd_research;;
     status) cmd_status;;
@@ -1170,5 +1151,4 @@ case "${1:-}" in
     help|--help|-h) cmd_help;;
     *) cmd_help;;
 esac
-
 

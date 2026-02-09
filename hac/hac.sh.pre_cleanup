@@ -1100,12 +1100,40 @@ sync_master_context_excel() {
     # Sync latest AI_SAFE Excel file
     local latest_safe=$(ls -t "$EXPORTS_DIR"/*_AI_SAFE.xlsx 2>/dev/null | head -1)
     if [ -f "$latest_safe" ]; then
-        cat "$latest_safe" | ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" \
-            "cat > $GDRIVE_EXCEL/HA_Master_Context_Latest_AI_SAFE.xlsx" 2>/dev/null
+        scp -i "$SYNOLOGY_KEY" "$latest_safe" \
+            "$SYNOLOGY_USER@$SYNOLOGY_HOST:$GDRIVE_EXCEL/HA_Master_Context_Latest_AI_SAFE.xlsx" 2>/dev/null
         log_ok "Synced Master Context Excel to Google Drive"
     fi
 }
 
+cmd_export() {
+    echo "═══════════════════════════════════════════════════════"
+    echo "HAC EXPORT - Generating Master Context Excel Files"
+    echo "═══════════════════════════════════════════════════════"
+    bash /homeassistant/hac/scripts/export_master_context.sh
+    log_ok "Syncing to Google Drive..."
+    sync_master_context_excel
+    echo "═══════════════════════════════════════════════════════"
+    echo "✅ Export complete! Files available:"
+    echo "   Local: /homeassistant/hac/exports/"
+    echo "   Samba: \\\\homeassistant.local\\\\config\\\\hac\\\\exports\\\\"
+    echo "   GDrive: HAC/MasterContext/"
+    echo "═══════════════════════════════════════════════════════"
+}
+
+sync_master_context_excel() {
+    local SYNOLOGY_USER="admin"
+    local SYNOLOGY_HOST="192.168.1.52"
+    local SYNOLOGY_KEY="$HOME/.ssh/ha_to_synology"
+    local GDRIVE_EXCEL="/volume1/GoogleDrive/HAC/MasterContext"
+    local EXPORTS_DIR="/homeassistant/hac/exports"
+    ssh -i "$SYNOLOGY_KEY" "$SYNOLOGY_USER@$SYNOLOGY_HOST" "mkdir -p $GDRIVE_EXCEL" 2>/dev/null
+    local latest_safe=$(ls -t "$EXPORTS_DIR"/*_AI_SAFE.xlsx 2>/dev/null | head -1)
+    if [ -f "$latest_safe" ]; then
+        scp -i "$SYNOLOGY_KEY" "$latest_safe" "$SYNOLOGY_USER@$SYNOLOGY_HOST:$GDRIVE_EXCEL/HA_Master_Context_Latest_AI_SAFE.xlsx" 2>/dev/null
+        log_ok "Synced Master Context Excel to Google Drive"
+    fi
+}
 
 sync_to_gdrive() {
     local SYNOLOGY_USER="admin"

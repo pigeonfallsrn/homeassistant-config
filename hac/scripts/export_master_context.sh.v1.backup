@@ -1,0 +1,83 @@
+#!/bin/bash
+# HA Master Context Exporter v1.0
+# Generates comprehensive Excel-ready CSV exports
+
+set -e
+
+DATE=$(date +%Y%m%d_%H%M%S)
+STORAGE="/homeassistant/.storage"
+OUTPUT="/homeassistant/hac/exports"
+TEMP="$OUTPUT/temp_$DATE"
+
+mkdir -p "$TEMP"
+
+echo "═══════════════════════════════════════════════════════"
+echo "HA Master Context Export - $DATE"
+echo "═══════════════════════════════════════════════════════"
+
+# 1. Entity Registry
+echo "[1/8] Extracting entities..."
+jq -r '.data.entities[] | [
+  .entity_id,
+  .platform,
+  .area_id // "UNASSIGNED",
+  .device_id // "NO_DEVICE",
+  .disabled_by // "ENABLED",
+  .original_name,
+  .unique_id
+] | @csv' "$STORAGE/core.entity_registry" > "$TEMP/entities.csv"
+
+# 2. Device Registry
+echo "[2/8] Extracting devices..."
+jq -r '.data.devices[] | [
+  .id,
+  .name,
+  .manufacturer // "Unknown",
+  .model // "Unknown",
+  .sw_version // "Unknown",
+  .area_id // "UNASSIGNED",
+  (.identifiers | tostring)
+] | @csv' "$STORAGE/core.device_registry" > "$TEMP/devices.csv"
+
+# 3. Area Registry (FIXED)
+echo "[3/8] Extracting areas..."
+jq -r '.data.areas[] | [
+  .id,
+  .name,
+  .floor_id // "NO_FLOOR",
+  (.aliases | join(";"))
+] | @csv' "$STORAGE/core.area_registry" > "$TEMP/areas.csv"
+
+# 4. Integration Config Entries
+echo "[4/8] Extracting integrations..."
+jq -r '.data.entries[] | [
+  .entry_id,
+  .domain,
+  .title,
+  .source,
+  .version,
+  (.data | keys | join(";"))
+] | @csv' "$STORAGE/core.config_entries" > "$TEMP/integrations.csv"
+
+# 5. Automations (Python parser needed)
+echo "[5/8] Parsing automations..."
+python3 /homeassistant/hac/scripts/parse_automations.py > "$TEMP/automations.csv"
+
+# 6. HAC Learnings
+echo "[6/8] Extracting HAC learnings..."
+python3 /homeassistant/hac/scripts/parse_learnings.py > "$TEMP/learnings.csv"
+
+# 7. Privacy Audit (placeholder for now)
+echo "[7/8] Generating privacy audit..."
+echo "entity_id,contains_personal_data,safe_for_ai,redaction_rule" > "$TEMP/privacy_audit.csv"
+
+# 8. Generate Excel files
+echo "[8/8] Creating Excel files..."
+python3 /homeassistant/hac/scripts/merge_to_excel.py "$TEMP" "$OUTPUT" "$DATE"
+
+# Cleanup
+rm -rf "$TEMP"
+
+echo "✅ Export complete!"
+echo "   FULL: $OUTPUT/HA_Master_Context_${DATE}_FULL.xlsx"
+echo "   SAFE: $OUTPUT/HA_Master_Context_${DATE}_AI_SAFE.xlsx"
