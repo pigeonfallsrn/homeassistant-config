@@ -341,13 +341,13 @@ def create_historical_snapshot(data):
 
 def write_sheets(svc, sid, data):
     """Write all data to Google Sheets"""
-    # Map display names to actual sheet names (replace underscores with spaces for display)
+    # Map display names to actual sheet names (use exact tab names from Google Sheets)
     sheet_mapping = {
         'Dashboard': 'Dashboard',
         'Historical Snapshots': 'Historical_Snapshots - Daily entity/automation cou',
         'Error Log': 'Error_Log - Last 50 errors with timestamps',
         'Git History': 'Git_History - HAC commit log',
-        'Token Efficiency': 'Token_Efficiency - Track context size over t',
+        'Token Efficiency': 'Token_Efficiency - Track context size over time',
         'Entities': 'Entities',
         'Devices': 'Devices',
         'Areas': 'Areas',
