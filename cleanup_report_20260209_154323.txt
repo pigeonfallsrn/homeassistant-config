@@ -1,0 +1,15 @@
+Home Assistant Cleanup Report
+Generated: Mon Feb  9 15:43:23 CST 2026
+
+SYSTEM INFO:
+  Config directory: /config
+  Entity registry: /config/.storage/core.entity_registry
+  Area registry: /config/.storage/core.area_registry
+
+FINDINGS:
+
+  Total entities: 4682
+  Total areas: 0
+0
+
+See CLEANUP_PLAN.md for detailed step-by-step instructions
