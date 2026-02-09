@@ -12,7 +12,7 @@ TEMP="$OUTPUT/temp_$DATE"
 mkdir -p "$TEMP"
 
 echo "═══════════════════════════════════════════════════════"
-echo "HA Master Context Export v2.0 - $DATE"
+echo "HA Master Context Export v3.0 - $DATE"
 echo "═══════════════════════════════════════════════════════"
 
 # 1. Entity Registry

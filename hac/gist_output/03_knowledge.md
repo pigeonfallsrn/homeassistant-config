@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-08 22:33
+# System Knowledge - 2026-02-08 22:47
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -33,6 +33,7 @@
 ## Recent Session Learnings
 - 09:30: Garage notification mess: 3 overlapping automation sets were all active. Single source of truth is now packages/garage_quick_open.yaml only. Removed automations/garage_arrival.yaml and garage_door_notifications.yaml plus 17 orphaned entity registry entries.
 - 11:51: Fixed 2nd floor bathroom fan Shelly to Inovelli VZM35-SN, added Navien flow pretrigger, purged 52 ghost automations, installed 9 new hac workflow commands
+- 22:41: Master Context Excel export system complete: v2.0 with Action Items tab, automated Synology/GDrive sync via hac export command
 
 ## Historical Learnings (last 30 lines)
 - Use `| default('', true)` for stricter default, OR add explicit null check before operations

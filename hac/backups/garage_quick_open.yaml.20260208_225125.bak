@@ -393,6 +393,8 @@ automation:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
       - condition: state
+        entity_id: sun.sun
+        state: "below_horizon"
     action:
       - service: light.turn_on
         target:
@@ -417,6 +419,8 @@ automation:
         entity_id: person.john_spencer
         state: "home"
     action:
+      - delay:
+          seconds: 2
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F697 North Door Open"
@@ -484,6 +488,8 @@ automation:
         entity_id: person.john_spencer
         state: "home"
     action:
+      - delay:
+          seconds: 2
       - service: notify.mobile_app_john_s_phone
         data:
           title: "\U0001F697 South Door Open"

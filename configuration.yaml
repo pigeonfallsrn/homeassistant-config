@@ -144,3 +144,16 @@ input_select: !include input_select.yaml
 input_datetime: !include input_datetime.yaml
 counter: !include counter.yaml
 timer: !include timer.yaml
+
+# HAC Master Context Excel Auto-Export
+shell_command:
+  hac_export: 'bash -c "cd /homeassistant/hac && ./hac.sh export"'
+
+automation:
+  - alias: "HAC: Daily Master Context Export"
+    description: "Auto-generate Master Context Excel at 3 AM"
+    trigger:
+      - platform: time
+        at: "03:00:00"
+    action:
+      - service: shell_command.hac_export
