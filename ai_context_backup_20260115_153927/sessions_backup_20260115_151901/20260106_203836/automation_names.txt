@@ -1,8 +1,0 @@
-  alias: Bathroom Fan – Auto ON (RH ≥ 70% for 1 min)
-  alias: Bathroom Fan – Auto OFF (RH ≤ 60% for 10 min)
-  alias: Everyone Away → All Lights Off
-  alias: First Person Home After Dark → Entry Lights On
-  alias: Bathroom - Red Light (11pm-5:30am)
-  alias: Living Room TV OFF → Full AV System OFF
-  alias: Garage All Lights OFF
-  alias: Entry Room Inovelli Ceiling Lights Switch

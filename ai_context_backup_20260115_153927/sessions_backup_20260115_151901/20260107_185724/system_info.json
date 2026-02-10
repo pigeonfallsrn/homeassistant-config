@@ -1,1 +1,0 @@
-{"result":"ok","data":{"version":"2025.12.5","version_latest":"2026.1.0","update_available":true,"machine":"green","ip_address":"172.30.32.1","arch":"aarch64","image":"ghcr.io/home-assistant/green-homeassistant","boot":true,"port":8123,"ssl":false,"watchdog":false,"audio_input":null,"audio_output":null,"backups_exclude_database":false,"duplicate_log_file":false}}

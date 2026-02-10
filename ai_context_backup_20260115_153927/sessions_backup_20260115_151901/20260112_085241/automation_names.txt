@@ -1,8 +1,0 @@
-  automation.bathroom_fan_auto_on_rh_70_for_1_min
-  automation.bathroom_fan_auto_off_rh_60_for_10_min
-  automation.everyone_away_all_lights_off
-  automation.first_person_home_after_dark_entry_lights_on
-  automation.bathroom_red_light_11pm_5_30am
-  automation.living_room_tv_off_full_av_system_off
-  automation.garage_all_lights_off_2
-  automation.entry_room_inovelli_ceiling_lights_switch
