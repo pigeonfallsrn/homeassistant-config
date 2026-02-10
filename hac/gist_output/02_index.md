@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-09 09:42
+# Automation Index - 2026-02-09 19:52
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -16,8 +16,9 @@ Fetch full YAML: `hac pkg <filename>`
 - **entry_room_ceiling_motion.yaml** (1 automations)
 - **family_activities.yaml** (6 automations)
 - **garage_door_alerts.yaml** (2 automations)
-- **garage_lighting_automation.yaml** (2 automations)
+- **garage_lighting_automation_FIXED.yaml** (2 automations)
 - **garage_quick_open.yaml** (13 automations)
+- **google_sheets_sync.yaml** (3 automations)
 - **hac_session_log.yaml** (0
 0 automations)
 - **humidity_smart_alerts.yaml** (4 automations)
@@ -90,9 +91,9 @@ Fetch full YAML: `hac pkg <filename>`
 98: garage_door_alert_actions
 223: garage_door_reset_snooze_on_close
 
-### garage_lighting_automation.yaml
-9: garage_master_lights_on
-48: garage_master_lights_off
+### garage_lighting_automation_FIXED.yaml
+18: garage_master_lights_on_fixed
+77: garage_master_lights_off_fixed
 
 ### garage_quick_open.yaml
 14: garage_auto_open_approaching
@@ -108,6 +109,11 @@ Fetch full YAML: `hac pkg <filename>`
 474: garage_south_opened_close_option
 499: garage_south_close_action
 517: garage_south_close_clear
+
+### google_sheets_sync.yaml
+25: 'google_sheets_export_daily'
+36: 'google_sheets_export_startup'
+48: 'google_sheets_export_manual'
 
 ### hac_session_log.yaml
 
@@ -135,11 +141,11 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### kitchen_tablet_dashboard.yaml
 236: kitchen_tablet_brightness_schedule
-276: kitchen_tablet_doorbell_popup
-309: kitchen_tablet_motion_wake
-330: kitchen_tablet_sleep_inactivity
-353: kitchen_tablet_wake_on_presence
-376: kitchen_tablet_sleep_when_away
+277: kitchen_tablet_doorbell_popup
+310: kitchen_tablet_motion_wake
+331: kitchen_tablet_sleep_inactivity
+354: kitchen_tablet_wake_on_presence
+377: kitchen_tablet_sleep_when_away
 
 ### lights_auto_off_safety.yaml
 15: safety_all_lights_off_nobody_home

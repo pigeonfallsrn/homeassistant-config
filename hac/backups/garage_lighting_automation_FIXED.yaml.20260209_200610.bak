@@ -1,0 +1,130 @@
+# ============================================================================
+# GARAGE LIGHTING - COMPREHENSIVE FIX
+# Uses ALL 5 motion sensors + adjustable timeout + time-based brightness
+# ============================================================================
+
+input_number:
+  garage_light_timeout:
+    name: Garage Light Auto-Off Timer
+    min: 3
+    max: 30
+    step: 1
+    unit_of_measurement: minutes
+    initial: 10
+    icon: mdi:timer
+
+automation:
+  # === LIGHTS ON - Uses ALL motion sensors ===
+  - id: garage_master_lights_on_fixed
+    alias: "Garage All Lights ON (Fixed)"
+    trigger:
+      # Door motors
+      - platform: state
+        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motor
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.ratgdo32disco_5735e8_motor
+        to: 'on'
+      # Door open/close
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: 'open'
+      - platform: state
+        entity_id: cover.ratgdo32disco_5735e8_door
+        to: 'open'
+      # Walk-in door
+      - platform: state
+        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+        to: 'on'
+      # ALL 5 motion sensors
+      - platform: state
+        entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.garage_south_wall_motion_light_sensor_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion
+        to: 'on'
+    action:
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.garage
+            - light.ratgdo32disco_fd8d8c_light
+            - light.garage_north_wall_nightlight
+            - light.garage_north_of_east_wall_motion_light_sensor
+            - light.garage_south_wall_motion_light_sensor
+            - light.garage_south_of_east_wall_motion_light_sensor
+        data:
+          # Dim at night (10PM-6AM), full brightness during day
+          brightness_pct: >
+            {% set hour = now().hour %}
+            {% if hour >= 22 or hour < 6 %}
+              30
+            {% else %}
+              100
+            {% endif %}
+    mode: restart
+
+  # === LIGHTS OFF - Checks ALL sensors + adjustable timeout ===
+  - id: garage_master_lights_off_fixed
+    alias: "Garage All Lights OFF (Fixed)"
+    trigger:
+      # Check every 30 seconds when any motion sensor goes off
+      - platform: state
+        entity_id:
+          - binary_sensor.ratgdo32disco_fd8d8c_motion
+          - binary_sensor.ratgdo32disco_5735e8_motion
+          - binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
+          - binary_sensor.garage_south_wall_motion_light_sensor_motion
+          - binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion
+        to: 'off'
+        for:
+          seconds: 30
+    condition:
+      # ALL these must be true to turn off lights
+      - condition: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        state: 'closed'
+      - condition: state
+        entity_id: cover.ratgdo32disco_5735e8_door
+        state: 'closed'
+      # Template checks ALL 5 motion sensors + respects timeout setting
+      - condition: template
+        value_template: >
+          {% set timeout_minutes = states('input_number.garage_light_timeout') | int %}
+          {% set timeout_seconds = timeout_minutes * 60 %}
+          {% set motion_sensors = [
+            'binary_sensor.ratgdo32disco_fd8d8c_motion',
+            'binary_sensor.ratgdo32disco_5735e8_motion',
+            'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',
+            'binary_sensor.garage_south_wall_motion_light_sensor_motion',
+            'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'
+          ] %}
+          {% set ns = namespace(all_clear=true) %}
+          {% for sensor in motion_sensors %}
+            {% if is_state(sensor, 'on') %}
+              {% set ns.all_clear = false %}
+            {% elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) < timeout_seconds %}
+              {% set ns.all_clear = false %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.all_clear }}
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.garage
+            - light.ratgdo32disco_fd8d8c_light
+            - light.garage_north_wall_nightlight
+            - light.garage_north_of_east_wall_motion_light_sensor
+            - light.garage_south_wall_motion_light_sensor
+            - light.garage_south_of_east_wall_motion_light_sensor
+    mode: restart
