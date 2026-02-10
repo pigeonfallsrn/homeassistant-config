@@ -19,3 +19,5 @@ ha-service-account.json
 homeassistant-sheetsync-*.json
 ha-service-account.json
 homeassistant-sheetsync-*.json
+zigbee.db-shm
+zigbee.db-wal
