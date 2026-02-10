@@ -1,1 +1,0 @@
-Error: Object of type DockerMount is not JSON serializable

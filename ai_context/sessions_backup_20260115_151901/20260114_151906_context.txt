@@ -1,3 +1,0 @@
-Session: 20260114_151906
-Automations: 7
-Errors: 0
