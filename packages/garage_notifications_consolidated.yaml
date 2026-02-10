@@ -1,0 +1,121 @@
+# ============================================================================
+# GARAGE DOOR NOTIFICATIONS - Consolidated & Enhanced
+# Auto-popup with large buttons, handles both doors with templates
+# ============================================================================
+
+automation:
+  # === DOOR OPENED - SHOW CLOSE BUTTON ===
+  - id: garage_door_opened_close_option
+    alias: "Garage - Door Opened (Show Close Button)"
+    description: "When either door opens while home, show notification with large close button"
+    trigger:
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: "open"
+        id: north
+      - platform: state
+        entity_id: cover.ratgdo32disco_5735e8_door
+        to: "open"
+        id: south
+    condition:
+      - condition: state
+        entity_id: person.john_spencer
+        state: "home"
+    action:
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "🚗 {{ 'North' if trigger.id == 'north' else 'South' }} Door Open"
+          message: "Tap to close"
+          data:
+            tag: "garage_{{ trigger.id }}_close"
+            channel: "Garage Doors"
+            importance: high
+            ttl: 0
+            priority: high
+            sticky: false
+            timeout: 120
+            actions:
+              - action: "CLOSE_{{ trigger.id | upper }}_NOW"
+                title: "🚪 CLOSE DOOR"
+                # iOS specific - requires iOS Companion App 2023.1+
+                destructive: false
+                # Android specific
+                icon_url: "https://github.com/home-assistant/assets/raw/master/logo/logo-small.png"
+    mode: parallel
+    max: 2
+
+  # === CLOSE ACTION HANDLER ===
+  - id: garage_door_close_action_handler
+    alias: "Garage - Close Action Handler (Consolidated)"
+    description: "Handles close button presses for both doors"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "CLOSE_NORTH_NOW"
+        id: north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "CLOSE_SOUTH_NOW"
+        id: south
+    action:
+      - service: cover.close_cover
+        target:
+          entity_id: "{{ 'cover.ratgdo32disco_fd8d8c_door' if trigger.id == 'north' else 'cover.ratgdo32disco_5735e8_door' }}"
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_{{ trigger.id }}_close"
+      - service: notify.mobile_app_john_s_phone
+        data:
+          title: "✅ Garage"
+          message: "{{ 'North' if trigger.id == 'north' else 'South' }} door closing..."
+          data:
+            tag: "garage_close_confirm"
+            timeout: 5
+            ttl: 0
+    mode: parallel
+    max: 2
+
+  # === AUTO-CLEAR NOTIFICATIONS ===
+  - id: garage_door_notifications_autoclear
+    alias: "Garage - Auto-Clear Notifications on Close"
+    description: "Clear all garage notifications when doors close"
+    trigger:
+      - platform: state
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+        to: "closed"
+        id: north
+      - platform: state
+        entity_id: cover.ratgdo32disco_5735e8_door
+        to: "closed"
+        id: south
+    action:
+      # Clear the close notification for this specific door
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_{{ trigger.id }}_close"
+      # Clear any quick-open notifications
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_quick_open"
+      # Clear auto-close notifications
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_auto_close"
+      # Clear confirmation messages
+      - service: notify.mobile_app_john_s_phone
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_close_confirm"
+    mode: parallel
+    max: 2

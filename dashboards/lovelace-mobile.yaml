@@ -360,3 +360,79 @@ views:
           - calendar.john_michelle
           - calendar.whitehall_middle_school_volleyball_calendar
         initial_view: listWeek
+  - title: Garage
+    path: garage
+    icon: mdi:garage
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## 🚗 Garage Control
+              Quick access to doors and lights
+          - type: entities
+            title: Garage Doors
+            show_header_toggle: false
+            entities:
+              - entity: cover.ratgdo32disco_fd8d8c_door
+                name: North Door
+                icon: mdi:garage-variant
+              - entity: cover.ratgdo32disco_5735e8_door
+                name: South Door
+                icon: mdi:garage-variant
+          - type: entities
+            title: Garage Lighting
+            show_header_toggle: false
+            entities:
+              - entity: light.garage
+                name: Main Lights
+                icon: mdi:lightbulb-group
+              - entity: input_number.garage_light_timeout
+                name: Auto-Off Timer
+                icon: mdi:timer-outline
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: cover.ratgdo32disco_fd8d8c_door
+                name: North
+                icon: mdi:garage-open-variant
+                tap_action:
+                  action: call-service
+                  service: cover.open_cover
+                  service_data:
+                    entity_id: cover.ratgdo32disco_fd8d8c_door
+                hold_action:
+                  action: call-service
+                  service: cover.close_cover
+                  service_data:
+                    entity_id: cover.ratgdo32disco_fd8d8c_door
+                show_state: true
+                show_name: true
+              - type: button
+                entity: cover.ratgdo32disco_5735e8_door
+                name: South
+                icon: mdi:garage-open-variant
+                tap_action:
+                  action: call-service
+                  service: cover.open_cover
+                  service_data:
+                    entity_id: cover.ratgdo32disco_5735e8_door
+                hold_action:
+                  action: call-service
+                  service: cover.close_cover
+                  service_data:
+                    entity_id: cover.ratgdo32disco_5735e8_door
+                show_state: true
+                show_name: true
+          - type: button
+            name: 🚨 CLOSE ALL DOORS
+            icon: mdi:garage-lock
+            tap_action:
+              action: call-service
+              service: cover.close_cover
+              service_data:
+                entity_id:
+                  - cover.ratgdo32disco_fd8d8c_door
+                  - cover.ratgdo32disco_5735e8_door
+            show_state: false
+            icon_height: 40px

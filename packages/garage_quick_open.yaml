@@ -381,7 +381,7 @@ automation:
     mode: single
 
   # ===========================================================================
-  # ARRIVAL LIGHTS (Night Only)
+  # ARRIVAL LIGHTS - FIXED (was broken, condition block in wrong place)
   # ===========================================================================
   - id: arrival_lights_approaching
     alias: "Arrival - Driveway & Garage Lights When Approaching"
@@ -392,6 +392,10 @@ automation:
     condition:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
+      - condition: sun
+        after: sunset
+        after_offset: "-00:30:00"
+    action:
       - service: light.turn_on
         target:
           entity_id:
@@ -400,132 +404,3 @@ automation:
         data:
           brightness_pct: 100
     mode: single
-
-  # ===========================================================================
-  # QUICK CLOSE NOTIFICATIONS (when door opens while home)
-  # ===========================================================================
-  - id: garage_north_opened_close_option
-    alias: "Garage - North Door Opened Close Option"
-    trigger:
-      - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
-        to: "open"
-    condition:
-      - condition: state
-        entity_id: person.john_spencer
-        state: "home"
-    action:
-      - service: notify.mobile_app_john_s_phone
-        data:
-          title: "\U0001F697 North Door Open"
-          message: "Tap to close"
-          data:
-            tag: "garage_north_close"
-            ttl: 0
-            priority: high
-            timeout: 90
-            actions:
-              - action: "CLOSE_NORTH_NOW"
-                title: "CLOSE DOOR"
-    mode: single
-
-  - id: garage_north_close_action
-    alias: "Garage - North Close Action Handler"
-    trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "CLOSE_NORTH_NOW"
-    action:
-      - service: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_north_close"
-    mode: single
-
-  - id: garage_north_close_clear
-    alias: "Garage - Clear North Close When Closed"
-    trigger:
-      - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
-        to: "closed"
-    action:
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_north_close"
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_quick_open"
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_auto_close"
-    mode: single
-
-  - id: garage_south_opened_close_option
-    alias: "Garage - South Door Opened Close Option"
-    trigger:
-      - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
-        to: "open"
-    condition:
-      - condition: state
-        entity_id: person.john_spencer
-        state: "home"
-    action:
-      - service: notify.mobile_app_john_s_phone
-        data:
-          title: "\U0001F697 South Door Open"
-          message: "Tap to close"
-          data:
-            tag: "garage_south_close"
-            ttl: 0
-            priority: high
-            timeout: 90
-            actions:
-              - action: "CLOSE_SOUTH_NOW"
-                title: "CLOSE DOOR"
-    mode: single
-
-  - id: garage_south_close_action
-    alias: "Garage - South Close Action Handler"
-    trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "CLOSE_SOUTH_NOW"
-    action:
-      - service: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_5735e8_door
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_south_close"
-    mode: single
-
-  - id: garage_south_close_clear
-    alias: "Garage - Clear South Close When Closed"
-    trigger:
-      - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
-        to: "closed"
-    action:
-      - service: notify.mobile_app_john_s_phone
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_south_close"
-    mode: single
-
-  # ===========================================================================
