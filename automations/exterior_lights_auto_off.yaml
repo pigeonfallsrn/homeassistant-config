@@ -1,5 +1,5 @@
-- alias: "Front Driveway - Auto Off After No Motion"
-  id: front_driveway_auto_off
+- id: front_driveway_auto_off
+  alias: "Front Driveway - Auto Off After No Motion"
   description: "Turn off driveway lights 5 minutes after no motion"
   trigger:
     - platform: state
@@ -19,8 +19,8 @@
         transition: 5
   mode: single
 
-- alias: "Front Driveway - Lights On When Motion (Dark)"
-  id: front_driveway_motion_lights_on
+- id: front_driveway_motion_lights_on
+  alias: "Front Driveway - Lights On When Motion (Dark)"
   trigger:
     - platform: state
       entity_id: binary_sensor.front_driveway_door_motion
@@ -37,8 +37,8 @@
         brightness_pct: 100
   mode: single
 
-- alias: "Garage - Auto Off After No Motion"
-  id: garage_lights_auto_off
+- id: garage_lights_auto_off
+  alias: "Garage - Auto Off After No Motion"
   description: "Turn off garage lights 5 minutes after no motion"
   trigger:
     - platform: template
@@ -60,8 +60,8 @@
         transition: 5
   mode: single
 
-- alias: "Garage - Lights On When Walk-in Door Opens"
-  id: garage_walkin_door_lights_on
+- id: garage_walkin_door_lights_on
+  alias: "Garage - Lights On When Walk-in Door Opens"
   description: "Turn on garage lights when walk-in door opens"
   trigger:
     - platform: state
