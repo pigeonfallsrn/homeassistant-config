@@ -41,7 +41,7 @@ automation:
       - platform: homeassistant
         event: start
     action:
-      - delay: '00:02:00'
+      - delay: '00:05:00'
       - service: shell_command.export_to_google_sheets
 
   # Manual export button
@@ -58,3 +58,8 @@ automation:
         data:
           title: "✅ Export Complete"
           message: "Google Sheets export finished at {{ now().strftime('%I:%M %p') }}"
+  # Rate limiting boolean
+input_boolean:
+  sheets_export_in_progress:
+    name: "Sheets Export In Progress"
+    initial: false

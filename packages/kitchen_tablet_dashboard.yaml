@@ -235,6 +235,7 @@ script:
 automation:
   - id: kitchen_tablet_brightness_schedule
     alias: "Kitchen Tablet - Brightness Schedule"
+    mode: single
     trigger:
       - platform: time
         at: "07:00:00"
