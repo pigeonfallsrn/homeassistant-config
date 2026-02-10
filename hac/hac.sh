@@ -6,7 +6,7 @@
 set -e
 
 # === CONFIG ===
-HAC_VERSION="7.3"
+HAC_VERSION="8.0"
 HAC_DIR="/config/hac"
 OUTPUT_DIR="$HAC_DIR/gist_output"
 PACKAGES_DIR="/config/packages"
@@ -630,6 +630,12 @@ cmd_triggers() {
     sqlite3 "$DB_PATH" "SELECT datetime(s.last_changed_ts,'unixepoch','localtime'),replace(m.entity_id,'automation.','') FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' ORDER BY s.last_updated_ts DESC LIMIT $n;" 2>/dev/null
 }
 
+
+# === IGNORE PATTERNS FOR DOUBLE-FIRES ===
+IGNORE_DOUBLE_FIRES=(
+    "calendar_refresh_school_tomorrow"
+    "calendar_refresh_school_in_session_now"
+)
 cmd_health() {
     echo "=== Health Check ===" 
     echo "HA: $(get_ha_version) | HAC: v$HAC_VERSION"
@@ -667,6 +673,73 @@ cmd_migrate() {
     echo "  https://gist.github.com/pigeonfallsrn/$old_gist"
 }
 
+
+cmd_ui_automations() {
+    echo "=== UI-Created Automations ==="
+    echo "(Automations in HA database but not in YAML files)"
+    echo ""
+    
+    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" > /tmp/ha_states.json 2>/dev/null
+    
+    python3 << 'PYEOF'
+import json, glob, re
+
+try:
+    with open('/tmp/ha_states.json') as f:
+        states = json.load(f)
+except:
+    print("Error: Could not read HA states")
+    exit(1)
+
+ha_automations = {s['entity_id'].replace('automation.', ''): s['attributes'].get('friendly_name', '') 
+                  for s in states if s['entity_id'].startswith('automation.')}
+
+yaml_ids = set()
+for pattern in ['/config/packages/*.yaml', '/config/automations/*.yaml', '/config/automations.yaml']:
+    for filepath in glob.glob(pattern):
+        try:
+            with open(filepath) as f:
+                yaml_ids.update(re.findall(r"id:\s*['\"]?([a-zA-Z0-9_-]+)['\"]?", f.read()))
+        except: 
+            pass
+
+ui_only = {k: v for k, v in ha_automations.items() if k not in yaml_ids}
+
+if ui_only:
+    print(f"Found {len(ui_only)} UI-created automations:\n")
+    for auto_id, name in sorted(ui_only.items()):
+        print(f"  • {auto_id}")
+        if name: 
+            print(f"    '{name}'")
+else:
+    print("No UI-created automations found")
+    print("(All automations are defined in YAML)")
+PYEOF
+    rm -f /tmp/ha_states.json
+}
+cmd_doctor() {
+    echo "╔════════════════════════════════════════╗"
+    echo "║   HAC Doctor - System Diagnostics      ║"
+    echo "╚════════════════════════════════════════╝"
+    echo ""
+    cmd_health
+    echo ""
+    echo "=== UI Automations Check ==="
+    cmd_ui_automations | head -10
+    echo ""
+    echo "=== Recent Errors ==="
+    cmd_errors 5 2>/dev/null || echo "  No recent errors"
+    echo ""
+    echo "=== Git Status ==="
+    cd /config && git status --short | head -10 || echo "  Clean"
+    echo ""
+    echo "=== Disk Usage ==="
+    df -h /config | tail -1 | awk '{print "  Config: "$3" used / "$2" total ("$5" full)"}'
+    echo ""
+    echo "=== Recommendations ==="
+    [ -n "$(cd /config && git status --short)" ] && echo "  ⚠ Uncommitted changes - run 'hac push'"
+    [ -d "$BACKUP_DIR" ] && echo "  ✓ Last backup: $(ls -t "$BACKUP_DIR" | head -1)"
+}
 cmd_help() {
     cat << HELP
 HAC v$HAC_VERSION - Home Assistant Context Manager
@@ -689,6 +762,8 @@ CONTEXT
   pkg [file]    Full YAML with line numbers
   ids [file]    Automation IDs + line numbers
   health        Integration + double-fire check
+  ui-automations UI-created automation detector
+  doctor        Comprehensive system diagnostics
 
 EDITING (safe)
   backup <file>           Create timestamped backup
@@ -1171,6 +1246,8 @@ case "${1:-}" in
     errors) cmd_errors "$2";;
     triggers) cmd_triggers "$2";;
     health) cmd_health;;
+    ui-automations) cmd_ui_automations;;
+    doctor) cmd_doctor;;
     init) cmd_init;;
     migrate) cmd_migrate;;
     diag)    cmd_diag "$2";;
@@ -1200,3 +1277,4 @@ hac_track_insight() {
 
 # Alias
 alias hac_track='hac_track_insight'
+
