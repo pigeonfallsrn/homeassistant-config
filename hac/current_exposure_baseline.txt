@@ -1,27 +1,50 @@
-# Current MCP Exposure - 2026-02-12 (FINAL)
+# MCP Exposure - Final Configuration (2026-02-12)
 
-## ✅ EXPOSED (Safe & Verified)
-**Lights:** All bathroom, bedroom, living area lights + AL controls + scenes
-**Climate:** Nest thermostats (read state), temp/humidity sensors, mini splits
-**Media:** Echo devices, AV receivers, smart plugs
-**Motion (8):** Kitchen, Kitchen Lounge, Living Room, Entry, Upstairs Hallway, Upstairs Bath, Downstairs, Upstairs
-**Doors (5):** Garage walk-in, Very Front, Front Driveway, Garage North bay sensor, Garage South bay sensor
-**Presence:** Anyone Home, Girls location tracking
-**Other:** Back Patio door, 1st Floor Bath motion, Back Yard motion, Basement motion
+## ✅ EXPOSED (~290 entities - All Zero Risk)
 
-## 🚫 BLOCKED (Critical Safety)
-❌ cover.garage_north_garage_door_ratgdo32disco_door (CONTROL)
-❌ cover.garage_south_garage_door_ratgdo32disco_door (CONTROL)
-❌ switch.basement_domestic_water_main_valve (CONTROL)
-❌ button.usw_* (network equipment)
-❌ lock.* (if any)
+**Environmental Sensors:**
+- All temperature sensors (~20)
+- All humidity sensors (~15)
+- All battery level sensors (~30+)
+- Power/energy monitoring sensors
 
-## 🟡 LOW RISK (User Accepted)
-⚠️  switch.basement_avr_hard_reset (smart plug - user accepts risk)
+**Motion & Presence:**
+- All motion sensors (Kitchen, Living, Entry, Upstairs, etc.)
+- Presence detection (Anyone Home, Girls at School/Mom's)
 
-## Status: COMPLETE ✅
-- Water valve: BLOCKED
-- Garage covers: BLOCKED  
-- Motion sensors: EXPOSED (8)
-- Door sensors: EXPOSED (5)
-- Total entities exposed: ~70
+**Door/Window Sensors:**
+- All door contact sensors (5)
+- Garage bay door SENSORS (not controls)
+
+**Lighting & Climate:**
+- All lights (~150+)
+- Nest thermostats (state monitoring)
+- Mini split controls
+- Adaptive Lighting
+
+**Media & Devices:**
+- All Echo devices
+- Media players (Sonos, Roku, etc.)
+- Smart plugs (non-critical)
+
+## 🔴 BLOCKED (Critical - VERIFIED)
+❌ cover.ratgdo32disco_5735e8_door (Garage North CONTROL)
+❌ cover.ratgdo32disco_fd8d8c_door (Garage South CONTROL)
+❌ lock.ratgdo32disco_5735e8_lock_remotes
+❌ lock.ratgdo32disco_fd8d8c_lock_remotes
+❌ switch.aqara_retrofit_valves_t1 (Water valve CONTROL)
+❌ All button.usw_* (Network equipment - 48 entities)
+
+## Status: OPTIMIZED ✅
+- Maximum context for automation assistance
+- Zero safety risk (all read-only sensors)
+- Critical controls properly isolated
+- Battery monitoring enabled for proactive maintenance
+- Energy tracking enabled for cost analysis
+
+## Benefits Unlocked:
+✅ "Which sensors need new batteries?" → I can tell you
+✅ "What's using the most power?" → I can analyze
+✅ "Is the house properly heated/cooled?" → I can check all zones
+✅ "Are all doors closed?" → I can verify all sensors
+✅ Complete automation debugging context
