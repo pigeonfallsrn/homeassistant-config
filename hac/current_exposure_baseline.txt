@@ -1,25 +1,27 @@
-# Current MCP Exposure - 2026-02-12 Audit (Corrected)
+# Current MCP Exposure - 2026-02-12 (FINAL)
 
-## ✅ SAFE (Currently Exposed)
-- All lights, scenes, adaptive lighting
-- Nest thermostats (read-only state)
-- Temperature/humidity sensors  
-- Echo devices, AV receivers
-- Smart plugs (AVR, TV, chargers, etc.) - low risk
-- Motion: 1st Floor Bath, Back Yard, Basement
-- Presence: Anyone Home, Girls location
-- Doors: Back Patio
+## ✅ EXPOSED (Safe & Verified)
+**Lights:** All bathroom, bedroom, living area lights + AL controls + scenes
+**Climate:** Nest thermostats (read state), temp/humidity sensors, mini splits
+**Media:** Echo devices, AV receivers, smart plugs
+**Motion (8):** Kitchen, Kitchen Lounge, Living Room, Entry, Upstairs Hallway, Upstairs Bath, Downstairs, Upstairs
+**Doors (5):** Garage walk-in, Very Front, Front Driveway, Garage North bay sensor, Garage South bay sensor
+**Presence:** Anyone Home, Girls location tracking
+**Other:** Back Patio door, 1st Floor Bath motion, Back Yard motion, Basement motion
 
-## ⚠️ RECOMMENDED ADDITIONS (Safe Sensors)
-- Motion: Kitchen, Living Room, Entry, Upstairs Hallway
-- Doors: Garage walk-in, Front door, Very Front door
-- Door sensors: Garage bay doors (binary_sensor only, NOT covers)
+## 🚫 BLOCKED (Critical Safety)
+❌ cover.garage_north_garage_door_ratgdo32disco_door (CONTROL)
+❌ cover.garage_south_garage_door_ratgdo32disco_door (CONTROL)
+❌ switch.basement_domestic_water_main_valve (CONTROL)
+❌ button.usw_* (network equipment)
+❌ lock.* (if any)
 
-## 🚫 CORRECTLY BLOCKED (Critical)
-- ✅ Water valve (blocked by user)
-- Garage door covers (cover.garage_*)
-- Locks (if any exist)
-- Network equipment (button.usw_*)
+## 🟡 LOW RISK (User Accepted)
+⚠️  switch.basement_avr_hard_reset (smart plug - user accepts risk)
 
-## 🟡 LOW RISK (User's Choice)
-- AVR hard reset plug (currently exposed - user accepts risk)
+## Status: COMPLETE ✅
+- Water valve: BLOCKED
+- Garage covers: BLOCKED  
+- Motion sensors: EXPOSED (8)
+- Door sensors: EXPOSED (5)
+- Total entities exposed: ~70
