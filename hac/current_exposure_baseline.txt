@@ -1,0 +1,28 @@
+# Current MCP Exposure - 2026-02-12 Audit
+
+## LIGHTS (Currently Exposed - SAFE)
+✅ All bathroom, bedroom, living area lights
+✅ Adaptive Lighting controls
+✅ Scene controls
+✅ Smart plugs (low-risk devices)
+
+## CLIMATE (Currently Exposed - SAFE)
+✅ Nest thermostats (read-only useful)
+✅ Temperature/humidity sensors
+✅ Mini split controls
+
+## MEDIA (Currently Exposed - SAFE)
+✅ Echo devices
+✅ AV receivers
+
+## SENSORS (Currently Exposed - LIMITED)
+✅ Motion: 1st Floor Bath, Back Yard, Basement
+⚠️  MISSING: Kitchen, Living Room, Entry, Upstairs motion sensors
+✅ Presence: Anyone Home, Girls location
+✅ Doors: Back Patio only
+⚠️  MISSING: Garage walk-in, Front door, Very Front door sensors
+
+## 🚨 CRITICAL SAFETY ISSUE FOUND
+❌ switch.basement_domestic_water_main_valve (EXPOSED - MUST BLOCK)
+❌ switch.basement_avr_hard_reset (EXPOSED - SHOULD BLOCK)
+
