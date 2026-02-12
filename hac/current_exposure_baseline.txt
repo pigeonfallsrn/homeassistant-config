@@ -1,28 +1,25 @@
-# Current MCP Exposure - 2026-02-12 Audit
+# Current MCP Exposure - 2026-02-12 Audit (Corrected)
 
-## LIGHTS (Currently Exposed - SAFE)
-✅ All bathroom, bedroom, living area lights
-✅ Adaptive Lighting controls
-✅ Scene controls
-✅ Smart plugs (low-risk devices)
+## ✅ SAFE (Currently Exposed)
+- All lights, scenes, adaptive lighting
+- Nest thermostats (read-only state)
+- Temperature/humidity sensors  
+- Echo devices, AV receivers
+- Smart plugs (AVR, TV, chargers, etc.) - low risk
+- Motion: 1st Floor Bath, Back Yard, Basement
+- Presence: Anyone Home, Girls location
+- Doors: Back Patio
 
-## CLIMATE (Currently Exposed - SAFE)
-✅ Nest thermostats (read-only useful)
-✅ Temperature/humidity sensors
-✅ Mini split controls
+## ⚠️ RECOMMENDED ADDITIONS (Safe Sensors)
+- Motion: Kitchen, Living Room, Entry, Upstairs Hallway
+- Doors: Garage walk-in, Front door, Very Front door
+- Door sensors: Garage bay doors (binary_sensor only, NOT covers)
 
-## MEDIA (Currently Exposed - SAFE)
-✅ Echo devices
-✅ AV receivers
+## 🚫 CORRECTLY BLOCKED (Critical)
+- ✅ Water valve (blocked by user)
+- Garage door covers (cover.garage_*)
+- Locks (if any exist)
+- Network equipment (button.usw_*)
 
-## SENSORS (Currently Exposed - LIMITED)
-✅ Motion: 1st Floor Bath, Back Yard, Basement
-⚠️  MISSING: Kitchen, Living Room, Entry, Upstairs motion sensors
-✅ Presence: Anyone Home, Girls location
-✅ Doors: Back Patio only
-⚠️  MISSING: Garage walk-in, Front door, Very Front door sensors
-
-## 🚨 CRITICAL SAFETY ISSUE FOUND
-❌ switch.basement_domestic_water_main_valve (EXPOSED - MUST BLOCK)
-❌ switch.basement_avr_hard_reset (EXPOSED - SHOULD BLOCK)
-
+## 🟡 LOW RISK (User's Choice)
+- AVR hard reset plug (currently exposed - user accepts risk)
