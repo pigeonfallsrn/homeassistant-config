@@ -297,7 +297,6 @@
   action:
     - service: light.turn_off
       target:
-        entity_id:
+        entity_id: light.alaina_s_led_strips
           - light.alaina_s_led_strips
-          - light.alaina_s_led_light_strip_2
   mode: single
