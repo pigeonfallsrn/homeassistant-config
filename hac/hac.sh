@@ -842,6 +842,10 @@ $(cat "$SESSION_FILE" 2>/dev/null | tail -5 || echo "New session")
 PROMPT
 }
 
+cmd_prompt() {
+    cat /homeassistant/hac/optimized_session_prompt_v3.md
+}
+
 cmd_mcp() {
     local gist_id=$(get_gist_id)
     [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
@@ -1228,6 +1232,7 @@ case "${1:-}" in
     gdrive) cmd_gdrive;;
     sheets) cmd_sheets;;
     export) cmd_export;;
+    prompt) cmd_prompt;;
     mcp) cmd_mcp;;
     research) cmd_research;;
     status) cmd_status;;
