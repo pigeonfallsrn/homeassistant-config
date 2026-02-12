@@ -1,7 +1,7 @@
 # =============================================================================
 # ADAPTIVE LIGHTING - Wisconsin-Optimized Configuration
 # Location: Strum, WI (44.5°N, 91.4°W)
-# Updated: 2026-02-07 - Seasonal auto sunrise/sunset, best practices
+# Updated: 2026-02-11 - Removed Upstairs Zone, 2 active instances only
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -71,40 +71,6 @@
   sunset_offset: 1800            # Extended cozy evening
   
   # Hue best practices
-  separate_turn_on_commands: true
-  take_over_control: true
-  detect_non_ha_changes: false
-
-# -----------------------------------------------------------------------------
-# UPSTAIRS ZONE - Hallway motion lighting
-# -----------------------------------------------------------------------------
-- name: "Upstairs Zone"
-  lights:
-    - light.upstairs_hallway
-  
-  prefer_rgb_color: true         # RGB bulb capability
-  
-  # Motion-optimized timing
-  initial_transition: 1
-  sleep_transition: 1
-  transition: 30
-  interval: 60
-  
-  # Capped brightness for nighttime comfort
-  min_brightness: 3
-  max_brightness: 80             # Don't blind at night
-  min_color_temp: 2000
-  max_color_temp: 5500           # Match other instances
-  
-  # Red sleep mode (preserve night vision)
-  sleep_brightness: 3
-  sleep_rgb_color: [255, 20, 0]
-  
-  # WISCONSIN AUTO TRACKING
-  sunrise_offset: -1800
-  sunset_offset: 1800
-  
-  # Hue best practices  
   separate_turn_on_commands: true
   take_over_control: true
   detect_non_ha_changes: false
