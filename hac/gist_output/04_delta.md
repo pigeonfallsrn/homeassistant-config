@@ -1,11 +1,8 @@
-# Delta - 2026-02-09 19:52
+# Delta - 2026-02-12 17:43
 
 ## Changed Since Last Push
-- garage_lighting_automation_FIXED.yaml
-- upstairs_lighting.yaml
-- occupancy_system.yaml
-- kitchen_tablet_dashboard.yaml
-- google_sheets_sync.yaml
+- garage_quick_open.yaml
+- garage_notifications_consolidated.yaml
 
 ## Recent Errors (last 3)
 

@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-09 19:52
+# System Knowledge - 2026-02-12 17:43
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -32,55 +32,55 @@
 - 2026-02-09: HAC v8.0 - Enhanced Monitoring & Ghost Detection
 
 ## Recent Session Learnings
-- 12:49: Google Sheets Export v3.1 BREAKTHROUGH 2026-02-09: Now reading from HA registry files (.storage/core.entity_registry, core.device_registry, core.area_registry). MASSIVE improvements: 30 areas (was 1), 30 integrations (was 0), 367 actual devices with manufacturer/model (was 21 generic domains), 1198 action items (down from 2089). All entities now have correct area assignments. Devices tab shows real device names, manufacturers, models. Integrations tab shows all 30 platforms. This is the complete, production-ready version.
-- 12:57: Phase 1 COMPLETE 2026-02-09 12:49: Master workbook fully operational with all 13 tabs populated. Next: Create LLM Index companion workbook for token-efficient queries (~700 tokens vs ~15,000). Current master: 3,201 entities, 193 automations, 30 areas, 30 integrations, 367 devices, 1,198 action items, 2 sessions. Export automation runs daily 11PM, on startup, and manual button.
-- 13:24: LLM Index workbook created 2026-02-09: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk - This will be the token-efficient companion with 5 summary tabs. Spreadsheet ID saved to /config/.llm_index_id. Next: Create dual export script that populates both master (full data) and LLM index (summaries).
-- 13:59: Export v4.0 DUAL WORKBOOK COMPLETE 2026-02-09 13:58: Revolutionary setup working perfectly. TWO workbooks: (1) Master https://docs.google.com/spreadsheets/d/11quLdO56rqI8GAPq-KnKtJoBs7cH6QAVgHs8W6UC_8w - full data 13 tabs for deep analysis. (2) LLM Index https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk - 5 summary tabs (~700 tokens, 86% reduction). Script: /config/python_scripts/export_to_sheets.py exports to BOTH simultaneously. Auto-runs daily 11PM, startup, manual button. This is PRODUCTION READY.
-- 14:07: HAC command enhancement 2026-02-09 14:04: Added 'hac sheets' command for quick dual-workbook export from terminal. Complements existing 'hac export' (Excel files). New workflow: 'hac sheets' updates both Google Sheets workbooks instantly. Function added to /config/hac/hac.sh. Ready for Part B: Gemini AI integration.
-- 14:09: Gemini AI Integration COMPLETE 2026-02-09 14:08: Added AI-powered features to Master workbook. Dashboard now has Gemini Insights section with 5 pre-configured questions (automation gaps, area attention, device reliability, energy efficiency, next automations). New 'AI Suggestions' tab with automation recommendations across 5 categories. Chart recommendations added to Dashboard. Script: /config/python_scripts/add_gemini_formulas.py. Both Part A (hac sheets) and Part B (Gemini AI) COMPLETE.
-- 14:18: Git security fix 2026-02-09 14:15: Removed Google service account credentials from git history using git-filter-repo. Both ha-service-account.json and homeassistant-sheetsync-c7be17aa6748.json purged from all commits. Added to .gitignore to prevent future commits. Successfully pushed cleaned history to GitHub. Credentials remain local-only in /config/ for Google Sheets API access.
-- 14:33: Service account credentials restored. hac sheets working. System operational.
-- 15:44: Major cleanup 2026-02-09: Fixed malformed area names (Master Bedroom, Upstairs Bathroom), removed 31 unavailable entities, standardized naming
-- 16:13: Major cleanup 2026-02-09: Fixed malformed area names (Master Bedroom, Upstairs Bathroom), removed 31 unavailable entities, standardized naming
-- 16:13: Cleanup complete 2026-02-09: Renamed Upstairs Bathroom area, disabled unavailable Hue devices (Front Driveway lights, vanity lights), updated automation area references in upstairs_lighting.yaml and occupancy_system.yaml. System cleaned from 3,201 entities with 31 unavailable down to clean working state.
-- 16:22: Garage lighting fix 2026-02-09: Upgraded automation to use ALL 5 motion sensors (was only 2), added adjustable timeout helper (10min default), added night dimming (30% brightness 10PM-6AM). Fixes issue where lights turned off while working in garage away from door sensors.
-- 16:33: Learnings export to Google Sheets COMPLETE 2026-02-09: Built learnings parser that reads all 25 learning files from /config/hac/learnings/, auto-categorizes by type (Automation, Lighting, Integration, etc.), extracts tags, and exports to new Learnings tab in Master workbook. 127 total learnings now searchable, filterable, and queryable. Stats: 66 Automation, 25 Lighting, 14 Integration. Top tags: automation (50), motion (33), hue (31). Token-efficient alternative to reading raw text files.
-- 16:39: AI Query Dashboard COMPLETE 2026-02-09: Added 10 pre-configured Gemini AI query buttons to Dashboard tab. One-click insights for learning patterns, focus areas, area analysis, complexity ranking, monthly comparison, integration health, automation evolution, top tags, lighting insights, and recent wins.
-- 16:44: AI Insights Historical Tracking COMPLETE 2026-02-09: Built complete tracking system for AI queries and responses. New 'AI Insights History' tab logs: timestamp, query type, question, AI response, implementation status (📋 Planned, 🔄 In Progress, ✅ Complete), notes, and tags. Added 'hac track' command for manual logging. Dashboard now includes tracking instructions. Creates closed-loop improvement system - track what AI recommends, mark when implemented, see evolution over time.
-- 16:46: AI Insights Historical Tracking COMPLETE 2026-02-09: Built complete tracking system for AI queries and responses. New 'AI Insights History' tab logs: timestamp, query type, question, AI response, implementation status (📋 Planned, 🔄 In Progress, ✅ Complete), notes, and tags. Added 'hac track' command for manual logging. Dashboard now includes tracking instructions. Creates closed-loop improvement system - track what AI recommends, mark when implemented, see evolution over time.
-- 16:57: SESSION COMPLETE 2026-02-09 17:00: Built complete AI-powered knowledge management system. Learnings export (131 learnings auto-categorized), AI query dashboard (10 persistent buttons), historical tracking with status management, garage lighting fixed, system cleaned. Dashboard now permanently includes AI Insights section that persists across exports. Token-efficient (86% reduction), Gemini AI integration working, closed-loop improvement system operational. LEGENDARY session.
-- 16:57: SESSION COMPLETE 2026-02-09 17:00: Built complete AI-powered knowledge management system. Learnings export (131 learnings auto-categorized), AI query dashboard (10 persistent buttons), historical tracking with status management, garage lighting fixed, system cleaned. Dashboard now permanently includes AI Insights section that persists across exports. Token-efficient (86% reduction), Gemini AI integration working, closed-loop improvement system operational. LEGENDARY session.
-- 19:32: Calendar refresh automations (school_tomorrow, school_in_session_now) double-fire on restart - expected behavior with mode: single protection
-- 19:51: Upgraded HAC to v8.0: Added double-fire ignore list for calendar automations, new ui-automations command (found 187 UI automations), and doctor command for comprehensive diagnostics. Fixed kitchen tablet brightness and google sheets startup delays.
+- 07:05: 2026-02-11 AL cleanup complete: removed 5 ghost instances, disabled Upstairs Zone. Final config: 2 AL instances (Living Spaces + Entry Room Ceiling) managing 5 lights total. System clean and working.
+- 07:05: 2026-02-11 AL cleanup complete: Removed 5 ghost instances (bedroom_test, kitchen_entry_ceiling, living_room_ceiling, kitchen_chandelier, pre_release), disabled Upstairs Zone AL. Final config: 2 active AL instances - Living Spaces (4 accent lamps) + Entry Room Ceiling (1 motion light) = 5 lights under AL control. 141 lights remain manual/automation-controlled. Ghost entity conflicts resolved, system clean and working.
+- 14:38: 2026-02-11 AL cleanup complete: Removed 5 ghost instances (bedroom_test, kitchen_entry_ceiling, living_room_ceiling, kitchen_chandelier, pre_release), disabled Upstairs Zone AL. Final config: 2 active AL instances - Living Spaces (4 accent lamps) + Entry Room Ceiling (1 motion light) = 5 lights under AL control. 141 lights remain manual/automation-controlled. Ghost entity conflicts resolved, system clean and working.
+- 14:41: 2026-02-11 AL cleanup complete: Removed 5 ghost instances (bedroom_test, kitchen_entry_ceiling, living_room_ceiling, kitchen_chandelier, pre_release), disabled Upstairs Zone AL. Final config: 2 active AL instances - Living Spaces (4 accent lamps) + Entry Room Ceiling (1 motion light) = 5 lights under AL control. 141 lights remain manual/automation-controlled. Ghost entity conflicts resolved, system clean and working.
+- 15:07: MCP Privacy Policy: Claude has READ-ONLY access to motion/door/temp sensors for context. Claude CANNOT control and has NO live access to: garage doors (covers), locks, water valves, or network equipment. These exist in context CSVs for knowledge but are intentionally blocked from MCP control/query. If user asks about their state, acknowledge from context but state 'I don't have live MCP access - please check HA app.'
+- 15:09: MCP Exposure Audit: CORRECT command is 'ha core info' (works). INCORRECT: jq query on entity_registry/list endpoint - API format incompatible. Always verify exposure via HA UI: Settings > Voice Assistants > Assist > Exposed Entities. No reliable CLI method exists for exposure status.
+- 15:09: MCP Privacy Boundaries: LIVE ACCESS via MCP = motion sensors (binary_sensor.*_motion), door sensors (binary_sensor.*_door), temp/humidity (sensor.*_temperature/humidity), lights. BLOCKED from MCP = garage door covers (cover.garage_*), locks (lock.*), water valve controls (switch.*_valve*), network equipment (button.usw_*). Context CSVs contain ALL devices for knowledge; MCP provides live state only for safe sensors.
+- 15:12: URGENT: Water valve control (switch.basement_domestic_water_main_valve) currently EXPOSED to MCP - must be blocked immediately. Also found: basement_avr_hard_reset exposed. Both are safety-critical controls that should never be in MCP exposure.
+- 15:15: AVR hard reset correction: User correctly identified this is just a smart plug for AV receiver, not a critical safety device. Low risk - acceptable to remain exposed. Only TRUE safety-critical items are: water valve (now blocked), garage door covers, locks, network equipment.
+- 15:22: MCP Exposure Complete: Added 8 motion sensors + 5 door sensors via terminal script. Total safe sensors now exposed: kitchen/living/entry/upstairs motion detection + all door sensors (garage walk-in, front doors, garage bay door sensors). Water valve remains blocked.
+- 15:33: MCP Full Exposure Complete: Exposed all 290 zero-risk sensors (temperature, humidity, battery, power monitoring). Critical controls remain blocked: garage doors, locks, water valve, network equipment. Total MCP context now maximized while maintaining safety.
+- 16:10: Upstairs hallway 3-way switch testing in progress. User will determine if switch cuts power to light or if power is always hot. This determines whether Hue click switch installation is required before automations can work. Apollo Pro mmWave sensors planned for kitchen testing, then bedroom installations.
+- 17:00: Terminal heredoc syntax (cat << 'EOF') consistently fails in zsh causing dquote> prompts. ALWAYS use simple echo redirection instead: echo 'content' > file. Avoid multi-line heredocs in all future sessions. Use printf or multiple echo commands for multi-line content. This prevents terminal quote hell.
+- 17:00: Session 2026-02-12 achievements: MCP exposure optimized (290 safe sensors exposed, critical controls blocked), lighting issues diagnosed ([PERSON] LED needs auto-off, upstairs hallway needs time-based automation or Hue click switch), Apollo Pro mmWave strategy created for future bedroom occupancy detection. Awaiting 3-way switch power test to determine implementation path.
+- 17:02: HAC prompt optimization needed: Review all learnings for common patterns, terminal preferences (zsh, no heredocs, simple commands), HA debugging workflow, MCP privacy model, Git habits. Goal: Create condensed strategic session starter that gives LLM maximum context with minimum tokens.
+- 17:16: CRITICAL: Avoid complex multi-step scripts that chain multiple heredocs and loops. Script went into infinite loop creating files. Always use simple, single-purpose commands. Test scripts individually before chaining.
+- 17:35: Session v3 prompt created with MANDATORY automation workflow: 1) Verify entities exist 2) Check group membership 3) Validate YAML 4) Commit. Added critical rules: NEVER use sed for YAML, NEVER use view tool (use cat/less), ALWAYS verify entity status before creating automations. Prevents sed disasters, vim traps, and entity mismatches.
+- 17:35: Entity verification pattern established: python3 one-liners to check entity_registry for hidden/disabled status, core.config_entries for group membership. Light groups created via UI stored in config_entries domain='group', NOT separate files. This workflow eliminates back-and-forth debugging.
+- 17:35: [PERSON] LED strip automation COMPLETE: Targets light.alaina_s_led_strips group (contains strip_1 visible + strip_2 hidden). Turns off at midnight. Ready for HA reload. Next: await 3-way switch test results for upstairs hallway automation path.
+- 17:43: HAC export workflow: 'hac export' generates comprehensive Excel files (FULL, AI_SAFE, LLM.json) from current HA state - includes entities, devices, areas, integrations, automations, and learnings. Useful for: 1) Generating fresh context before major sessions, 2) Sharing sanitized system state, 3) External analysis in Excel, 4) Backup snapshots. Files sync to Google Drive automatically. Consider running export at session start for up-to-date context.
 
 ## Historical Learnings (last 30 lines)
-- Vanity switch (602bdb2b4675a5e364853ac1e53ed689) -> light.2nd_floor_vanity_lights
-- Fan switch (3eed85f7ca546a7ed7e24b0cfc6c818b) -> switch.upstairs_bathroom_fan
-- Humidity auto: >65% on, <55% off with manual override
-- Key: Use Hue ZONE entities not Room entity for separate control
-- 20:16: HYBRID AUTOMATION SETUP (Best Practice):
-- automation manual: include_dir_merge_list automations/ (YAML)
-- automation ui: include automations.yaml (UI-created)
-- Blueprints now work from UI and save to automations.yaml
-- Existing YAML automations preserved in automations/ dir
-- Source: Official HA docs splitting_configuration
-- 20:35: AUTOMATION CLEANUP SESSION:
-- ui_automations.yaml - old UI automations duplicated in dedicated files
-- bathroom_motion_lighting.yaml - duplicates 1st/2nd floor bathroom
-- All .bak files in automations/
-- 1st_floor_bathroom_inovelli.yaml
-- 2nd_floor_bathroom_inovelli.yaml (new humidity/fan setup)
-- upstairs_bathroom_motion.yaml (2nd floor motion)
-- alaina_wake_echo_alarm.yaml
-- exterior_lights_auto_off.yaml
-- garage_arrival.yaml
-- garage_door_notifications.yaml
-- kitchen_tablet_wake.yaml
-- tablet_power.yaml
-- entry_room_aux_switch
-- kitchen_lounge_vzm36_fixed
-- kitchen_lounge_dimmer_fixed
-- kitchen_chandelier_switch_v2
-- kitchen_above_sink_inovelli
-- living_room_tv_off_trigger_av_system_off
-- first_person_home_lights_on
+- 07:51: 2ND FL BATHROOM LIGHTING FIX:
+- Problem: Lights dim because adaptive_lighting controls light.2nd_floor_bathroom
+- Solution: Button press activates TIME-BASED Hue scenes + sets manual_control
+- DAY (6am-8pm): Energize scene (bright cool)
+- EVENING (8pm-11pm): Relax scene (warm medium)
+- NIGHT (11pm-6am): Nightlight scene (dim red)
+- Use adaptive_lighting.set_manual_control to pause AL on button press
+- Scenes: scene.2nd_floor_vanity_lights_energize/relax/nightlight
+- Scenes: scene.2nd_fl_bathroom_ceiling_lights_energize
+- 12:06: LIGHTING AUDIT SESSION HANDOFF - 2026-02-07
+- Fixed 2nd floor bathroom Inovelli (ceiling+vanity separate, time-based scenes)
+- Removed light.2nd_floor_bathroom from Adaptive Lighting (was fighting)
+- Set up hybrid automation config (YAML + UI)
+- Cleaned up duplicate automations (33→19)
+- Created entry_room_aux.yaml, kitchen_inovelli.yaml, living_room_av.yaml, first_person_home.yaml
+- Button UP: Time-based scene (Energize 6am-8pm / Relax 8pm-11pm / Nightlight 11pm-6am)
+- Button DOWN: Off + clear override
+- Button HOLD: Dim up/down
+- Motion: Only fires if input_boolean.ROOM_manual_override is OFF
+- Override auto-clears after 30 min
+- automations/2nd_floor_bathroom_inovelli.yaml (GOOD TEMPLATE - copy pattern)
+- automations/1st_floor_bathroom_inovelli.yaml (NEEDS UPGRADE)
+- automations/kitchen_inovelli.yaml (NEEDS UPGRADE for chandelier/dimmer)
+- automations/entry_room_aux.yaml (NEEDS UPGRADE)
+- packages/upstairs_lighting.yaml (DELETE bathroom section, keep hallway)
+- scene.2nd_fl_bathroom_ceiling_lights_energize
+- scene.2nd_floor_vanity_lights_energize/relax/nightlight
+- scene.1st_floor_ceiling_lights_energize/relax/read/nightlight
+- Check for kitchen/entry scenes in .storage/core.entity_registry
+- 12:36: Completed lighting audit 2026-02-07: Upgraded 4 Inovelli automations (1st floor bathroom, entry room AUX, kitchen chandelier, kitchen lounge) with time-based Hue scenes + manual override. Fixed AL config: enabled auto sunrise/sunset for Wisconsin seasonal tracking, added Entry Room Ceiling dedicated AL instance for motion-activated circadian health, consolidated all AL definitions to main config. Key insight: Motion-activated primary lights NEED dedicated AL instances for circadian health benefits.
