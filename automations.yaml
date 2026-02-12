@@ -276,3 +276,15 @@
       target:
         entity_id: light.alaina_s_led_strips
   mode: single
+- id: alaina_led_strip_auto_off
+  alias: "Alaina's LED Strip - Auto Off at Midnight"
+  description: "Turn off Alaina's LED strip at midnight to save power and ensure it's off overnight"
+  trigger:
+    - platform: time
+      at: "00:00:00"
+  condition: []
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.alaina_s_led_strips
+  mode: single
