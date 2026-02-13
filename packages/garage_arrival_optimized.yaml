@@ -1,40 +1,40 @@
 # ============================================================================
 # GARAGE ARRIVAL - OPTIMIZED v2.0
-# Android Auto detection + Dashboard popup + Smart timing
+# HandsFreeLink Bluetooth detection + Dashboard popup + Smart timing
 # ============================================================================
 
 automation:
   # ===========================================================================
-  # SMART ARRIVAL - Android Auto + Distance-based Dashboard Popup
-  # Replaces: garage_auto_open_approaching, garage_open_fallback_notification
+  # SMART ARRIVAL - Bluetooth HandsFreeLink + Distance-based Dashboard Popup
+  # Detects when phone connects to Honda Odyssey Bluetooth
   # ===========================================================================
   - id: garage_arrival_smart_popup
     alias: "Garage - Smart Arrival Dashboard Popup"
     description: >
       Shows garage control dashboard when:
-      1. Android Auto connects (in car)
+      1. Phone connected to car Bluetooth (HandsFreeLink)
       2. Approaching home (< 800m)
       3. Doors are closed
       
       Dashboard stays up until you arrive home or dismiss it.
     trigger:
-      # Primary: Android Auto connects while approaching
+      # Primary: Bluetooth connection changes (car connection detected)
       - platform: state
-        entity_id: binary_sensor.john_s_phone_android_auto
-        to: "on"
-        id: android_auto
+        entity_id: sensor.john_s_phone_bluetooth_connection
+        id: bluetooth_change
       
-      # Backup: Enter proximity zone while Android Auto active
+      # Backup: Enter proximity zone while connected to car
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
         below: 800
         id: proximity
     
     condition:
-      # Must be in car (Android Auto active)
-      - condition: state
-        entity_id: binary_sensor.john_s_phone_android_auto
-        state: "on"
+      # Must be connected to car Bluetooth (HandsFreeLink)
+      - condition: template
+        value_template: >
+          {% set connected = state_attr('sensor.john_s_phone_bluetooth_connection', 'connected_paired_devices') | default([]) %}
+          {{ connected | select('search', 'HandsFreeLink') | list | length > 0 }}
       
       # Approaching home (not already there)
       - condition: numeric_state
@@ -69,8 +69,8 @@ automation:
             importance: high
             ttl: 0
             priority: high
-            sticky: true  # Stays visible
-            timeout: 300  # 5 minutes
+            sticky: true
+            timeout: 300
             notification_icon: "mdi:garage-variant"
             color: "#03A9F4"
             actions:
@@ -82,14 +82,11 @@ automation:
                 title: "🚪 OPEN BOTH"
               - action: "GARAGE_DISMISS"
                 title: "❌ Dismiss"
-            
-            # Android-specific: Make it prominent
             visibility: public
             persistent: true
     
     mode: single
     max_exceeded: silent
-
 
   # ===========================================================================
   # ACTION HANDLERS - Unified for all garage open/close actions
@@ -103,28 +100,23 @@ automation:
         event_data:
           action: "GARAGE_OPEN_NORTH"
         id: north
-      
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
           action: "GARAGE_OPEN_SOUTH"
         id: south
-      
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
           action: "GARAGE_OPEN_BOTH"
         id: both
-      
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
           action: "GARAGE_DISMISS"
         id: dismiss
-    
     action:
       - choose:
-          # Open North Door
           - conditions:
               - condition: trigger
                 id: north
@@ -144,8 +136,6 @@ automation:
                   data:
                     tag: "garage_open_confirm"
                     timeout: 10
-          
-          # Open South Door
           - conditions:
               - condition: trigger
                 id: south
@@ -165,8 +155,6 @@ automation:
                   data:
                     tag: "garage_open_confirm"
                     timeout: 10
-          
-          # Open Both Doors
           - conditions:
               - condition: trigger
                 id: both
@@ -188,8 +176,6 @@ automation:
                   data:
                     tag: "garage_open_confirm"
                     timeout: 10
-          
-          # Dismiss
           - conditions:
               - condition: trigger
                 id: dismiss
@@ -199,7 +185,6 @@ automation:
                   message: "clear_notification"
                   data:
                     tag: "garage_arrival_dashboard"
-    
     mode: queued
     max: 5
 
@@ -213,13 +198,10 @@ automation:
       - platform: state
         entity_id: person.john_spencer
         to: "home"
-    
     action:
       - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_arrival_dashboard"
-    
     mode: single
-
