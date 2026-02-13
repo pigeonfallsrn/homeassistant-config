@@ -266,8 +266,8 @@
   variables:
     device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
 
-- alias: "Alaina's LED Strip Lights Button"
-  id: alaina_led_strip_lights_button
+- id: 'alaina_led_strip_lights_button'
+  alias: "Alaina's LED Strip Lights Button"
   trigger:
     - platform: state
       entity_id: input_button.alaina_led_strip_lights
@@ -276,20 +276,10 @@
       target:
         entity_id: light.alaina_s_led_strips
   mode: single
-  alias: "Alaina's LED Strip - Auto Off at Midnight"
-  description: "Turn off Alaina's LED strip at midnight to save power and ensure it's off overnight"
-  trigger:
-    - platform: time
-      at: "00:00:00"
-  condition: []
-  action:
-    - service: light.turn_off
-      target:
-        entity_id: light.alaina_s_led_strips
-  mode: single
-- id: alaina_led_strip_auto_off
+
+- id: 'alaina_led_strip_auto_off'
   alias: "Alaina's LED Strips - Auto Off at Midnight"
-  description: "Turn off both of Alaina's LED strips at midnight to save power and ensure they're off overnight"
+  description: "Turn off Alaina's LED strips at midnight"
   trigger:
     - platform: time
       at: "00:00:00"
@@ -298,5 +288,4 @@
     - service: light.turn_off
       target:
         entity_id: light.alaina_s_led_strips
-          - light.alaina_s_led_strips
   mode: single
