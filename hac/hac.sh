@@ -613,6 +613,86 @@ cmd_learn() {
     log_ok "Logged to session + learnings"
 }
 
+cmd_review() {
+    local days="${1:-7}"
+    local kb_file="$HAC_DIR/gist_output/03_knowledge.md"
+    
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  HAC LEARNING REVIEW — Last $days days"
+    echo "═══════════════════════════════════════════════════════════════"
+    
+    # Count what we're working with
+    local files=$(find "$LEARNINGS_DIR" -name "*.md" -mtime -${days} -type f 2>/dev/null | sort)
+    local file_count=$(echo "$files" | grep -c "." 2>/dev/null || echo 0)
+    echo ""
+    echo "📁 Found $file_count learning files from last $days days"
+    echo ""
+    
+    if [ "$file_count" -eq 0 ]; then
+        echo "No recent learnings found."
+        return
+    fi
+    
+    # Show files being reviewed
+    echo "Files:"
+    echo "$files" | while read f; do
+        local size=$(wc -c < "$f" 2>/dev/null)
+        local name=$(basename "$f")
+        echo "  $name (${size}b)"
+    done
+    echo ""
+    
+    # Extract key patterns by category
+    echo "═══ ARCHITECTURE DECISIONS ═══"
+    echo "$files" | xargs grep -hi "discovery:\|decision:\|architecture\|use this.*not this\|important" 2>/dev/null | sed 's/^[[:space:]]*/  /' | head -10
+    echo ""
+    
+    echo "═══ CRITICAL RULES (mistakes/disasters) ═══"
+    echo "$files" | xargs grep -hi "never\|always\|critical\|broke\|disaster\|fix.*required\|root.cause\|lesson:" 2>/dev/null | sed 's/^[[:space:]]*/  /' | head -10
+    echo ""
+    
+    echo "═══ TOOLS & COMMANDS CREATED ═══"
+    echo "$files" | xargs grep -hi "created:\|script.*created\|new.*command\|tool:" 2>/dev/null | sed 's/^[[:space:]]*/  /' | head -10
+    echo ""
+    
+    echo "═══ TABLED / TODO ═══"
+    echo "$files" | xargs grep -hi "tabled\|todo\|next.session\|priority\|\[ \]" 2>/dev/null | sed 's/^[[:space:]]*/  /' | head -10
+    echo ""
+    
+    echo "═══ RESOLVED / COMPLETED ═══"
+    echo "$files" | xargs grep -hi "resolved\|completed\|fixed\|done\|\[x\]\|✅" 2>/dev/null | sed 's/^[[:space:]]*/  /' | head -10
+    echo ""
+    
+    # Show current knowledge file stats
+    local kb_lines=$(wc -l < "$kb_file" 2>/dev/null || echo 0)
+    local kb_size=$(wc -c < "$kb_file" 2>/dev/null || echo 0)
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "📊 Current 03_knowledge.md: ${kb_lines} lines, ${kb_size} bytes"
+    echo ""
+    echo "💡 Next steps:"
+    echo "   1. Review patterns above"
+    echo "   2. Run: hac promote \"pattern to add to knowledge base\""
+    echo "   3. Run: hac cleanup to archive old resolved items"
+    echo "═══════════════════════════════════════════════════════════════"
+}
+
+cmd_promote() {
+    [ -z "$1" ] && echo "Usage: hac promote \"learning to add to knowledge base\"" && return
+    local kb_file="$HAC_DIR/gist_output/03_knowledge.md"
+    local section="## Recent Session Learnings"
+    
+    # Add learning above the "Recent Session Learnings" section
+    if grep -q "$section" "$kb_file" 2>/dev/null; then
+        sed -i "/$section/a - $(date '+%Y-%m-%d'): $1" "$kb_file"
+        log_ok "Promoted to 03_knowledge.md"
+    else
+        echo "" >> "$kb_file"
+        echo "$section" >> "$kb_file"
+        echo "- $(date '+%Y-%m-%d'): $1" >> "$kb_file"
+        log_ok "Added new section + promoted to 03_knowledge.md"
+    fi
+}
+
 cmd_table() {
     [ -z "$1" ] && echo "## Tabled Projects" && cat "$TABLED_FILE" 2>/dev/null && return
     ensure_dirs
@@ -778,6 +858,8 @@ SECURITY
 
 LOGGING
   learn "note"  Log to session + learnings
+  review [days]  Review learnings (default 7 days)
+  promote "txt"  Promote learning to knowledge base
   table "proj"  Add to tabled projects
   errors [n]    Last n errors (default 20)
   triggers [n]  Last n triggers (default 20)
@@ -1247,6 +1329,8 @@ case "${1:-}" in
     sanitize-test) python3 /config/hac/hac_sanitize.py test;;
     hygiene) cmd_hygiene;;
     learn) shift; cmd_learn "$*";;
+    review) cmd_review "$2";;
+    promote) shift; cmd_promote "$*";;
     table) shift; cmd_table "$*";;
     errors) cmd_errors "$2";;
     triggers) cmd_triggers "$2";;
