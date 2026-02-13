@@ -1321,6 +1321,68 @@ project() {
     echo "For ChatGPT/Gemini: still use hac push or hac gpt/hac gem"
     echo "═══════════════════════════════════════════════════════════════"
 }
+
+cmd_menu() {
+    cat << 'MENUEOF'
+===============================================================================
+HAC v8.0 - Home Assistant Context Manager
+===============================================================================
+
+START A SESSION - Which AI, where?
+-------------------------------------------------------------------------------
+  hac project   | Claude in BROWSER (recommended)
+                | -> Opens Project with persistent knowledge base
+                | -> No context paste needed, just chat
+                | -> Use Sonnet 4.5 (default) or Opus for complex work
+
+  hac mcp       | Claude DESKTOP app + MCP
+                | -> Live entity queries via MCP server
+                | -> Best for: real-time state debugging
+
+  hac gpt       | ChatGPT session
+                | -> Generates context + gist URLs to paste
+
+  hac gem       | Gemini session
+                | -> Generates context + gist URLs to paste
+
+DURING SESSION - Useful commands
+-------------------------------------------------------------------------------
+  hac status    | Quick system overview (presence, recent triggers)
+  hac pkg FILE  | View YAML with line numbers (e.g., hac pkg lighting)
+  hac ids FILE  | List automation IDs + line numbers
+  hac health    | Check integrations + double-fire issues
+  hac doctor    | Full system diagnostics
+
+EDITING - Safe workflow
+-------------------------------------------------------------------------------
+  hac backup FILE        | ALWAYS DO THIS FIRST: hac backup automations.yaml
+  hac sed 'pattern' FILE | Safe sed with auto-backup (use -p to preview)
+  hac diff FILE          | Compare current vs backup
+  hac restore FILE [ts]  | Rollback if needed
+  hac check              | Validate config + optional restart
+
+END SESSION - Capture learnings
+-------------------------------------------------------------------------------
+  hac learn "insight"    | Log key insight to daily learnings
+  hac promote "text"     | Move insight to permanent knowledge base
+  hac table "project"    | Add to tabled/future projects list
+
+QUICK REFERENCE
+-------------------------------------------------------------------------------
+  Full command list:     hac help
+  View learnings:        hac review [days]
+
+===============================================================================
+TERMINAL RULES (hardwired)
+===============================================================================
+  BACKUP FIRST:        hac backup <file> before ANY edit
+  ZSH ESCAPE:          Use single quotes or escape ! in strings
+  CHAIN COMMANDS:      cmd1 && cmd2 (token efficient)
+  HA PATHS:            /homeassistant/ (not /config/)
+  AFTER EDITS:         hac check -> restart if valid
+===============================================================================
+MENUEOF
+}
 case "${1:-}" in
     push) cmd_push;;
     q) cmd_q;;
@@ -1365,7 +1427,7 @@ case "${1:-}" in
     issues)  cmd_issues;;
     pre)     shift; cmd_pre "$@";;
     help|--help|-h) cmd_help;;
-    *) cmd_help;;
+    *) cmd_menu;;
 esac
 
 
