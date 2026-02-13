@@ -1,8 +1,8 @@
-# Delta - 2026-02-12 17:43
+# Delta - 2026-02-13 11:17
 
 ## Changed Since Last Push
+- garage_arrival_optimized.yaml
 - garage_quick_open.yaml
-- garage_notifications_consolidated.yaml
 
 ## Recent Errors (last 3)
 

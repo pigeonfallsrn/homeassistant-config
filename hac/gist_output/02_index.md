@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-12 17:43
+# Automation Index - 2026-02-13 11:17
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -15,10 +15,11 @@ Fetch full YAML: `hac pkg <filename>`
 0 automations)
 - **entry_room_ceiling_motion.yaml** (1 automations)
 - **family_activities.yaml** (6 automations)
+- **garage_arrival_optimized.yaml** (3 automations)
 - **garage_door_alerts.yaml** (2 automations)
-- **garage_lighting_automation_FIXED.yaml** (2 automations)
+- **garage_lighting_automation_fixed.yaml** (2 automations)
 - **garage_notifications_consolidated.yaml** (3 automations)
-- **garage_quick_open.yaml** (7 automations)
+- **garage_quick_open.yaml** (5 automations)
 - **google_sheets_sync.yaml** (3 automations)
 - **hac_session_log.yaml** (0
 0 automations)
@@ -88,11 +89,16 @@ Fetch full YAML: `hac pkg <filename>`
 330: family_daily_reset
 345: family_increment_grades
 
+### garage_arrival_optimized.yaml
+11: garage_arrival_smart_popup
+94: garage_arrival_action_handler
+194: garage_arrival_autoclear
+
 ### garage_door_alerts.yaml
 98: garage_door_alert_actions
 223: garage_door_reset_snooze_on_close
 
-### garage_lighting_automation_FIXED.yaml
+### garage_lighting_automation_fixed.yaml
 18: garage_master_lights_on_fixed
 77: garage_master_lights_off_fixed
 
@@ -102,13 +108,11 @@ Fetch full YAML: `hac pkg <filename>`
 83: garage_door_notifications_autoclear
 
 ### garage_quick_open.yaml
-14: garage_auto_open_approaching
-124: garage_open_fallback_notification
-165: garage_auto_close_departure
-276: garage_quick_open_walkin
-309: garage_quick_open_action_handler
-362: garage_quick_open_clear
-386: arrival_lights_approaching
+11: garage_quick_open_walkin
+49: garage_auto_close_departure
+149: garage_quick_open_action_handler
+188: garage_quick_open_clear
+212: arrival_lights_approaching
 
 ### google_sheets_sync.yaml
 25: 'google_sheets_export_daily'
@@ -198,4 +202,5 @@ Fetch full YAML: `hac pkg <filename>`
 ### automations.yaml
 1: '1770558776705'
 148: '1770564792613'
-290: alaina_led_strip_auto_off
+269: 'alaina_led_strip_lights_button'
+280: 'alaina_led_strip_auto_off'
