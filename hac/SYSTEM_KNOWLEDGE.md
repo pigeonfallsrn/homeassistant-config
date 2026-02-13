@@ -215,3 +215,13 @@ UniFi integration via access point device tracking
 - Industry standard for large HA systems
 - Enables git version control per-domain
 - Easier to find/edit related automations
+
+---
+
+## Google Sheets Exports
+
+Run `hac sheets` to export current data to:
+- **Master Workbook**: https://docs.google.com/spreadsheets/d/11quLdO56rqI8GAPq-KnKtJoBs7cH6QAVgHs8W6UC_8w
+- **LLM Index**: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk
+
+Contents: Entity registry, device registry, area mappings, current states
