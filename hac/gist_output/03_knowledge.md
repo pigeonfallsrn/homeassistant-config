@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-13 11:17
+# System Knowledge - 2026-02-13 14:23
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -32,8 +32,31 @@
 - 2026-02-09: HAC v8.0 - Enhanced Monitoring & Ghost Detection
 
 ## Recent Session Learnings
-- 11:05: 2026-02-11 AL cleanup complete: Removed 5 ghost instances (bedroom_test, kitchen_entry_ceiling, living_room_ceiling, kitchen_chandelier, pre_release), disabled Upstairs Zone AL. Final config: 2 active AL instances - Living Spaces (4 accent lamps) + Entry Room Ceiling (1 motion light) = 5 lights under AL control. 141 lights remain manual/automation-controlled. Ghost entity conflicts resolved, system clean and working.
-- 11:05: 2026-02-11 AL cleanup complete: removed 5 ghost instances, disabled Upstairs Zone. Final config: 2 AL instances (Living Spaces + Entry Room Ceiling) managing 5 lights total. System clean and working.
+- 2026-02-13: MCP is now universal (Claude/ChatGPT/Gemini) — HA official MCP Server integration available since 2025.2
+- 2026-02-13: Claude Projects can replace gist-based context — upload knowledge base files for persistent RAG access
+- 2026-02-13: hac review [days] + hac promote for learning consolidation workflow
+- 2026-02-13: Model selection: Sonnet 4.5 default (80% of work), Opus 4.6 for architecture/research, Haiku 4.5 for quick lookups
+- 2026-02-13: Entity IDs generated from alias: field, not id: field — always search alias: when looking for automation definitions
+**Key Learning:**
+Entity ID generation: `alias: "Kitchen - Light"` → `automation.kitchen_light`
+
+**Tools Created:**
+- `/homeassistant/hac/scripts/count_automations.py` - Accurate counter
+- `/homeassistant/hac/notes/automation_detection_workflow.md` - Reference guide
+- `/homeassistant/hac/notes/automation_architecture.md` - System overview
+- `/homeassistant/hac/notes/research_findings_ui_vs_yaml.md` - Full investigation
+
+**Conclusion:** 
+System already follows HA best practices. Package-based organization is industry standard for large systems. No migration needed. HAC detector needs fix to properly scan packages/.
+
+**Research Sources:**
+- Official HA docs (packages, splitting configuration)
+- Community forums (100+ automation organization patterns)
+- HA blog posts (future of YAML, 2020-2026 releases)
+- Git version control best practices for HA
+
+**Time Invested:** ~2 hours deep research
+**Value:** Confirmed architecture is exemplary, documented for future reference
 
 ## Historical Learnings (last 30 lines)
 - Daily statistics counters

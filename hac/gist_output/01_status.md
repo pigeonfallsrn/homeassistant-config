@@ -1,4 +1,4 @@
-# HA Status - 2026-02-13 11:17 CST
+# HA Status - 2026-02-13 14:23 CST
 Version: 2026.2.1 | HAC: v8.0
 
 ## People
@@ -37,7 +37,7 @@ ella_winddown_override: off
 alaina_winddown_override: off
 ella_bedroom_override: off
 alaina_bedroom_override: off
-school_tomorrow: on
+school_tomorrow: off
 guest_present: off
 kids_bedtime_override: off
 john_home: on
@@ -53,16 +53,16 @@ kitchen_table_manual_override: unavailable
 2nd_floor_bathroom_fan_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-12 22:34:39 upstairs_hallway_motion_lighting_v2
-2026-02-12 22:34:39 presence_update_someone_home
-2026-02-12 22:34:39 presence_update_occupancy_combinations
-2026-02-12 22:34:39 presence_ella_away
-2026-02-12 22:34:39 presence_alaina_away
-2026-02-12 22:34:39 presence_john_away
-2026-02-12 22:34:39 presence_john_home
-2026-02-12 22:34:39 calendar_refresh_school_in_session_now
-2026-02-12 22:34:39 calendar_refresh_school_tomorrow
-2026-02-12 22:34:39 context_apply_on_time_change
+2026-02-13 12:08:26 upstairs_hallway_motion_lighting_v2
+2026-02-13 12:08:26 presence_update_someone_home
+2026-02-13 12:08:26 presence_update_occupancy_combinations
+2026-02-13 12:08:26 presence_john_away
+2026-02-13 12:08:26 presence_john_home
+2026-02-13 12:08:26 calendar_refresh_school_in_session_now
+2026-02-13 12:08:26 calendar_refresh_school_tomorrow
+2026-02-13 12:08:26 context_apply_on_occupancy_change
+2026-02-13 12:08:26 occupancy_update_mode
+2026-02-13 12:08:26 safety_all_lights_off_when_nobody_home
 
 ## Errors (last 5)
 
