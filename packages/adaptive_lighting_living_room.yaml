@@ -13,7 +13,7 @@ input_number:
     max: 200
     step: 10
     initial: 50
-    unit_of_measurement: lux
+    unit_of_measurement: lx
     icon: mdi:brightness-5
 
 input_boolean:

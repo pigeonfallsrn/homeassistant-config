@@ -1,24 +1,25 @@
-# Kitchen Lounge Lamp - Adaptive Lighting with Lux + Presence + Time Awareness
-# Updated: 2026-01-22 - Activity boost, fixed duplicate triggers, reliable time
+# Living Room Lamps - Adaptive Lighting with Lux + Presence + Time Awareness
+# Covers: light.living_room_east_floor_lamp, light.living_room_lounge_lamp
+# Updated: 2026-01-22 - Lux-based control, activity boost, consistent sensors
 
 # =============================================================================
 # HELPERS
 # =============================================================================
 
-input_boolean:
-  kitchen_lounge_manual_override:
-    name: Kitchen Lounge Manual Override
-    initial: false
-
 input_number:
-  kitchen_lounge_lux_threshold:
-    name: Kitchen Lounge Lux Threshold
+  living_room_lux_threshold:
+    name: Living Room Lux Threshold
     min: 10
     max: 200
     step: 10
     initial: 50
-    unit_of_measurement: lx
+    unit_of_measurement: lux
     icon: mdi:brightness-5
+
+input_boolean:
+  living_room_manual_override:
+    name: Living Room Manual Override
+    initial: false
 
 # =============================================================================
 # AUTOMATIONS
@@ -26,15 +27,15 @@ input_number:
 
 automation:
   # ---------------------------------------------------------------------------
-  # Kitchen Lounge Lamp - Motion + Lux Adaptive Control
+  # Living Room Lamps - Motion + Lux Activated
   # ---------------------------------------------------------------------------
-  - id: kitchen_lounge_lamp_adaptive_control
-    alias: "Kitchen Lounge Lamp - Adaptive Control"
-    description: "Manages lamp based on motion, lux, presence, time, and modes"
+  - id: living_room_lamps_adaptive_control
+    alias: "Living Room Lamps - Adaptive Control"
+    description: "Manages lamps based on motion, lux, presence, time, and modes"
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.kitchen_lounge_motion
+        entity_id: binary_sensor.downstairs_motion
         to: "on"
         id: motion
       - platform: state
@@ -46,7 +47,7 @@ automation:
         id: bedtime_on
     condition:
       - condition: state
-        entity_id: input_boolean.kitchen_lounge_manual_override
+        entity_id: input_boolean.living_room_manual_override
         state: "off"
     action:
       - choose:
@@ -58,7 +59,9 @@ automation:
             sequence:
               - service: light.turn_on
                 target:
-                  entity_id: light.kitchen_lounge_lamp
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
                 data:
                   rgb_color: [255, 30, 0]
                   brightness_pct: 5
@@ -74,7 +77,9 @@ automation:
             sequence:
               - service: light.turn_on
                 target:
-                  entity_id: light.kitchen_lounge_lamp
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
                 data:
                   brightness_pct: 10
                   color_temp_kelvin: 2200
@@ -83,7 +88,9 @@ automation:
                   minutes: 15
               - service: light.turn_off
                 target:
-                  entity_id: light.kitchen_lounge_lamp
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
                 data:
                   transition: 60
 
@@ -98,15 +105,17 @@ automation:
                 entity_id: input_boolean.dad_bedtime_mode
                 state: "off"
               - condition: numeric_state
-                entity_id: sensor.kitchen_lounge_average_lux
-                below: input_number.kitchen_lounge_lux_threshold
+                entity_id: sensor.living_room_average_lux
+                below: input_number.living_room_lux_threshold
             sequence:
               - service: switch.turn_on
                 target:
                   entity_id: switch.adaptive_lighting_living_spaces
               - service: light.turn_on
                 target:
-                  entity_id: light.kitchen_lounge_lamp
+                  entity_id:
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
                 data:
                   brightness_pct: "{{ states('sensor.evening_lamp_max_brightness') | int }}"
 
@@ -125,22 +134,23 @@ automation:
                 data:
                   entity_id: switch.adaptive_lighting_living_spaces
                   lights:
-                    - light.kitchen_lounge_lamp
+                    - light.living_room_east_floor_lamp
+                    - light.living_room_lounge_lamp
                   transition: 5
 
   # ---------------------------------------------------------------------------
-  # Kitchen Lounge Lamp - Activity Boost (restore from dimmed state)
+  # Living Room Lamps - Activity Boost (restore from dimmed state)
   # ---------------------------------------------------------------------------
-  - id: kitchen_lounge_lamp_activity_boost
-    alias: "Kitchen Lounge Lamp - Activity Boost"
+  - id: living_room_lamps_activity_boost
+    alias: "Living Room Lamps - Activity Boost"
     description: "Restore full brightness when motion detected while dimmed"
     trigger:
       - platform: state
-        entity_id: binary_sensor.kitchen_lounge_motion
+        entity_id: binary_sensor.downstairs_motion
         to: "on"
     condition:
       - condition: state
-        entity_id: input_boolean.kitchen_lounge_manual_override
+        entity_id: input_boolean.living_room_manual_override
         state: "off"
       - condition: state
         entity_id: input_boolean.hot_tub_mode
@@ -149,10 +159,10 @@ automation:
         entity_id: input_boolean.dad_bedtime_mode
         state: "off"
       - condition: state
-        entity_id: light.kitchen_lounge_lamp
+        entity_id: light.living_room_east_floor_lamp
         state: "on"
       - condition: numeric_state
-        entity_id: light.kitchen_lounge_lamp
+        entity_id: light.living_room_east_floor_lamp
         attribute: brightness
         below: 100
     action:
@@ -160,89 +170,134 @@ automation:
         data:
           entity_id: switch.adaptive_lighting_living_spaces
           lights:
-            - light.kitchen_lounge_lamp
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
           transition: 2
     mode: single
 
   # ---------------------------------------------------------------------------
-  # Kitchen Lounge Lamp - No Motion Dim (8 min)
+  # Living Room Lamps - No Motion Dim (15 min for living space)
   # ---------------------------------------------------------------------------
-  - id: kitchen_lounge_lamp_no_motion_dim
-    alias: "Kitchen Lounge Lamp - Dim After 8min No Motion"
+  - id: living_room_lamps_no_motion_dim
+    alias: "Living Room Lamps - Dim After 15min No Motion"
     trigger:
       - platform: state
-        entity_id: binary_sensor.kitchen_lounge_motion
+        entity_id: binary_sensor.downstairs_motion
         to: "off"
         for:
-          minutes: 8
+          minutes: 15
     condition:
       - condition: state
-        entity_id: input_boolean.kitchen_lounge_manual_override
+        entity_id: input_boolean.living_room_manual_override
         state: "off"
       - condition: state
         entity_id: input_boolean.hot_tub_mode
         state: "off"
-      - condition: state
-        entity_id: light.kitchen_lounge_lamp
-        state: "on"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
       - condition: numeric_state
-        entity_id: light.kitchen_lounge_lamp
+        entity_id: light.living_room_east_floor_lamp
         attribute: brightness
         above: 50
     action:
       - service: light.turn_on
         target:
-          entity_id: light.kitchen_lounge_lamp
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
         data:
           brightness_pct: 20
           transition: 60
     mode: single
 
   # ---------------------------------------------------------------------------
-  # Kitchen Lounge Lamp - No Motion Off (20 min)
+  # Living Room Lamps - No Motion Off (45 min)
   # ---------------------------------------------------------------------------
-  - id: kitchen_lounge_lamp_no_motion_off
-    alias: "Kitchen Lounge Lamp - Off After 20min No Motion"
+  - id: living_room_lamps_no_motion_off
+    alias: "Living Room Lamps - Off After 45min No Motion"
     trigger:
       - platform: state
-        entity_id: binary_sensor.kitchen_lounge_motion
+        entity_id: binary_sensor.downstairs_motion
         to: "off"
         for:
-          minutes: 20
+          minutes: 90
     condition:
       - condition: state
-        entity_id: input_boolean.kitchen_lounge_manual_override
+        entity_id: input_boolean.living_room_manual_override
         state: "off"
-      - condition: state
-        entity_id: light.kitchen_lounge_lamp
-        state: "on"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
     action:
       - service: light.turn_off
         target:
-          entity_id: light.kitchen_lounge_lamp
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
         data:
           transition: 60
     mode: single
 
   # ---------------------------------------------------------------------------
-  # Kitchen Lounge Lamp - Hard Off Time
+  # Living Room Lamps - Hard Off Time
   # ---------------------------------------------------------------------------
-  - id: kitchen_lounge_lamp_hard_off
-    alias: "Kitchen Lounge Lamp - Hard Off at Evening End"
+  - id: living_room_lamps_hard_off
+    alias: "Living Room Lamps - Hard Off at Evening End"
     trigger:
       - platform: time
         at: sensor.evening_lamp_off_time
     condition:
-      - condition: state
-        entity_id: light.kitchen_lounge_lamp
-        state: "on"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: light.living_room_east_floor_lamp
+            state: "on"
+          - condition: state
+            entity_id: light.living_room_lounge_lamp
+            state: "on"
       - condition: state
         entity_id: input_boolean.hot_tub_mode
         state: "off"
     action:
       - service: light.turn_off
         target:
-          entity_id: light.kitchen_lounge_lamp
+          entity_id:
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
         data:
           transition: 120
+    mode: single
+
+  # ---------------------------------------------------------------------------
+  # GLOBAL: Everyone Left - All Managed Lamps Off
+  # ---------------------------------------------------------------------------
+  - id: global_everyone_left_lamps_off
+    alias: "Global - All Adaptive Lamps Off When Everyone Leaves"
+    description: "Master switch - turns off all adaptive-managed lamps when house is empty"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.someone_home
+        to: "off"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id:
+            - light.entry_room_hue_color_lamp
+            - light.kitchen_lounge_lamp
+            - light.living_room_east_floor_lamp
+            - light.living_room_lounge_lamp
+            - light.very_front_door_hallway
+        data:
+          transition: 10
     mode: single

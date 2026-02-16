@@ -21,7 +21,7 @@ template:
         unique_id: john_ap_location_hybrid
         icon: mdi:map-marker-account
         state: >
-          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('', true) %}
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('') %}
           {% set state = states('device_tracker.john_s_s24_ultra_4') %}
           {% if ap[:11] in ['70:a7:41:c6', '72:a7:41'] or ap == '70:a7:41:c6:1e:6c' %}Home · Upstairs
           {% elif ap[:11] in ['d0:21:f9:eb', 'd2:21:f9'] or ap == 'd0:21:f9:eb:b8:8c' %}Home · Downstairs
@@ -35,7 +35,7 @@ template:
           source: unifi
           ap_mac: "{{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') }}"
           floor: >
-            {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('', true) %}
+            {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('') %}
             {% if ap[:8] in ['70:a7:41', '72:a7:41'] %}2nd
             {% elif ap[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
             {% elif ap[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
@@ -51,7 +51,7 @@ template:
           {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
           {% set ssid = states('sensor.ellas_iphone_ssid') | default('', true) %}
           {% set icloud_state = states('device_tracker.ellas_iphone') %}
-          {% set icloud_addr = state_attr('device_tracker.ellas_iphone', 'address') | default('', true) %}
+          {% set icloud_addr = state_attr('device_tracker.ellas_iphone', 'address') | default('') %}
           {% set home = is_state('input_boolean.ella_home', 'on') %}
           {% set upstairs_motion = is_state('binary_sensor.upstairs_motion', 'on') %}
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
@@ -87,7 +87,7 @@ template:
             {% elif home and upstairs and not downstairs %}2nd
             {% elif home and downstairs and not upstairs %}1st
             {% else %}unknown{% endif %}
-          at_moms: "{{ 'Traci' in (state_attr('device_tracker.ellas_iphone', 'address') | default('', true)) }}"
+          at_moms: "{{ 'Traci' in (state_attr('device_tracker.ellas_iphone', 'address') | default('')) }}"
 
       # -------------------------------------------------------------------------
       # ALAINA - Uses BSSID + Motion fallback (iPhone with Private Address)
@@ -99,7 +99,7 @@ template:
           {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
           {% set ssid = states('sensor.alainas_iphone_ssid') | default('', true) %}
           {% set icloud_state = states('device_tracker.alaina_s_iphone_17') %}
-          {% set icloud_addr = state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('', true) %}
+          {% set icloud_addr = state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('') %}
           {% set home = is_state('input_boolean.alaina_home', 'on') %}
           {% set upstairs_motion = is_state('binary_sensor.upstairs_motion', 'on') %}
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
@@ -135,7 +135,7 @@ template:
             {% elif home and upstairs and not downstairs %}2nd
             {% elif home and downstairs and not upstairs %}1st
             {% else %}unknown{% endif %}
-          at_moms: "{{ 'Traci' in (state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('', true)) }}"
+          at_moms: "{{ 'Traci' in (state_attr('device_tracker.alaina_s_iphone_17', 'address') | default('')) }}"
 
       # -------------------------------------------------------------------------
       # MICHELLE - Uses UniFi (iPhone tracked by UniFi)
@@ -144,7 +144,7 @@ template:
         unique_id: michelle_ap_location_hybrid
         icon: mdi:map-marker-account
         state: >
-          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('', true) %}
+          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
           {% set state = states('device_tracker.michelle_s_iphone_14_pro') %}
           {% if ap[:8] in ['60:22:32', '62:22:32'] or ap == '60:22:32:3d:b6:44' %}Her House
           {% elif ap[:8] in ['70:a7:41', '72:a7:41'] %}John's House · Upstairs
@@ -158,10 +158,10 @@ template:
           source: unifi
           ap_mac: "{{ state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') }}"
           at_her_house: >
-            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('', true) %}
+            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
             {{ ap[:8] in ['60:22:32', '62:22:32'] }}
           at_johns_house: >
-            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('', true) %}
+            {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('') %}
             {{ ap[:8] in ['70:a7:41', '72:a7:41', 'd0:21:f9', 'd2:21:f9', 'f4:92:bf', 'f6:92:bf'] }}
 
   # ---------------------------------------------------------------------------

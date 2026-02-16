@@ -21,14 +21,14 @@ input_number:
     max: 200
     step: 10
     initial: 50
-    unit_of_measurement: lux
+    unit_of_measurement: lx
     icon: mdi:brightness-5
 
 template:
   - sensor:
       - name: "Entry Room Average Lux"
         unique_id: entry_room_average_lux
-        unit_of_measurement: lux
+        unit_of_measurement: lx
         device_class: illuminance
         state: >
           {% set east = states('sensor.entry_room_east_wall_nightlight_illuminance') | float(0) %}

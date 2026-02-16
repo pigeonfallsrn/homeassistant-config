@@ -360,9 +360,8 @@ script:
       
       # Load URL on tablet
       - service: fully_kiosk.load_url
-        target:
-          entity_id: media_player.kitchen_wall_a9_tablet
         data:
+          entity_id: media_player.kitchen_wall_a9_tablet
           url: "{{ dashboard_url }}"
 # ═══════════════════════════════════════════════════════════
 # AUTOMATIONS - Core Triggers
