@@ -1286,7 +1286,7 @@ sync_to_gdrive() {
 }
 cmd_sheets() {
     echo "Exporting to Google Sheets..."
-    python3 /config/python_scripts/export_to_sheets.py
+    /config/python_scripts/venv/bin/python /config/python_scripts/export_to_sheets.py
     if [ $? -eq 0 ]; then
         echo ""
         echo "✓ Export complete!"
