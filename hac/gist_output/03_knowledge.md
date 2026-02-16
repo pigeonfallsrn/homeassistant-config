@@ -32,6 +32,10 @@
 - 2026-02-09: HAC v8.0 - Enhanced Monitoring & Ghost Detection
 
 ## Recent Session Learnings
+- 2026-02-16: Cloudflare Access: Protect HA with Zero Trust application + email OTP policy to stop bots at edge before reaching HA login
+- 2026-02-16: Illuminance sensors: Use unit_of_measurement: lx (not lux) for device_class: illuminance
+- 2026-02-16: HA 2026.2 service call syntax: entity_id must be under target: not data: for service calls
+- 2026-02-16: Template None handling: Use default('', true) not default('') to handle None values from integrations like UniFi that return null during connectivity transitions
 - 2026-02-13: MCP is now universal (Claude/ChatGPT/Gemini) — HA official MCP Server integration available since 2025.2
 - 2026-02-13: Claude Projects can replace gist-based context — upload knowledge base files for persistent RAG access
 - 2026-02-13: hac review [days] + hac promote for learning consolidation workflow
