@@ -72,3 +72,59 @@ cd /homeassistant && claude  # Start Code session
 - **Status:** Desktop ✅ | Web ⏸️ (OAuth pending) | Code ✅
 
 *Part of HAC v8.0+*
+
+## Claude Code - Advanced Usage
+
+### When to Use Claude Code vs Desktop
+
+**Desktop MCP (Primary - 95% of work):**
+- Real-time device queries and control
+- Interactive troubleshooting  
+- Single automation edits
+- Daily HA maintenance
+- Learning and exploration
+
+**Claude Code (Specialized - 5% of work):**
+- Large refactors (20+ files at once)
+- Overnight autonomous tasks (1-4 hours)
+- **Deep research on HA topics** (NEW capability)
+- Systematic batch operations
+
+### Deep Research Capability
+
+**Use Case:** Comprehensive research on HA patterns, best practices, troubleshooting approaches.
+
+**Example:**
+```bash
+cd /homeassistant && claude
+
+"Deep research: Survey Home Assistant best practices for 
+Adaptive Lighting + motion sensor conflict resolution. 
+Include community patterns, common pitfalls, recommended 
+automation structure. Generate report with citations."
+```
+
+**What Happens:**
+- Runs 30-90 minutes autonomously
+- Searches forums, GitHub, docs
+- Verifies claims across sources
+- Generates 10K-50K word report with citations
+- You review, extract actionable insights
+
+**Integration with HAC:**
+1. Use Code for research → comprehensive report
+2. Extract key patterns → promote to HAC knowledge
+3. Implement solutions → document in automations
+4. Test via Desktop MCP
+
+### Test Command
+```bash
+cd /homeassistant && claude
+
+"Quick research (15 min): Common patterns for preventing 
+bathroom automation conflicts with Adaptive Lighting. 
+Cite specific examples."
+```
+
+If valuable → use for future HA learning
+If not → Desktop MCP sufficient for your workflow
