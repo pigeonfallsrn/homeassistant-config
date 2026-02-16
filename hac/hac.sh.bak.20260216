@@ -613,16 +613,6 @@ cmd_learn() {
     log_ok "Logged to session + learnings"
 }
 
-cmd_recall() {
-    local TOPIC="$1"
-    [[ -z "$TOPIC" ]] && { echo "Usage: hac recall <topic>"; return 1; }
-    echo "=== Learnings matching: $TOPIC ==="
-    grep -rhi --color=always "$TOPIC" /homeassistant/hac/learnings/*.md 2>/dev/null | head -30
-    echo ""
-    echo "=== In SYSTEM_KNOWLEDGE.md ==="
-    grep -i --color=always "$TOPIC" /homeassistant/hac/SYSTEM_KNOWLEDGE.md 2>/dev/null | head -10
-}
-
 cmd_review() {
     local days="${1:-7}"
     local kb_file="$HAC_DIR/gist_output/03_knowledge.md"
@@ -1418,7 +1408,6 @@ case "${1:-}" in
     hygiene) cmd_hygiene;;
     learn) shift; cmd_learn "$*";;
     review) cmd_review "$2";;
-    recall) cmd_recall "$2";;
     promote) shift; cmd_promote "$*";;
     table) shift; cmd_table "$*";;
     errors) cmd_errors "$2";;
@@ -1455,3 +1444,5 @@ hac_track_insight() {
 
 # Alias
 alias hac_track='hac_track_insight'
+
+
