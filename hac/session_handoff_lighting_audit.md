@@ -1,48 +1,54 @@
 # Lighting Audit Handoff
-*Created: 2026-02-18 | Last Updated: 2026-02-18*
+*Created: 2026-02-18 | Last Updated: 2026-02-18 11:15*
 
-## Current State (as of session start)
-- **Total light entities:** 140
-- **Areas defined:** 35
-- **Many lights already have area assignments** (spot-checked 5, 4 had areas)
+## Phase 1 Status: IN PROGRESS
 
-## Priority Issues Identified
+### Completed ✅
+1. Backup registry files (core.entity_registry, core.device_registry)
+2. Fixed 2 typo entity_ids:
+   - `front_drivay` → `light.front_driveway_inovelli` (area: front_driveway)
+   - `smart_ligjt` → `light.living_room_tv_led_strip` (area: living_room)
+3. Bulk area assignments: **~38 lights assigned** including:
+   - Alaina's bedroom: LED strips, bedside lamp, ceiling candles (5 entities)
+   - Ella's bedroom: wall light, bedside lamp, ceiling lights 1-3, LED strip (7 entities)
+   - Master bedroom: wall light, room group, LED strip (3 entities)
+   - Upstairs hallway: group + 3 ceiling candles + nightlight (5 entities)
+   - 2nd floor bathroom: group + 5 vanity/ceiling bulbs + Inovelli switch + fan (8 entities)
+   - Back patio: steps light, group (2 entities)
+   - Garage: group, nightlight (2 entities)
+   - Very front door: group, hallway (2 entities)
+   - Living room: TV LED strip, 2 nightlights (3 entities)
+   - Misc: stairway cubby nightlight, basement nightlight
 
-### 1. Typo Entity IDs (CRITICAL - blocks voice control)
-- `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` → needs rename
-- `light.living_room_tv_smart_ligjt_strip` → typo "ligjt"
+### Remaining Phase 1 Work
+- [ ] `light.back_door_patio_light_inovelli_switch` → back_patio
+- [ ] `light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn` → 1st_floor_bathroom
+- [ ] Check remaining ~20 lights for area assignment gaps
+- [ ] Living room lounge ceiling individual bulbs
+- [ ] Garage individual Hue bulbs (currently unavailable)
+- [ ] Very front door individual Hue bulbs
 
-### 2. Generic Hue Names (still have original Hue defaults)
-Entity IDs are generic but friendly_names are descriptive:
-- `hue_color_lamp_3/4/5` → 2nd Floor Bathroom Vanity 1/2/3 of 3
-- `hue_color_candle_1/2` → 2nd Floor Bathroom Ceiling 1/2of2
-- `hue_color_candle_3/4` → Alaina's Bedroom Ceiling 1/2 of 2
-- `hue_color_candle_3_2/4_2/5` → Upstairs Hallway Ceiling 1/2/3 of 3
-- `hue_color_lamp_10/11/12` → Very Front Door lights
-- `hue_color_downlight_1_2/1_3`, `hue_color_lamp_1_3/1_5/2_3/2_4` → Garage lights
-
-### 3. Unavailable Entities (11+ lights)
-- Echo Glows (3) - expected if not powered
-- Garage LiftMaster lights (4) - integration issue?
-- Govee lamps (2) - moved/offline
-- Aqara LED strips (2) - possibly removed
-- Some Hue groups marked unavailable
-
-### 4. Area Assignment Gaps
-- Need full audit of which lights lack area_id
-- Focus on: nightlights, LED strips, UniFi AP LEDs
-
-## Phase 1 Plan
-1. ✅ Backup registry files
-2. ✅ Query current state via MCP
-3. □ Fix typo entity_ids (ha_rename_entity)
-4. □ Bulk area assignments for unassigned lights
-5. □ Git commit checkpoint
-
-## Phase 2 Plan (future session)
-- Entity_id cleanup (rename generic hue_ prefixes)
-- Unavailable entity triage
+### Phase 2 (Future Session)
+- Entity_id rename for generic hue_ prefixes
+- Unavailable entity triage (11+ lights)
 - Blueprint migration for Inovelli controls
+- Fix misassigned devices (Living Room Lounge → sun_room noted earlier)
 
 ## Git Commits
-- (pending first changes)
+- `1b963d6` fix: rename typo entity_ids (front_drivay, smart_ligjt) + assign areas
+- (pending) feat: bulk area assignments for ~38 light entities
+
+## Quick Resume Commands
+```bash
+# Check current light area status
+cd /homeassistant && hac mcp
+
+# Continue area assignments via MCP
+# Use ha_get_entity to check, ha_set_entity to assign
+```
+
+## Notes
+- Entry room nightlights already had area assignments
+- kitchen_counter_night_light is actually in stairway cubby (friendly_name: Stairwell_Night_Light)
+- kitchen_west_wall_nightlight is actually in basement (friendly_name: Basement_Third Reality_Nightlight)
+- alaina_s_led_light_strip_2 is hidden by integration (duplicate?)
