@@ -55,9 +55,9 @@ Control automations in automations.yaml + automations/ dir, NOT packages/.
 ### Phase 4: Labels + Safety Audit (FUTURE)
 
 ## Outstanding Physical Checks (before Phase 1)
-- [ ] 2 unidentified Kitchen VZM31-SN switches (da86388f, f671e66f)
-- [ ] Ella duplicate Govee lamps (ella_s_govee_floor_lamp vs ella_s_floor_lamp)
-- [ ] 1st Floor Bathroom active vanity entity (ZHA vs TP-Link)
+- [x] 2 unidentified Kitchen (RESOLVED: 3-way dimmers for dumb LED ceilings) VZM31-SN switches (da86388f, f671e66f)
+- [x] Ella Govee lamps (RESOLVED: one in Master Bedroom, one in Kitchen - reassign areas) lamps (ella_s_govee_floor_lamp vs ella_s_floor_lamp)
+- [x] 1st Floor Bathroom (RESOLVED: Kasa=vanity dumb bulbs, Inovelli=2 Hue ceiling Smart Bulb Mode, both active) active vanity entity (ZHA vs TP-Link)
 
 ## Next Session Startup Prompt
 Continuing lighting audit Phase 1. Last session (2026-02-18, Opus) completed full audit. Handoff: hac/handoffs/session_handoff_lighting_audit.md
