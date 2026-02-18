@@ -24,3 +24,10 @@ zigbee.db-wal
 hac/exports/*.xlsx
 !.storage/automations
 python_scripts/venv/
+
+# Backup files
+*.bak.*
+
+# Python cache
+__pycache__/
+*.pyc
