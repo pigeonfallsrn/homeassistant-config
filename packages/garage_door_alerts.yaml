@@ -50,7 +50,7 @@ alert:
     message: "North garage door has been open for {{ relative_time(states.cover.ratgdo32disco_fd8d8c_door.last_changed) }}"
     done_message: "clear_notification"
     notifiers:
-      - mobile_app_john_s_phone
+      - mobile_app_sm_s928u
     data:
       tag: "garage_door_north"
       ttl: 0
@@ -79,7 +79,7 @@ alert:
     message: "South garage door has been open for {{ relative_time(states.cover.ratgdo32disco_5735e8_door.last_changed) }}"
     done_message: "clear_notification"
     notifiers:
-      - mobile_app_john_s_phone
+      - mobile_app_sm_s928u
     data:
       tag: "garage_door_south"
       ttl: 0

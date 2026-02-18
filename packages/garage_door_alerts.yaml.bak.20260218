@@ -138,7 +138,7 @@ automation:
               - service: cover.close_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -151,7 +151,7 @@ automation:
               - service: cover.close_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -166,7 +166,7 @@ automation:
                   entity_id: input_datetime.garage_north_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -181,7 +181,7 @@ automation:
                   entity_id: input_datetime.garage_south_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -196,7 +196,7 @@ automation:
                   entity_id: input_datetime.garage_north_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=60) }}"
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -211,7 +211,7 @@ automation:
                   entity_id: input_datetime.garage_south_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=60) }}"
-              - service: notify.mobile_app_john_s_phone
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
