@@ -1,8 +1,6 @@
 # Standard Configuration
 default_config:
 homeassistant:
-  external_url: "https://homeassistant.myhomehub13.xyz"
-  internal_url: "http://homeassistant.local:8123"
   customize: !include customize.yaml
   packages: !include_dir_named packages
 frontend:

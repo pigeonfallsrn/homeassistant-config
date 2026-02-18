@@ -288,31 +288,38 @@
       entity_id: light.alaina_s_led_strips
   mode: single
 - id: '1771364980856'
-  alias: Entry Room Inovelli - Front Driveway Control
-  description: Entry Room Inovelli controls Front Driveway Hue lights via state changes
+  alias: Front Driveway Inovelli - Hue Lights Control
+  description: Front Driveway Inovelli VZM30-SN controls Front Driveway Hue lights
+    via ZHA events
   triggers:
-  - platform: state
-    entity_id: light.entry_room_ceiling_light_inovelli_smart_dimmer_switch
-    to: 'on'
-    id: switch_on
-  - platform: state
-    entity_id: light.entry_room_ceiling_light_inovelli_smart_dimmer_switch
-    to: 'off'
-    id: switch_off
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: c0:9b:9e:ff:fe:d1:2d:4e
   actions:
   - choose:
     - conditions:
-      - condition: trigger
-        id: switch_on
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "on" or (trigger.event.data.params.button
+          == "button_2" and trigger.event.data.params.press_type == "press") }}'
       sequence:
       - target:
           entity_id: light.front_driveway
         action: light.turn_on
     - conditions:
-      - condition: trigger
-        id: switch_off
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "off" or (trigger.event.data.params.button
+          == "button_1" and trigger.event.data.params.press_type == "press") }}'
       sequence:
       - target:
           entity_id: light.front_driveway
         action: light.turn_off
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.params.button == "button_3" and trigger.event.data.params.press_type
+          == "press" }}'
+      sequence:
+      - target:
+          entity_id: light.front_driveway
+        action: light.toggle
   mode: single

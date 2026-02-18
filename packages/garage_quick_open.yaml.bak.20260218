@@ -27,7 +27,7 @@ automation:
             entity_id: cover.ratgdo32disco_5735e8_door
             state: "closed"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "🚪 Walk-in Door Opened"
           message: "Open garage door?"
@@ -62,7 +62,7 @@ automation:
         entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "open"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "🚪 Garage Still Open"
           message: "North door closing in 60s — tap to cancel"
@@ -97,7 +97,7 @@ automation:
           - condition: template
             value_template: "{{ wait.trigger and wait.trigger.id == 'cancelled' }}"
         then:
-          - service: notify.mobile_app_sm_s928u
+          - service: notify.mobile_app_john_s_phone
             data:
               message: "clear_notification"
               data:
@@ -107,7 +107,7 @@ automation:
           - condition: template
             value_template: "{{ wait.trigger and wait.trigger.id == 'returned' }}"
         then:
-          - service: notify.mobile_app_sm_s928u
+          - service: notify.mobile_app_john_s_phone
             data:
               title: "🏠 Welcome Back"
               message: "Auto-close cancelled"
@@ -122,7 +122,7 @@ automation:
           - service: cover.close_cover
             target:
               entity_id: cover.ratgdo32disco_fd8d8c_door
-          - service: notify.mobile_app_sm_s928u
+          - service: notify.mobile_app_john_s_phone
             data:
               message: "clear_notification"
               data:
@@ -134,7 +134,7 @@ automation:
       - service: cover.close_cover
         target:
           entity_id: cover.ratgdo32disco_fd8d8c_door
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "🔒 Garage"
           message: "North door closed"
@@ -175,7 +175,7 @@ automation:
               - service: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
@@ -194,12 +194,12 @@ automation:
           - cover.ratgdo32disco_5735e8_door
         to: "open"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_quick_open"
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:

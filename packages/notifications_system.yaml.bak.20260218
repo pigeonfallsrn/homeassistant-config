@@ -18,7 +18,7 @@ automation:
         entity_id: input_boolean.someone_home
         state: "on"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "Welcome Home"
           message: "You arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -40,7 +40,7 @@ automation:
 # DISABLED -         entity_id: person.alaina_spencer
 # DISABLED -         to: "home"
 # DISABLED -     action:
-# DISABLED -       - service: notify.mobile_app_sm_s928u
+# DISABLED -       - service: notify.mobile_app_john_s_phone
 # DISABLED -         data:
 # DISABLED -           title: "Alaina Arrived"
 # DISABLED -           message: "Alaina arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -55,7 +55,7 @@ automation:
         entity_id: person.ella_spencer
         to: "home"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "Ella Arrived"
           message: "Ella arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -90,7 +90,7 @@ automation:
                   entity_id:
                     - light.entry_room_hue_color_lamp
                     - light.living_room_east_floor_lamp
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -101,7 +101,7 @@ automation:
                 id: disarm
             sequence:
               # Add your alarm disarm service here if you have one
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -133,7 +133,7 @@ automation:
             {{ ns.devices }}
       - condition: template
         value_template: "{{ low_batteries | length > 0 }}"
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "🔋 Low Battery Alert"
           message: "{{ low_batteries | length }} device(s) need attention:\n{{ low_batteries | join('\n') }}"
@@ -166,7 +166,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -176,7 +176,7 @@ automation:
               - condition: trigger
                 id: snooze
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -218,7 +218,7 @@ automation:
           - sensor.lumi_lumi_sensor_wleak_aq1_battery
         below: 10
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "⚠️ Critical Battery"
           message: "{{ trigger.to_state.name }} is at {{ trigger.to_state.state }}%"
@@ -261,7 +261,7 @@ automation:
             entity_id: light.back_patio
             state: "on"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "Heading to Bed?"
           message: "1st floor or outside lights are still on."
@@ -317,7 +317,7 @@ automation:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -334,7 +334,7 @@ automation:
                     - light.living_room
                     - light.kitchen_lounge
                     - light.1st_floor_bathroom
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -350,7 +350,7 @@ automation:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -360,7 +360,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -400,7 +400,7 @@ automation:
 #DISABLED               - condition: template
 #DISABLED                 value_template: "{{ avg_humidity < 30 }}"
 #DISABLED             sequence:
-#DISABLED               - service: notify.mobile_app_sm_s928u
+#DISABLED               - service: notify.mobile_app_john_s_phone
 #DISABLED                 data:
 #DISABLED                   title: "🏜️ Low Humidity Alert"
 #DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Pause bathroom fan?"
@@ -420,7 +420,7 @@ automation:
 #DISABLED               - condition: template
 #DISABLED                 value_template: "{{ avg_humidity > 55 and is_summer }}"
 #DISABLED             sequence:
-#DISABLED               - service: notify.mobile_app_sm_s928u
+#DISABLED               - service: notify.mobile_app_john_s_phone
 #DISABLED                 data:
 #DISABLED                   title: "💧 High Humidity Alert"
 #DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Turn on AC?"
@@ -467,7 +467,7 @@ automation:
               - service: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -485,7 +485,7 @@ automation:
               - service: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -506,7 +506,7 @@ automation:
                 data:
                   temperature: 74
                   hvac_mode: cool
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -516,7 +516,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:

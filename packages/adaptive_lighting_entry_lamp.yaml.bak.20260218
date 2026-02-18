@@ -482,7 +482,7 @@ automation:
         entity_id: input_boolean.hot_tub_mode
         to: "on"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "Hot Tub Mode Active"
           message: "Adaptive lighting paused. Entry lamp set to red."
@@ -525,7 +525,7 @@ automation:
               - service: input_boolean.turn_off
                 target:
                   entity_id: input_boolean.hot_tub_mode
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
@@ -535,14 +535,14 @@ automation:
               - condition: trigger
                 id: snooze_30
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
                     tag: "hot_tub_mode"
               - delay:
                   minutes: 30
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   title: "Hot Tub Mode Still Active"
                   message: "30 minute snooze ended."
@@ -561,14 +561,14 @@ automation:
               - condition: trigger
                 id: snooze_60
             sequence:
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   message: "clear_notification"
                   data:
                     tag: "hot_tub_mode"
               - delay:
                   minutes: 60
-              - service: notify.mobile_app_sm_s928u
+              - service: notify.mobile_app_john_s_phone
                 data:
                   title: "Hot Tub Mode Still Active"
                   message: "1 hour snooze ended."

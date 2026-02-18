@@ -22,7 +22,7 @@ automation:
         entity_id: person.john_spencer
         state: "home"
     action:
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "🚗 {{ 'North' if trigger.id == 'north' else 'South' }} Door Open"
           message: "Tap to close"
@@ -63,12 +63,12 @@ automation:
       - service: cover.close_cover
         target:
           entity_id: "{{ 'cover.ratgdo32disco_fd8d8c_door' if trigger.id == 'north' else 'cover.ratgdo32disco_5735e8_door' }}"
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_{{ trigger.id }}_close"
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           title: "✅ Garage"
           message: "{{ 'North' if trigger.id == 'north' else 'South' }} door closing..."
@@ -94,25 +94,25 @@ automation:
         id: south
     action:
       # Clear the close notification for this specific door
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_{{ trigger.id }}_close"
       # Clear any quick-open notifications
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_quick_open"
       # Clear auto-close notifications
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
             tag: "garage_auto_close"
       # Clear confirmation messages
-      - service: notify.mobile_app_sm_s928u
+      - service: notify.mobile_app_john_s_phone
         data:
           message: "clear_notification"
           data:
