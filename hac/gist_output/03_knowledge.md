@@ -32,6 +32,7 @@
 - 2026-02-09: HAC v8.0 - Enhanced Monitoring & Ghost Detection
 
 ## Recent Session Learnings
+- 2026-02-18: Mobile app notify services use device ID (e.g., sm_s928u), not friendly names. Changes on phone re-registration. Use notify groups for abstraction.
 - 2026-02-16: Cloudflare Access: Protect HA with Zero Trust application + email OTP policy to stop bots at edge before reaching HA login
 - 2026-02-16: Illuminance sensors: Use unit_of_measurement: lx (not lux) for device_class: illuminance
 - 2026-02-16: HA 2026.2 service call syntax: entity_id must be under target: not data: for service calls
