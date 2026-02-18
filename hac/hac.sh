@@ -968,6 +968,8 @@ $(cmd_status 2>/dev/null)
 ## Session
 $(cat "$SESSION_FILE" 2>/dev/null | tail -10 || echo "New")
 
+## Active Handoffs
+$(ls /homeassistant/hac/handoffs/*.md 2>/dev/null | while read f; do echo "- $(basename $f)"; head -3 "$f" | tail -1; done || echo "None")
 ## Today's Learnings
 $(tail -15 "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null || echo "None")
 ═══════════════════════════════════════════════════════════════════════════════
