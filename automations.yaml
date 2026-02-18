@@ -289,116 +289,30 @@
   mode: single
 - id: '1771364980856'
   alias: Entry Room Inovelli - Front Driveway Control
-  description: Entry Room Inovelli controls Front Driveway Hue lights. Up paddle toggles
-    on, down paddle toggles off. Config button scenes for advanced control.
+  description: Entry Room Inovelli controls Front Driveway Hue lights via state changes
   triggers:
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
-    id: inovelli_event
+  - platform: state
+    entity_id: light.entry_room_ceiling_light_inovelli_smart_dimmer_switch
+    to: 'on'
+    id: switch_on
+  - platform: state
+    entity_id: light.entry_room_ceiling_light_inovelli_smart_dimmer_switch
+    to: 'off'
+    id: switch_off
   actions:
   - choose:
     - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''on'' }}'
+      - condition: trigger
+        id: switch_on
       sequence:
       - target:
           entity_id: light.front_driveway
         action: light.turn_on
     - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''off'' }}'
+      - condition: trigger
+        id: switch_off
       sequence:
       - target:
           entity_id: light.front_driveway
         action: light.turn_off
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          brightness_pct: 100
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_double'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          brightness_pct: 50
-          color_temp_kelvin: 2700
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_triple'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          brightness_pct: 25
-          color_temp_kelvin: 2200
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_hold'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        action: light.toggle
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          brightness_pct: 10
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_2_double'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        action: light.turn_off
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          rgb_color:
-          - 255
-          - 0
-          - 0
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_3_double'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          rgb_color:
-          - 0
-          - 255
-          - 0
-        action: light.turn_on
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_3_triple'' }}'
-      sequence:
-      - target:
-          entity_id: light.front_driveway
-        data:
-          rgb_color:
-          - 0
-          - 0
-          - 255
-        action: light.turn_on
   mode: single
