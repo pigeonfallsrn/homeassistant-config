@@ -225,3 +225,14 @@ Run `hac sheets` to export current data to:
 - **LLM Index**: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk
 
 Contents: Entity registry, device registry, area mappings, current states
+
+### Inovelli Automation Pattern (CRITICAL)
+- **Always use blueprint:** `fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml`
+- **Never use raw zha_event** - catches attribute_updated, dimmer changes, causing 100+ false triggers/hour
+- **Main switch buttons:** button_1 (down), button_2 (up), button_3 (config)
+- **Aux switch buttons:** button_4_press (down), button_5_press (up)
+- **Aux not working?** Toggle "Aux switch scenes" OFF/ON in ZHA device page to re-sync parameter
+
+### MCP Limitations
+- `ha_config_get_automation` only sees UI-created automations (stored in .storage/)
+- YAML automations in `automations/*.yaml` or `packages/*.yaml` must be read via terminal

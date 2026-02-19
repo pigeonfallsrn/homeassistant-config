@@ -32,6 +32,7 @@
 - 2026-02-09: HAC v8.0 - Enhanced Monitoring & Ghost Detection
 
 ## Recent Session Learnings
+- 2026-02-19: Inovelli automations MUST use fxlt blueprint (fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml) - raw zha_event triggers on attribute_updated causing 100+ false triggers/hour. Aux switch uses button_4_press (down) and button_5_press (up).
 - 2026-02-18: Inovelli inventory (14): 5x VZM31-SN, 5x VZM30-SN, 1x VZM35-SN, 2x VZM36. Control automations in automations.yaml + automations/ dir, NOT packages/.
 - 2026-02-18: Adaptive Lighting instances (5): living_spaces, entry_room_ceiling, kitchen_table, kids_rooms, upstairs_hallway. Each has sleep_mode switch. Gaps: Master Bedroom, bathrooms.
 - 2026-02-18: Mobile app notify services use device ID (e.g., sm_s928u), not friendly names. Changes on phone re-registration. Use notify groups for abstraction.
