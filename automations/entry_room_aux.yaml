@@ -2,7 +2,7 @@
 # ENTRY ROOM - AUX SWITCH AUTOMATIONS
 # =============================================================================
 # AUX Switch (d80c7fa6d013f0fd1cbdd6f67c6a1cac)
-# Controls: light.entry_room_ceiling_hue_white_lights
+# Controls: light.entry_rm_ceiling_hue_white_1_2, light.entry_rm_ceiling_hue_white_2_2
 # 
 # Time-based scenes, manual override blocks motion automation
 # =============================================================================
@@ -47,7 +47,9 @@
                   sequence:
                     - action: light.turn_on
                       target:
-                        entity_id: light.entry_room_ceiling_hue_white_lights
+                        entity_id:
+                          - light.entry_rm_ceiling_hue_white_1_2
+                          - light.entry_rm_ceiling_hue_white_2_2
                       data:
                         brightness_pct: 60
                         color_temp_kelvin: 2700
@@ -62,7 +64,9 @@
           sequence:
             - action: light.turn_off
               target:
-                entity_id: light.entry_room_ceiling_hue_white_lights
+                entity_id:
+                          - light.entry_rm_ceiling_hue_white_1_2
+                          - light.entry_rm_ceiling_hue_white_2_2
               data:
                 transition: 2
             - action: input_boolean.turn_off

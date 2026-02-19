@@ -19,5 +19,5 @@
           false
         {% endif %}
   action:
-    - service: script.alaina_gradual_wake
+    - service: script.alaina_gentle_wake
   mode: single
