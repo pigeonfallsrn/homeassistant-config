@@ -2,7 +2,7 @@
 # ENTRY ROOM CEILING - MOTION AUTOMATION
 # =============================================================================
 # Motion sensors: Aqara P1 + ThirdReality (aggregated)
-# Controls: light.entry_room_ceiling_hue_white_lights
+# Controls: light.entry_room
 # Adaptive Lighting: switch.adaptive_lighting_entry_room_ceiling
 # 
 # Lux-aware, manual override support, Wisconsin-optimized
@@ -42,12 +42,12 @@ automation:
               - choose:
                   - conditions:
                       - condition: numeric_state
-                        entity_id: sensor.entry_room_lux  # Your ThirdReality lux
+                        entity_id: sensor.entry_room_east_wall_nightlight_illuminance  # Your ThirdReality lux
                         below: 20  # Skip if sunny
                     sequence:
                       - action: light.turn_on
                         target:
-                          entity_id: light.entry_room_ceiling_hue_white_lights
+                          entity_id: light.entry_room
                       - action: adaptive_lighting.apply
                         target:
                           entity_id: switch.adaptive_lighting_entry_room_ceiling
@@ -61,6 +61,6 @@ automation:
             sequence:
               - action: light.turn_off
                 target:
-                  entity_id: light.entry_room_ceiling_hue_white_lights
+                  entity_id: light.entry_room
                 data:
                   transition: 5

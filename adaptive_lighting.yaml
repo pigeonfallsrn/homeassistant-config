@@ -46,7 +46,7 @@
 # -----------------------------------------------------------------------------
 - name: "Entry Room Ceiling"
   lights:
-    - light.entry_room_ceiling_hue_white_lights  # White bulbs only
+    - light.entry_room  # White bulbs only
   
   prefer_rgb_color: false        # White bulbs = color temp only
   
