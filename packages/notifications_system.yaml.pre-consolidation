@@ -9,45 +9,28 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_john
     alias: "Arrival - John Home"
-    description: >
-      Unified arrival notification with garage controls.
-      Consolidated from separate notification + garage systems 2026-02-20.
     trigger:
       - platform: state
         entity_id: person.john_spencer
         to: "home"
     condition:
-      # Prevent false triggers from zone bouncing - must have been away 2+ min
-      - condition: template
-        value_template: >
-          {{ (as_timestamp(now()) - as_timestamp(trigger.from_state.last_changed)) > 120 }}
+      - condition: state
+        entity_id: input_boolean.someone_home
+        state: "on"
     action:
       - service: notify.mobile_app_sm_s928u
         data:
-          title: "🏠 Welcome Home"
-          message: >
-            {{ now().strftime('%I:%M %p') }} • 
-            North: {{ states('cover.ratgdo32disco_fd8d8c_door') }} | 
-            South: {{ states('cover.ratgdo32disco_5735e8_door') }}
+          title: "Welcome Home"
+          message: "You arrived home at {{ now().strftime('%I:%M %p') }}"
           data:
             tag: "arrival_john"
-            group: "arrival"
-            channel: "Arrival"
-            importance: high
-            ttl: 0
-            priority: high
-            sticky: true
-            timeout: 300
-            notification_icon: "mdi:home-import-outline"
-            color: "#4CAF50"
             actions:
-              - action: "ARRIVAL_OPEN_NORTH"
-                title: "🚪 North"
-              - action: "ARRIVAL_OPEN_SOUTH"
-                title: "🚪 South"
-              - action: "URI"
-                title: "📱 Dashboard"
-                uri: "/lovelace/arriving-home"
+              - action: "ARRIVAL_LIGHTS_ON"
+                title: "Lights On"
+              - action: "ARRIVAL_DISARM"
+                title: "Disarm"
+              - action: "ARRIVAL_DISMISS"
+                title: "Dismiss"
     mode: single
 # DISABLED - 
 # DISABLED -   - id: arrival_notification_alaina
@@ -85,18 +68,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_actions
     alias: "Arrival - Handle Notification Actions"
-    description: "Handles all arrival notification actions including garage doors"
     trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "ARRIVAL_OPEN_NORTH"
-        id: open_north
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "ARRIVAL_OPEN_SOUTH"
-        id: open_south
       - platform: event
         event_type: mobile_app_notification_action
         event_data:
@@ -107,51 +79,8 @@ automation:
         event_data:
           action: "ARRIVAL_DISARM"
         id: disarm
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "ARRIVAL_DISMISS"
-        id: dismiss
     action:
       - choose:
-          - conditions:
-              - condition: trigger
-                id: open_north
-            sequence:
-              - service: cover.open_cover
-                target:
-                  entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "arrival_john"
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  title: "✅ North Garage"
-                  message: "Opening..."
-                  data:
-                    tag: "garage_action_confirm"
-                    timeout: 8
-          - conditions:
-              - condition: trigger
-                id: open_south
-            sequence:
-              - service: cover.open_cover
-                target:
-                  entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "arrival_john"
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  title: "✅ South Garage"
-                  message: "Opening..."
-                  data:
-                    tag: "garage_action_confirm"
-                    timeout: 8
           - conditions:
               - condition: trigger
                 id: lights_on
@@ -166,26 +95,19 @@ automation:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
+
           - conditions:
               - condition: trigger
                 id: disarm
             sequence:
+              # Add your alarm disarm service here if you have one
               - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
-          - conditions:
-              - condition: trigger
-                id: dismiss
-            sequence:
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "arrival_john"
-    mode: queued
-    max: 5
+    mode: single
+
   # ---------------------------------------------------------------------------
   # Low Battery Daily Digest - 9 AM
   # ---------------------------------------------------------------------------
@@ -600,171 +522,3 @@ automation:
                   data:
                     tag: "humidity_alert"
     mode: restart
-
-  # ---------------------------------------------------------------------------
-  # Departure - Garage Open Alert (Added 2026-02-20)
-  # ---------------------------------------------------------------------------
-  - id: departure_garage_open_alert
-    alias: "Departure - Garage Open Alert"
-    description: >
-      Alerts when leaving home with garage door(s) open.
-      Offers close or snooze options.
-    trigger:
-      - platform: state
-        entity_id: person.john_spencer
-        from: "home"
-        to: "not_home"
-        for:
-          seconds: 30
-    condition:
-      - condition: or
-        conditions:
-          - condition: state
-            entity_id: cover.ratgdo32disco_fd8d8c_door
-            state: "open"
-          - condition: state
-            entity_id: cover.ratgdo32disco_5735e8_door
-            state: "open"
-    action:
-      - service: notify.mobile_app_sm_s928u
-        data:
-          title: "🚨 Garage Door Open"
-          message: >
-            {% set north = states('cover.ratgdo32disco_fd8d8c_door') %}
-            {% set south = states('cover.ratgdo32disco_5735e8_door') %}
-            {% if north == 'open' and south == 'open' %}Both doors open!
-            {% elif north == 'open' %}North door open!
-            {% else %}South door open!
-            {% endif %}
-          data:
-            tag: "departure_garage_open"
-            group: "garage"
-            channel: "Garage Alerts"
-            importance: high
-            ttl: 0
-            priority: high
-            sticky: true
-            persistent: true
-            notification_icon: "mdi:garage-alert"
-            color: "#F44336"
-            actions:
-              - action: "DEPARTURE_CLOSE_ALL"
-                title: "🔒 Close All"
-              - action: "DEPARTURE_SNOOZE_30"
-                title: "⏰ 30min"
-              - action: "DEPARTURE_IGNORE"
-                title: "✓ Leave Open"
-    mode: single
-
-  - id: departure_garage_action_handler
-    alias: "Departure - Handle Garage Actions"
-    description: "Handles departure garage alert actions"
-    trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "DEPARTURE_CLOSE_ALL"
-        id: close_all
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "DEPARTURE_SNOOZE_30"
-        id: snooze_30
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "DEPARTURE_IGNORE"
-        id: ignore
-    action:
-      - choose:
-          - conditions:
-              - condition: trigger
-                id: close_all
-            sequence:
-              - service: cover.close_cover
-                target:
-                  entity_id:
-                    - cover.ratgdo32disco_fd8d8c_door
-                    - cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "departure_garage_open"
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  title: "✅ Garage Closing"
-                  message: "All doors closing..."
-                  data:
-                    tag: "garage_action_confirm"
-                    timeout: 10
-          - conditions:
-              - condition: trigger
-                id: snooze_30
-            sequence:
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "departure_garage_open"
-              - delay:
-                  minutes: 30
-              - condition: state
-                entity_id: person.john_spencer
-                state: "not_home"
-              - condition: or
-                conditions:
-                  - condition: state
-                    entity_id: cover.ratgdo32disco_fd8d8c_door
-                    state: "open"
-                  - condition: state
-                    entity_id: cover.ratgdo32disco_5735e8_door
-                    state: "open"
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  title: "🚨 Reminder: Garage Still Open"
-                  message: >
-                    {% set north = states('cover.ratgdo32disco_fd8d8c_door') %}
-                    {% set south = states('cover.ratgdo32disco_5735e8_door') %}
-                    {% if north == 'open' and south == 'open' %}Both doors still open
-                    {% elif north == 'open' %}North still open
-                    {% else %}South still open
-                    {% endif %}
-                  data:
-                    tag: "departure_garage_open"
-                    group: "garage"
-                    channel: "Garage Alerts"
-                    importance: high
-                    sticky: true
-                    persistent: true
-                    actions:
-                      - action: "DEPARTURE_CLOSE_ALL"
-                        title: "🔒 Close All"
-                      - action: "DEPARTURE_SNOOZE_30"
-                        title: "⏰ 30min"
-                      - action: "DEPARTURE_IGNORE"
-                        title: "✓ Leave Open"
-          - conditions:
-              - condition: trigger
-                id: ignore
-            sequence:
-              - service: notify.mobile_app_sm_s928u
-                data:
-                  message: "clear_notification"
-                  data:
-                    tag: "departure_garage_open"
-    mode: restart
-
-  - id: departure_garage_autoclear
-    alias: "Departure - Clear Alert on Return"
-    trigger:
-      - platform: state
-        entity_id: person.john_spencer
-        to: "home"
-    action:
-      - service: notify.mobile_app_sm_s928u
-        data:
-          message: "clear_notification"
-          data:
-            tag: "departure_garage_open"
-    mode: single

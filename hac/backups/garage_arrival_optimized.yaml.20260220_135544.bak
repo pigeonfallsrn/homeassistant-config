@@ -1,0 +1,207 @@
+# ============================================================================
+# GARAGE ARRIVAL - OPTIMIZED v2.0
+# HandsFreeLink Bluetooth detection + Dashboard popup + Smart timing
+# ============================================================================
+
+automation:
+  # ===========================================================================
+  # SMART ARRIVAL - Bluetooth HandsFreeLink + Distance-based Dashboard Popup
+  # Detects when phone connects to Honda Odyssey Bluetooth
+  # ===========================================================================
+  - id: garage_arrival_smart_popup
+    alias: "Garage - Smart Arrival Dashboard Popup"
+    description: >
+      Shows garage control dashboard when:
+      1. Phone connected to car Bluetooth (HandsFreeLink)
+      2. Approaching home (< 800m)
+      3. Doors are closed
+      
+      Dashboard stays up until you arrive home or dismiss it.
+    trigger:
+      # Primary: Bluetooth connection changes (car connection detected)
+      - platform: state
+        entity_id: sensor.john_s_phone_bluetooth_connection
+        id: bluetooth_change
+      
+      # Backup: Enter proximity zone while connected to car
+      - platform: numeric_state
+        entity_id: sensor.john_distance_to_home
+        below: 800
+        id: proximity
+    
+    condition:
+      # Must be connected to car Bluetooth (HandsFreeLink)
+      - condition: template
+        value_template: >
+          {% set connected = state_attr('sensor.john_s_phone_bluetooth_connection', 'connected_paired_devices') | default([]) %}
+          {{ connected | select('search', 'HandsFreeLink') | list | length > 0 }}
+      
+      # Approaching home (not already there)
+      - condition: numeric_state
+        entity_id: sensor.john_distance_to_home
+        below: 1000
+        above: 50
+      
+      # Not already home
+      - condition: template
+        value_template: "{{ states('person.john_spencer') != 'home' }}"
+      
+      # At least one door is closed
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: cover.ratgdo32disco_fd8d8c_door
+            state: "closed"
+          - condition: state
+            entity_id: cover.ratgdo32disco_5735e8_door
+            state: "closed"
+    
+    action:
+      # Send dashboard-style notification with large action buttons
+      - service: notify.mobile_app_sm_s928u
+        data:
+          title: "🚗 Arriving Home"
+          message: "{{ distance(states.zone.home, states.person.john_spencer) | round(1) }}km away - Open garage door?"
+          data:
+            tag: "garage_arrival_dashboard"
+            group: "garage"
+            channel: "Garage Arrival"
+            importance: high
+            ttl: 0
+            priority: high
+            sticky: true
+            timeout: 300
+            notification_icon: "mdi:garage-variant"
+            color: "#03A9F4"
+            actions:
+              - action: "GARAGE_OPEN_NORTH"
+                title: "🚪 OPEN NORTH"
+              - action: "GARAGE_OPEN_SOUTH"  
+                title: "🚪 OPEN SOUTH"
+              - action: "GARAGE_OPEN_BOTH"
+                title: "🚪 OPEN BOTH"
+              - action: "GARAGE_DISMISS"
+                title: "❌ Dismiss"
+            visibility: public
+            persistent: true
+    
+    mode: single
+    max_exceeded: silent
+
+  # ===========================================================================
+  # ACTION HANDLERS - Unified for all garage open/close actions
+  # ===========================================================================
+  - id: garage_arrival_action_handler
+    alias: "Garage - Arrival Action Handler"
+    description: "Handles all garage open actions from arrival dashboard"
+    trigger:
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_OPEN_NORTH"
+        id: north
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_OPEN_SOUTH"
+        id: south
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_OPEN_BOTH"
+        id: both
+      - platform: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "GARAGE_DISMISS"
+        id: dismiss
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: north
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.ratgdo32disco_fd8d8c_door
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_arrival_dashboard"
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  title: "✅ Opening North Door"
+                  message: "Garage door opening..."
+                  data:
+                    tag: "garage_open_confirm"
+                    timeout: 10
+          - conditions:
+              - condition: trigger
+                id: south
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id: cover.ratgdo32disco_5735e8_door
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_arrival_dashboard"
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  title: "✅ Opening South Door"
+                  message: "Garage door opening..."
+                  data:
+                    tag: "garage_open_confirm"
+                    timeout: 10
+          - conditions:
+              - condition: trigger
+                id: both
+            sequence:
+              - service: cover.open_cover
+                target:
+                  entity_id:
+                    - cover.ratgdo32disco_fd8d8c_door
+                    - cover.ratgdo32disco_5735e8_door
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_arrival_dashboard"
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  title: "✅ Opening Both Doors"
+                  message: "Garage doors opening..."
+                  data:
+                    tag: "garage_open_confirm"
+                    timeout: 10
+          - conditions:
+              - condition: trigger
+                id: dismiss
+            sequence:
+              - service: notify.mobile_app_sm_s928u
+                data:
+                  message: "clear_notification"
+                  data:
+                    tag: "garage_arrival_dashboard"
+    mode: queued
+    max: 5
+
+  # ===========================================================================
+  # AUTO-CLEAR - Remove dashboard when you arrive home
+  # ===========================================================================
+  - id: garage_arrival_autoclear
+    alias: "Garage - Clear Arrival Dashboard on Arrival"
+    description: "Automatically dismisses garage dashboard when you arrive home"
+    trigger:
+      - platform: state
+        entity_id: person.john_spencer
+        to: "home"
+    action:
+      - service: notify.mobile_app_sm_s928u
+        data:
+          message: "clear_notification"
+          data:
+            tag: "garage_arrival_dashboard"
+    mode: single
