@@ -359,3 +359,177 @@
           - light.entry_rm_ceiling_hue_white_2_2
         data:
           brightness_step_pct: 10
+- id: '1771556632224'
+  alias: Kitchen Lounge - Inovelli Controls Hue Ceiling
+  description: 'fxlt blueprint: Kitchen Lounge Inovelli VZM31-SN controls Hue ceiling
+    lights'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 5e2d477e04d216ab91a0c2f1364ab118
+      button_1:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_off
+      button_2:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_on
+      button_1_hold:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_step_pct: -10
+        action: light.turn_on
+      button_2_hold:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_step_pct: 10
+        action: light.turn_on
+      button_2_double:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_pct: 100
+        action: light.turn_on
+      button_1_double:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_pct: 10
+        action: light.turn_on
+- id: '1771557081733'
+  alias: Kitchen Lounge - Aux Switch Controls Hue + Fan
+  description: 'Aux paddle=Hue lights, Config buttons control fan (main=button_3,
+    aux=button_6). Multi-tap: 1x=low, 2x=med, 3x=high, hold=off'
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_5_press
+    id: aux_up
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_4_press
+    id: aux_down
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_press
+    id: config_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_hold
+    id: config_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_double
+    id: config_double
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_triple
+    id: config_triple
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_press
+    id: aux_config_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_hold
+    id: aux_config_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_double
+    id: aux_config_double
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_triple
+    id: aux_config_triple
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aux_up
+      sequence:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: aux_down
+      sequence:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_off
+    - conditions:
+      - condition: trigger
+        id:
+        - config_press
+        - aux_config_press
+      sequence:
+      - target:
+          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+        data:
+          percentage: 33
+        action: fan.set_percentage
+    - conditions:
+      - condition: trigger
+        id:
+        - config_double
+        - aux_config_double
+      sequence:
+      - target:
+          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+        data:
+          percentage: 66
+        action: fan.set_percentage
+    - conditions:
+      - condition: trigger
+        id:
+        - config_triple
+        - aux_config_triple
+      sequence:
+      - target:
+          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+        data:
+          percentage: 100
+        action: fan.set_percentage
+    - conditions:
+      - condition: trigger
+        id:
+        - config_hold
+        - aux_config_hold
+      sequence:
+      - target:
+          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+        action: fan.turn_off
+  mode: single
