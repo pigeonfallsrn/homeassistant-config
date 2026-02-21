@@ -966,12 +966,17 @@ $(cmd_status 2>/dev/null)
 3. hac learn "insight" to persist
 
 ## Session
-$(cat "$SESSION_FILE" 2>/dev/null | tail -10 || echo "New")
+$(cat "$SESSION_FILE" 2>/dev/null | tail -5 || echo "New")
 
-## Active Handoffs
-$(ls /homeassistant/hac/handoffs/*.md 2>/dev/null | while read f; do echo "- $(basename $f)"; head -3 "$f" | tail -1; done || echo "None")
-## Today's Learnings
-$(tail -15 "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null || echo "None")
+## Active Work
+$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -8 || echo "None - run: echo 'TASK: xxx' > $HAC_DIR/ACTIVE.md")
+
+## Handoffs
+$(for f in "$HAC_DIR"/handoffs/*.md; do [ -f "$f" ] && echo "- $(basename "$f")"; done 2>/dev/null || echo "None")
+**Status:** IN PROGRESS
+
+## Today (last 3)
+$(tail -10 "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null | grep "^-" | tail -3 || echo "None")
 ═══════════════════════════════════════════════════════════════════════════════
 PROMPT
 }
