@@ -605,6 +605,25 @@ cmd_sed() {
     safe_sed "${args[@]}"
 }
 
+cmd_active() {
+    local active_file="$HAC_DIR/ACTIVE.md"
+    if [ -z "$1" ]; then
+        cat "$active_file" 2>/dev/null || echo "No active task. Usage: hac active 'task description'"
+        return
+    fi
+    cat > "$active_file" << ACTIVEEOF
+# Active Work
+TASK: $1
+NEXT: (define next step)
+BLOCKED: None
+UPDATED: $(date +%Y-%m-%d)
+
+## Quick Context
+(add context here)
+ACTIVEEOF
+    echo "✓ Active task set: $1"
+}
+
 cmd_learn() {
     [ -z "$1" ] && echo "Usage: hac learn \"insight\"" && return
     ensure_dirs
@@ -1423,6 +1442,7 @@ case "${1:-}" in
     audit) cmd_audit;;
     sanitize-test) python3 /config/hac/hac_sanitize.py test;;
     hygiene) cmd_hygiene;;
+    active) shift; cmd_active "$*";;
     learn) shift; cmd_learn "$*";;
     review) cmd_review "$2";;
     recall) cmd_recall "$2";;
