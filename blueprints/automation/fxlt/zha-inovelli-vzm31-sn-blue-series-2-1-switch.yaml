@@ -151,10 +151,6 @@ condition: '{{ trigger.event.data.device_id == device_id }}'
 action:
 - variables:
     command: '{{ trigger.event.data.command }}'
-- service: logbook.log
-  data:
-    name: ZHA
-    message: 'received event: {{ command }}'
 - choose:
   - conditions: '{{ command == ''button_1_press'' }}'
     sequence: !input button_1
