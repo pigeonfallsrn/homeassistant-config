@@ -13,6 +13,9 @@
     - light.living_room_east_floor_lamp
     - light.living_room_lounge_lamp
     - light.very_front_door_hallway
+    - light.living_room_west_floor_lamp   # Was missing (match east lamp)
+    - light.kitchen_lounge_lamp           # Kitchen accent
+    - light.kitchen_above_sink_light      # Hue behind Inovelli SBM
   
   prefer_rgb_color: false
   
