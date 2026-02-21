@@ -18,3 +18,6 @@
 - [x] 2026-02-21: HA MCP Server Integration (active)
 - [x] 2026-02-21: HAC v8.0→v8.1 (ACTIVE.md task tracking)
 - [x] 2026-02-21: Double-trigger root cause (fxlt blueprint design)
+
+## Recent Ideas (Mobile Capture)
+- [ ] Hot tub mode: dim/off living room lounge lamp when activated (blinding from patio)
