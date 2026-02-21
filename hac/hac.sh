@@ -960,46 +960,42 @@ cmd_prompt() {
 
 cmd_mcp() {
     local gist_id=$(get_gist_id)
-    [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
     local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
     
     cat << PROMPT
 ═══════════════════════════════════════════════════════════════════════════════
-HAC v$HAC_VERSION - CLAUDE DESKTOP + MCP SESSION
+HAC v9 - TOKEN-EFFICIENT MCP SESSION
 ═══════════════════════════════════════════════════════════════════════════════
-MCP HA server connected - query entities directly.
 
-**URLs:** $gist_url/01_status.md | 02_index.md | 03_knowledge.md
-
-## MCP Actions Available
-- Query entity states directly
-- Call services (careful)
-- Read configs via terminal
-
-## Live Status
-$(cmd_status 2>/dev/null)
-
-## Rules
-1. MCP for live state, gist for structure
-2. hac backup <file> before edits
-3. hac learn "insight" to persist
-
-## Session
-$(cat "$SESSION_FILE" 2>/dev/null | tail -5 || echo "New")
+## System
+$(grep -A4 "^## System" "$HAC_DIR/CONTEXT.md" 2>/dev/null | tail -4 || echo "HA Green | MCP Connected")
 
 ## Active Work
-$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -8 || echo "None - run: echo 'TASK: xxx' > $HAC_DIR/ACTIVE.md")
+$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -10 || echo "None - run: hac active 'task'")
 
-## Handoffs
-$(for f in "$HAC_DIR"/handoffs/*.md; do [ -f "$f" ] && echo "- $(basename "$f")"; done 2>/dev/null || echo "None")
-**Status:** IN PROGRESS
+## Resources (request as needed)
+| Need | Command |
+|------|---------|
+| AL/Inovelli patterns | \`cat /homeassistant/hac/knowledge/patterns.md\` |
+| Gotchas/pitfalls | \`cat /homeassistant/hac/knowledge/gotchas.md\` |
+| Architecture decisions | \`cat /homeassistant/hac/knowledge/decisions.md\` |
+| Paused projects | \`cat /homeassistant/hac/tabled_projects.md\` |
+| Today's learnings | \`cat /homeassistant/hac/learnings/$(date +%Y%m%d).md\` |
+| Full resource index | \`cat /homeassistant/hac/RESOURCES.md\` |
 
-## Today (last 3)
-$(tail -10 "$LEARNINGS_DIR/$(date +%Y%m%d).md" 2>/dev/null | grep "^-" | tail -3 || echo "None")
+## Links
+- LLM Index: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk
+- Gist: $gist_url
+
+## Rules
+1. \`hac backup <file>\` before edits
+2. \`hac learn "insight"\` to persist  
+3. \`hac active "task"\` to update focus
+4. MCP for live state, terminal for files
+
 ═══════════════════════════════════════════════════════════════════════════════
 PROMPT
 }
-
 cmd_research() {
     local gist_id=$(get_gist_id)
     [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
@@ -1333,6 +1329,19 @@ cmd_sheets() {
     fi
 }
 
+
+cmd_sync() {
+    echo "═══════════════════════════════════════════════════════════════════════════════"
+    echo "HAC SYNC - Full Export + Sheets Update"
+    echo "═══════════════════════════════════════════════════════════════════════════════"
+    cmd_export
+    echo ""
+    cmd_sheets
+    echo ""
+    echo "✓ Sync complete! LLM can now access:"
+    echo "  - Google Sheet: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk"
+    echo "  - Ask Claude to fetch it using google_drive_search or direct link"
+}
 cmd_gdrive() {
     ensure_dirs
     generate_readme
@@ -1426,6 +1435,7 @@ case "${1:-}" in
     gem) cmd_gem;;
     gdrive) cmd_gdrive;;
     sheets) cmd_sheets;;
+    sync) cmd_sync;;
     export) cmd_export;;
     prompt) cmd_prompt;;
     mcp) cmd_mcp;;

@@ -18,6 +18,19 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 MASTER_WORKBOOK_ID = "11quLdO56rqI8GAPq-KnKtJoBs7cH6QAVgHs8W6UC_8w"
 LLM_INDEX_WORKBOOK_ID = "1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk"
 
+
+def ensure_sheet_exists(svc, spreadsheet_id, sheet_name):
+    """Create sheet if it doesn't exist"""
+    try:
+        spreadsheet = svc.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
+        existing = [s['properties']['title'] for s in spreadsheet.get('sheets', [])]
+        if sheet_name not in existing:
+            body = {'requests': [{'addSheet': {'properties': {'title': sheet_name}}}]}
+            svc.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=body).execute()
+            print(f"  + Created sheet: {sheet_name}")
+    except Exception as e:
+        print(f"  ⚠ Could not create sheet {sheet_name}: {e}")
+
 def load_registries():
     """Load entity, device, and area registries"""
     registries = {'entities': {}, 'devices': {}, 'areas': {}}
@@ -350,10 +363,12 @@ def write_llm_index_workbook(svc, data):
         'Recent Changes': format_llm_recent_changes(data),
         'Active Issues': format_llm_active_issues(data),
         'Quick Reference': format_llm_quick_reference(data),
-        'HAC Session Latest': format_llm_session_latest(data)
+        'HAC Session Latest': format_llm_session_latest(data),
+        'Recent Learnings': format_llm_recent_learnings()
     }
     
     for sheet_name, rows in llm_sheets.items():
+        ensure_sheet_exists(svc, LLM_INDEX_WORKBOOK_ID, sheet_name)
         try:
             svc.spreadsheets().values().clear(spreadsheetId=LLM_INDEX_WORKBOOK_ID, range=f"'{sheet_name}'!A:Z").execute()
             svc.spreadsheets().values().update(spreadsheetId=LLM_INDEX_WORKBOOK_ID, range=f"'{sheet_name}'!A1",
@@ -422,7 +437,59 @@ def format_llm_session_latest(data):
         [latest['preview']]
     ]
 
-# Master Workbook Formatters (Full Data)
+
+def format_llm_recent_learnings():
+    """Parse actual learning content from last 14 days"""
+    from datetime import datetime, timedelta
+    from pathlib import Path
+    import re
+    
+    rows = [['date', 'category', 'insight', 'source']]
+    learnings_dir = Path('/homeassistant/hac/learnings')
+    
+    if not learnings_dir.exists():
+        return rows
+    
+    cutoff = datetime.now() - timedelta(days=14)
+    
+    for file in sorted(learnings_dir.glob('2026*.md'), reverse=True):
+        try:
+            date_str = file.stem.replace('-', '')[:8]
+            file_date = datetime.strptime(date_str, '%Y%m%d')
+            if file_date < cutoff:
+                continue
+        except:
+            continue
+        
+        try:
+            content = file.read_text()
+            for line in content.split('\n'):
+                line = line.strip()
+                if line.startswith('- ') and len(line) > 10:
+                    time_match = re.match(r'^- (\d{2}:\d{2}): (.+)$', line)
+                    if time_match:
+                        insight = time_match.group(2)[:200]
+                    else:
+                        insight = line[2:202]
+                    
+                    lower = insight.lower()
+                    if any(k in lower for k in ['fixed', 'resolved', 'complete']):
+                        category = 'DONE'
+                    elif any(k in lower for k in ['bug', 'issue', 'error', 'broken']):
+                        category = 'BUG'
+                    elif any(k in lower for k in ['todo', 'need', 'should', 'must']):
+                        category = 'TODO'
+                    elif any(k in lower for k in ['pattern', 'config', 'setting']):
+                        category = 'PATTERN'
+                    else:
+                        category = 'NOTE'
+                    
+                    rows.append([date_str, category, insight, file.name])
+        except:
+            continue
+    
+    return rows[:100]
+
 def format_dashboard(data):
     return [
         ['HA MASTER CONTEXT v4.0'],
