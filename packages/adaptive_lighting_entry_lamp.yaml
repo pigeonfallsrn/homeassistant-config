@@ -178,6 +178,23 @@ automation:
     mode: single
 
   # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Hot Tub Mode - Living Room Lamp Off (visible from patio)
+  # ---------------------------------------------------------------------------
+  - id: hot_tub_mode_living_room_lamp
+    alias: "Hot Tub Mode - Turn Off Living Room Lamp"
+    description: "Living room lounge lamp is visible from patio - turn off when in hot tub"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.hot_tub_mode
+        to: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.living_room_lounge_lamp
+    mode: single
+
   # Arrival - Turn On Adaptive Lighting + Welcome Light
   # ---------------------------------------------------------------------------
   - id: arrival_adaptive_lighting_on
