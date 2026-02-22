@@ -20,4 +20,4 @@
 - [x] 2026-02-21: Double-trigger root cause (fxlt blueprint design)
 
 ## Recent Ideas (Mobile Capture)
-- [ ] Hot tub mode: dim/off living room lounge lamp when activated (blinding from patio)
+- [x] Hot tub mode: dim/off living room lounge lamp when activated (blinding from patio)
