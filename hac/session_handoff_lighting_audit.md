@@ -83,3 +83,49 @@ cd /homeassistant && hac mcp
 2. Unavailable entity triage (11+ lights)
 3. Blueprint migration (fxlt → MasterDevwi or Ratoka)
 4. Fix Living Room Lounge device → sun_room area assignment
+
+---
+
+## Phase 2 Progress: 2026-02-21
+
+### Session Updates
+
+**Immediate Fixes Completed ✅**
+- [x] `light.1st_floor_bathroom_vanity_lights` → 2nd_floor_bathroom
+- [x] `light.ella_s_govee_floor_lamp` → master_bedroom  
+- [x] `light.alaina_s_floor_govee_lamp` → kitchen
+
+**Entity ID Rename Check**
+- No generic `hue_color_lamp_*` or `hue_color_candle_*` patterns exist
+- Hue integration already generating proper entity IDs
+- ✅ No renames needed
+
+**Alexa Mirror Entity**
+- [x] `light.toy_room_light` disabled (was "Living Room Lounge Lamp (Alexa)")
+
+### Unavailable Entity Triage
+
+**Matter (2) - Aqara Hub M3 Offline**
+Root cause: `button.aqara_hub_m3_identify` unavailable since HA restart
+- `light.aqara_led_strip_t1` (friendly: "Kitchen Lounge Bar Counter LED Strip", device: "Master_Bedroom_Behind_TV" - MISMATCH)
+- `light.aqara_led_strip_t1_2` (friendly: "Master Bedroom TV LED Strip")
+- **Action:** Physical check Aqara Hub M3 in entry_room. Once hub online, strips auto-recover.
+
+**Hue (6) - Check Hue App / Physical Power**
+- `light.garage_ceiling_north`
+- `light.garage_ceiling_south`
+- `light.2nd_floor_bathroom_vanity_1of3`
+- `light.2nd_floor_bathroom_vanity_2of3`
+- `light.2nd_floor_bathroom_vanity_3of3`
+- `light.upstairs_hallway_east_wall_night_light`
+
+**Govee Cloud (2) - Check Power/WiFi/Account**
+- `light.ella_s_govee_floor_lamp`
+- `light.alaina_s_floor_govee_lamp`
+
+### Remaining Phase 2 Work
+- [ ] Fix Aqara LED strip friendly_name mismatch (device vs entity name)
+- [ ] Physical triage of Hue unavailable bulbs
+- [ ] Govee cloud reconnection
+- [ ] Blueprint migration (fxlt → MasterDevwi/Ratoka)
+- [ ] Living Room Lounge device → sun_room area fix
