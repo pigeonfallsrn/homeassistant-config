@@ -1,5 +1,5 @@
 # Active Work
-TASK: Living Room A/V integration COMPLETE. Next: Test automations, future Klipsch tuning session
+TASK: Entry Room ceiling color bulb upgrade - Inovelli/Hue zone integration complete
 NEXT: (define next step)
 BLOCKED: None
 UPDATED: 2026-02-23

@@ -59,7 +59,7 @@
 - id: '1771532178019'
   alias: Entry Room Ceiling - Inovelli Controls Hue Lights
   description: Entry Room Ceiling Inovelli VZM31-SN controls Entry Room Ceiling Hue
-    White bulbs
+    zone
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -67,29 +67,21 @@
       button_1:
       - action: light.turn_off
         target:
-          entity_id:
-          - light.entry_rm_ceiling_hue_white_1_2
-          - light.entry_rm_ceiling_hue_white_2_2
+          entity_id: light.entry_room_ceiling_light
       button_2:
       - action: light.turn_on
         target:
-          entity_id:
-          - light.entry_rm_ceiling_hue_white_1_2
-          - light.entry_rm_ceiling_hue_white_2_2
+          entity_id: light.entry_room_ceiling_light
       button_1_hold:
       - action: light.turn_on
         target:
-          entity_id:
-          - light.entry_rm_ceiling_hue_white_1_2
-          - light.entry_rm_ceiling_hue_white_2_2
+          entity_id: light.entry_room_ceiling_light
         data:
           brightness_step_pct: -10
       button_2_hold:
       - action: light.turn_on
         target:
-          entity_id:
-          - light.entry_rm_ceiling_hue_white_1_2
-          - light.entry_rm_ceiling_hue_white_2_2
+          entity_id: light.entry_room_ceiling_light
         data:
           brightness_step_pct: 10
 - id: '1771556632224'
