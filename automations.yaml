@@ -266,3 +266,236 @@
           entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
         action: fan.turn_off
   mode: single
+- id: '1771854304476'
+  alias: 2nd Floor Bathroom - Humidity Fan Control v2
+  description: Automatic fan control based on humidity derivative with Navien pre-trigger
+    and manual override. Rising humidity or sustained hot water flow turns fan on.
+    Falling humidity + delay turns off. Manual paddle override disables auto for 30min.
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+    above: 1.5
+    id: humidity_rising
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+    below: -0.5
+    for:
+      minutes: 2
+    id: humidity_falling
+  - platform: numeric_state
+    entity_id: sensor.navien_water_flow
+    above: 0.5
+    for:
+      minutes: 2
+    id: hot_water_pretrigger
+  - platform: numeric_state
+    entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
+    above: 65
+    id: max_humidity
+  conditions:
+  - condition: state
+    entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - humidity_rising
+        - hot_water_pretrigger
+        - max_humidity
+      sequence:
+      - target:
+          entity_id: fan.inovelli_vzm35_sn_fan
+        action: fan.turn_on
+    - conditions:
+      - condition: trigger
+        id: humidity_falling
+      sequence:
+      - delay:
+          minutes: 5
+      - condition: numeric_state
+        entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
+        below: 60
+      - target:
+          entity_id: fan.inovelli_vzm35_sn_fan
+        action: fan.turn_off
+  mode: restart
+- id: '1771854392376'
+  alias: 2nd Floor Bathroom - Fan Inovelli Paddle Control v2
+  description: Inovelli VZM35-SN paddle controls fan directly. Up=On, Down=Off. Sets
+    manual override for 30 minutes to prevent humidity auto from interfering.
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_2_press
+    id: up_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_1_press
+    id: down_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_2_hold
+    id: up_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_1_hold
+    id: down_hold
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up_press
+        - up_hold
+      sequence:
+      - target:
+          entity_id: fan.inovelli_vzm35_sn_fan
+        action: fan.turn_on
+      - target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+        action: input_boolean.turn_on
+      - target:
+          entity_id: timer.bathroom_2nd_floor_fan
+        data:
+          duration: 00:30:00
+        action: timer.start
+    - conditions:
+      - condition: trigger
+        id:
+        - down_press
+        - down_hold
+      sequence:
+      - target:
+          entity_id: fan.inovelli_vzm35_sn_fan
+        action: fan.turn_off
+      - target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+        action: input_boolean.turn_on
+      - target:
+          entity_id: timer.bathroom_2nd_floor_fan
+        data:
+          duration: 00:30:00
+        action: timer.start
+  mode: single
+- id: '1771854413864'
+  alias: 2nd Floor Bathroom - Reset Fan Override on Timer
+  description: Clear manual override when 30-minute timer expires, allowing humidity
+    automation to resume control.
+  triggers:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.bathroom_2nd_floor_fan
+  actions:
+  - target:
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    action: input_boolean.turn_off
+  mode: single
+- id: '1771858450789'
+  alias: Living Room - AVR On When Fire TV Active
+  description: Turn on AVR, set to AV1, and power subwoofer when Fire TV starts playing
+    or wakes from standby
+  triggers:
+  - platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to: playing
+    id: fire_tv_playing
+  - platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    from: standby
+    to: idle
+    id: fire_tv_woke_up
+  conditions: []
+  actions:
+  - parallel:
+    - sequence:
+      - target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        action: media_player.turn_on
+      - delay:
+          seconds: 3
+      - target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          source: AV1
+        action: media_player.select_source
+    - target:
+        entity_id: switch.living_room_subwoofer_plug
+      action: switch.turn_on
+  mode: single
+- id: '1771858469033'
+  alias: Living Room - AVR Off When Fire TV Idle
+  description: Turn off AVR and subwoofer after Fire TV idle/standby for 10 minutes
+  triggers:
+  - platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to:
+    - idle
+    - standby
+    - 'off'
+    for:
+      minutes: 10
+  conditions:
+  - condition: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    state: 'on'
+  actions:
+  - parallel:
+    - target:
+        entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+      action: media_player.turn_off
+    - sequence:
+      - delay:
+          seconds: 5
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_off
+  mode: restart
+- id: '1771858527176'
+  alias: Living Room - Subwoofer Sync with AVR
+  description: Keep subwoofer power synced with AVR state as backup
+  triggers:
+  - platform: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    to: 'on'
+    id: avr_on
+  - platform: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    to: 'off'
+    for:
+      seconds: 5
+    id: avr_off
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: avr_on
+      sequence:
+      - condition: state
+        entity_id: switch.living_room_subwoofer_plug
+        state: 'off'
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_on
+    - conditions:
+      - condition: trigger
+        id: avr_off
+      sequence:
+      - condition: state
+        entity_id: switch.living_room_subwoofer_plug
+        state: 'on'
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_off
+  mode: restart

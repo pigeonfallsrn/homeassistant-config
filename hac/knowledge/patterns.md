@@ -35,3 +35,32 @@ trigger:
 ## Inovelli → Hue Flow
 Inovelli → ZHA → HA → Hue Bridge → Hue Bulbs
 (Direct Zigbee binding not possible across coordinators)
+
+## A/V Automation Patterns
+
+### Fire TV + AVR Coordination
+```yaml
+# Dual trigger pattern - catch both playback start AND wake from standby
+trigger:
+  - platform: state
+    entity_id: media_player.fire_tv_xxx
+    to: "playing"
+    id: playing
+  - platform: state
+    entity_id: media_player.fire_tv_xxx
+    from: "standby"
+    to: "idle"
+    id: woke_up
+```
+
+### HDMI ARC Setup
+- Fire TV built-in to TV with HDMI eARC output
+- Receiver HDMI OUT connects to TV HDMI eARC
+- Audio travels FROM TV TO receiver via ARC
+- Receiver source is typically `AV1`, `AV4`, or `AUDIO` - NOT an HDMI input number
+- Check receiver display when audio works to confirm correct source name
+
+### Subwoofer Smart Plug Sync
+- Use 5-second delay on off to prevent cycling during quick power toggles
+- Add condition to only act if state differs (prevent redundant commands)
+- Mode: restart ensures timer resets on repeated triggers
