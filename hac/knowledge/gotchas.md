@@ -24,3 +24,28 @@
 ## ZSH Terminal
 - Always escape `!` or use single quotes
 - Never chain after `python3 -c` on same line
+
+## DANGER ZONE - NEVER EDIT DIRECTLY
+These files will crash HA Core if malformed:
+- `.storage/core.config_entries` - Integration registry
+- `.storage/core.entity_registry` - Entity definitions  
+- `.storage/core.device_registry` - Device definitions
+- Any `.storage/*.json` - Internal HA databases
+
+**If you need to modify these, the answer is: YOU DONT.**
+Use UI or accept it cant be done programmatically.
+
+## UI-ONLY OPERATIONS (No API/CLI exists)
+- **Adaptive Lighting**: Create/delete entries (use UI config flow)
+- **ZHA**: Device pairing, network settings
+- **Hue**: Bridge linking, entertainment areas
+- **Matter**: Device commissioning
+- **Any integration config flow**: Must use UI wizard
+
+## SAFE OPERATIONS (API/CLI supported)
+- Automations: ha_config_set_automation or YAML
+- Scripts: ha_config_set_script or YAML
+- Helpers: ha_config_set_helper (most types)
+- Services: ha_call_service
+- Entity settings: ha_set_entity
+- Dashboards: ha_config_set_dashboard

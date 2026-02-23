@@ -1492,3 +1492,14 @@ hac_track_insight() {
 
 # Alias
 alias hac_track='hac_track_insight'
+
+# Snapshot before risky operations
+hac_snapshot() {
+    local name="${1:-HAC_$(date +%Y%m%d_%H%M%S)}"
+    ha backups partial --homeassistant --name "HAC: $name" --no-progress
+}
+
+# List recent HAC snapshots
+hac_rollback() {
+    ha backups list | grep -E "(slug|name.*HAC)" | head -20
+}
