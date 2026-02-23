@@ -403,40 +403,40 @@
   mode: single
 - id: '1771858450789'
   alias: Living Room - AVR On When Fire TV Active
-  description: Turn on AVR at 35% volume, set to AV1, and power subwoofer when Fire
-    TV starts playing or wakes from standby
+  description: Turn on AVR at 30% volume, set to AV1 (HDMI1 passthrough), and power
+    subwoofer when Fire TV starts playing or wakes from standby
   triggers:
   - id: fire_tv_playing
+    platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
     to: playing
-    platform: state
-    entity_id: media_player.living_room_fire_tv_192_168_1_17
   - id: fire_tv_woke_up
-    to: idle
-    from: standby
     platform: state
     entity_id: media_player.living_room_fire_tv_192_168_1_17
+    from: standby
+    to: idle
   conditions: []
   actions:
   - parallel:
     - sequence:
-      - target:
+      - action: media_player.turn_on
+        target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
-        action: media_player.turn_on
       - delay:
           seconds: 3
-      - data:
+      - action: media_player.select_source
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
           source: AV1
+      - action: media_player.volume_set
         target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
-        action: media_player.select_source
-      - data:
-          volume_level: 0.35
-        target:
-          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
-        action: media_player.volume_set
-    - target:
+        data:
+          volume_level: 0.3
+    - action: switch.turn_on
+      target:
         entity_id: switch.living_room_subwoofer_plug
-      action: switch.turn_on
   mode: single
 - id: '1771858469033'
   alias: Living Room - AVR Off When Fire TV Idle
