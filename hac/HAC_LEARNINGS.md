@@ -168,3 +168,40 @@ Suggest specific optimizations based on my actual usage patterns.
 - [ ] Performance analysis
 - [ ] Update HAC documentation
 
+
+---
+## Session 2026-02-23: Entry Room Inovelli + Hue Color Bulb Setup
+
+### INOVELLI AUX SWITCH QUIRK
+**Problem:** AUX DOWN button sends direct Zigbee `off` command instead of `button_4_press` scene event, even with "Aux switch scenes" enabled on main VZM31-SN.
+**Solution:** Create separate automation to catch the `off` command:
+```yaml
+triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: "XX:XX:XX:XX:XX:XX:XX:XX"
+      command: "off"
+actions:
+  - action: light.turn_off
+    target:
+      entity_id: light.target_light
+```
+**Note:** AUX UP (`button_5_press`) works correctly after toggling "Aux switch scenes" off/on.
+
+### AUX SWITCH BUTTON MAPPING (VZM31-SN 3-way)
+- `button_4_press` = AUX DOWN (may send `off` instead)
+- `button_5_press` = AUX UP
+- `button_6_press` = AUX CONFIG
+
+### HUE ROOM VS ZONE TARGETING
+**Problem:** Hue room scenes (e.g., `scene.entry_room_energize`) control ALL lights in room including lamps.
+**Solution:** For ceiling-only control, target the specific Hue zone entity (`light.entry_room_ceiling_light`) instead of room-wide scenes.
+
+### BULB REPLACEMENT WORKFLOW
+When replacing Hue bulbs (e.g., white → color):
+1. Old entity IDs become unavailable
+2. New entities auto-created by Hue integration
+3. Update Hue zones in Hue app to include new bulbs
+4. Reload automations in HA (`automation.reload`)
+5. Update any automations referencing old entity IDs

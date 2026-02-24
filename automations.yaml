@@ -496,3 +496,50 @@
           entity_id: switch.living_room_subwoofer_plug
         action: switch.turn_off
   mode: restart
+- id: '1771882149561'
+  alias: Entry Room - AUX Switch Off Command
+  description: Catches AUX DOWN 'off' command that bypasses scene events
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: 'off'
+  actions:
+  - action: light.turn_off
+    target:
+      entity_id: light.entry_room_ceiling_light
+  mode: single
+- id: '1771901615355'
+  alias: Entry Room - AUX Switch Ceiling Control
+  description: AUX switch UP/DOWN controls Entry Room Ceiling Hue zone only (not lamp)
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: button_5_press
+    id: aux_up
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: button_4_press
+    id: aux_down
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aux_up
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_ceiling_light
+    - conditions:
+      - condition: trigger
+        id: aux_down
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.entry_room_ceiling_light
+  mode: restart
