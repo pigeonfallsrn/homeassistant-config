@@ -395,16 +395,16 @@
   mode: single
 - id: '1771858450789'
   alias: Living Room - AVR On When Fire TV Active
-  description: Turn on AVR at 30% volume, set to AV1 (HDMI1 passthrough), and power
-    subwoofer when Fire TV starts playing or wakes from standby
+  description: Turn on AVR at 30% volume, set to AV1, and power subwoofer when Fire
+    TV starts playing or wakes from standby
   triggers:
   - id: fire_tv_playing
     platform: state
-    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    entity_id: media_player.living_room_tv
     to: playing
   - id: fire_tv_woke_up
     platform: state
-    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    entity_id: media_player.living_room_tv
     from: standby
     to: idle
   conditions: []
@@ -435,7 +435,7 @@
   description: Turn off AVR and subwoofer after Fire TV idle/standby for 10 minutes
   triggers:
   - platform: state
-    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    entity_id: media_player.living_room_tv
     to:
     - idle
     - standby
