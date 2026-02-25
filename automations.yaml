@@ -74,6 +74,8 @@
       - action: light.turn_on
         target:
           entity_id: light.entry_room_ceiling_light
+        data:
+          brightness_pct: 100
       button_1_hold:
       - action: light.turn_on
         target:
@@ -128,8 +130,8 @@
         action: light.turn_on
 - id: '1771557081733'
   alias: Kitchen Lounge - Aux Switch Controls Hue + Fan
-  description: 'Aux paddle=Hue lights, Config buttons control fan (main=button_3,
-    aux=button_6). Multi-tap: 1x=low, 2x=med, 3x=high, hold=off'
+  description: 'Aux paddle=Hue lights, Config buttons CYCLE fan: press cycles low→med→high→off,
+    hold=off'
   triggers:
   - platform: event
     event_type: zha_event
@@ -164,20 +166,6 @@
     event_data:
       device_ieee: 04:e3:e5:ff:fe:5f:55:c6
       cluster_id: 64561
-      command: button_3_double
-    id: config_double
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
-      cluster_id: 64561
-      command: button_3_triple
-    id: config_triple
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
-      cluster_id: 64561
       command: button_6_press
     id: aux_config_press
   - platform: event
@@ -187,78 +175,74 @@
       cluster_id: 64561
       command: button_6_hold
     id: aux_config_hold
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
-      cluster_id: 64561
-      command: button_6_double
-    id: aux_config_double
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
-      cluster_id: 64561
-      command: button_6_triple
-    id: aux_config_triple
   actions:
   - choose:
     - conditions:
       - condition: trigger
         id: aux_up
       sequence:
-      - target:
+      - action: light.turn_on
+        target:
           entity_id: light.kitchen_lounge
-        action: light.turn_on
     - conditions:
       - condition: trigger
         id: aux_down
       sequence:
-      - target:
+      - action: light.turn_off
+        target:
           entity_id: light.kitchen_lounge
-        action: light.turn_off
     - conditions:
       - condition: trigger
         id:
         - config_press
         - aux_config_press
       sequence:
-      - target:
-          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-        data:
-          percentage: 33
-        action: fan.set_percentage
-    - conditions:
-      - condition: trigger
-        id:
-        - config_double
-        - aux_config_double
-      sequence:
-      - target:
-          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-        data:
-          percentage: 66
-        action: fan.set_percentage
-    - conditions:
-      - condition: trigger
-        id:
-        - config_triple
-        - aux_config_triple
-      sequence:
-      - target:
-          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-        data:
-          percentage: 100
-        action: fan.set_percentage
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            state: 'off'
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 33
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 50
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 66
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 80
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 100
+        default:
+        - action: fan.turn_off
+          target:
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
     - conditions:
       - condition: trigger
         id:
         - config_hold
         - aux_config_hold
       sequence:
-      - target:
+      - action: fan.turn_off
+        target:
           entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-        action: fan.turn_off
   mode: single
 - id: '1771854304476'
   alias: 2nd Floor Bathroom - Humidity Fan Control v2
@@ -776,62 +760,35 @@
           entity_id: input_boolean.hot_tub_mode
   mode: single
   max_exceeded: silent
-- id: '1772045673519'
-  alias: Hot Tub Mode - Activate
-  description: 'When Hot Tub Mode turns ON: disable adaptive lighting, motion automations,
-    and dim/off interior lights so you''re not backlit when returning from hot tub.'
-  triggers:
-  - platform: state
-    entity_id: input_boolean.hot_tub_mode
-    to: 'on'
-    id: mode_on
-  - platform: state
-    entity_id: input_boolean.hot_tub_mode
-    to: 'off'
-    id: mode_off
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: mode_on
-      sequence:
-      - parallel:
-        - action: switch.turn_off
-          target:
-            entity_id:
-            - switch.adaptive_lighting_entry_room_lamp_adaptive
-            - switch.adaptive_lighting_entry_room_ceiling
-            - switch.adaptive_lighting_living_spaces
-        - action: automation.turn_off
-          target:
-            entity_id:
-            - automation.entry_room_lamp_off_after_no_motion
-            - automation.entry_room_ceiling_motion_lighting
-            - automation.entry_room_lamp_adaptive_lux_control
-            - automation.entry_room_lamp_activity_boost
-            - automation.entry_room_lamp_dim_after_15min_no_motion
-        - action: light.turn_off
-          target:
-            entity_id:
-            - light.entry_room
-            - light.living_room_lounge
-    - conditions:
-      - condition: trigger
-        id: mode_off
-      sequence:
-      - parallel:
-        - action: switch.turn_on
-          target:
-            entity_id:
-            - switch.adaptive_lighting_entry_room_lamp_adaptive
-            - switch.adaptive_lighting_entry_room_ceiling
-            - switch.adaptive_lighting_living_spaces
-        - action: automation.turn_on
-          target:
-            entity_id:
-            - automation.entry_room_lamp_off_after_no_motion
-            - automation.entry_room_ceiling_motion_lighting
-            - automation.entry_room_lamp_adaptive_lux_control
-            - automation.entry_room_lamp_activity_boost
-            - automation.entry_room_lamp_dim_after_15min_no_motion
+- id: '1772057917525'
+  alias: 1st Floor Bathroom - Inovelli Controls Hue Ceiling
+  description: 1st Floor Bathroom Inovelli VZM31-SN controls Hue ceiling lights via
+    blueprint
   mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_2:
+      - data:
+          brightness_pct: 100
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_1_hold:
+      - data:
+          brightness_step_pct: -10
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_2_hold:
+      - data:
+          brightness_step_pct: 10
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      inovelli_switch: 0600639e50d4e1ed71fdaa1ef789e678
