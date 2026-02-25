@@ -1,8 +1,8 @@
 # Active Work
-TASK: Entry Room AL config complete - verify light.entry_room_hue_color_lamp included in Entry Room Lamp Adaptive instance
+TASK: Fix Inovelli double-fire: entry_room_ceiling (132x/hr), 1st_floor_bathroom (28x/hr)
 NEXT: (define next step)
 BLOCKED: None
-UPDATED: 2026-02-23
+UPDATED: 2026-02-25
 
 ## Quick Context
 (add context here)

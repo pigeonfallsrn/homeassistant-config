@@ -147,6 +147,8 @@ variables:
 trigger:
 - platform: event
   event_type: zha_event
+  event_data:
+    device_id: !input inovelli_switch
 condition: '{{ trigger.event.data.device_id == device_id }}'
 action:
 - variables:
