@@ -60,6 +60,8 @@
   alias: Entry Room Ceiling - Inovelli Controls Hue Lights
   description: Entry Room Ceiling Inovelli VZM31-SN controls Entry Room Ceiling Hue
     zone
+  mode: single
+  max_exceeded: silent
   use_blueprint:
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
@@ -395,18 +397,21 @@
   mode: single
 - id: '1771858450789'
   alias: Living Room - AVR On When Fire TV Active
-  description: Turn on AVR at 30% volume, set to AV1, and power subwoofer when Fire
-    TV starts playing or wakes from standby
+  description: Turn on AVR at 40% volume, set to AV1, Surround Decoder mode, and power
+    subwoofer when Fire TV wakes from sleep
   triggers:
   - id: fire_tv_playing
-    platform: state
-    entity_id: media_player.living_room_tv
     to: playing
-  - id: fire_tv_woke_up
     platform: state
-    entity_id: media_player.living_room_tv
-    from: standby
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+  - id: fire_tv_woke_up
     to: idle
+    from:
+    - 'off'
+    - standby
+    - unavailable
+    platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
   conditions: []
   actions:
   - parallel:
@@ -425,7 +430,12 @@
         target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
         data:
-          volume_level: 0.3
+          volume_level: 0.4
+      - action: media_player.select_sound_mode
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          sound_mode: Surround Decoder
     - action: switch.turn_on
       target:
         entity_id: switch.living_room_subwoofer_plug
@@ -435,7 +445,7 @@
   description: Turn off AVR and subwoofer after Fire TV idle/standby for 10 minutes
   triggers:
   - platform: state
-    entity_id: media_player.living_room_tv
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
     to:
     - idle
     - standby
@@ -542,4 +552,82 @@
       - action: light.turn_off
         target:
           entity_id: light.entry_room_ceiling_light
+  mode: restart
+- id: 2nd_floor_bathroom_ceiling_inovelli
+  alias: 2nd Floor Bathroom - Ceiling Lights Inovelli Control
+  description: VZM30-SN paddle controls Hue ceiling lights (2 bulbs). Up=On, Down=Off,
+    Hold=Dim. Replaces broken automation.
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+      command: 'on'
+    id: up_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+      command: 'off'
+    id: down_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+      command: move_with_on_off
+    id: up_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+      command: move
+    id: down_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+      command: stop_with_on_off
+    id: release
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: up_press
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+    - conditions:
+      - condition: trigger
+        id: down_press
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+    - conditions:
+      - condition: trigger
+        id: up_hold
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: trigger
+        id: down_hold
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: -10
   mode: restart

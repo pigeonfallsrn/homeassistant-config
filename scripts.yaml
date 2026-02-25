@@ -114,42 +114,124 @@ kitchen_sonos_stop:
       - media_player.kitchen_echo_show
 living_room_movie_mode:
   alias: Living Room Movie Mode
+  description: Set up living room for movie watching - AVR on, dim lights, TV backlight
   icon: mdi:movie-open
-  description: 'Activate movie mode: dim lights, turn on AVR to AV1, set volume, power
-    subwoofer'
+  mode: single
   sequence:
   - parallel:
     - sequence:
-      - target:
+      - action: media_player.turn_on
+        target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
-        action: media_player.turn_on
       - delay:
-          seconds: 3
-      - target:
+          seconds: 2
+      - action: media_player.select_source
+        target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
         data:
           source: AV1
-        action: media_player.select_source
-      - target:
+      - action: media_player.volume_set
+        target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
         data:
-          volume_level: 0.45
-        action: media_player.volume_set
-    - target:
-        entity_id: switch.living_room_subwoofer_plug
-      action: switch.turn_on
-    - sequence:
-      - target:
-          entity_id:
-          - light.living_room_lounge_ceiling_light
-          - light.living_room_lounge_ceiling_light_2_of_3
-          - light.living_room_lounge_ceiling_light_3_of_3
-        action: light.turn_off
-      - target:
-          entity_id:
-          - light.living_room_east_floor_lamp
-          - light.living_room_west_floor_lamp
+          volume_level: 0.4
+      - action: media_player.select_sound_mode
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
         data:
-          brightness_pct: 10
-          transition: 3
-        action: light.turn_on
+          sound_mode: Surround Decoder
+    - action: switch.turn_on
+      target:
+        entity_id: switch.living_room_subwoofer_plug
+    - action: scene.turn_on
+      target:
+        entity_id: scene.living_room_floor_lamps_rest
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room_table_lamps
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_tv_led_strip
+      data:
+        brightness_pct: 30
+fire_tv_youtube:
+  alias: Fire TV - Open YouTube
+  icon: mdi:youtube
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: YouTube (FireTV)
+fire_tv_netflix:
+  alias: Fire TV - Open Netflix
+  icon: mdi:netflix
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: am start -n com.netflix.ninja/.MainActivity
+fire_tv_hulu:
+  alias: Fire TV - Open Hulu
+  icon: mdi:hulu
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.hulu.plus 1
+fire_tv_spotify:
+  alias: Fire TV - Open Spotify
+  icon: mdi:spotify
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: Spotify
+fire_tv_prime:
+  alias: Fire TV - Open Prime Video
+  icon: mdi:amazon
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: Prime Video (FireTV)
+fire_tv_peace_lutheran:
+  alias: Fire TV - Peace Lutheran Livestream
+  icon: mdi:church
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: am start -a android.intent.action.VIEW -d 'https://peacelutheranofpigeonfalls.org/LiveStream'
+fire_tv_hudl:
+  alias: Fire TV - Whitehall Norse Hudl
+  icon: mdi:basketball
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.hudl.fanexperience 1
+fire_tv_plex:
+  alias: Fire TV - Open Plex
+  icon: mdi:plex
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.plexapp.android 1
+fire_tv_hdhomerun:
+  alias: Fire TV - Open HD HomeRun
+  icon: mdi:television-classic
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.silicondust.view 1
