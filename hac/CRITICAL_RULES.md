@@ -7,7 +7,7 @@ hac backup <filename>   # NON-NEGOTIABLE
 ```
 
 ## TERMINAL (ZSH)
-- **Git errors** (`confused by unstable object`): Run `git gc --prune=now` first
+- **Git errors** (`confused by unstable object`): Run `git gc --prune=now` twice (HA Green/SD card limitation)
 - **Escape `!`** or use single quotes: `echo 'Hello!'` not `echo "Hello!"`
 - **Never chain after `python3 -c`** on same line
 - **Paths**: `/homeassistant/` (not `/config/`)
