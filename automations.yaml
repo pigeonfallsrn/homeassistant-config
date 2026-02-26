@@ -256,7 +256,7 @@
       minutes: 2
     id: hot_water
   - platform: numeric_state
-    entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
+    entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
     above: 65
     id: high_humidity
   conditions:
@@ -271,7 +271,7 @@
       minutes: 15
   - if:
     - condition: numeric_state
-      entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
+      entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
       below: 60
     then:
     - action: fan.turn_off
