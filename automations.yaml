@@ -246,58 +246,43 @@
   mode: single
 - id: '1771854304476'
   alias: 2nd Floor Bathroom - Humidity Fan Control v2
-  description: Automatic fan control based on humidity derivative with Navien pre-trigger
-    and manual override. Rising humidity or sustained hot water flow turns fan on.
-    Falling humidity + delay turns off. Manual paddle override disables auto for 30min.
+  description: Timer-based fan control. Turns on with hot water or high humidity.
+    Auto-off after 15min if humidity normalized, 30min max.
   triggers:
-  - platform: numeric_state
-    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-    above: 1.5
-    id: humidity_rising
-  - platform: numeric_state
-    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-    below: -0.5
-    for:
-      minutes: 2
-    id: humidity_falling
   - platform: numeric_state
     entity_id: sensor.navien_water_flow
     above: 0.5
     for:
       minutes: 2
-    id: hot_water_pretrigger
+    id: hot_water
   - platform: numeric_state
     entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
     above: 65
-    id: max_humidity
+    id: high_humidity
   conditions:
   - condition: state
     entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
     state: 'off'
   actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - humidity_rising
-        - hot_water_pretrigger
-        - max_humidity
-      sequence:
-      - target:
-          entity_id: fan.inovelli_vzm35_sn_fan
-        action: fan.turn_on
-    - conditions:
-      - condition: trigger
-        id: humidity_falling
-      sequence:
-      - delay:
-          minutes: 5
-      - condition: numeric_state
-        entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
-        below: 60
-      - target:
-          entity_id: fan.inovelli_vzm35_sn_fan
-        action: fan.turn_off
+  - action: fan.turn_on
+    target:
+      entity_id: fan.inovelli_vzm35_sn_fan
+  - delay:
+      minutes: 15
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.1st_floor_bathroom_vanity_lights_humidity
+      below: 60
+    then:
+    - action: fan.turn_off
+      target:
+        entity_id: fan.inovelli_vzm35_sn_fan
+    else:
+    - delay:
+        minutes: 15
+    - action: fan.turn_off
+      target:
+        entity_id: fan.inovelli_vzm35_sn_fan
   mode: restart
 - id: '1771854392376'
   alias: 2nd Floor Bathroom - Fan Inovelli Paddle Control v2
