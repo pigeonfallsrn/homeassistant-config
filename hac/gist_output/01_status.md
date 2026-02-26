@@ -1,5 +1,5 @@
-# HA Status - 2026-02-26 13:03 CST
-Version: 2026.2.3 | HAC: v8.0
+# HA Status - 2026-02-26 13:10 CST
+Version: 2026.2.3 | HAC: v9.1
 
 ## People
 john_spencer: home
