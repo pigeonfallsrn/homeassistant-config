@@ -1,10 +1,10 @@
-# HA Status - 2026-02-13 14:23 CST
-Version: 2026.2.1 | HAC: v8.0
+# HA Status - 2026-02-26 12:59 CST
+Version: 2026.2.3 | HAC: v8.0
 
 ## People
 john_spencer: home
 alaina_spencer: Whitehall School
-ella_spencer: Whitehall School
+ella_spencer: home
 [PERSON]: home
 jarrett_goetting: unknown
 jean_spencer: unknown
@@ -42,10 +42,10 @@ guest_present: off
 kids_bedtime_override: off
 john_home: on
 alaina_home: off
-ella_home: off
+ella_home: on
 michelle_home: off
 someone_home: on
-girls_home: off
+girls_home: on
 both_girls_home: off
 bathroom_manual_override: unavailable
 kitchen_table_manual_override: unavailable
@@ -53,16 +53,16 @@ kitchen_table_manual_override: unavailable
 2nd_floor_bathroom_fan_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-13 12:08:26 upstairs_hallway_motion_lighting_v2
-2026-02-13 12:08:26 presence_update_someone_home
-2026-02-13 12:08:26 presence_update_occupancy_combinations
-2026-02-13 12:08:26 presence_john_away
-2026-02-13 12:08:26 presence_john_home
-2026-02-13 12:08:26 calendar_refresh_school_in_session_now
-2026-02-13 12:08:26 calendar_refresh_school_tomorrow
-2026-02-13 12:08:26 context_apply_on_occupancy_change
-2026-02-13 12:08:26 occupancy_update_mode
-2026-02-13 12:08:26 safety_all_lights_off_when_nobody_home
+2026-02-26 10:45:16 2nd_floor_bathroom_humidity_fan_control_v3
+2026-02-26 10:45:16 2nd_floor_bathroom_vanity_lights_inovelli_control
+2026-02-26 09:21:14 calendar_refresh_school_in_session_now
+2026-02-26 09:21:14 calendar_refresh_school_tomorrow
+2026-02-26 09:21:14 context_apply_on_time_change
+2026-02-26 09:21:14 kitchen_tablet_wake_on_kitchen_motion
+2026-02-26 09:21:14 kitchen_tablet_brightness_schedule
+2026-02-26 09:21:14 humidity_smart_shower_alert_low_house_humidity
+2026-02-26 09:21:14 google_sheets_export_on_startup
+2026-02-26 09:21:14 entry_room_ceiling_motion_lighting
 
 ## Errors (last 5)
 

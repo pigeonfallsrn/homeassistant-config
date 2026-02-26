@@ -1,8 +1,8 @@
-# Automation Index - 2026-02-13 14:23
+# Automation Index - 2026-02-26 12:59
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
-- **adaptive_lighting_entry_lamp.yaml** (13 automations)
+- **adaptive_lighting_entry_lamp.yaml** (14 automations)
 - **adaptive_lighting_kitchen_lounge_lamp.yaml** (5 automations)
 - **adaptive_lighting_living_room.yaml** (6 automations)
 - **ap_presence_hybrid.yaml** (0
@@ -31,7 +31,7 @@ Fetch full YAML: `hac pkg <filename>`
 - **lights_auto_off_safety.yaml** (3 automations)
 - **motion_aggregation.yaml** (0
 0 automations)
-- **notifications_system.yaml** (8 automations)
+- **notifications_system.yaml** (11 automations)
 - **occupancy_system.yaml** (9 automations)
 - **presence_display.yaml** (0
 0 automations)
@@ -45,15 +45,16 @@ Fetch full YAML: `hac pkg <filename>`
 109: extended_evening_auto_clear
 123: hot_tub_mode_auto_reset
 138: hot_tub_mode_auto_off_when_done
-183: arrival_adaptive_lighting_on
-233: entry_room_lamp_adaptive_control
-336: entry_room_lamp_activity_boost
-372: entry_room_lamp_no_motion_dim
-406: entry_room_lamp_no_motion_off
-432: entry_room_lamp_hard_off
-455: adaptive_lighting_global_off
-478: hot_tub_mode_notification
-501: hot_tub_mode_notification_actions
+185: hot_tub_mode_living_room_lamp
+200: arrival_adaptive_lighting_on
+250: entry_room_lamp_adaptive_control
+377: entry_room_lamp_activity_boost
+413: entry_room_lamp_no_motion_dim
+447: entry_room_lamp_no_motion_off
+473: entry_room_lamp_hard_off
+496: adaptive_lighting_global_off
+519: hot_tub_mode_notification
+542: hot_tub_mode_notification_actions
 
 ### adaptive_lighting_kitchen_lounge_lamp.yaml
 31: kitchen_lounge_lamp_adaptive_control
@@ -160,24 +161,27 @@ Fetch full YAML: `hac pkg <filename>`
 
 ### notifications_system.yaml
 10: arrival_notification_john
-51: arrival_notification_ella
-69: arrival_notification_actions
-114: low_battery_daily_digest
-150: low_battery_notification_actions
-190: critical_battery_alert
-237: bedtime_first_floor_lights_off_prompt
-281: bedtime_lights_notification_actions
+68: arrival_notification_ella
+86: arrival_notification_actions
+192: low_battery_daily_digest
+228: low_battery_notification_actions
+268: critical_battery_alert
+315: bedtime_first_floor_lights_off_prompt
+359: bedtime_lights_notification_actions
+607: departure_garage_open_alert
+659: departure_garage_action_handler
+758: departure_garage_autoclear
 
 ### occupancy_system.yaml
-374: update_occupancy_mode
-397: apply_context_on_occupancy_change
-408: apply_context_on_time_change
-420: apply_context_on_overlay_change
-436: refresh_school_tomorrow
-468: refresh_school_in_session_now
-505: upstairs_hallway_motion_lighting_OLD_DISABLED
-570: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
-611: morning_wake_master_bedroom
+375: update_occupancy_mode
+398: apply_context_on_occupancy_change
+409: apply_context_on_time_change
+421: apply_context_on_overlay_change
+437: refresh_school_tomorrow
+469: refresh_school_in_session_now
+506: upstairs_hallway_motion_lighting_OLD_DISABLED
+571: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
+612: morning_wake_master_bedroom
 
 ### presence_display.yaml
 
@@ -196,11 +200,27 @@ Fetch full YAML: `hac pkg <filename>`
 407: recent_motion_detected
 
 ### upstairs_lighting.yaml
-39: upstairs_hallway_motion_lighting_v2
+8: upstairs_hallway_motion_lighting_v2
 
 
 ### automations.yaml
-1: '1770558776705'
-148: '1770564792613'
-269: 'alaina_led_strip_lights_button'
-280: 'alaina_led_strip_auto_off'
+1: alaina_led_strip_lights_button
+11: alaina_led_strip_auto_off
+23: '1771364980856'
+59: '1771532178019'
+91: '1771556632224'
+131: '1771557081733'
+247: '1771854304476'
+287: '1771854392376'
+353: '1771854413864'
+367: '1771858450789'
+416: '1771858469033'
+444: '1771858527176'
+482: '1771882149561'
+496: '1771901615355'
+529: 2nd_floor_bathroom_vanity_inovelli
+605: '1772045640891'
+674: '1772057917525'
+706: '1772070592354'
+750: '1772070611621'
+794: '1772074192238'

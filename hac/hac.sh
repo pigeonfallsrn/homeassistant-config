@@ -1395,7 +1395,7 @@ project() {
 cmd_menu() {
     cat << 'MENUEOF'
 ===============================================================================
-HAC v8.0 - Home Assistant Context Manager
+HAC v9.1 - Home Assistant Context Manager
 ===============================================================================
 
 START A SESSION - Which AI, where?
