@@ -236,3 +236,22 @@ Contents: Entity registry, device registry, area mappings, current states
 ### MCP Limitations
 - `ha_config_get_automation` only sees UI-created automations (stored in .storage/)
 - YAML automations in `automations/*.yaml` or `packages/*.yaml` must be read via terminal
+
+---
+
+## Git Troubleshooting
+
+### "Unstable object source data" Error
+HA writes to database files mid-commit. Fix:
+```bash
+git reset HEAD zigbee.db* home-assistant_v2.db*
+git commit -m "message"
+```
+
+### SSH Push Fails on Port 443
+Duplicate `Host github.com` in `~/.ssh/config` - later entry overrides. Should have ONE block only.
+
+### Standard Commit Pattern
+```bash
+git add -A && git reset HEAD zigbee.db* home-assistant_v2.db* && git commit -m "message" && git push
+```
