@@ -239,6 +239,8 @@ $(tail -500 /config/home-assistant.log 2>/dev/null | grep -iE "error|exception" 
 
 ## Double-Fires (last hour)
 $(sqlite3 "$DB_PATH" "SELECT replace(m.entity_id,'automation.',''),COUNT(*) FROM states s JOIN states_meta m ON s.metadata_id=m.metadata_id WHERE m.entity_id LIKE 'automation.%' AND s.state='on' AND s.last_changed_ts>strftime('%s','now','-1 hours') GROUP BY m.entity_id HAVING COUNT(*)>3 ORDER BY COUNT(*) DESC LIMIT 5;" 2>/dev/null | while IFS='|' read a c; do echo "⚠ $a: ${c}x"; done)
+## Active Work
+$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -40 || echo "None")
 INNER
 )
     sanitize_output "$content" > "$OUTPUT_DIR/01_status.md"
