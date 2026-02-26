@@ -381,22 +381,26 @@
   mode: single
 - id: '1771858450789'
   alias: Living Room - AVR On When Fire TV Active
-  description: Turn on AVR at 40% volume, set to AV1, Surround Decoder mode, and power
-    subwoofer when Fire TV wakes from sleep
+  description: Turn on AVR at 50% volume, set to AV1, Surround Decoder mode, and power
+    subwoofer when Fire TV wakes. Only triggers when AVR is off to preserve manual
+    volume adjustments.
   triggers:
   - id: fire_tv_playing
-    to: playing
     platform: state
     entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to: playing
   - id: fire_tv_woke_up
+    platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
     to: idle
     from:
     - 'off'
     - standby
     - unavailable
-    platform: state
-    entity_id: media_player.living_room_fire_tv_192_168_1_17
-  conditions: []
+  conditions:
+  - condition: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    state: 'off'
   actions:
   - parallel:
     - sequence:
@@ -414,7 +418,7 @@
         target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
         data:
-          volume_level: 0.4
+          volume_level: 0.5
       - action: media_player.select_sound_mode
         target:
           entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
