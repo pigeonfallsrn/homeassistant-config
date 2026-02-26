@@ -541,84 +541,6 @@
         target:
           entity_id: light.entry_room_ceiling_light
   mode: restart
-- id: 2nd_floor_bathroom_ceiling_inovelli
-  alias: 2nd Floor Bathroom - Ceiling Lights Inovelli Control
-  description: VZM30-SN paddle controls Hue ceiling lights (2 bulbs). Up=On, Down=Off,
-    Hold=Dim. Replaces broken automation.
-  triggers:
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-      command: 'on'
-    id: up_press
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-      command: 'off'
-    id: down_press
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-      command: move_with_on_off
-    id: up_hold
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-      command: move
-    id: down_hold
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-      command: stop_with_on_off
-    id: release
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: up_press
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-    - conditions:
-      - condition: trigger
-        id: down_press
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-    - conditions:
-      - condition: trigger
-        id: up_hold
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-        data:
-          brightness_step_pct: 10
-    - conditions:
-      - condition: trigger
-        id: down_hold
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-        data:
-          brightness_step_pct: -10
-  mode: restart
 - id: 2nd_floor_bathroom_vanity_inovelli
   alias: 2nd Floor Bathroom - Vanity Lights Inovelli Control
   description: VZM30-SN paddle controls Hue vanity lights (3 bulbs). Up=On, Down=Off,
@@ -882,5 +804,61 @@
       - action: light.turn_on
         target:
           entity_id: light.kitchen_chandelier
+        data:
+          brightness_pct: 100
+- id: '1772074192238'
+  alias: 2nd Floor Bathroom Ceiling - Inovelli Controls Hue Lights
+  description: 2nd Floor Bathroom Ceiling Inovelli VZM30-SN controls 2 Hue ceiling
+    bulbs via fxlt blueprint
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_pct: 100
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: 10
+      button_1_double:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_pct: 10
+      button_2_double:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
         data:
           brightness_pct: 100
