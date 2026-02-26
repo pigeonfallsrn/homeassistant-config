@@ -985,8 +985,16 @@ cmd_mcp() {
     
     cat << PROMPT
 ═══════════════════════════════════════════════════════════════════════════════
-HAC v9 - TOKEN-EFFICIENT MCP SESSION
+HAC v9.1 - CLAUDE 4.5 MCP SESSION
 ═══════════════════════════════════════════════════════════════════════════════
+
+## ⚠️ CRITICAL RULES (read before any edit)
+**BEFORE EDITS**: \`hac backup <file>\` — NON-NEGOTIABLE
+**TERMINAL**: Escape \`!\` in ZSH, paths use \`/homeassistant/\`
+**MOTION**: Always \`mode: restart\`, use combined sensors with \`delay_off: 60s\`
+**INOVELLI**: Smart Bulb Mode=param 52, params need toggle+air gap to write
+**ADAPTIVE LIGHTING**: UI-only create/delete, Hue needs separate_turn_on_commands+take_over_control+detect_non_ha_changes:false
+**NEVER EDIT**: \`.storage/*.json\` files directly
 
 ## System
 $(grep -A4 "^## System" "$HAC_DIR/CONTEXT.md" 2>/dev/null | tail -4 || echo "HA Green | MCP Connected")
@@ -994,26 +1002,22 @@ $(grep -A4 "^## System" "$HAC_DIR/CONTEXT.md" 2>/dev/null | tail -4 || echo "HA 
 ## Active Work
 $(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -10 || echo "None - run: hac active 'task'")
 
-## Resources (request as needed)
-| Need | Command |
-|------|---------|
-| AL/Inovelli patterns | \`cat /homeassistant/hac/knowledge/patterns.md\` |
-| Gotchas/pitfalls | \`cat /homeassistant/hac/knowledge/gotchas.md\` |
-| Architecture decisions | \`cat /homeassistant/hac/knowledge/decisions.md\` |
-| Paused projects | \`cat /homeassistant/hac/tabled_projects.md\` |
-| Today's learnings | \`cat /homeassistant/hac/learnings/$(date +%Y%m%d).md\` |
-| Full resource index | \`cat /homeassistant/hac/RESOURCES.md\` |
+## Commands
+| Action | Command |
+|--------|---------|
+| Full rules | \`cat /homeassistant/hac/CRITICAL_RULES.md\` |
+| Patterns | \`cat /homeassistant/hac/knowledge/patterns.md\` |
+| Gotchas | \`cat /homeassistant/hac/knowledge/gotchas.md\` |
+| Today's log | \`cat /homeassistant/hac/learnings/$(date +%Y%m%d).md\` |
+
+## Session Rules
+1. \`hac backup <file>\` before edits
+2. \`hac learn "CATEGORY" "insight"\` (MOTION, INOVELLI, AL, YAML, ZHA, HAC)
+3. \`hac active "task"\` to update focus
+4. MCP for live state/services, terminal for files/YAML
 
 ## Links
-- LLM Index: https://docs.google.com/spreadsheets/d/1zqHimElloqzVLacx_LH8NqZ9XKZ75APsE9EPiIGd3Gk
 - Gist: $gist_url
-
-## Rules
-1. \`hac backup <file>\` before edits
-2. \`hac learn "insight"\` to persist  
-3. \`hac active "task"\` to update focus
-4. MCP for live state, terminal for files
-
 ═══════════════════════════════════════════════════════════════════════════════
 PROMPT
 }
