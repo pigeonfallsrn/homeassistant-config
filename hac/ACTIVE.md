@@ -1,5 +1,5 @@
 # Active Work
-TASK: None - ready for next task
+TASK: Phase 2 lighting audit: physical triage pending (Aqara Hub M3, Hue bulbs, Govee lamps)
 NEXT: (define next step)
 BLOCKED: None
 UPDATED: 2026-02-25

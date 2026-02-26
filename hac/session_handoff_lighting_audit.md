@@ -129,3 +129,20 @@ Root cause: `button.aqara_hub_m3_identify` unavailable since HA restart
 - [ ] Govee cloud reconnection
 - [ ] Blueprint migration (fxlt → MasterDevwi/Ratoka)
 - [ ] Living Room Lounge device → sun_room area fix
+
+---
+
+## Session: 2026-02-25
+
+### Completed ✅
+- **AL Entry Room Lamp:** Verified `light.entry_room_hue_color_lamp` in dedicated instance
+- **AL Duplicate Fix:** Removed lamp from Living Spaces instance (was in both)
+- **AL Config Fix:** Set `separate_turn_on_commands: true` on Entry Room Lamp Adaptive
+- **fxlt Blueprint Fix:** Added `event_data.device_id` filter to trigger - eliminated 132x/hr double-fires across all 10 Inovelli automations using this blueprint
+- **Area Cleanup:** Deleted empty `sun_room` area, kept `living_room_lounge` as canonical
+
+### Still Pending (Physical Triage)
+- [ ] Aqara Hub M3 (entry_room) - check power/network, 2 Matter LED strips depend on it
+- [ ] 6 Hue bulbs unavailable (garage ceiling x2, 2nd floor bathroom vanity x3, upstairs hallway nightlight)
+- [ ] 2 Govee lamps (power/WiFi/cloud account)
+- [ ] Aqara LED strip friendly_name mismatch (device says Master_Bedroom, entity says Kitchen)
