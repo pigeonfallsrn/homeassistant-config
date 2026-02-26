@@ -17,7 +17,7 @@
         entity_id: light.front_driveway
       data:
         transition: 5
-  mode: single
+  mode: restart
 
 - id: front_driveway_motion_lights_on
   alias: "Front Driveway - Lights On When Motion (Dark)"
@@ -35,17 +35,15 @@
         entity_id: light.front_driveway
       data:
         brightness_pct: 100
-  mode: single
+  mode: restart
 
 - id: garage_lights_auto_off
   alias: "Garage - Auto Off After No Motion"
   description: "Turn off garage lights 5 minutes after no motion"
   trigger:
-    - platform: template
-      value_template: >
-        {{ is_state('binary_sensor.garage_north_wall_nightlight_motion', 'off') and
-           is_state('binary_sensor.ratgdo32disco_fd8d8c_motion', 'off') and
-           is_state('binary_sensor.ratgdo32disco_5735e8_motion', 'off') }}
+    - platform: state
+      entity_id: binary_sensor.garage_motion_combined
+      to: "off"
       for:
         minutes: 5
   condition:
@@ -58,7 +56,7 @@
         entity_id: light.garage
       data:
         transition: 5
-  mode: single
+  mode: restart
 
 - id: garage_walkin_door_lights_on
   alias: "Garage - Lights On When Walk-in Door Opens"
@@ -73,4 +71,4 @@
         entity_id: light.garage
       data:
         brightness_pct: 100
-  mode: single
+  mode: restart
