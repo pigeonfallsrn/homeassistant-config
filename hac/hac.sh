@@ -6,7 +6,7 @@
 set -e
 
 # === CONFIG ===
-HAC_VERSION="8.0"
+HAC_VERSION="9.1"
 HAC_DIR="/config/hac"
 OUTPUT_DIR="$HAC_DIR/gist_output"
 PACKAGES_DIR="/config/packages"

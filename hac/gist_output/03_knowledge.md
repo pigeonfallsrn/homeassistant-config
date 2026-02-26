@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-26 12:59
+# System Knowledge - 2026-02-26 13:03
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
