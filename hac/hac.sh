@@ -625,12 +625,33 @@ ACTIVEEOF
 }
 
 cmd_learn() {
-    [ -z "$1" ] && echo "Usage: hac learn \"insight\"" && return
+    # Usage: hac learn "insight" OR hac learn "CATEGORY" "insight"
+    [ -z "$1" ] && echo "Usage: hac learn \"insight\" OR hac learn \"CATEGORY\" \"insight\"" && return
     ensure_dirs
-    echo "- $(date '+%H:%M'): $1" >> "$SESSION_FILE"
-    echo "- $(date '+%H:%M'): $1" >> "$LEARNINGS_DIR/$(date +%Y%m%d).md"
-    log_ok "Logged to session + learnings"
+    
+    local CATEGORY="GENERAL"
+    local INSIGHT="$1"
+    if [ -n "$2" ]; then
+        CATEGORY=$(echo "$1" | tr "[:lower:]" "[:upper:]")
+        INSIGHT="$2"
+    fi
+    
+    local ENTRY="- [$(date +%Y-%m-%d) $(date +%H:%M)] $CATEGORY: $INSIGHT"
+    local DAILY_FILE="$LEARNINGS_DIR/$(date +%Y%m%d).md"
+    
+    # Check for repeat patterns in CRITICAL_RULES
+    local KEYWORDS=$(echo "$INSIGHT" | tr " " "\n" | grep -E "^[A-Za-z]{4,}$" | head -3 | tr "\n" "|" | sed "s/|$//")
+    if [ -n "$KEYWORDS" ] && grep -qiE "$KEYWORDS" "$HAC_DIR/CRITICAL_RULES.md" 2>/dev/null; then
+        echo "⚠️  REPEAT PATTERN DETECTED - Check CRITICAL_RULES.md first!"
+        grep -iE "$KEYWORDS" "$HAC_DIR/CRITICAL_RULES.md" | head -3
+        echo ""
+    fi
+    
+    echo "$ENTRY" >> "$SESSION_FILE"
+    echo "$ENTRY" >> "$DAILY_FILE"
+    log_ok "Logged: $CATEGORY → $(basename $DAILY_FILE)"
 }
+
 
 cmd_recall() {
     local TOPIC="$1"
@@ -1453,7 +1474,7 @@ case "${1:-}" in
     sanitize-test) python3 /config/hac/hac_sanitize.py test;;
     hygiene) cmd_hygiene;;
     active) shift; cmd_active "$*";;
-    learn) shift; cmd_learn "$*";;
+    learn) shift; cmd_learn "$@";;
     review) cmd_review "$2";;
     recall) cmd_recall "$2";;
     promote) shift; cmd_promote "$*";;

@@ -1,5 +1,9 @@
 # John Spencer's Home Assistant Context
-*HAC v9 - Token-Efficient Session Management*
+*HAC v9.1 - Token-Efficient Session Management*
+
+## ⚠️ FIRST: Read CRITICAL_RULES.md
+**Before doing anything**, review `/homeassistant/hac/CRITICAL_RULES.md`
+Contains hard-won lessons that cost real time to learn.
 
 ## System
 - **Platform:** HA Green, HA 2026.2.x
@@ -8,26 +12,26 @@
 - **MCP:** Connected - query live states directly
 
 ## Active Work
-<!-- Sourced from ACTIVE.md -->
+<!-- `cat ACTIVE.md` for current task -->
 
 ## Resources (request as needed)
-| Need | Command | Contains |
-|------|---------|----------|
-| Reusable configs | `cat /homeassistant/hac/knowledge/patterns.md` | AL settings, Inovelli params, motion patterns |
-| Pitfalls learned | `cat /homeassistant/hac/knowledge/gotchas.md` | Hard-won lessons, breaking changes |
-| Architecture | `cat /homeassistant/hac/knowledge/decisions.md` | Why things are built this way |
-| Paused work | `cat /homeassistant/hac/tabled_projects.md` | Future projects with context |
-| Recent learnings | `cat /homeassistant/hac/learnings/$(date +%Y%m%d).md` | Today's insights |
-| Active issues | LLM Index Sheet → Active Issues tab | Prioritized action items |
-| All entities | MCP `ha_search_entities` or Master Sheet | Entity lookup |
+| Need | Command |
+|------|---------|
+| **CRITICAL RULES** | `cat /homeassistant/hac/CRITICAL_RULES.md` |
+| Reusable patterns | `cat /homeassistant/hac/knowledge/patterns.md` |
+| Known gotchas | `cat /homeassistant/hac/knowledge/gotchas.md` |
+| Architecture decisions | `cat /homeassistant/hac/knowledge/decisions.md` |
+| Paused projects | `cat /homeassistant/hac/tabled_projects.md` |
+| Today's learnings | `cat /homeassistant/hac/learnings/$(date +%Y%m%d).md` |
 
 ## Session Rules
-1. **Before edits:** `hac backup <file>`
-2. **Persist insight:** `hac learn "what you learned"`
-3. **Update focus:** `hac active "new task"`
-4. **Commit work:** `cd /homeassistant && git add -A && git commit -m "summary"`
+1. **Read CRITICAL_RULES.md** before starting work
+2. **Before edits:** `hac backup <file>`
+3. **Persist insight:** `hac learn "CATEGORY" "what you learned"`
+4. **Update focus:** `hac active "new task"`
+5. **Commit work:** `cd /homeassistant && git add -A && git commit -m "summary"`
 
 ## Terminal Rules (ZSH)
-- Escape `!` in strings or use single quotes
+- Escape `!` or use single quotes
 - Never chain after `python3 -c` on same line
 - Paths: /homeassistant/ (not /config/)
