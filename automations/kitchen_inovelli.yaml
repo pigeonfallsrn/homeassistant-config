@@ -218,35 +218,6 @@
                     entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
 
 # -----------------------------------------------------------------------------
-# ABOVE SINK (keep simple on/off)
-# -----------------------------------------------------------------------------
-- id: kitchen_above_sink_inovelli
-  alias: Kitchen Above Sink - Inovelli Control
-  description: Simple on/off control
-  mode: queued
-  trigger:
-    - platform: event
-      event_type: zha_event
-      event_data:
-        device_id: 89ca030d64760ad87512e97d13a2737d
-  action:
-    - variables:
-        command: "{{ trigger.event.data.command }}"
-    - choose:
-        - conditions: "{{ command == 'button_2_press' }}"
-          sequence:
-            - action: light.turn_on
-              target:
-                entity_id: light.hue_color_downlight_1_3
-        - conditions: "{{ command == 'button_1_press' }}"
-          sequence:
-            - action: light.turn_off
-              target:
-                entity_id: light.hue_color_downlight_1_3
-
-# -----------------------------------------------------------------------------
-# OVERRIDE RESETS
-# -----------------------------------------------------------------------------
 - id: kitchen_table_light_override_reset
   alias: Kitchen Table - Reset Light Override (30 min)
   mode: restart
