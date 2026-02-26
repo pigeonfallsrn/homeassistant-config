@@ -847,3 +847,69 @@
           - light.2nd_floor_bathroom_ceiling_2of2
         data:
           brightness_pct: 100
+- id: 2nd_floor_bathroom_humidity_fan_v3
+  alias: 2nd Floor Bathroom - Humidity Fan Control v3
+  description: 'Derivative-based shower detection with safety guards. Triggers: humidity
+    rising >2%/min, OR absolute >70%, OR hot water flow. Safety: 30 min max runtime,
+    HA restart recovery, manual override.'
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+    above: 2
+    id: derivative_rising
+  - platform: numeric_state
+    entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+    above: 70
+    id: high_humidity
+  - platform: numeric_state
+    entity_id: sensor.navien_water_flow
+    above: 0.5
+    for:
+      minutes: 2
+    id: hot_water
+  - platform: homeassistant
+    event: start
+    id: ha_restart
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ha_restart
+      sequence:
+      - if:
+        - condition: state
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+          state: 'on'
+        - condition: numeric_state
+          entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+          below: 55
+        then:
+        - action: fan.turn_off
+          target:
+            entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    default:
+    - condition: state
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+      state: 'off'
+    - action: fan.turn_on
+      target:
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    - wait_for_trigger:
+      - platform: numeric_state
+        entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+        below: -1
+        for:
+          minutes: 3
+      - platform: numeric_state
+        entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+        below: 55
+      timeout:
+        minutes: 30
+      continue_on_timeout: true
+    - delay:
+        minutes: 5
+    - action: fan.turn_off
+      target:
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
+  mode: restart

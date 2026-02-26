@@ -1,9 +1,0 @@
-
-# Humidity Management Controls
-bathroom_fan_pause_hours:
-  name: "Bathroom Fan Pause Duration"
-  min: 1
-  max: 12
-  step: 1
-  unit_of_measurement: "hours"
-  initial: 4
