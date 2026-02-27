@@ -131,10 +131,6 @@ bathroom_fan_pause_low_humidity:
   icon: mdi:fan-off
   initial: false
 
-bathroom_1st_floor_fan_manual_override:
-  name: 1st Floor Bathroom Fan Manual Override
-  icon: mdi:fan-alert
-  initial: false
 
 bathroom_2nd_floor_fan_manual_override:
   name: 2nd Floor Bathroom Fan Manual Override

@@ -6,6 +6,8 @@
 # Exhaust Fan: VZM35-SN (3eed85f7ca546a7ed7e24b0cfc6c818b)
 # 
 # Time-based scenes, manual override blocks motion automation
+# Humidity fan control consolidated in automation.2nd_floor_bathroom_humidity_fan_control_v3
+# Paddle control consolidated in automation.2nd_floor_bathroom_fan_inovelli_paddle_control_v2
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -131,73 +133,6 @@
           brightness_step_pct: 10
 
 # -----------------------------------------------------------------------------
-# EXHAUST FAN - Humidity auto control
-# -----------------------------------------------------------------------------
-- id: '2nd_floor_bathroom_fan_humidity_on'
-  alias: 2nd Floor Bathroom - Fan On (High Humidity)
-  mode: single
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
-      above: 65
-      for:
-        minutes: 2
-  condition:
-    - condition: state
-      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-      state: 'off'
-  action:
-    - action: fan.turn_on
-      target:
-        entity_id: fan.inovelli_vzm35_sn_fan
-
-- id: '2nd_floor_bathroom_fan_humidity_off'
-  alias: 2nd Floor Bathroom - Fan Off (Normal Humidity)
-  mode: single
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.aqara_temp_humidity_sensor_humidity_4
-      below: 55
-      for:
-        minutes: 5
-  condition:
-    - condition: state
-      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-      state: 'off'
-  action:
-    - action: fan.turn_off
-      target:
-        entity_id: fan.inovelli_vzm35_sn_fan
-
-# -----------------------------------------------------------------------------
-# EXHAUST FAN - Inovelli manual control
-# -----------------------------------------------------------------------------
-- id: '2nd_floor_bathroom_fan_inovelli'
-  alias: 2nd Floor Bathroom - Fan Inovelli Manual Control
-  use_blueprint:
-    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-    input:
-      inovelli_switch: 3eed85f7ca546a7ed7e24b0cfc6c818b
-      button_1:
-      - action: fan.turn_off
-        target:
-          entity_id: fan.inovelli_vzm35_sn_fan
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-      button_2:
-      - action: fan.turn_on
-        target:
-          entity_id: fan.inovelli_vzm35_sn_fan
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-      button_3:
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
-
-# -----------------------------------------------------------------------------
 # OVERRIDE RESETS
 # -----------------------------------------------------------------------------
 - id: '2nd_floor_bathroom_fan_override_reset'
@@ -205,14 +140,14 @@
   mode: restart
   trigger:
     - platform: state
-      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
       to: 'on'
       for:
         minutes: 30
   action:
     - action: input_boolean.turn_off
       target:
-        entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+        entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
 
 - id: '2nd_floor_bathroom_light_override_reset'
   alias: 2nd Floor Bathroom - Reset Light Override (30 min)
@@ -243,12 +178,12 @@
         minutes: 2
   condition:
     - condition: state
-      entity_id: input_boolean.2nd_floor_bathroom_fan_manual_override
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
       state: 'off'
     - condition: state
-      entity_id: fan.inovelli_vzm35_sn_fan
+      entity_id: fan.2nd_floor_bathroom_exhaust_fan
       state: 'off'
   action:
     - action: fan.turn_on
       target:
-        entity_id: fan.inovelli_vzm35_sn_fan
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
