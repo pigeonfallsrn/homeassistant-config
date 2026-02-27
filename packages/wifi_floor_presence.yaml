@@ -1,0 +1,69 @@
+# WiFi-Based Floor Presence Detection
+# Uses UniFi AP MAC addresses to determine floor/location
+#
+# AP MAC Reference:
+#   1st Floor (U7 In-Wall): 1c:0b:8b:76:fc:ae
+#   2nd Floor (UZ In-Wall): 1c:0b:8b:76:fa:65
+#   Garage (U6 Lite):       f4:92:bf:69:53:f0
+#
+# Created: 2026-02-27
+
+template:
+  - sensor:
+      - name: "John WiFi Location"
+        unique_id: john_wifi_floor_presence
+        state: >
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') %}
+          {% set tracker = states('device_tracker.john_s_s24_ultra_4') %}
+          {% if tracker == 'not_home' %}Away
+          {% elif ap == '1c:0b:8b:76:fc:ae' %}1st Floor
+          {% elif ap == '1c:0b:8b:76:fa:65' %}2nd Floor
+          {% elif ap == 'f4:92:bf:69:53:f0' %}Garage
+          {% elif ap is none or ap == '' %}Home (Unknown AP)
+          {% else %}Home (Other){% endif %}
+        icon: >
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') %}
+          {% if ap == '1c:0b:8b:76:fc:ae' %}mdi:home-floor-1
+          {% elif ap == '1c:0b:8b:76:fa:65' %}mdi:home-floor-2
+          {% elif ap == 'f4:92:bf:69:53:f0' %}mdi:garage
+          {% else %}mdi:home{% endif %}
+
+      - name: "Michelle WiFi Location"
+        unique_id: michelle_wifi_floor_presence
+        state: >
+          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') %}
+          {% set tracker = states('device_tracker.michelle_s_iphone_14_pro') %}
+          {% if tracker == 'not_home' %}Away
+          {% elif ap == '1c:0b:8b:76:fc:ae' %}1st Floor
+          {% elif ap == '1c:0b:8b:76:fa:65' %}2nd Floor
+          {% elif ap == 'f4:92:bf:69:53:f0' %}Garage
+          {% elif ap is none or ap == '' %}Home (Unknown AP)
+          {% else %}Home (Other){% endif %}
+        icon: >
+          {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') %}
+          {% if ap == '1c:0b:8b:76:fc:ae' %}mdi:home-floor-1
+          {% elif ap == '1c:0b:8b:76:fa:65' %}mdi:home-floor-2
+          {% elif ap == 'f4:92:bf:69:53:f0' %}mdi:garage
+          {% else %}mdi:home{% endif %}
+
+  - binary_sensor:
+      - name: "1st Floor Occupied (WiFi)"
+        unique_id: first_floor_occupied_wifi
+        state: >
+          {{ states('sensor.john_wifi_location') == '1st Floor' or
+             states('sensor.michelle_wifi_location') == '1st Floor' }}
+        device_class: occupancy
+
+      - name: "2nd Floor Occupied (WiFi)"
+        unique_id: second_floor_occupied_wifi
+        state: >
+          {{ states('sensor.john_wifi_location') == '2nd Floor' or
+             states('sensor.michelle_wifi_location') == '2nd Floor' }}
+        device_class: occupancy
+
+      - name: "Garage Occupied (WiFi)"
+        unique_id: garage_occupied_wifi
+        state: >
+          {{ states('sensor.john_wifi_location') == 'Garage' or
+             states('sensor.michelle_wifi_location') == 'Garage' }}
+        device_class: occupancy
