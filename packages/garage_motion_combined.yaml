@@ -1,12 +1,11 @@
-binary_sensor:
-  - platform: template
-    sensors:
-      garage_motion_combined:
-        friendly_name: "Garage Motion Combined"
+template:
+  - binary_sensor:
+      - name: "Garage Motion Combined"
         device_class: motion
         delay_off:
           seconds: 60
-        value_template: >
+        unique_id: garage_motion_combined
+        state: >
           {{ is_state('binary_sensor.garage_north_wall_nightlight_motion', 'on') or
              is_state('binary_sensor.ratgdo32disco_fd8d8c_motion', 'on') or
              is_state('binary_sensor.ratgdo32disco_5735e8_motion', 'on') }}
