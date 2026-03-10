@@ -10,6 +10,7 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **Git errors** (`confused by unstable object`): Run `git gc --prune=now` twice (HA Green/SD card limitation)
 - **Escape `!`** or use single quotes: `echo 'Hello!'` not `echo "Hello!"`
 - **Never chain after `python3 -c`** on same line
+- **BusyBox grep** (HA Green): NO `--include`, NO long options. Use `-rEl` for recursive+extended+filenames. Never `--include=*.yaml` — use `grep -rEl 'pattern' /path/` instead
 - **Paths**: `/homeassistant/` (not `/config/`)
 
 ## MOTION AUTOMATIONS (Times Hit: 15+)
