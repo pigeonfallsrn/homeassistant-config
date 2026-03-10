@@ -317,7 +317,7 @@ automation:
     trigger:
       - platform: template
         value_template: >
-          {{ state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') == '70:a7:41:c6:1e:6c' }}
+          {{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') == '70:a7:41:c6:1e:6c' }}
     condition:
       - condition: time
         after: "19:00:00"

@@ -6,8 +6,8 @@
 #
 # AP REFERENCE:
 #   2nd Floor: MAC 70:a7:41:c6:1e:6c | BSSIDs start with 70:a7:41 or 72:a7:41
-#   1st Floor: MAC 1c:0b:8b:76:fa:65 | BSSIDs start with 1c:0b:8b or 1c:0b:8b
-#   Garage:    MAC 1c:0b:8b:76:fc:ae | BSSIDs start with 1c:0b:8b or 1c:0b:8b
+#   1st Floor: MAC d0:21:f9:eb:b8:8c | BSSIDs start with d0:21:f9 or d2:21:f9
+#   Garage:    MAC f4:92:bf:69:53:f0 | BSSIDs start with f4:92:bf or f6:92:bf
 #   Michelle's: MAC 60:22:32:3d:b6:44 | BSSIDs start with 60:22:32 or 62:22:32
 #   Big Garage: MAC f0:9f:c2:26:6e:23 | BSSIDs start with f0:9f:c2 or f2:9f:c2
 # =============================================================================
@@ -21,11 +21,11 @@ template:
         unique_id: john_ap_location_hybrid
         icon: mdi:map-marker-account
         state: >
-          {% set ap = state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') | default('', true) %}
-          {% set state = states('device_tracker.galaxy_s26_ultra') %}
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('', true) %}
+          {% set state = states('device_tracker.john_s_s24_ultra_4') %}
           {% if ap[:11] in ['70:a7:41:c6', '72:a7:41'] or ap == '70:a7:41:c6:1e:6c' %}Home · Upstairs
-          {% elif ap[:11] in ['1c:0b:8b:eb', '1c:0b:8b'] or ap == '1c:0b:8b:76:fa:65' %}Home · Downstairs
-          {% elif ap[:11] in ['1c:0b:8b:69', '1c:0b:8b'] or ap == '1c:0b:8b:76:fc:ae' %}Home · Garage
+          {% elif ap[:11] in ['d0:21:f9:eb', 'd2:21:f9'] or ap == 'd0:21:f9:eb:b8:8c' %}Home · Downstairs
+          {% elif ap[:11] in ['f4:92:bf:69', 'f6:92:bf'] or ap == 'f4:92:bf:69:53:f0' %}Home · Garage
           {% elif ap[:11] in ['60:22:32:3d', '62:22:32'] or ap == '60:22:32:3d:b6:44' %}Michelle's House
           {% elif ap[:11] in ['f0:9f:c2:26', 'f2:9f:c2'] or ap == 'f0:9f:c2:26:6e:23' %}Big Garage
           {% elif state == 'home' %}Home
@@ -33,12 +33,12 @@ template:
           {% else %}{{ state | title }}{% endif %}
         attributes:
           source: unifi
-          ap_mac: "{{ state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') }}"
+          ap_mac: "{{ state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') }}"
           floor: >
-            {% set ap = state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') | default('', true) %}
+            {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') | default('', true) %}
             {% if ap[:8] in ['70:a7:41', '72:a7:41'] %}2nd
-            {% elif ap[:8] in ['1c:0b:8b', '1c:0b:8b'] %}1st
-            {% elif ap[:8] in ['1c:0b:8b', '1c:0b:8b'] %}garage
+            {% elif ap[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif ap[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
             {% else %}unknown{% endif %}
 
       # -------------------------------------------------------------------------
@@ -57,8 +57,8 @@ template:
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
           {# BSSID detection first #}
           {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
-          {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}Home · Downstairs
-          {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}Home · Garage
+          {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
+          {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
           {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
           {% elif bssid[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
           {% elif ssid in ['Spencer', 'Spencer IoT', 'Spencer - guest'] %}Home
@@ -82,8 +82,8 @@ template:
             {% set upstairs = is_state('binary_sensor.upstairs_motion', 'on') %}
             {% set downstairs = is_state('binary_sensor.downstairs_motion', 'on') %}
             {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
-            {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}1st
-            {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}garage
+            {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
             {% elif home and upstairs and not downstairs %}2nd
             {% elif home and downstairs and not upstairs %}1st
             {% else %}unknown{% endif %}
@@ -105,8 +105,8 @@ template:
           {% set downstairs_motion = is_state('binary_sensor.downstairs_motion', 'on') %}
           {# BSSID detection first #}
           {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}Home · Upstairs
-          {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}Home · Downstairs
-          {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}Home · Garage
+          {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}Home · Downstairs
+          {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}Home · Garage
           {% elif bssid[:8] in ['60:22:32', '62:22:32'] %}Michelle's House
           {% elif bssid[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
           {% elif ssid in ['Spencer', 'Spencer IoT', 'Spencer - guest'] %}Home
@@ -130,8 +130,8 @@ template:
             {% set upstairs = is_state('binary_sensor.upstairs_motion', 'on') %}
             {% set downstairs = is_state('binary_sensor.downstairs_motion', 'on') %}
             {% if bssid and bssid[:8] in ['70:a7:41', '72:a7:41'] %}2nd
-            {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}1st
-            {% elif bssid[:8] in ['1c:0b:8b', '1c:0b:8b'] %}garage
+            {% elif bssid[:8] in ['d0:21:f9', 'd2:21:f9'] %}1st
+            {% elif bssid[:8] in ['f4:92:bf', 'f6:92:bf'] %}garage
             {% elif home and upstairs and not downstairs %}2nd
             {% elif home and downstairs and not upstairs %}1st
             {% else %}unknown{% endif %}
@@ -148,8 +148,8 @@ template:
           {% set state = states('device_tracker.michelle_s_iphone_14_pro') %}
           {% if ap[:8] in ['60:22:32', '62:22:32'] or ap == '60:22:32:3d:b6:44' %}Her House
           {% elif ap[:8] in ['70:a7:41', '72:a7:41'] %}John's House · Upstairs
-          {% elif ap[:8] in ['1c:0b:8b', '1c:0b:8b'] %}John's House · Downstairs
-          {% elif ap[:8] in ['1c:0b:8b', '1c:0b:8b'] %}John's House · Garage
+          {% elif ap[:8] in ['d0:21:f9', 'd2:21:f9'] %}John's House · Downstairs
+          {% elif ap[:8] in ['f4:92:bf', 'f6:92:bf'] %}John's House · Garage
           {% elif ap[:8] in ['f0:9f:c2', 'f2:9f:c2'] %}Big Garage
           {% elif state == 'home' %}Home
           {% elif state == 'not_home' %}Away
@@ -162,7 +162,7 @@ template:
             {{ ap[:8] in ['60:22:32', '62:22:32'] }}
           at_johns_house: >
             {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') | default('', true) %}
-            {{ ap[:8] in ['70:a7:41', '72:a7:41', '1c:0b:8b', '1c:0b:8b', '1c:0b:8b', '1c:0b:8b'] }}
+            {{ ap[:8] in ['70:a7:41', '72:a7:41', 'd0:21:f9', 'd2:21:f9', 'f4:92:bf', 'f6:92:bf'] }}
 
   # ---------------------------------------------------------------------------
   # AGGREGATE SENSORS - Floor occupancy with "who" attribute

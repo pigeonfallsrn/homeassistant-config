@@ -1,4 +1,4 @@
-# System Knowledge - 2026-02-26 13:53
+# System Knowledge - 2026-03-10 09:52
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -109,63 +109,47 @@ source: "com.amazon.firetv.youtube"
 - Prioritize touch targets for one-handed use
 
 ## Recent Session Learnings
-- 2026-03-10: Doorbell automations: mode: parallel not restart — event-based concurrent execution needed for multi-doorbell setups
-- 2026-03-10: notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra
-- 2026-03-10: G4 Doorbell Pro package camera entity: camera.*_package_camera — dedicated lens, use for package snapshots
-- 2026-03-10: UniFi Protect: use event.* entities (not binary_sensor) for doorbell/vehicle triggers — reliable, carries confidence + zone metadata
-- 2026-03-10: Doorbell/package automations: use mode: parallel (not restart) — event-based, not motion-based, need concurrent execution for multiple doorbells
-- 2026-03-10: notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra — primary notification target for John-only automations
-- 2026-03-10: UniFi Protect G4 Doorbell Pro: package camera entity is camera.*_package_camera — dedicated close-up lens, more reliable than main camera for package detection
-- 2026-03-10: UniFi Protect: use event.* entities (not binary_sensor) for doorbell ring and vehicle triggers — more reliable, carries confidence + zone metadata, avoids simultaneous-detection bug
-4. Consider ALSO adding via HomeKit Controller (exposes different device subset)
-
-RESEARCH NOTES:
-- Use BOTH Matter + HomeKit integrations (different devices exposed)
-- M3 acts as Thread Border Router (extends mesh)
-- IR blaster does NOT expose to HA
-- Locks only via Matter, some sensors only via HomeKit
-- Pet feeders need Zigbee2MQTT direct pairing
-- 10:28: Matter recommission fix: Remove stale fabric from BOTH HA Matter integration AND Aqara Connected Ecosystems, then re-pair fresh. VLAN separation (IoT vs Default) not the issue - mDNS working across subnets.
-- 10:55: Bathroom humidity fan best practice: Use derivative sensor (3 min window) for shower detection instead of absolute threshold. Triggers: rising >2%/min OR absolute >70%. Safety: 30 min max runtime, HA restart recovery, wait_for_trigger with timeout. Blackshome blueprint is community gold standard.
-- 10:55: Entity naming: ZHA devices get generic entity_ids like inovelli_vzm35_sn_fan. Rename via ha_rename_entity to location-based IDs (e.g. fan.2nd_floor_bathroom_exhaust_fan) for maintainability. Device names are separate from entity IDs.
-- 10:55: Matter recommission fix: Remove stale fabric from BOTH HA Matter integration AND Aqara Connected Ecosystems, then re-pair fresh. VLAN separation (IoT vs Default) not the issue - mDNS working across subnets.
-- 11:59: VZM35-SN exhaust fan: Hardware auto-off (param 12) = 2700s provides firmware-level safety backup independent of HA. Community strongly recommends for defense-in-depth. Fan timer display (param 121) not needed when automation handles humidity - changes paddle UX. Inovelli in-switch humidity sensors inadequate for shower detection (8% vs 58% rise vs dedicated Aqara).
-- [2026-02-26 12:40] GENERAL: INOVELLI Testing repeat detection for smart bulb mode
-- [2026-02-26 12:40] GENERAL: TEST This is a test entry that should not trigger warning
-- [2026-02-26 12:40] GENERAL: Simple learning without category
-- [2026-02-26 12:41] INOVELLI: param 52 needs air gap after toggle
-- [2026-02-26 12:44] HAC: v9.1 upgrade: CRITICAL_RULES.md at root, structured hac learn with categories and repeat detection, 67→10 root files, archive/sessions/projects/knowledge structure
-- [2026-02-26 12:54] GIT: git gc --prune=now fixes confused by unstable object errors - happens frequently on HA Green
-- [2026-02-26 12:56] GIT: Pre-commit hook at .git/hooks/pre-commit auto-runs git gc to prevent unstable object errors
+- [2026-03-10 07:06] HAC: hac alias was missing from .zshrc after system update - fix: echo 'alias hac="/homeassistant/hac/hac.sh"' >> ~/.zshrc && source ~/.zshrc
+- [2026-03-10 07:06] YAML: BusyBox grep on HA Green does not support --include flag - use: find /homeassistant/packages -name '*.yaml' | xargs grep pattern
+- [2026-03-10 07:06] HAC: UI-created automations on HA Green are NOT in /homeassistant/.storage/ from terminal - storage is only accessible via MCP API or HA UI. ha_config_get_automation via MCP also fails for these - must use ha_config_set_automation to update by entity_id
+- [2026-03-10 08:29] MOTION: Driveway motion lights need sunset+time cutoff condition - without it fires all night on wind/animals. Fix: add sun after:sunset AND time before:23:00 conditions
+- [2026-03-10 08:55] MOTION: Garage lights auto-off uses dual automation pattern: Garage All Lights OFF (Fixed) on door-close + Garage Auto Off After No Motion with ~5min delay. Both working correctly - motion clears then 5min delay fires off. Do not fix what isnt broken.
+- [2026-03-10 08:55] HAC: Garage ThirdReality motion sensors aggregate into binary_sensor.garage_motion_combined with delay_off - this is the correct pattern for garage auto-off. Motion cleared 8:30am, lights off 8:35am = 5min delay confirmed working.
+- [2026-03-10 08:55] MOTION: Driveway camera has vehicle_detected and object_detected binary sensors in addition to motion - these fired correctly on arrival. Future: could use vehicle_detected as smarter trigger vs raw motion to reduce false positives from wind/animals overnight.
+- [2026-03-10 08:58] MOTION: UniFi Protect vehicle_detected + person_detected = correct exterior trigger. 163:0 ratio vs raw motion overnight. AI filter eliminates wind/animals completely. Belt+suspenders: AI detection + sunset-23:00 window.
+- [2026-03-10 08:58] MOTION: object_detected fires on animals/birds - not useful as primary trigger. Use vehicle_detected OR person_detected for driveways. motion sensor kept as fallback only.
+- [2026-03-10 09:43] MOTION: Doorbell ring automation uses event.* entity trigger not binary_sensor — more reliable, carries confidence + zone metadata in attributes
+- [2026-03-10 09:43] HAC: notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra (S928U model) — verify in Companion App settings
+- [2026-03-10 09:45] MOTION: Package detection uses binary_sensor (not event entity) — no simultaneous-detection conflict risk for package, and no event.* equivalent exists
 
 ## Historical Learnings (last 30 lines)
+- [2026-02-26 12:56] GIT: Pre-commit hook at .git/hooks/pre-commit auto-runs git gc to prevent unstable object errors
+- [2026-02-26 21:54] ENTITY: After renaming entities (e.g. fan.inovelli_vzm35_sn_fan → fan.2nd_floor_bathroom_exhaust_fan), grep ALL yaml files AND check API-based automations for stale references
+- [2026-02-26 21:54] MOTION: Bathroom fan override: Use state-based reset (bool on for 30min) not timer-based - simpler, one automation vs two
+- [2026-02-26 21:54] HAC: Ghost entities (unavailable/restored) persist after YAML removal due to recorder DB - use recorder.purge_entities service AND hac purge, may need multiple restarts
+- [2026-02-26 22:55] HAC: System audit 2/26: 75 orphan scripts, 19 orphan helpers, 4 dead automations. Presence refactor + Inovelli blueprint opportunities identified
+- [2026-02-26 22:55] HAC: hac backup needs a filename to back up, not a label. Use HA backup for pre-phase snapshots
+- [2026-02-26 22:58] HAC: System audit 2/26: 75 orphan scripts, 19 orphan helpers, 4 dead automations. Presence refactor + Inovelli blueprint opportunities identified
+- [2026-02-26 22:58] HAC: hac backup needs a filename to back up, not a label. Use HA backup for pre-phase snapshots
+- [2026-02-26 23:09] HAC: Migrated garage_motion_combined from legacy platform:template to modern template: syntax. Added unique_id. Fixes 2026.6 deprecation.
+- 1x press → 33% (low)
+- 2x press → 66% (medium)
+- 3x press → 100% (high)
+- Hold → off
+- 16:27: 1st Floor Bathroom Inovelli automation was missing (ghost entity in registry). Created blueprint automation targeting light.1st_floor_bathroom Hue group with brightness_pct:100 on up-paddle.
+- 16:27: Dumb light switches (direct load control) should have button_delay=0 for instant response - no need for multi-tap scene detection. Applies to: Kitchen Ceiling Cans, Under Cabinet, Bar Pendants.
+- 16:27: Blueprint Inovelli automations calling light.turn_on without brightness_pct will restore last dimmed state. Always include brightness_pct:100 in up-paddle action to ensure full brightness on single press.
+- 16:33: Inovelli VZM31-SN sends 3 zha_events per button press: level cluster (on/off) + scene cluster (button_X_press). Blueprint triggers on all but only matches scene commands. mode:single + max_exceeded:silent prevents actual duplicate actions. 'Double-fire' warnings are phantom triggers - harmless noise, not real duplicates.
+- 16:45: Config button best practices: 1) Fan control (1x/2x/3x=speeds, hold=off), 2) Robot vacuum trigger, 3) Scene cycling, 4) Secondary device toggle. EP3 supports Zigbee binding for hub-independent control.
+- 16:45: Kitchen dumb switch flicker/slow fix: Ceiling Cans had on_off_transition_time=5 (5 sec!), Bar Pendants had min_dim=1 causing turn-off flicker. Fix: transition_time=0 for instant, min_dim=15+ to avoid LED driver flicker zone.
+- 16:50: Inovelli dumb switch slow on/off fix: on_off_transition_time controls Zigbee commands, but LOCAL_RAMP_RATE controls physical paddle. Ceiling Cans had local_ramp_rate_on_to_off=102 (102 sec!). Set all local_ramp_rate params to 0 for instant response.
+- 16:50: Inovelli LED flicker at turn-off: caused by minimum_load_dimming_level too low. LED drivers flicker in low-dim zone. Bar Pendants fixed by raising min_dim from 1 to 25. Start at 15, increase if still flickering.
+- 16:54: Inovelli dumb switch slow on/off fix: on_off_transition_time controls Zigbee commands, but LOCAL_RAMP_RATE controls physical paddle. Ceiling Cans had local_ramp_rate_on_to_off=102 (102 sec!). Set all local_ramp_rate params to 0 for instant response.
+- 16:54: Inovelli LED flicker at turn-off: caused by minimum_load_dimming_level too low. LED drivers flicker in low-dim zone. Bar Pendants fixed by raising min_dim from 1 to 25. Start at 15, increase if still flickering.
+- 16:54: fxlt blueprint hold actions fire once per hold - use brightness_step_pct for single 10% step. For smooth continuous dimming, need repeat loop with input_boolean controlled by hold/release events. Ratoka blueprint (github.com/Ratoka/home-assistant-hue-inovelli-blueprints) provides this plus auto scene cycling.
+- 16:58: Git "confused by unstable object source data" fix: run git gc --prune=now before commit. Caused by zigbee.db changing during git add. Prevention: add zigbee.db* to .gitignore or reset before AND after git add -A. Always use single quotes in ZSH commit messages to avoid ! expansion.
 - 17:03: AL cleanup: removing entry_room_hue_color_lamp from Living Spaces (duplicate - has dedicated instance), fixing separate_turn_on_commands on Entry Room Lamp Adaptive
 - 17:23: fxlt blueprint fix: added event_data.device_id filter to trigger - prevents firing on all 49 ZHA device events, now only fires for specific switch
 - 19:21: Session complete: AL deduplication + fxlt blueprint event_data filter fix. Inovelli double-fires eliminated (132x/hr → 0)
 - 19:26: Area cleanup: deleted empty sun_room area, keeping living_room_lounge as canonical name for that space
 - 21:25: Inovelli Best Practices Audit (2026-02-24): Smart Bulb Mode switches require Output Mode=OnOff + Button Delay=0 for instant response. Fixed: 1st Floor Bath Ceiling (Dimmer→OnOff), Button Delay→0 on Entry Room, Kitchen Lounge, Kitchen Chandelier, Above Sink, 1st Floor Bath, Back Patio, 2nd Floor Bath Ceiling. Confirmed correct: Kitchen Bar Pendants/Under Cabinet/Ceiling Cans (dumb LEDs) have SBM=OFF + Dimmer mode. VZM35 exhaust fan correct with SBM=OFF + OnOff. Key insight: SBM=ON + Output=OnOff + Delay=0 = fastest smart bulb response.
-- .storage files have strict internal schemas
-- Validation happens at Core startup, NOT at write time
-- File appeared valid but Core rejected it on load
-- Result: Only 8 of 56 integrations loaded (degraded state)
-- `.storage/core.config_entries` - Integration registry
-- `.storage/core.entity_registry` - Entity definitions
-- `.storage/core.device_registry` - Device definitions
-- Adaptive Lighting: Create/delete entries
-- ZHA: Device pairing, network settings
-- Hue: Bridge linking
-- Any integration config flow
-- `hac_snapshot "name"` - Create backup before risky ops
-- `hac_rollback` - List HAC snapshots for restore
-- Entry Room Hue color bulbs installed but automation not updated
-- Entry Room Adaptive Lamp needs light.entry_room_hue_color_lamp added via UI
-- 21:19: Living Room A/V: Fire TV=media_player.living_room_tv, automations fixed, Klipsch settings applied, dashboard at /living-room
-- 21:24: Entry Room Inovelli double-fire fix: mode queued→single, max_exceeded silent. ZHA sends duplicate events ~28ms apart.hac learn Entry Room Inovelli double-fire fix: mode queued→single, max_exceeded silent. ZHA sends duplicate events ~28ms apart.
-- 21:24: Entry Room Inovelli double-fire fix: mode queued→single, max_exceeded silent. ZHA sends duplicate events ~28ms apart.
-- 23:20: Switched AVR automations from Alexa (media_player.living_room_tv) to ADB (media_player.living_room_fire_tv_192_168_1_17) for local reliability
-- 23:48: Fire TV ADB app launch: Working: YouTube (source), Netflix (am start), Hulu (monkey), Spotify (source), Plex (monkey com.plexapp.android), HDHomeRun (monkey com.silicondust.view), Peace Lutheran (Silk browser URL). NOT WORKING: Prime Video (source select fails), Hudl (monkey com.hudl.fanexperience fails). Tabled for later.
-- 08:27: DOUBLE-FIRING ROOT CAUSE: fxlt Inovelli blueprint triggers on ALL zha_event, filters by device_id in condition. Each press fires all automations using that blueprint. 14x/hr = normal when 3 bathroom automations share blueprint. Fix: removed logbook.log noise. Future: migrate to per-device-id trigger or unified blueprint
-- 11:31: AL YAML vs Storage: YAML defines config but AL stores runtime in .storage/core.config_entries. YAML changes need storage edit or delete/re-add integration. Direct edit: ha core stop, backup .storage/core.config_entries, sed lights array, ha core start.
-- 11:36: AL Living Spaces expanded: 4→7 lights. Added west_floor_lamp, kitchen_lounge_lamp, kitchen_above_sink_light. Verified working 2026-02-21.
-- 12:32: Phase 1 COMPLETE 2026-02-21: All 133 lights have area assignments. AP LED corrections: 2nd_floor_ap→master_bedroom, 1st_floor_ap→kitchen_lounge, tower_flex→back_patio, garage_ap→garage. Unavailable Hue triaged (power issues, not HA). Kitchen 3-way confirmed working (Smart Bulb Mode OFF for dumb loads). Phase 2 ready: entity renames, blueprint migration, AL expansion.
-- 13:17: HAC v9 COMPLETE 2026-02-21: Implemented token-efficient 3-tier context system. CONTEXT.md+RESOURCES.md for structured loading. knowledge/ dir for patterns/gotchas/decisions. hac sync combines export+sheets. Recent Learnings tab adds parsed content to LLM Index. ~60% token reduction in hac mcp output.

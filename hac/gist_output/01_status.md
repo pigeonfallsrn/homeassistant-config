@@ -1,11 +1,11 @@
-# HA Status - 2026-02-26 13:53 CST
-Version: 2026.2.3 | HAC: v9.1
+# HA Status - 2026-03-10 09:52 CDT
+Version: 2026.3.1 | HAC: v9.1
 
 ## People
 john_spencer: home
 alaina_spencer: Whitehall School
-ella_spencer: home
-[PERSON]: home
+ella_spencer: [PERSON]’s House (40062 US Hwy 53)
+[PERSON]: not_home
 jarrett_goetting: unknown
 jean_spencer: unknown
 owen_goetting: unknown
@@ -28,7 +28,6 @@ living_room_manual_override: off
 master_bedroom_manual_override: off
 kids_bedroom_manual_override: off
 garage_manual_override: off
-bathroom_1st_floor_fan_manual_override: off
 bathroom_2nd_floor_fan_manual_override: off
 maintenance_mode: off
 hot_tub_mode: off
@@ -37,7 +36,7 @@ ella_winddown_override: off
 alaina_winddown_override: off
 ella_bedroom_override: off
 alaina_bedroom_override: off
-school_tomorrow: off
+school_tomorrow: on
 guest_present: off
 kids_bedtime_override: off
 john_home: on
@@ -47,22 +46,18 @@ michelle_home: off
 someone_home: on
 girls_home: on
 both_girls_home: off
-bathroom_manual_override: unavailable
-kitchen_table_manual_override: unavailable
-2nd_floor_bathroom_manual_override: unavailable
-2nd_floor_bathroom_fan_manual_override: unavailable
 
 ## Recent Triggers (last 10)
-2026-02-26 10:45:16 2nd_floor_bathroom_humidity_fan_control_v3
-2026-02-26 10:45:16 2nd_floor_bathroom_vanity_lights_inovelli_control
-2026-02-26 09:21:14 calendar_refresh_school_in_session_now
-2026-02-26 09:21:14 calendar_refresh_school_tomorrow
-2026-02-26 09:21:14 context_apply_on_time_change
-2026-02-26 09:21:14 kitchen_tablet_wake_on_kitchen_motion
-2026-02-26 09:21:14 kitchen_tablet_brightness_schedule
-2026-02-26 09:21:14 humidity_smart_shower_alert_low_house_humidity
-2026-02-26 09:21:14 google_sheets_export_on_startup
-2026-02-26 09:21:14 entry_room_ceiling_motion_lighting
+2026-03-10 07:12:12 upstairs_hallway_motion_lighting_v2
+2026-03-10 07:12:12 presence_update_someone_home
+2026-03-10 07:12:12 presence_update_occupancy_combinations
+2026-03-10 07:12:12 presence_update_girls_status
+2026-03-10 07:12:12 presence_alaina_away
+2026-03-10 07:12:12 presence_alaina_home
+2026-03-10 07:12:12 presence_john_away
+2026-03-10 07:12:12 presence_john_home
+2026-03-10 07:12:12 calendar_refresh_school_in_session_now
+2026-03-10 07:12:12 calendar_refresh_school_tomorrow
 
 ## Errors (last 5)
 
@@ -70,39 +65,11 @@ kitchen_table_manual_override: unavailable
 ## Double-Fires (last hour)
 
 ## Active Work
-# ACTIVE WORK
-
-## Current Status
-TASK: Ready for new work (HAC v9.1 optimization complete)
+# Active Work
+TASK: Monitoring: driveway lights (overnight) + doorbell/package notifications (next delivery). Next phase: 9.1 presence input_boolean → binary_sensor conversion
+NEXT: (define next step)
 BLOCKED: None
-UPDATED: 2026-02-26
+UPDATED: 2026-03-10
 
-## HAC v9.1 Roadmap Status
-
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 1-5 | CRITICAL_RULES, structured learning, file cleanup | ✅ DONE |
-| 6 | Weekly review automation | ⏳ DEFERRED |
-| 7 | Claude Project setup (upload CRITICAL_RULES + CONTEXT) | 🔲 NOT STARTED |
-| 8 | `hac analyze` command for pattern detection | 🔲 NOT STARTED |
-| 9 | Synology Gitea deployment | 🔲 NOT STARTED |
-| 10 | Weekly review HA automation | 🔲 NOT STARTED |
-
-## Phase 7 Details (if chosen)
-**Goal**: Upload CRITICAL_RULES.md + CONTEXT.md to Claude Project for persistent knowledge
-**Steps**:
-1. Create new Claude Project named "Home Assistant HAC"
-2. Upload `/homeassistant/hac/CRITICAL_RULES.md`
-3. Upload `/homeassistant/hac/CONTEXT.md`
-4. Test new conversation sees rules without `hac mcp`
-
-## Completed 2026-02-26
-- CRITICAL_RULES.md (66 lines of hard-won lessons)
-- `hac learn "CATEGORY" "insight"` with repeat detection
-- `hac mcp` updated for Claude 4.5
-- File cleanup: 67 → 10 root files
-- Pre-commit git gc hook
-- Claude memory consolidation
-
-## Other Queued Work
-- Lighting Audit Phase 1: Bulk area assignments (sessions/session_handoff_lighting_audit.md)
+## Quick Context
+(add context here)

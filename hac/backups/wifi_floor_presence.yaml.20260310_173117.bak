@@ -4,7 +4,7 @@
 # AP MAC Reference:
 #   1st Floor (U7 In-Wall): 1c:0b:8b:76:fc:ae
 #   2nd Floor (UZ In-Wall): 1c:0b:8b:76:fa:65
-#   Garage (U6 Lite):       1c:0b:8b:76:fc:ae
+#   Garage (U6 Lite):       f4:92:bf:69:53:f0
 #
 # Created: 2026-02-27
 
@@ -13,19 +13,19 @@ template:
       - name: "John WiFi Location"
         unique_id: john_wifi_floor_presence
         state: >
-          {% set ap = state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') %}
-          {% set tracker = states('device_tracker.galaxy_s26_ultra') %}
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') %}
+          {% set tracker = states('device_tracker.john_s_s24_ultra_4') %}
           {% if tracker == 'not_home' %}Away
           {% elif ap == '1c:0b:8b:76:fc:ae' %}1st Floor
           {% elif ap == '1c:0b:8b:76:fa:65' %}2nd Floor
-          {% elif ap == '1c:0b:8b:76:fc:ae' %}Garage
+          {% elif ap == 'f4:92:bf:69:53:f0' %}Garage
           {% elif ap is none or ap == '' %}Home (Unknown AP)
           {% else %}Home (Other){% endif %}
         icon: >
-          {% set ap = state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') %}
+          {% set ap = state_attr('device_tracker.john_s_s24_ultra_4', 'ap_mac') %}
           {% if ap == '1c:0b:8b:76:fc:ae' %}mdi:home-floor-1
           {% elif ap == '1c:0b:8b:76:fa:65' %}mdi:home-floor-2
-          {% elif ap == '1c:0b:8b:76:fc:ae' %}mdi:garage
+          {% elif ap == 'f4:92:bf:69:53:f0' %}mdi:garage
           {% else %}mdi:home{% endif %}
 
       - name: "Michelle WiFi Location"
@@ -36,14 +36,14 @@ template:
           {% if tracker == 'not_home' %}Away
           {% elif ap == '1c:0b:8b:76:fc:ae' %}1st Floor
           {% elif ap == '1c:0b:8b:76:fa:65' %}2nd Floor
-          {% elif ap == '1c:0b:8b:76:fc:ae' %}Garage
+          {% elif ap == 'f4:92:bf:69:53:f0' %}Garage
           {% elif ap is none or ap == '' %}Home (Unknown AP)
           {% else %}Home (Other){% endif %}
         icon: >
           {% set ap = state_attr('device_tracker.michelle_s_iphone_14_pro', 'ap_mac') %}
           {% if ap == '1c:0b:8b:76:fc:ae' %}mdi:home-floor-1
           {% elif ap == '1c:0b:8b:76:fa:65' %}mdi:home-floor-2
-          {% elif ap == '1c:0b:8b:76:fc:ae' %}mdi:garage
+          {% elif ap == 'f4:92:bf:69:53:f0' %}mdi:garage
           {% else %}mdi:home{% endif %}
 
   - binary_sensor:

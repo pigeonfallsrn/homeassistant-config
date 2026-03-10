@@ -1,7 +1,10 @@
-# Delta - 2026-02-26 13:53
+# Delta - 2026-03-10 09:52
 
 ## Changed Since Last Push
-_None_
+- garage_motion_combined.yaml
+- wifi_floor_presence.yaml
+- occupancy_system.yaml
+- notifications_system.yaml
 
 ## Recent Errors (last 3)
 

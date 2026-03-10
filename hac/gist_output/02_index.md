@@ -1,4 +1,4 @@
-# Automation Index - 2026-02-26 13:53
+# Automation Index - 2026-03-10 09:52
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -18,6 +18,8 @@ Fetch full YAML: `hac pkg <filename>`
 - **garage_arrival_optimized.yaml** (3 automations)
 - **garage_door_alerts.yaml** (2 automations)
 - **garage_lighting_automation_fixed.yaml** (2 automations)
+- **garage_motion_combined.yaml** (0
+0 automations)
 - **garage_notifications_consolidated.yaml** (3 automations)
 - **garage_quick_open.yaml** (5 automations)
 - **google_sheets_sync.yaml** (3 automations)
@@ -32,11 +34,13 @@ Fetch full YAML: `hac pkg <filename>`
 - **motion_aggregation.yaml** (0
 0 automations)
 - **notifications_system.yaml** (11 automations)
-- **occupancy_system.yaml** (9 automations)
+- **occupancy_system.yaml** (8 automations)
 - **presence_display.yaml** (0
 0 automations)
 - **presence_system.yaml** (12 automations)
 - **upstairs_lighting.yaml** (1 automations)
+- **wifi_floor_presence.yaml** (0
+0 automations)
 
 ## All Automation IDs
 
@@ -102,6 +106,8 @@ Fetch full YAML: `hac pkg <filename>`
 ### garage_lighting_automation_fixed.yaml
 18: garage_master_lights_on_fixed
 77: garage_master_lights_off_fixed
+
+### garage_motion_combined.yaml
 
 ### garage_notifications_consolidated.yaml
 8: garage_door_opened_close_option
@@ -181,7 +187,6 @@ Fetch full YAML: `hac pkg <filename>`
 469: refresh_school_in_session_now
 506: upstairs_hallway_motion_lighting_OLD_DISABLED
 571: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
-612: morning_wake_master_bedroom
 
 ### presence_display.yaml
 
@@ -202,6 +207,8 @@ Fetch full YAML: `hac pkg <filename>`
 ### upstairs_lighting.yaml
 8: upstairs_hallway_motion_lighting_v2
 
+### wifi_floor_presence.yaml
+
 
 ### automations.yaml
 1: alaina_led_strip_lights_button
@@ -212,15 +219,15 @@ Fetch full YAML: `hac pkg <filename>`
 131: '1771557081733'
 247: '1771854304476'
 287: '1771854392376'
-353: '1771854413864'
-367: '1771858450789'
-416: '1771858469033'
-444: '1771858527176'
-482: '1771882149561'
-496: '1771901615355'
-529: 2nd_floor_bathroom_vanity_inovelli
-605: '1772045640891'
-674: '1772057917525'
-706: '1772070592354'
-750: '1772070611621'
-794: '1772074192238'
+344: '1771858450789'
+393: '1771858469033'
+421: '1771858527176'
+459: '1771882149561'
+473: '1771901615355'
+506: 2nd_floor_bathroom_vanity_inovelli
+582: '1772045640891'
+651: '1772057917525'
+683: '1772070592354'
+727: '1772070611621'
+771: '1772074192238'
+827: 2nd_floor_bathroom_humidity_fan_v3
