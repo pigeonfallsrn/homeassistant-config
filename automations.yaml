@@ -955,3 +955,49 @@
     snapshot_path: '{{ ''/config/www/doorbell/snapshot_front.jpg'' if trigger.entity_id
       == ''event.very_front_door_doorbell'' else ''/config/www/doorbell/snapshot_driveway.jpg''
       }}'
+- id: '1773153864754'
+  alias: Doorbell Package Detected → Notification
+  description: Sends a push notification with package camera snapshot to John when
+    a package is detected at either doorbell. Daytime only (7am–10pm). Uses dedicated
+    package camera on G4 Doorbell Pro for reliable close-up snapshot.
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.very_front_door_package_detected
+    to: 'on'
+    alias: Very Front Door package detected
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_package_detected
+    to: 'on'
+    alias: Front Driveway Door package detected
+  conditions:
+  - condition: time
+    after: 07:00:00
+    before: '22:00:00'
+  actions:
+  - delay:
+      seconds: 3
+  - target:
+      entity_id: '{{ package_camera }}'
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - data:
+      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
+      message: A package was detected at the {{ doorbell_label }}
+      data:
+        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
+        channel: Doorbell
+        importance: default
+        tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
+    action: notify.mobile_app_sm_s928u
+  mode: parallel
+  max: 2
+  variables:
+    package_camera: '{{ ''camera.very_front_door_package_camera'' if trigger.entity_id
+      == ''binary_sensor.very_front_door_package_detected'' else ''camera.front_driveway_door_package_camera''
+      }}'
+    doorbell_label: '{{ ''Front Door'' if trigger.entity_id == ''binary_sensor.very_front_door_package_detected''
+      else ''Driveway Door'' }}'
+    snapshot_path: '{{ ''/config/www/doorbell/package_front.jpg'' if trigger.entity_id
+      == ''binary_sensor.very_front_door_package_detected'' else ''/config/www/doorbell/package_driveway.jpg''
+      }}'
