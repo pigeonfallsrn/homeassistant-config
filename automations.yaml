@@ -913,3 +913,45 @@
     target:
       entity_id: light.front_driveway
   mode: single
+- id: '1773152820854'
+  alias: Doorbell Ring → Notification with Snapshot
+  description: Sends a push notification with camera snapshot to John when either
+    doorbell is pressed. Uses event entity trigger (not binary_sensor) for reliability.
+    Snapshots saved to www/doorbell/ and included in notification.
+  triggers:
+  - platform: state
+    entity_id: event.very_front_door_doorbell
+    alias: Very Front Door ring
+  - platform: state
+    entity_id: event.front_driveway_door_doorbell
+    alias: Front Driveway Door ring
+  actions:
+  - delay:
+      seconds: 2
+  - target:
+      entity_id: '{{ camera_entity }}'
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - data:
+      title: "\U0001F514 Doorbell — {{ doorbell_label }}"
+      message: Someone is at the {{ doorbell_label }}
+      data:
+        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
+        channel: Doorbell
+        importance: high
+        ttl: 0
+        priority: high
+        tag: doorbell_{{ doorbell_label | lower | replace(' ', '_') }}
+    action: notify.mobile_app_sm_s928u
+  mode: parallel
+  max: 2
+  variables:
+    camera_entity: '{{ ''camera.very_front_door_high_resolution_channel'' if trigger.entity_id
+      == ''event.very_front_door_doorbell'' else ''camera.front_driveway_door_high_resolution_channel''
+      }}'
+    doorbell_label: '{{ ''Front Door'' if trigger.entity_id == ''event.very_front_door_doorbell''
+      else ''Driveway Door'' }}'
+    snapshot_path: '{{ ''/config/www/doorbell/snapshot_front.jpg'' if trigger.entity_id
+      == ''event.very_front_door_doorbell'' else ''/config/www/doorbell/snapshot_driveway.jpg''
+      }}'
