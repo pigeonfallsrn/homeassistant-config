@@ -64,3 +64,12 @@ trigger:
 - Use 5-second delay on off to prevent cycling during quick power toggles
 - Add condition to only act if state differs (prevent redundant commands)
 - Mode: restart ensures timer resets on repeated triggers
+
+## UniFi Protect Smart Detection Triggers
+- **Use `event.*` entities** (not `binary_sensor.*`) for doorbell ring and vehicle triggers
+  - Event entities fire once per detection, carry confidence + zone metadata in attributes
+  - Binary sensors can go unavailable for ~1min during simultaneous detections
+  - Pattern: trigger on state change of `event.camera_name_doorbell` or `event.camera_name_vehicle`
+- **Package detection**: use `binary_sensor.*_package_detected` — no `event.*` equivalent exists
+- **G4 Doorbell Pro package camera**: `camera.*_package_camera` — dedicated close-up lens, use for snapshots
+- **Doorbell/package automations**: `mode: parallel` (not restart) — event-based, concurrent execution needed for multi-doorbell setups

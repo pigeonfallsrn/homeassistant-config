@@ -49,3 +49,10 @@ Use UI or accept it cant be done programmatically.
 - Services: ha_call_service
 - Entity settings: ha_set_entity
 - Dashboards: ha_config_set_dashboard
+
+## UniFi Protect
+- Simultaneous person + vehicle detection can cause both binary_sensors to go unavailable ~1 min
+  → Workaround: use event.* entities instead of binary_sensor for triggers
+- `binary_sensor.*_vehicle_detected` showing unavailable may mean smart detection disabled in Protect app (not a HA issue)
+- Very Front Door: vehicle detection intentionally disabled (faces street/intersection — too noisy)
+- notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra (current canonical notify target)
