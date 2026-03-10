@@ -1,8 +1,8 @@
 # Active Work
-TASK: Phase 9.0 COMPLETE - 105 orphans removed. Next: Phase 9.1 presence refactor
+TASK: Phase 9.x: Fix driveway lights overnight cycling + welcome home false trigger guard improvement
 NEXT: (define next step)
 BLOCKED: None
-UPDATED: 2026-02-27
+UPDATED: 2026-03-10
 
 ## Quick Context
 (add context here)

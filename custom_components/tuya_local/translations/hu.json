@@ -52,6 +52,13 @@
                     "type": "Eszköz típus"
                 }
             },
+            "select_type_auto_detected": {
+                "title": "Válaszd ki az eszköz típusát",
+                "description": "Válaszd ki azt a típust, amelyik legjobban illik az eszközödhöz. A {detected_protocol} protokoll verzió automatikusan észlelve és elmentve. Ha a jövőben frissíted az eszköz firmware-jét, előfordulhat, hogy újra kell konfigurálnod ezt az integrációt.",
+                "data": {
+                    "type": "Eszköz típus"
+                }
+            },
             "choose_entities": {
                 "title": "Eszköz részletei",
                 "description": "Válasz egy nevet az eszköznek",
@@ -66,7 +73,7 @@
             "no_devices": "Nem található a fiókhoz nem regisztrált eszköz."
         },
         "error": {
-            "connection": "A megadott adatokkal nem sikerült kapcsolódni az eszközhöz. Lehet ideiglenes a probléma, vagy nem megfelelőek a megadott adatok.",
+            "connection": "A megadott adatokkal nem sikerült kapcsolódni az eszközhöz. Lehet ideiglenes a probléma, vagy nem megfelelőek a megadott adatok. Ha egy adott protokoll verziót választottál, próbáld meg 'auto'-ra állítani.",
             "does_not_need_hub": "Az eszköznek nincs szüksége átjáróra",
             "needs_hub": "Az eszköznek átjáróra van szüksége"
         }
@@ -94,7 +101,7 @@
             }
         },
         "error": {
-            "connection": "A megadott adatokkal nem sikerült kapcsolódni az eszközhöz. Lehet ideiglenes a probléma, vagy nem megfelelőek a megadott adatok."
+            "connection": "A megadott adatokkal nem sikerült kapcsolódni az eszközhöz. Lehet ideiglenes a probléma, vagy nem megfelelőek a megadott adatok. Ha egy adott protokoll verziót választottál, próbáld meg 'auto'-ra állítani."
         },
         "abort": {
             "not_supported": "Sajnálom, ez az eszköz nem támogatott."
@@ -635,6 +642,7 @@
                     "45s": "45 másodperc",
                     "1m": "1 perc",
                     "2m": "2 perc",
+                    "3m": "3 perc",
                     "5m": "5 perc",
                     "10m": "10 perc",
                     "15m": "15 perc",
@@ -892,6 +900,8 @@
                     "waiting_for_authorization": "Várakozás az engedélyezésre",
                     "standby": "Készenléti",
                     "heating": "Fűtés",
+                    "cold": "Hűtés",
+                    "warm": "Meleg",
                     "cooling": "Hűtés",
                     "keeping_warm": "Melegen tartás",
                     "no_water": "Nincs víz",
@@ -1062,6 +1072,9 @@
             },
             "sleep": {
                 "name": "Alvás"
+            },
+            "sound": {
+                "name": "Hang"
             },
             "switch_x": {
                 "name": "Kapcsoló {x}"

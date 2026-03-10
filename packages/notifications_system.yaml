@@ -20,7 +20,7 @@ automation:
       # Prevent false triggers from zone bouncing - must have been away 2+ min
       - condition: template
         value_template: >
-          {{ (as_timestamp(now()) - as_timestamp(trigger.from_state.last_changed)) > 120 }}
+          {{ (as_timestamp(now()) - as_timestamp(trigger.from_state.last_changed)) > 300 }}
     action:
       - service: notify.mobile_app_sm_s928u
         data:
