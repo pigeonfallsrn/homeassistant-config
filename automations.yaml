@@ -892,11 +892,15 @@
   mode: restart
 - id: front_driveway_motion_lights_on
   alias: Front Driveway - Lights On When Motion (Dark)
-  description: Turn on driveway lights when motion detected after dark. Restricted
-    to sunset-11pm to prevent all-night cycling from wind/animals. Updated 2026-03-10.
+  description: 'Turn on driveway lights on vehicle or person detection after dark.
+    Uses AI detection instead of raw motion to prevent false positives from wind/animals.
+    Belt+suspenders: sunset-23:00 window + smart detection. Updated 2026-03-10.'
   triggers:
   - platform: state
-    entity_id: binary_sensor.front_driveway_door_motion
+    entity_id: binary_sensor.front_driveway_door_vehicle_detected
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_person_detected
     to: 'on'
   conditions:
   - condition: sun
