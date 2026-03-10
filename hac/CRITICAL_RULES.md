@@ -11,6 +11,7 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **Escape `!`** or use single quotes: `echo 'Hello!'` not `echo "Hello!"`
 - **Never chain after `python3 -c`** on same line
 - **BusyBox grep** (HA Green): NO `--include`, NO long options. Use `-rEl` for recursive+extended+filenames. Never `--include=*.yaml` — use `grep -rEl 'pattern' /path/` instead
+- **BusyBox sed** (HA Green): NO multi-line, NO complex scripts. Use `python3` heredoc for non-trivial file edits
 - **Paths**: `/homeassistant/` (not `/config/`)
 
 ## MOTION AUTOMATIONS (Times Hit: 15+)
