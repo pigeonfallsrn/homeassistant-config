@@ -109,6 +109,14 @@ source: "com.amazon.firetv.youtube"
 - Prioritize touch targets for one-handed use
 
 ## Recent Session Learnings
+- 2026-03-10: Doorbell automations: mode: parallel not restart — event-based concurrent execution needed for multi-doorbell setups
+- 2026-03-10: notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra
+- 2026-03-10: G4 Doorbell Pro package camera entity: camera.*_package_camera — dedicated lens, use for package snapshots
+- 2026-03-10: UniFi Protect: use event.* entities (not binary_sensor) for doorbell/vehicle triggers — reliable, carries confidence + zone metadata
+- 2026-03-10: Doorbell/package automations: use mode: parallel (not restart) — event-based, not motion-based, need concurrent execution for multiple doorbells
+- 2026-03-10: notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra — primary notification target for John-only automations
+- 2026-03-10: UniFi Protect G4 Doorbell Pro: package camera entity is camera.*_package_camera — dedicated close-up lens, more reliable than main camera for package detection
+- 2026-03-10: UniFi Protect: use event.* entities (not binary_sensor) for doorbell ring and vehicle triggers — more reliable, carries confidence + zone metadata, avoids simultaneous-detection bug
 4. Consider ALSO adding via HomeKit Controller (exposes different device subset)
 
 RESEARCH NOTES:
