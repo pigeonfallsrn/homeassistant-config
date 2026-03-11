@@ -1,39 +1,6 @@
-- id: front_driveway_motion_lights_on
-  alias: "Front Driveway - Lights On When Motion (Dark)"
-  description: "Turn on driveway light on motion at night, off after 5min no motion or 10min hard cap"
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.front_driveway_door_motion
-      to: "on"
-  condition:
-    - condition: state
-      entity_id: binary_sensor.front_driveway_door_is_dark
-      state: "on"
-  action:
-    - service: light.turn_on
-      target:
-        entity_id: light.front_driveway
-      data:
-        brightness_pct: 100
-    - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.front_driveway_door_motion
-          to: "off"
-          for:
-            minutes: 5
-      timeout:
-        minutes: 10
-      continue_on_timeout: true
-    - service: light.turn_off
-      target:
-        entity_id: light.front_driveway
-      data:
-        transition: 5
-  mode: restart
-
 - id: front_driveway_auto_off
   alias: "Front Driveway - Auto Off After No Motion"
-  description: "Safety net: turn off driveway lights 5 minutes after no motion"
+  description: "Turn off driveway lights 5 minutes after no motion"
   trigger:
     - platform: state
       entity_id: binary_sensor.front_driveway_door_motion
@@ -50,6 +17,24 @@
         entity_id: light.front_driveway
       data:
         transition: 5
+  mode: restart
+
+- id: front_driveway_motion_lights_on
+  alias: "Front Driveway - Lights On When Motion (Dark)"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_driveway_door_motion
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.front_driveway_door_is_dark
+      state: "on"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.front_driveway
+      data:
+        brightness_pct: 100
   mode: restart
 
 - id: garage_lights_auto_off
