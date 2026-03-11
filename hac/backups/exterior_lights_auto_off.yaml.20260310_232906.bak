@@ -3,7 +3,7 @@
   description: "Turn on driveway light on motion at night, off after 5min no motion or 10min hard cap"
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_driveway_door_person_detected
+      entity_id: binary_sensor.front_driveway_door_motion
       to: "on"
   condition:
     - condition: state
@@ -17,7 +17,7 @@
         brightness_pct: 100
     - wait_for_trigger:
         - platform: state
-          entity_id: binary_sensor.front_driveway_door_person_detected
+          entity_id: binary_sensor.front_driveway_door_motion
           to: "off"
           for:
             minutes: 5
@@ -36,7 +36,7 @@
   description: "Safety net: turn off driveway lights 5 minutes after no motion"
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_driveway_door_person_detected
+      entity_id: binary_sensor.front_driveway_door_motion
       to: "off"
       for:
         minutes: 5
