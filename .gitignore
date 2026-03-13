@@ -32,3 +32,4 @@ python_scripts/venv/
 __pycache__/
 *.pyc
 zigbee.db*
+.cache/
