@@ -27,7 +27,7 @@ views:
               - type: conditional
                 conditions:
                   - condition: state
-                    entity: cover.ratgdo32disco_fd8d8c_door
+                    entity: cover.garage_north_garage_door_ratgdo32disco_door
                     state: open
                 chip:
                   type: template
@@ -38,11 +38,11 @@ views:
                     action: call-service
                     service: cover.close_cover
                     target:
-                      entity_id: cover.ratgdo32disco_fd8d8c_door
+                      entity_id: cover.garage_north_garage_door_ratgdo32disco_door
               - type: conditional
                 conditions:
                   - condition: state
-                    entity: cover.ratgdo32disco_5735e8_door
+                    entity: cover.garage_south_garage_door_ratgdo32disco_door
                     state: open
                 chip:
                   type: template
@@ -53,7 +53,7 @@ views:
                     action: call-service
                     service: cover.close_cover
                     target:
-                      entity_id: cover.ratgdo32disco_5735e8_door
+                      entity_id: cover.garage_south_garage_door_ratgdo32disco_door
               - type: conditional
                 conditions:
                   - condition: state
@@ -285,14 +285,14 @@ views:
                     content: "1st: {{ states('sensor.first_floor_thermostat_temperature') | round(0) }}°"
                   - type: template
                     icon: mdi:thermometer
-                    content: "Bsmt: {{ states('sensor.basement_thermostat_temperature') | round(0) }}°"
+                    content: "Bsmt: {{ states('sensor.basement_nest_thermostat_temperature') | round(0) }}°"
                   - type: template
                     icon: mdi:thermometer
                     content: "2nd: {{ states('sensor.master_nest_thermostat_temperature') | round(0) }}°"
                   - type: template
                     icon: mdi:warehouse
-                    icon_color: "{% set e = states('sensor.pfp_east_nest_thermostat_sensor_temperature') | float(40) %}{% set w = states('sensor.pfp_west_nest_sensor_temperature') | float(40) %}{% if e < 35 or w < 35 %}red{% elif e < 42 or w < 42 %}orange{% else %}green{% endif %}"
-                    content: "PFP: {{ states('sensor.pfp_east_nest_thermostat_sensor_temperature') | round(0) }}°/{{ states('sensor.pfp_west_nest_sensor_temperature') | round(0) }}°"
+                    icon_color: "{% set e = states('sensor.pfp_east_nest_thermostat_temperature_sensor') | float(40) %}{% set w = states('sensor.pfp_west_nest_sensor_temperature') | float(40) %}{% if e < 35 or w < 35 %}red{% elif e < 42 or w < 42 %}orange{% else %}green{% endif %}"
+                    content: "PFP: {{ states('sensor.pfp_east_nest_thermostat_temperature_sensor') | round(0) }}°/{{ states('sensor.pfp_west_nest_sensor_temperature') | round(0) }}°"
                   - type: template
                     entity: todo.shopping_list
                     icon: mdi:cart
