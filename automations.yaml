@@ -1001,3 +1001,163 @@
     snapshot_path: '{{ ''/config/www/doorbell/package_front.jpg'' if trigger.entity_id
       == ''binary_sensor.very_front_door_package_detected'' else ''/config/www/doorbell/package_driveway.jpg''
       }}'
+- id: '1773360880637'
+  alias: Ella - Wake With Echo Alarm
+  description: Mirrors alaina_wake_echo_alarm. Fires every minute, checks if Ella's
+    Echo alarm is in the active/ringing window (within last 2 min). Runs ella_gentle_wake
+    script to brighten lights at actual alarm time. Complements ella_gentle_wake_before_alarm
+    which fires 15 min prior.
+  triggers:
+  - platform: time_pattern
+    minutes: /1
+  conditions:
+  - condition: template
+    value_template: '{{ state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
+      ''status'') == ''ON'' or (as_timestamp(now()) - as_timestamp(state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
+      ''dismissed'') | default(''2000-01-01'', true))) | float(9999) < 120 }}'
+  - condition: state
+    entity_id: input_boolean.ella_home
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.ella_bedroom_override
+    state: 'off'
+  actions:
+  - action: script.ella_gentle_wake
+  mode: single
+- id: upstairs_hallway_motion_lighting_v2
+  alias: Upstairs Hallway → Motion Lighting v2
+  description: Time-aware motion lighting for upstairs hallway. After 9pm uses warm/dim
+    scene instead of Energize. Triggers on upstairs bathroom motion (the main traffic
+    sensor for hallway use). Mode restart prevents double-fires.
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.upstairs_bathroom_motion
+    to: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: time
+        after: '21:00:00'
+        before: '23:59:59'
+      sequence:
+      - target:
+          entity_id: scene.upstairs_hallway_relax
+        action: scene.turn_on
+    - conditions:
+      - condition: time
+        after: 00:00:00
+        before: 06:00:00
+      sequence:
+      - target:
+          entity_id: light.upstairs_hallway
+        data:
+          brightness_pct: 10
+          color_temp_kelvin: 2200
+          transition: 2
+        action: light.turn_on
+    default:
+    - target:
+        entity_id: scene.upstairs_hallway_energize
+      action: scene.turn_on
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.upstairs_bathroom_motion
+      to: 'off'
+    timeout:
+      minutes: 8
+    continue_on_timeout: true
+  - delay:
+      minutes: 2
+  - target:
+      entity_id: light.upstairs_hallway
+    data:
+      transition: 5
+    action: light.turn_off
+  mode: restart
+- id: '1773361493420'
+  alias: Girls → Bedtime Winddown Lighting
+  description: 'When either girl''s phone goes on the charger after 8:30pm while home,
+    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 10:15pm.
+    Research basis: AAP recommends teens lights-out by 10pm on school nights; 2200K
+    at <20% brightness suppresses cortisol and signals wind-down. Uses phone battery
+    state change to ''Charging'' as a reliable bedtime proxy. Auto-off via script
+    delay so both girls get their own countdown that restarts if they replug. Girls
+    can manually turn lights back on (bedroom_override covers that). Hallway is handled
+    separately by upstairs_hallway_motion_v2 time-aware logic.'
+  triggers:
+  - platform: state
+    entity_id: sensor.ellas_iphone_battery_state
+    to: Charging
+    id: ella_charging
+  - platform: state
+    entity_id: sensor.alainas_iphone_battery_state
+    to: Charging
+    id: alaina_charging
+  conditions:
+  - condition: time
+    after: '20:30:00'
+    before: '23:59:59'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ella_charging
+      - condition: state
+        entity_id: input_boolean.ella_home
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: 'off'
+      - condition: state
+        entity_id: light.ella_s_bedroom
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.ella_s_bedroom
+        data:
+          brightness_pct: 15
+          color_temp_kelvin: 2200
+          transition: 30
+        action: light.turn_on
+      - delay:
+          minutes: 45
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: 'off'
+      - target:
+          entity_id: light.ella_s_bedroom
+        data:
+          transition: 60
+        action: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: alaina_charging
+      - condition: state
+        entity_id: input_boolean.alaina_home
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: 'off'
+      - condition: state
+        entity_id: light.alaina_s_bedroom
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          brightness_pct: 15
+          color_temp_kelvin: 2200
+          transition: 30
+        action: light.turn_on
+      - delay:
+          minutes: 45
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: 'off'
+      - target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          transition: 60
+        action: light.turn_off
+  mode: parallel
+  max: 2
