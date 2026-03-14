@@ -315,9 +315,10 @@ automation:
   - id: bedtime_first_floor_lights_off_prompt
     alias: "Bedtime - Prompt to Turn Off 1st Floor Lights"
     trigger:
-      - platform: template
-        value_template: >
-          {{ state_attr('device_tracker.galaxy_s26_ultra', 'ap_mac') == '70:a7:41:c6:1e:6c' }}
+      - trigger: state
+        entity_id: device_tracker.galaxy_s26_ultra
+        attribute: ap_mac
+        to: "70:a7:41:c6:1e:6c"
     condition:
       - condition: time
         after: "19:00:00"
