@@ -68,3 +68,81 @@ template:
           {% elif count == 2 %}mdi:home-group
           {% else %}mdi:home-group-plus
           {% endif %}
+
+  - binary_sensor:
+      - name: "John Home"
+        unique_id: presence_john_home
+        state: "{{ is_state('person.john_spencer', 'home') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Alaina Home"
+        unique_id: presence_alaina_home
+        state: "{{ is_state('person.alaina_spencer', 'home') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Ella Home"
+        unique_id: presence_ella_home
+        state: "{{ is_state('person.ella_spencer', 'home') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Michelle Home"
+        unique_id: presence_michelle_home
+        state: "{{ is_state('binary_sensor.michelle_actually_home', 'on') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Someone Home"
+        unique_id: presence_someone_home
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') or
+             is_state('binary_sensor.alaina_home', 'on') or
+             is_state('binary_sensor.ella_home', 'on') or
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-account
+
+      - name: "Girls Home"
+        unique_id: presence_girls_home
+        state: >
+          {{ is_state('binary_sensor.alaina_home', 'on') or
+             is_state('binary_sensor.ella_home', 'on') }}
+        device_class: presence
+        icon: mdi:account-multiple
+
+      - name: "Both Girls Home"
+        unique_id: presence_both_girls_home
+        state: >
+          {{ is_state('binary_sensor.alaina_home', 'on') and
+             is_state('binary_sensor.ella_home', 'on') }}
+        device_class: presence
+        icon: mdi:account-multiple
+
+      - name: "John And Girls"
+        unique_id: presence_john_and_girls
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             (is_state('binary_sensor.alaina_home', 'on') or
+              is_state('binary_sensor.ella_home', 'on')) }}
+        device_class: presence
+        icon: mdi:home-group
+
+      - name: "John And Michelle"
+        unique_id: presence_john_and_michelle
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-heart
+
+      - name: "Full House"
+        unique_id: presence_full_house
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             is_state('binary_sensor.alaina_home', 'on') and
+             is_state('binary_sensor.ella_home', 'on') and
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-group
