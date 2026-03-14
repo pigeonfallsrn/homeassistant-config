@@ -182,7 +182,7 @@ template:
         unique_id: ella_at_activity
         device_class: presence
         state: >
-          {% set at_home = is_state('binary_sensor.ella_home', 'on') %}
+          {% set at_home = is_state('input_boolean.ella_home', 'on') %}
           {% set at_school = is_state('binary_sensor.ella_at_school', 'on') %}
           {% set tenacity_active = is_state('calendar.12s_1', 'on') %}
           {% set school_vball = is_state('calendar.whitehall_6th_grade_volleyball', 'on') %}
@@ -195,7 +195,7 @@ template:
         unique_id: alaina_at_activity
         device_class: presence
         state: >
-          {% set at_home = is_state('binary_sensor.alaina_home', 'on') %}
+          {% set at_home = is_state('input_boolean.alaina_home', 'on') %}
           {% set at_school = is_state('binary_sensor.alaina_at_school', 'on') %}
           {% set at_bagc = is_state('person.alaina_spencer', 'BAGC Gymnastics') %}
           {% set tenacity_active = is_state('calendar.14s_2', 'on') %}
@@ -240,7 +240,7 @@ template:
         state: >
           {% set school_tomorrow = is_state('input_boolean.school_tomorrow', 'on') %}
           {% set override = is_state('input_boolean.ella_winddown_override', 'on') %}
-          {% set at_home = is_state('binary_sensor.ella_home', 'on') %}
+          {% set at_home = is_state('input_boolean.ella_home', 'on') %}
           {% set late_activity = is_state('binary_sensor.ella_had_late_activity', 'on') %}
           {% set minutes_home = states('sensor.ella_minutes_since_home') | int(0) %}
           {% set current_hour = now().hour %}
@@ -258,7 +258,7 @@ template:
         state: >
           {% set school_tomorrow = is_state('input_boolean.school_tomorrow', 'on') %}
           {% set override = is_state('input_boolean.alaina_winddown_override', 'on') %}
-          {% set at_home = is_state('binary_sensor.alaina_home', 'on') %}
+          {% set at_home = is_state('input_boolean.alaina_home', 'on') %}
           {% set late_activity = is_state('binary_sensor.alaina_had_late_activity', 'on') %}
           {% set minutes_home = states('sensor.alaina_minutes_since_home') | int(0) %}
           {% set current_hour = now().hour %}
@@ -280,7 +280,7 @@ automation:
     mode: single
     trigger:
       - platform: state
-        entity_id: binary_sensor.ella_home
+        entity_id: input_boolean.ella_home
         to: "on"
     action:
       - service: input_datetime.set_datetime
@@ -294,7 +294,7 @@ automation:
     mode: single
     trigger:
       - platform: state
-        entity_id: binary_sensor.alaina_home
+        entity_id: input_boolean.alaina_home
         to: "on"
     action:
       - service: input_datetime.set_datetime

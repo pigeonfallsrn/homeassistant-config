@@ -39,7 +39,7 @@ template:
             School
           {% elif "Traci" in person or is_state_attr('sensor.alaina_ap_location', 'at_moms', true) %}
             At Mom's
-          {% elif person == 'home' or is_state('binary_sensor.alaina_home', 'on') %}
+          {% elif person == 'home' or is_state('input_boolean.alaina_home', 'on') %}
             Home
           {% else %}
             Away
@@ -66,7 +66,7 @@ template:
             School
           {% elif "Traci" in person or is_state_attr('sensor.ella_ap_location', 'at_moms', true) %}
             At Mom's
-          {% elif person == 'home' or is_state('binary_sensor.ella_home', 'on') %}
+          {% elif person == 'home' or is_state('input_boolean.ella_home', 'on') %}
             Home
           {% else %}
             Away
@@ -94,8 +94,8 @@ template:
         icon: mdi:home-group
         state: >
           {% set john = 'Home' in states('sensor.john_ap_location') %}
-          {% set alaina = 'Home' in states('sensor.alaina_ap_location') or is_state('binary_sensor.alaina_home', 'on') %}
-          {% set ella = 'Home' in states('sensor.ella_ap_location') or is_state('binary_sensor.ella_home', 'on') %}
+          {% set alaina = 'Home' in states('sensor.alaina_ap_location') or is_state('input_boolean.alaina_home', 'on') %}
+          {% set ella = 'Home' in states('sensor.ella_ap_location') or is_state('input_boolean.ella_home', 'on') %}
           {% set michelle = "John's House" in states('sensor.michelle_ap_location') %}
           {% set count = [john, alaina, ella, michelle] | select('true') | list | length %}
           {% if count == 0 %}Empty
@@ -107,7 +107,7 @@ template:
           who_home: >
             {% set p = [] %}
             {% if 'Home' in states('sensor.john_ap_location') %}{% set p = p + ['John'] %}{% endif %}
-            {% if 'Home' in states('sensor.alaina_ap_location') or is_state('binary_sensor.alaina_home', 'on') %}{% set p = p + ['Alaina'] %}{% endif %}
-            {% if 'Home' in states('sensor.ella_ap_location') or is_state('binary_sensor.ella_home', 'on') %}{% set p = p + ['Ella'] %}{% endif %}
+            {% if 'Home' in states('sensor.alaina_ap_location') or is_state('input_boolean.alaina_home', 'on') %}{% set p = p + ['Alaina'] %}{% endif %}
+            {% if 'Home' in states('sensor.ella_ap_location') or is_state('input_boolean.ella_home', 'on') %}{% set p = p + ['Ella'] %}{% endif %}
             {% if "John's House" in states('sensor.michelle_ap_location') %}{% set p = p + ['Michelle'] %}{% endif %}
             {{ p | join(', ') if p else 'Nobody' }}

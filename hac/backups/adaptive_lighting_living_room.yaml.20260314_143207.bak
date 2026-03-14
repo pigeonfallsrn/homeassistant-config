@@ -287,7 +287,7 @@ automation:
     description: "Master switch - turns off all adaptive-managed lamps when house is empty"
     trigger:
       - platform: state
-        entity_id: binary_sensor.someone_home
+        entity_id: input_boolean.someone_home
         to: "off"
     action:
       - service: light.turn_off

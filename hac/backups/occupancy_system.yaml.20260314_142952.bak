@@ -58,10 +58,10 @@ template:
       - name: "Occupancy Mode Auto"
         unique_id: occupancy_mode_auto
         state: >
-          {% set john = is_state('binary_sensor.john_home', 'on') %}
-          {% set alaina = is_state('binary_sensor.alaina_home', 'on') %}
-          {% set ella = is_state('binary_sensor.ella_home', 'on') %}
-          {% set michelle = is_state('binary_sensor.michelle_home', 'on') %}
+          {% set john = is_state('input_boolean.john_home', 'on') %}
+          {% set alaina = is_state('input_boolean.alaina_home', 'on') %}
+          {% set ella = is_state('input_boolean.ella_home', 'on') %}
+          {% set michelle = is_state('input_boolean.michelle_home', 'on') %}
           {% set kids = alaina or ella %}
           {% set both_kids = alaina and ella %}
           
@@ -379,10 +379,10 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - binary_sensor.john_home
-          - binary_sensor.alaina_home
-          - binary_sensor.ella_home
-          - binary_sensor.michelle_home
+          - input_boolean.john_home
+          - input_boolean.alaina_home
+          - input_boolean.ella_home
+          - input_boolean.michelle_home
         for:
           seconds: 30  # Debounce
     action:

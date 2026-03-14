@@ -39,7 +39,7 @@ template:
       - name: "Evening Lamp Off Time"
         unique_id: evening_lamp_off_time
         state: >
-          {% set kids_home = is_state('binary_sensor.alaina_home', 'on') or is_state('binary_sensor.ella_home', 'on') %}
+          {% set kids_home = is_state('input_boolean.alaina_home', 'on') or is_state('input_boolean.ella_home', 'on') %}
           {% set school = is_state('input_boolean.school_tomorrow', 'on') %}
           {% if is_state('input_boolean.hot_tub_mode', 'on') %}
             01:00
@@ -62,7 +62,7 @@ template:
           {% set hour = now().hour %}
           {% set minute = now().minute %}
           {% set time_val = hour + minute/60 %}
-          {% set kids_home = is_state('binary_sensor.alaina_home', 'on') or is_state('binary_sensor.ella_home', 'on') %}
+          {% set kids_home = is_state('input_boolean.alaina_home', 'on') or is_state('input_boolean.ella_home', 'on') %}
           {% set school = is_state('input_boolean.school_tomorrow', 'on') %}
           {% set extended = is_state('input_boolean.extended_evening', 'on') or is_state('input_boolean.guest_present', 'on') %}
           {% set hot_tub = is_state('input_boolean.hot_tub_mode', 'on') %}
@@ -149,7 +149,7 @@ automation:
         minutes: "/5"
         id: periodic_check
       - platform: state
-        entity_id: binary_sensor.someone_home
+        entity_id: input_boolean.someone_home
         to: "off"
         id: nobody_home
     condition:
@@ -497,7 +497,7 @@ automation:
     alias: "Adaptive Lighting - Off When Nobody Home or Late Night"
     trigger:
       - platform: state
-        entity_id: binary_sensor.someone_home
+        entity_id: input_boolean.someone_home
         to: "off"
         id: nobody_home
       - platform: time

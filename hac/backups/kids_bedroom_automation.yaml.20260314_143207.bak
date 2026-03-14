@@ -220,7 +220,7 @@ automation:
         entity_id: input_boolean.ella_bedroom_override
         state: "off"
       - condition: state
-        entity_id: binary_sensor.ella_home
+        entity_id: input_boolean.ella_home
         state: "on"
       - condition: time
         after: "05:00:00"
@@ -248,7 +248,7 @@ automation:
         entity_id: input_boolean.alaina_bedroom_override
         state: "off"
       - condition: state
-        entity_id: binary_sensor.alaina_home
+        entity_id: input_boolean.alaina_home
         state: "on"
       - condition: time
         after: "05:00:00"
@@ -271,7 +271,7 @@ automation:
         entity_id: input_boolean.school_tomorrow
         state: "on"
       - condition: state
-        entity_id: binary_sensor.ella_home
+        entity_id: input_boolean.ella_home
         state: "on"
       - condition: state
         entity_id: input_boolean.ella_bedroom_override
@@ -306,7 +306,7 @@ automation:
         entity_id: input_boolean.school_tomorrow
         state: "on"
       - condition: state
-        entity_id: binary_sensor.alaina_home
+        entity_id: input_boolean.alaina_home
         state: "on"
       - condition: state
         entity_id: input_boolean.alaina_bedroom_override
@@ -368,7 +368,7 @@ automation:
     alias: "Ella - Lights Off When Leaving"
     trigger:
       - platform: state
-        entity_id: binary_sensor.ella_home
+        entity_id: input_boolean.ella_home
         to: "off"
         for:
           minutes: 5
@@ -387,7 +387,7 @@ automation:
     alias: "Alaina - Lights Off When Leaving"
     trigger:
       - platform: state
-        entity_id: binary_sensor.alaina_home
+        entity_id: input_boolean.alaina_home
         to: "off"
         for:
           minutes: 5
@@ -406,7 +406,7 @@ automation:
     alias: "Kids - Lights Off When Everyone Away"
     trigger:
       - platform: state
-        entity_id: binary_sensor.someone_home
+        entity_id: input_boolean.someone_home
         to: "off"
     action:
       - service: script.ella_lights_off
