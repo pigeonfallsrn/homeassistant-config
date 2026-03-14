@@ -87,3 +87,4 @@ source: "com.amazon.firetv.youtube"
 - Consider: Mushroom cards, Bubble card, or custom grid layout
 - Prioritize touch targets for one-handed use
 - 2026-03-14: Ella companion app on iPhone 17 - install when she's home, update person.ella_spencer tracker source, rename iPad entity to avoid confusion
+- 2026-03-14: Set automatic backup retention policy - HA Green accumulates supervisor backups silently. Options: (A) Settings->System->Backups->Configure->set keep to 3, or (B) cloud backup integration to Google Drive + keep 2 local. Also table: remove python_scripts/venv/ if not referenced by export_to_sheets.py
