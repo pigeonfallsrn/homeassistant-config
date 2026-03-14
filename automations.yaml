@@ -943,7 +943,7 @@
         ttl: 0
         priority: high
         tag: doorbell_{{ doorbell_label | lower | replace(' ', '_') }}
-    action: notify.mobile_app_sm_s928u
+    action: notify.mobile_app_john_s_s26_ultra
   mode: parallel
   max: 2
   variables:
@@ -989,7 +989,7 @@
         channel: Doorbell
         importance: default
         tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
-    action: notify.mobile_app_sm_s928u
+    action: notify.mobile_app_john_s_s26_ultra
   mode: parallel
   max: 2
   variables:

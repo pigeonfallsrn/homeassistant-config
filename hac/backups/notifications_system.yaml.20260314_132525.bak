@@ -22,7 +22,7 @@ automation:
         value_template: >
           {{ (as_timestamp(now()) - as_timestamp(trigger.from_state.last_changed)) > 300 }}
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "🏠 Welcome Home"
           message: >
@@ -57,7 +57,7 @@ automation:
 # DISABLED -         entity_id: person.alaina_spencer
 # DISABLED -         to: "home"
 # DISABLED -     action:
-# DISABLED -       - service: notify.mobile_app_john_s_s26_ultra
+# DISABLED -       - service: notify.mobile_app_sm_s928u
 # DISABLED -         data:
 # DISABLED -           title: "Alaina Arrived"
 # DISABLED -           message: "Alaina arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -72,7 +72,7 @@ automation:
         entity_id: person.ella_spencer
         to: "home"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "Ella Arrived"
           message: "Ella arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -121,12 +121,12 @@ automation:
               - service: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   title: "✅ North Garage"
                   message: "Opening..."
@@ -140,12 +140,12 @@ automation:
               - service: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   title: "✅ South Garage"
                   message: "Opening..."
@@ -161,7 +161,7 @@ automation:
                   entity_id:
                     - light.entry_room_hue_color_lamp
                     - light.living_room_east_floor_lamp
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -170,7 +170,7 @@ automation:
               - condition: trigger
                 id: disarm
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -179,7 +179,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -211,7 +211,7 @@ automation:
             {{ ns.devices }}
       - condition: template
         value_template: "{{ low_batteries | length > 0 }}"
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "🔋 Low Battery Alert"
           message: "{{ low_batteries | length }} device(s) need attention:\n{{ low_batteries | join('\n') }}"
@@ -244,7 +244,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -254,7 +254,7 @@ automation:
               - condition: trigger
                 id: snooze
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -296,7 +296,7 @@ automation:
           - sensor.lumi_lumi_sensor_wleak_aq1_battery
         below: 10
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "⚠️ Critical Battery"
           message: "{{ trigger.to_state.name }} is at {{ trigger.to_state.state }}%"
@@ -339,7 +339,7 @@ automation:
             entity_id: light.back_patio
             state: "on"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "Heading to Bed?"
           message: "1st floor or outside lights are still on."
@@ -395,7 +395,7 @@ automation:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -412,7 +412,7 @@ automation:
                     - light.living_room
                     - light.kitchen_lounge
                     - light.1st_floor_bathroom
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -428,7 +428,7 @@ automation:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -438,7 +438,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -478,7 +478,7 @@ automation:
 #DISABLED               - condition: template
 #DISABLED                 value_template: "{{ avg_humidity < 30 }}"
 #DISABLED             sequence:
-#DISABLED               - service: notify.mobile_app_john_s_s26_ultra
+#DISABLED               - service: notify.mobile_app_sm_s928u
 #DISABLED                 data:
 #DISABLED                   title: "🏜️ Low Humidity Alert"
 #DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Pause bathroom fan?"
@@ -498,7 +498,7 @@ automation:
 #DISABLED               - condition: template
 #DISABLED                 value_template: "{{ avg_humidity > 55 and is_summer }}"
 #DISABLED             sequence:
-#DISABLED               - service: notify.mobile_app_john_s_s26_ultra
+#DISABLED               - service: notify.mobile_app_sm_s928u
 #DISABLED                 data:
 #DISABLED                   title: "💧 High Humidity Alert"
 #DISABLED                   message: "2nd floor avg: {{ avg_humidity }}%. Turn on AC?"
@@ -545,7 +545,7 @@ automation:
               - service: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -563,7 +563,7 @@ automation:
               - service: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -584,7 +584,7 @@ automation:
                 data:
                   temperature: 74
                   hvac_mode: cool
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -594,7 +594,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -626,7 +626,7 @@ automation:
             entity_id: cover.ratgdo32disco_5735e8_door
             state: "open"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           title: "🚨 Garage Door Open"
           message: >
@@ -686,12 +686,12 @@ automation:
                   entity_id:
                     - cover.ratgdo32disco_fd8d8c_door
                     - cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
                     tag: "departure_garage_open"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   title: "✅ Garage Closing"
                   message: "All doors closing..."
@@ -702,7 +702,7 @@ automation:
               - condition: trigger
                 id: snooze_30
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -720,7 +720,7 @@ automation:
                   - condition: state
                     entity_id: cover.ratgdo32disco_5735e8_door
                     state: "open"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   title: "🚨 Reminder: Garage Still Open"
                   message: >
@@ -748,7 +748,7 @@ automation:
               - condition: trigger
                 id: ignore
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - service: notify.mobile_app_sm_s928u
                 data:
                   message: "clear_notification"
                   data:
@@ -762,7 +762,7 @@ automation:
         entity_id: person.john_spencer
         to: "home"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - service: notify.mobile_app_sm_s928u
         data:
           message: "clear_notification"
           data:
