@@ -138,7 +138,137 @@ views:
               - type: vertical-stack
                 cards:
                   - type: custom:mushroom-title-card
+                  - type: custom:mushroom-title-card
                     title: Kitchen Lights
+                  # Active scene indicator
+                  - type: custom:mushroom-template-card
+                    primary: >-
+                      {{ states('input_select.kitchen_lighting_scene') }}
+                    secondary: Kitchen Scene
+                    icon: >-
+                      {% set s = states('input_select.kitchen_lighting_scene') %}
+                      {% if s == 'Cooking Bright' %}mdi:stove
+                      {% elif s == 'Dinner Dim' %}mdi:candle
+                      {% elif s == 'Movie Night' %}mdi:movie-open
+                      {% elif s == 'Nightlight Only' %}mdi:weather-night
+                      {% elif s == 'All On' %}mdi:lightbulb-on
+                      {% else %}mdi:lightbulb-off{% endif %}
+                    icon_color: >-
+                      {% set s = states('input_select.kitchen_lighting_scene') %}
+                      {% if s == 'Cooking Bright' %}amber
+                      {% elif s == 'Dinner Dim' %}orange
+                      {% elif s == 'Movie Night' %}purple
+                      {% elif s == 'Nightlight Only' %}blue
+                      {% elif s == 'All On' %}yellow
+                      {% else %}grey{% endif %}
+                    tap_action:
+                      action: none
+                  # Bubble sliders - color/dim capable lights
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_chandelier
+                    name: Chandelier
+                    icon: mdi:chandelier
+                    show_state: false
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_lounge_lamp
+                    name: Lounge Lamp
+                    icon: mdi:lamp
+                    show_state: false
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_above_sink_light
+                    name: Sink Light
+                    icon: mdi:track-light
+                    show_state: false
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_govee_floor_lamp
+                    name: Floor Lamp
+                    icon: mdi:floor-lamp
+                    show_state: false
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_lounge_light_fan_inovelli_vzm36_light
+                    name: Fan Light
+                    icon: mdi:ceiling-fan-light
+                    show_state: false
+                  # Scene buttons - active state via input_select color
+                  - type: horizontal-stack
+                    cards:
+                      - type: custom:mushroom-template-card
+                        primary: Cooking
+                        icon: mdi:stove
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'Cooking Bright') %}amber{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_cooking_bright
+                      - type: custom:mushroom-template-card
+                        primary: Dinner
+                        icon: mdi:candle
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'Dinner Dim') %}orange{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_dinner_dim
+                      - type: custom:mushroom-template-card
+                        primary: Movie
+                        icon: mdi:movie-open
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'Movie Night') %}purple{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_movie_night
+                      - type: custom:mushroom-template-card
+                        primary: Night
+                        icon: mdi:weather-night
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'Nightlight Only') %}blue{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_nightlight
+                      - type: custom:mushroom-template-card
+                        primary: All On
+                        icon: mdi:lightbulb-on
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'All On') %}yellow{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_all_on
+                      - type: custom:mushroom-template-card
+                        primary: Off
+                        icon: mdi:lightbulb-off
+                        icon_color: >-
+                          {% if is_state('input_select.kitchen_lighting_scene', 'Off') %}red{% else %}grey{% endif %}
+                        layout: vertical
+                        tap_action:
+                          action: perform-action
+                          perform_action: script.turn_on
+                          target:
+                            entity_id: script.kitchen_scene_all_off
+                  # Dumb LED toggles - brightness-only switches
                   - type: custom:mushroom-chips-card
                     alignment: center
                     chips:
@@ -161,9 +291,9 @@ views:
                         tap_action:
                           action: toggle
                       - type: light
-                        entity: light.kitchen_lounge_lamp
+                        entity: light.kitchen_bar_pendant_lights
                         use_light_color: true
-                        icon: mdi:lamp
+                        icon: mdi:ceiling-light-multiple
                         tap_action:
                           action: toggle
                       - type: light
@@ -172,51 +302,6 @@ views:
                         icon: mdi:sofa
                         tap_action:
                           action: toggle
-                  # Scene Buttons
-                  - type: horizontal-stack
-                    cards:
-                      - type: custom:mushroom-template-card
-                        primary: Cooking
-                        icon: mdi:stove
-                        icon_color: amber
-                        layout: vertical
-                        tap_action:
-                          action: call-service
-                          service: script.turn_on
-                          service_data:
-                            entity_id: script.kitchen_scene_cooking_bright
-                      - type: custom:mushroom-template-card
-                        primary: Dinner
-                        icon: mdi:candle
-                        icon_color: orange
-                        layout: vertical
-                        tap_action:
-                          action: call-service
-                          service: script.turn_on
-                          service_data:
-                            entity_id: script.kitchen_scene_dinner_dim
-                      - type: custom:mushroom-template-card
-                        primary: Movie
-                        icon: mdi:movie-open
-                        icon_color: purple
-                        layout: vertical
-                        tap_action:
-                          action: call-service
-                          service: script.turn_on
-                          service_data:
-                            entity_id: script.kitchen_scene_movie_night
-                      - type: custom:mushroom-template-card
-                        primary: "Off"
-                        icon: mdi:lightbulb-off
-                        icon_color: grey
-                        layout: vertical
-                        tap_action:
-                          action: call-service
-                          service: script.turn_on
-                          service_data:
-                            entity_id: script.kitchen_scene_all_off
-                  # MEDIA PLAYER
-                  - type: custom:mushroom-title-card
                     title: Music
                   - type: custom:mushroom-media-player-card
                     entity: media_player.kitchen_sonos_beam
