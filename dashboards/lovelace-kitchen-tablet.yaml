@@ -268,6 +268,13 @@ views:
                           perform_action: script.turn_on
                           target:
                             entity_id: script.kitchen_scene_all_off
+                  - type: custom:bubble-card
+                    card_type: button
+                    button_type: slider
+                    entity: light.kitchen_under_cabinet_aqara_t1_led_strip
+                    name: Under Cabinet
+                    icon: mdi:led-strip-variant
+                    show_state: false
                   # Dumb LED toggles - brightness-only switches
                   - type: custom:mushroom-chips-card
                     alignment: center
