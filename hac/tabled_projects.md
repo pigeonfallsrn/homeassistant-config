@@ -86,3 +86,4 @@ source: "com.amazon.firetv.youtube"
 - Mobile-optimized (S24 Ultra: 3088 x 1440)
 - Consider: Mushroom cards, Bubble card, or custom grid layout
 - Prioritize touch targets for one-handed use
+- 2026-03-14: Ella companion app on iPhone 17 - install when she's home, update person.ella_spencer tracker source, rename iPad entity to avoid confusion
