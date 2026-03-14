@@ -1161,3 +1161,102 @@
         action: light.turn_off
   mode: parallel
   max: 2
+- id: garage_auto_close_departure
+  alias: Garage - Auto Close North on Departure
+  description: When John leaves home and North garage door is open, send actionable
+    notification then auto-close after 60s unless cancelled.
+  triggers:
+  - platform: state
+    entity_id: person.john_spencer
+    to: not_home
+    from: home
+  conditions:
+  - condition: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    state: open
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: "\U0001F6AA Garage Still Open"
+      message: North door closing in 60s — tap to cancel
+      data:
+        tag: garage_auto_close
+        ttl: 0
+        priority: high
+        actions:
+        - action: CANCEL_AUTO_CLOSE
+          title: KEEP OPEN
+        - action: CLOSE_NOW_DEPART
+          title: CLOSE NOW
+  - wait_for_trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CANCEL_AUTO_CLOSE
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CLOSE_NOW_DEPART
+    timeout:
+      seconds: 60
+    continue_on_timeout: true
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
+        == ''CANCEL_AUTO_CLOSE'' }}'
+    then:
+    - action: notify.mobile_app_john_s_s26_ultra
+      data:
+        title: "\U0001F6AA Garage"
+        message: North door left open
+        data:
+          tag: garage_auto_close
+          timeout: 30
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
+        == ''CLOSE_NOW_DEPART'' }}'
+    then:
+    - action: cover.close_cover
+      target:
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+    - action: notify.mobile_app_john_s_s26_ultra
+      data:
+        title: "\U0001F512 Garage"
+        message: North door closed
+        data:
+          tag: garage_auto_close
+          timeout: 30
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is none }}'
+    then: []
+  - condition: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    state: open
+  - action: cover.close_cover
+    target:
+      entity_id: cover.ratgdo32disco_fd8d8c_door
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: "\U0001F512 Garage"
+      message: North door closed
+      data:
+        tag: garage_auto_close
+        timeout: 30
+  mode: single
+- id: garage_door_notifications_autoclear
+  alias: Garage - Auto-Clear Notifications on Close
+  description: When North garage door closes, dismiss the auto-close notification
+    from John's phone.
+  triggers:
+  - platform: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    to: closed
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      message: clear_notification
+      data:
+        tag: garage_auto_close
+  mode: single
