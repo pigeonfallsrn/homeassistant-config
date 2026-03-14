@@ -109,6 +109,7 @@ source: "com.amazon.firetv.youtube"
 - Prioritize touch targets for one-handed use
 
 ## Recent Session Learnings
+- 2026-03-14: ENTITY: notify.mobile_app_john_s_s26_ultra is John's canonical phone notify target as of 2026-03-14. Next phone migration: find /homeassistant/packages -name '*.yaml' | xargs sed -i 's/mobile_app_john_s_s26_ultra/mobile_app_NEW_NAME/g' then update UI automations via MCP.
 - [2026-03-10 07:06] HAC: hac alias was missing from .zshrc after system update - fix: echo 'alias hac="/homeassistant/hac/hac.sh"' >> ~/.zshrc && source ~/.zshrc
 - [2026-03-10 07:06] YAML: BusyBox grep on HA Green does not support --include flag - use: find /homeassistant/packages -name '*.yaml' | xargs grep pattern
 - [2026-03-10 07:06] HAC: UI-created automations on HA Green are NOT in /homeassistant/.storage/ from terminal - storage is only accessible via MCP API or HA UI. ha_config_get_automation via MCP also fails for these - must use ha_config_set_automation to update by entity_id
