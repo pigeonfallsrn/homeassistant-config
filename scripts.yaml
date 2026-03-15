@@ -106,53 +106,38 @@ kitchen_play_chill:
   alias: Kitchen - Play Chill Music
   icon: mdi:music
   sequence:
-  - service: media_player.select_source
+  - action: music_assistant.play_media
     target:
-      entity_id: media_player.spotify_pigeonfallsrn
+      entity_id: media_player.kitchen_2
     data:
-      source: Kitchen Echo Show
-  - delay:
-      seconds: 4
-  - service: media_player.play_media
-    target:
-      entity_id: media_player.spotify_pigeonfallsrn
-    data:
-      media_content_id: spotify:playlist:37i9dQZF1DWZd79rJ6a7lp
-      media_content_type: playlist
+      media_id: 37i9dQZF1DWZd79rJ6a7lp
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
 kitchen_play_dinner:
   alias: Kitchen - Play Dinner Music
   icon: mdi:silverware-fork-knife
   sequence:
-  - service: media_player.select_source
+  - action: music_assistant.play_media
     target:
-      entity_id: media_player.spotify_pigeonfallsrn
+      entity_id: media_player.kitchen_2
     data:
-      source: Kitchen Echo Show
-  - delay:
-      seconds: 4
-  - service: media_player.play_media
-    target:
-      entity_id: media_player.spotify_pigeonfallsrn
-    data:
-      media_content_id: spotify:playlist:37i9dQZF1DX4wta20PHgwo
-      media_content_type: playlist
+      media_id: 37i9dQZF1DX4wta20PHgwo
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
 kitchen_play_kids:
   alias: Kitchen - Play Kids Music
   icon: mdi:balloon
   sequence:
-  - service: media_player.select_source
+  - action: music_assistant.play_media
     target:
-      entity_id: media_player.spotify_pigeonfallsrn
+      entity_id: media_player.kitchen_2
     data:
-      source: Kitchen Echo Show
-  - delay:
-      seconds: 4
-  - service: media_player.play_media
-    target:
-      entity_id: media_player.spotify_pigeonfallsrn
-    data:
-      media_content_id: spotify:playlist:37i9dQZF1DX6RQTY0gGbeh
-      media_content_type: playlist
+      media_id: 37i9dQZF1DX6RQTY0gGbeh
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
 kitchen_sonos_stop:
   alias: Kitchen - Stop Music
   icon: mdi:stop

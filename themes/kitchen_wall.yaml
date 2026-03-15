@@ -1,0 +1,4 @@
+kitchen_wall:
+  ha-view-sections-column-max-width: 800px
+  ha-view-sections-column-min-width: 300px
+  ha-view-sections-column-gap: 8px
