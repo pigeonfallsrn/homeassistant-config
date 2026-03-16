@@ -1,4 +1,8 @@
 kitchen_wall:
+  # Column sizing
   ha-view-sections-column-max-width: 800px
   ha-view-sections-column-min-width: 300px
   ha-view-sections-column-gap: 8px
+  # Sections view outer wrapper — overrides HA's ~1280px default max-width
+  # Eliminates black side gutters on wide laptop/desktop screens
+  ha-view-sections-max-width: none

@@ -342,3 +342,54 @@ kitchen_scene_lounge:
       entity_id: light.kitchen_govee_floor_lamp
     data:
       brightness_pct: 60
+kitchen_scene_select:
+  alias: Kitchen Scene Select
+  description: Toggle kitchen lighting scene via tablet buttons. If requested scene
+    is already active, turns all off. Fires the scene script AND syncs input_select.kitchen_lighting_scene
+    for active-state tracking.
+  icon: mdi:lightbulb-group
+  mode: single
+  fields:
+    scene:
+      name: Scene
+      description: Scene name matching input_select.kitchen_lighting_scene options
+      required: true
+      selector:
+        select:
+          options:
+          - Cooking Bright
+          - Dinner Dim
+          - Movie Night
+          - Nightlight Only
+          - All On
+  sequence:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.kitchen_lighting_scene
+        state: '{{ scene }}'
+      sequence:
+      - action: script.turn_on
+        target:
+          entity_id: script.kitchen_scene_all_off
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.kitchen_lighting_scene
+        data:
+          option: 'Off'
+    default:
+    - variables:
+        scene_script_map:
+          Cooking Bright: script.kitchen_scene_cooking_bright
+          Dinner Dim: script.kitchen_scene_dinner_dim
+          Movie Night: script.kitchen_scene_movie_night
+          Nightlight Only: script.kitchen_scene_nightlight
+          All On: script.kitchen_scene_all_on
+    - action: script.turn_on
+      target:
+        entity_id: '{{ scene_script_map[scene] }}'
+    - action: input_select.select_option
+      target:
+        entity_id: input_select.kitchen_lighting_scene
+      data:
+        option: '{{ scene }}'
