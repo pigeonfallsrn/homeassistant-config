@@ -208,7 +208,7 @@ script:
         target:
           entity_id: light.inovelli_vzm31_sn_4
         data:
-          brightness_pct: 20
+          brightness_pct: 12
       - action: light.turn_on
         target:
           entity_id: light.kitchen_chandelier
@@ -225,7 +225,7 @@ script:
         target:
           entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
         data:
-          brightness_pct: 25
+          brightness_pct: 18
           color_temp_kelvin: 2700
       - action: light.turn_on
         target:
@@ -270,7 +270,7 @@ script:
         target:
           entity_id: light.inovelli_vzm31_sn_4
         data:
-          brightness_pct: 8
+          brightness_pct: 3
       - action: light.turn_on
         target:
           entity_id: light.kitchen_chandelier
@@ -293,7 +293,7 @@ script:
         target:
           entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
         data:
-          brightness_pct: 8
+          brightness_pct: 4
           color_temp_kelvin: 2200
       - action: light.turn_on
         target:
