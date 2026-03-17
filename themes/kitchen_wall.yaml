@@ -3,6 +3,18 @@ kitchen_wall:
   ha-view-sections-column-max-width: 800px
   ha-view-sections-column-min-width: 300px
   ha-view-sections-column-gap: 8px
-  # Sections view outer wrapper — overrides HA's ~1280px default max-width
-  # Eliminates black side gutters on wide laptop/desktop screens
-  ha-view-sections-max-width: none
+  # Eliminate side gutters — target the actual HA 2026.x shadow DOM wrapper
+  ha-view-sections-max-width: "none"
+  # Force full width via card-mod on the sections container
+  card-mod-root-yaml: |
+    ha-panel-lovelace$:
+      hui-root$:
+        div.header-wrapper + div:
+          margin: 0 !important;
+          max-width: 100% !important;
+          width: 100% !important;
+        hui-view$:
+          hui-sections-view$:
+            div.sections-container:
+              max-width: 100% !important;
+              padding: 0 4px !important;
