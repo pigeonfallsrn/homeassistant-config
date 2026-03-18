@@ -81,11 +81,11 @@ hac backup does NOT work for storage-mode dashboards. Never attempt it.
 - python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
 
 ## Sections View Gutter — Fix Location
-Fix lives in /homeassistant/themes/kitchen_wall.yaml via card-mod-root-yaml.
-Targets hui-sections-view shadow DOM div.sections-container max-width:100%.
-NOT a CSS resource file issue. CSS resource files load too late — do not use.
-After any theme change: frontend.reload_themes → clear tablet cache → reload URL.
-If bars persist after theme reload, check card-mod version compatibility with HA 2026.3.
+Fix is in /homeassistant/themes/kitchen_wall.yaml via card-mod-root-yaml.
+Target selectors (HA 2026.3): hui-sections-view shadow DOM div.sections-container + div.section-column.
+After theme edits: frontend.reload_themes then clear tablet cache then reload URL.
+CSS resource files do NOT work for this — load too late. Do not use wall-tablet.css.
+hac-dash script always reloads themes. If bars persist: check card-mod version.
 
 ## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
 FKB 1.60.1 supports hash navigation — version is NOT the issue.
