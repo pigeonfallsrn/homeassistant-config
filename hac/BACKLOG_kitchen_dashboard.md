@@ -2,7 +2,7 @@
 _Work from top. Do not skip blocking items._
 
 ## BLOCKING
-- [ ] Music popup: kiosk_mode test currently live (disabled this session). Tap music button — if popup opens, kiosk_mode was the blocker. Fix: use Bubble Card open_popup action or configure kiosk_mode allowlist for hash nav. Then re-enable kiosk_mode.
+- [x] Music popup: RESOLVED — more-info on media_player.kitchen_2. Confirmed 2026-03-17.
 - [ ] Calendar: verify fills full right column with dense_section_placement:false — check on tablet after next reload.
 
 ## HIGH PRIORITY
@@ -18,3 +18,10 @@ _Work from top. Do not skip blocking items._
 ## LOW PRIORITY / FUTURE
 - [ ] Retire lovelace-kitchen-tablet (legacy YAML-mode dashboard — confirmed superseded by kitchen-wall-v2)
 - [ ] Second room tablet using same kitchen-wall-v2 pattern
+
+## COMPLETED
+- [x] Music button: tap_action more-info on media_player.kitchen_2 — confirmed working 2026-03-17
+- [x] Now-playing card: conditional maxi-media-player in left section, visible when playing/paused — added 2026-03-17
+- [x] Scene buttons: Bright/Night working with active state highlight — 2026-03-17
+- [x] Calendar: fills right column, max_columns:2 + column_span:1 + dense_section_placement:false — 2026-03-17
+- [x] Knowledge system: two-tier docs, hac-dash script, PROJECT_INSTRUCTIONS_CLAUDE.md — 2026-03-17
