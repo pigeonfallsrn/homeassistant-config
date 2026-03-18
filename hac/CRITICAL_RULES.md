@@ -80,10 +80,12 @@ hac backup does NOT work for storage-mode dashboards. Never attempt it.
 - After ANY transform: reload tablet + verify before next edit
 - python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
 
-## Sections View Gutter (ACCEPT — DO NOT RETRY)
-Black side bars on kitchen tablet are unfixable via CSS, column-max-width vars,
-or any resource file approach. HA frontend limitation for sections layout on tablets.
-Do not attempt again. Ever.
+## Sections View Gutter — Fix Location
+Fix lives in /homeassistant/themes/kitchen_wall.yaml via card-mod-root-yaml.
+Targets hui-sections-view shadow DOM div.sections-container max-width:100%.
+NOT a CSS resource file issue. CSS resource files load too late — do not use.
+After any theme change: frontend.reload_themes → clear tablet cache → reload URL.
+If bars persist after theme reload, check card-mod version compatibility with HA 2026.3.
 
 ## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
 FKB 1.60.1 supports hash navigation — version is NOT the issue.

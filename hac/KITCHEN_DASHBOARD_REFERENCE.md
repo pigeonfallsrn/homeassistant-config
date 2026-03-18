@@ -26,9 +26,12 @@ hac backup does NOT work for storage-mode dashboards. Never attempt it.
 - Left section: weather + chips + cameras + scene buttons + shopping/music row
 - Right section: atomic-calendar-revive only
 
-## Black Side Bars (ACCEPT — DO NOT RETRY)
-Unfixable via CSS resource files, column-max-width vars, or any other approach.
-HA frontend limitation for sections layout on tablets. Logged. Done. Move on.
+## Black Side Bars — Fix Location
+Fix is in /homeassistant/themes/kitchen_wall.yaml via card-mod-root-yaml.
+Targets: hui-sections-view shadow DOM div.sections-container max-width:100%
+After theme edits: frontend.reload_themes → clear tablet cache → reload URL.
+CSS resource files (wall-tablet.css) do NOT work — load too late. Do not use.
+If bars persist: check card-mod selector compatibility with current HA version.
 
 ## atomic-calendar-revive Settings (confirmed working)
 compactMode: false        # NEVER true — collapses card height
