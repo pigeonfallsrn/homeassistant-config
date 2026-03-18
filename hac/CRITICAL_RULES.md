@@ -67,3 +67,43 @@ Adaptive Lighting, ZHA pairing, Hue linking, Matter commissioning
 
 ## SAFE VIA API
 Automations, Scripts, Helpers, Services, Entity settings, Dashboards
+
+## Storage-Mode Dashboard Backup (NON-NEGOTIABLE)
+Before ANY kitchen-wall-v2 edit:
+  cp /homeassistant/.storage/lovelace.kitchen_wall_v2 /homeassistant/hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
+hac backup does NOT work for storage-mode dashboards. Never attempt it.
+
+## Dashboard Transform Rules (hard-won)
+- ALWAYS force_reload:True before any transform to get current hash
+- NEVER do piecemeal index-based transforms across multiple calls — indices shift silently
+- For section[0] edits: do ONE comprehensive rebuild, not multiple surgical edits
+- After ANY transform: reload tablet + verify before next edit
+- python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
+
+## Sections View Gutter (ACCEPT — DO NOT RETRY)
+Black side bars on kitchen tablet are unfixable via CSS, column-max-width vars,
+or any resource file approach. HA frontend limitation for sections layout on tablets.
+Do not attempt again. Ever.
+
+## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
+FKB 1.60.1 supports hash navigation — version is NOT the issue.
+All failed approaches: navigate tap_action, hash on section button,
+browser_mod fire-dom-event, root-level hidden trigger button + navigate.
+NEXT HYPOTHESIS TO TEST: kiosk_mode non_admin_settings:kiosk:true intercepts
+hash navigation before Bubble Card sees it.
+TEST: temporarily set kiosk_mode:{} in dashboard, reload, test popup, then restore.
+
+## atomic-calendar-revive — Confirmed Working Settings (wall tablet)
+compactMode: false  ← NEVER use true, collapses card height
+maxDaysToShow: 3-5, maxEventCount: 12-15
+dateSize: 200+, titleSize: 190+, timeSize: 160+
+column_span:1 on BOTH sections + max_columns:2 = correct 50/50 split
+dense_section_placement: false  ← true fights column_span, causes regression
+
+## Dashboard Session Start Protocol (NON-NEGOTIABLE)
+1. cp .storage/lovelace.kitchen_wall_v2 hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
+2. Read hac/BACKLOG_kitchen_dashboard.md — work from top of blocking items
+3. ha_config_get_dashboard force_reload:True — capture current hash before ANY edit
+4. Single comprehensive transform — never piecemeal
+5. Reload + verify on tablet after EVERY transform before proceeding
+6. Commit + log learnings before ending session
