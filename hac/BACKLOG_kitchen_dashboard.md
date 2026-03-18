@@ -25,3 +25,6 @@ _Work from top. Do not skip blocking items._
 - [x] Scene buttons: Bright/Night working with active state highlight — 2026-03-17
 - [x] Calendar: fills right column, max_columns:2 + column_span:1 + dense_section_placement:false — 2026-03-17
 - [x] Knowledge system: two-tier docs, hac-dash script, PROJECT_INSTRUCTIONS_CLAUDE.md — 2026-03-17
+
+## DEPENDENCY REQUIRED BEFORE USE
+- [ ] Install mass_queue integration (github.com/droans/mass_queue) — required for mass-player-card to work. Without it: red error, card fails. After install: replace Mushroom template now-playing card with proper mass-player-card using entities:[media_player.kitchen_2]. Enables full album art, queue browser, media browser, swipe to change tracks.
