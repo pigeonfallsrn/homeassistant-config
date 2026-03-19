@@ -6,8 +6,6 @@ homeassistant:
   customize: !include customize.yaml
   packages: !include_dir_named packages
 frontend:
-  extra_module_url:
-    - /hacsfiles/Bubble-Card/bubble-pop-up-fix.js
 history:
 logbook:
 map:
