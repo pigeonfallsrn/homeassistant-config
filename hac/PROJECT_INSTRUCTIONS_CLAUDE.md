@@ -68,3 +68,9 @@ No card-mod-root-yaml needed. Simple theme vars only.
 [3] grid (4-col scene buttons: Bright/Dim/Music/Night)
 [4] bubble-card media-player (album art, navigates to #music)
 NEVER rebuild piecemeal. Always replace sections[0]['cards'] entirely.
+
+## FKB CONFIGURATION (via HA service — no port 2323 needed)
+fully_kiosk.set_config device_id=86870b5d8b01f345f5d5dd9c2ac06d2b
+  autoUpdateApp=false  ← run this at start of every session to prevent restarts
+  customCSS="css"      ← inject CSS for gutter fix
+Tablet IoT VLAN 192.168.21.x — port 2323 unreachable from main LAN.

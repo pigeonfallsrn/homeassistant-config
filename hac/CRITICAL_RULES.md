@@ -118,3 +118,20 @@ dense_section_placement: false  ← true fights column_span, causes regression
 FKB auto-updates cause random browser restarts and dashboard stuck-on-logo issues.
 Disable: FKB Settings > General Settings > Auto-Update Fully Kiosk Browser = OFF
 Control updates manually during maintenance windows only.
+
+## FKB Configuration via HA Service (PREFERRED METHOD)
+Use fully_kiosk.set_config — works cross-VLAN, no port 2323 needed.
+device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
+
+Key config keys:
+  autoUpdateApp: false        # DISABLE — prevents random restarts
+  customCSS: "css string"     # Inject CSS directly into FKB browser
+
+FKB port 2323 blocked: tablet on IoT VLAN 192.168.21.x, PC on 192.168.1.x
+UniFi firewall blocks LAN->IoT inbound. HA has cross-VLAN access already.
+
+## Sections View Gutter — FINAL STATUS
+Column width fix: ha-view-sections-column-max-width: 2000px in kitchen_wall theme
+Container padding: injected via fully_kiosk.set_config customCSS
+CSS injected: hui-sections-view { --ha-view-sections-column-max-width: 2000px; padding-left: 0; padding-right: 0; }
+Verify on tablet — may need browser restart to apply.
