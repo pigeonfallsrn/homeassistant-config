@@ -81,9 +81,9 @@ hac backup does NOT work for storage-mode dashboards. Never attempt it.
 - python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
 
 ## Sections View Gutter — CONFIRMED FIX (2026-03-19)
-WORKING FIX: card-mod-view-yaml in kitchen_wall theme targeting hui-sections-view host.
+WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
 
-Theme file /homeassistant/themes/kitchen_wall.yaml must contain:
+/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
   ha-view-sections-column-max-width: 2000px
   ha-view-sections-column-min-width: 300px
   ha-view-sections-column-gap: 8px
@@ -94,13 +94,14 @@ Theme file /homeassistant/themes/kitchen_wall.yaml must contain:
           --ha-view-sections-column-max-width: 2000px !important;
         }
 
-WHY IT WORKS: card-mod-view-yaml runs AFTER the component initializes,
-overriding the CSS variable at the shadow DOM host level. card-mod-root-yaml
-runs too early. CSS resource files lose the specificity race.
+WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
+host level before HA sections view applies its default. card-mod-root-yaml runs
+too early and loses. CSS resource files lose specificity race. FKB customCSS
+cannot pierce shadow DOM.
 
-After any theme change: frontend.reload_themes then clear cache + reload URL.
-DO NOT use card-mod-root-yaml, CSS resource files, or FKB customCSS for this.
-PHYSICAL BEZEL NOTE: Remaining ~8mm each side is physical tablet bezel, not CSS.
+After theme change: frontend.reload_themes + clear cache + reload tablet.
+DO NOT change this. DO NOT use any other approach.
+
 
 ## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
 FKB 1.60.1 supports hash navigation — version is NOT the issue.
@@ -141,11 +142,28 @@ Key config keys:
 FKB port 2323 blocked: tablet on IoT VLAN 192.168.21.x, PC on 192.168.1.x
 UniFi firewall blocks LAN->IoT inbound. HA has cross-VLAN access already.
 
-## Sections View Gutter — FINAL STATUS
-Column width fix: ha-view-sections-column-max-width: 2000px in kitchen_wall theme
-Container padding: injected via fully_kiosk.set_config customCSS
-CSS injected: hui-sections-view { --ha-view-sections-column-max-width: 2000px; padding-left: 0; padding-right: 0; }
-Verify on tablet — may need browser restart to apply.
+## Sections View Gutter — CONFIRMED FIX (2026-03-19)
+WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
+
+/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
+  ha-view-sections-column-max-width: 2000px
+  ha-view-sections-column-min-width: 300px
+  ha-view-sections-column-gap: 8px
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
+
+WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
+host level before HA sections view applies its default. card-mod-root-yaml runs
+too early and loses. CSS resource files lose specificity race. FKB customCSS
+cannot pierce shadow DOM.
+
+After theme change: frontend.reload_themes + clear cache + reload tablet.
+DO NOT change this. DO NOT use any other approach.
+
 
 ## FKB customCSS — Broader Selector Approach for Gutter
 Key: customCSS
@@ -156,9 +174,25 @@ may not reach it. If FKB customCSS does not eliminate bars, this is a
 shadow DOM isolation issue that cannot be solved from document-level CSS.
 True fix requires card-mod shadow DOM traversal with correct selectors.
 
-## Sections View Gutter — RESOLVED (Physical Bezel)
-CONFIRMED 2026-03-19: Black bars on left/right of kitchen tablet are the PHYSICAL BEZEL
-of the Samsung Galaxy Tab A9+, NOT CSS padding or sections view layout issues.
-Verified by opening FKB menu — dashboard content visible going edge-to-edge behind menu.
-ha-view-sections-column-max-width: 2000px in theme is correct and sufficient.
-DO NOT attempt further CSS fixes for this — it is hardware, not software.
+## Sections View Gutter — CONFIRMED FIX (2026-03-19)
+WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
+
+/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
+  ha-view-sections-column-max-width: 2000px
+  ha-view-sections-column-min-width: 300px
+  ha-view-sections-column-gap: 8px
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
+
+WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
+host level before HA sections view applies its default. card-mod-root-yaml runs
+too early and loses. CSS resource files lose specificity race. FKB customCSS
+cannot pierce shadow DOM.
+
+After theme change: frontend.reload_themes + clear cache + reload tablet.
+DO NOT change this. DO NOT use any other approach.
+
