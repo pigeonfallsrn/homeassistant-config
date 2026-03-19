@@ -78,13 +78,17 @@ template:
 
       - name: "Alaina Home"
         unique_id: presence_alaina_home
-        state: "{{ is_state('person.alaina_spencer', 'home') }}"
+        state: >
+          {{ is_state('person.alaina_spencer', 'home') and
+             (now() - states.device_tracker.alaina_s_iphone_17.last_updated).total_seconds() < 1800 }}
         device_class: presence
         icon: mdi:account
 
       - name: "Ella Home"
         unique_id: presence_ella_home
-        state: "{{ is_state('person.ella_spencer', 'home') }}"
+        state: >
+          {{ is_state('person.ella_spencer', 'home') and
+             (now() - states.device_tracker.ellas_iphone.last_updated).total_seconds() < 1800 }}
         device_class: presence
         icon: mdi:account
 
