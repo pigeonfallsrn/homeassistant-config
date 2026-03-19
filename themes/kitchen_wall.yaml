@@ -1,5 +1,10 @@
 kitchen_wall:
-  # Fill full tablet width — no gutters
   ha-view-sections-column-max-width: 2000px
   ha-view-sections-column-min-width: 300px
   ha-view-sections-column-gap: 8px
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
