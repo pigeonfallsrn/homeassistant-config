@@ -135,3 +135,12 @@ Column width fix: ha-view-sections-column-max-width: 2000px in kitchen_wall them
 Container padding: injected via fully_kiosk.set_config customCSS
 CSS injected: hui-sections-view { --ha-view-sections-column-max-width: 2000px; padding-left: 0; padding-right: 0; }
 Verify on tablet — may need browser restart to apply.
+
+## FKB customCSS — Broader Selector Approach for Gutter
+Key: customCSS
+Broader CSS targeting all HA container elements:
+ha-panel-lovelace, .lovelace-container, ha-app-layout, hui-sections-view { padding: 0; margin: 0; }
+Note: HA sections view padding lives inside shadow DOM — document-level CSS
+may not reach it. If FKB customCSS does not eliminate bars, this is a
+shadow DOM isolation issue that cannot be solved from document-level CSS.
+True fix requires card-mod shadow DOM traversal with correct selectors.
