@@ -80,16 +80,27 @@ hac backup does NOT work for storage-mode dashboards. Never attempt it.
 - After ANY transform: reload tablet + verify before next edit
 - python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
 
-## Sections View Gutter — DEFINITIVE FIX
-Root cause 1 (column width): ha-view-sections-column-max-width was 800px in theme.
-  FIX: Set to 2000px in kitchen_wall theme. DONE. Confirmed working.
-Root cause 2 (container padding): hui-sections-view has native padding-inline.
-  FIX OPTION A: wall-tablet.css resource file — NOT reliable (loads too late for shadow DOM)
-  FIX OPTION B: FKB Custom CSS injection — FKB remote admin port 2323 is DISABLED on tablet.
-    Enable in FKB Settings > Remote Administration, then access http://192.168.1.3:2323
-  FIX OPTION C: card-mod-root-yaml in theme — shadow DOM selectors unreliable across HA versions.
-  STATUS: Partially fixed (column width). Container padding still present (~1 inch each side).
-  ACCEPT remaining bars until FKB remote admin is enabled for CSS injection approach.
+## Sections View Gutter — CONFIRMED FIX (2026-03-19)
+WORKING FIX: card-mod-view-yaml in kitchen_wall theme targeting hui-sections-view host.
+
+Theme file /homeassistant/themes/kitchen_wall.yaml must contain:
+  ha-view-sections-column-max-width: 2000px
+  ha-view-sections-column-min-width: 300px
+  ha-view-sections-column-gap: 8px
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
+
+WHY IT WORKS: card-mod-view-yaml runs AFTER the component initializes,
+overriding the CSS variable at the shadow DOM host level. card-mod-root-yaml
+runs too early. CSS resource files lose the specificity race.
+
+After any theme change: frontend.reload_themes then clear cache + reload URL.
+DO NOT use card-mod-root-yaml, CSS resource files, or FKB customCSS for this.
+PHYSICAL BEZEL NOTE: Remaining ~8mm each side is physical tablet bezel, not CSS.
 
 ## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
 FKB 1.60.1 supports hash navigation — version is NOT the issue.

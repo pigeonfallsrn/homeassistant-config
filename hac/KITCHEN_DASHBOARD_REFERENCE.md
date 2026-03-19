@@ -96,3 +96,15 @@ hac learn has NO deduplication — before logging ask: is this already in a Tier
   Remaining fix: wall-tablet.css targeting hui-sections-view
 - Section 0 card order: [0]weather [1]chips [2]cameras [3]scene-grid [4]media-player
 - NEVER use piecemeal transforms — always rebuild sections[0]['cards'] entirely
+
+
+## Gutter Fix — CONFIRMED WORKING (2026-03-19)
+Add to /homeassistant/themes/kitchen_wall.yaml:
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
+Then: frontend.reload_themes + clear cache + reload tablet.
+This runs after component init and wins the CSS specificity race.

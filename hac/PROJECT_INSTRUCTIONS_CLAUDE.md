@@ -74,3 +74,15 @@ fully_kiosk.set_config device_id=86870b5d8b01f345f5d5dd9c2ac06d2b
   autoUpdateApp=false  ← run this at start of every session to prevent restarts
   customCSS="css"      ← inject CSS for gutter fix
 Tablet IoT VLAN 192.168.21.x — port 2323 unreachable from main LAN.
+
+
+## GUTTER FIX — CONFIRMED (2026-03-19)
+kitchen_wall theme MUST have card-mod-view-yaml:
+  card-mod-view-yaml: |
+    hui-sections-view:
+      $: |
+        :host {
+          --ha-view-sections-column-max-width: 2000px !important;
+        }
+DO NOT remove this. DO NOT replace with card-mod-root-yaml.
+After theme changes: frontend.reload_themes then reload tablet.
