@@ -113,3 +113,8 @@ dense_section_placement: false  ← true fights column_span, causes regression
 4. Single comprehensive transform — never piecemeal
 5. Reload + verify on tablet after EVERY transform before proceeding
 6. Commit + log learnings before ending session
+
+## FKB Auto-Update — DISABLE THIS
+FKB auto-updates cause random browser restarts and dashboard stuck-on-logo issues.
+Disable: FKB Settings > General Settings > Auto-Update Fully Kiosk Browser = OFF
+Control updates manually during maintenance windows only.
