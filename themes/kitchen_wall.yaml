@@ -1,16 +1,5 @@
 kitchen_wall:
-  # Column sizing
-  ha-view-sections-column-max-width: 800px
+  # Fill full tablet width — no gutters
+  ha-view-sections-column-max-width: 2000px
   ha-view-sections-column-min-width: 300px
   ha-view-sections-column-gap: 8px
-  # Eliminate side gutters — target the actual HA 2026.x shadow DOM wrapper
-  ha-view-sections-max-width: "none"
-  # Force full width via card-mod on the sections container
-  card-mod-root-yaml: |
-    hui-sections-view$: |
-      .grid {
-        max-width: 100% !important;
-      }
-      ha-view-sections {
-        --ha-view-sections-column-max-width: 9999px !important;
-      }
