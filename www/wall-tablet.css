@@ -1,1 +1,4 @@
-/* wall-tablet.css - intentionally empty, CSS vars do not work here */
+/* Remove sections view outer padding — eliminates left/right black bars */
+hui-sections-view {
+  --ha-view-sections-column-max-width: 2000px;
+}
