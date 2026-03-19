@@ -54,3 +54,17 @@ S24 Ultra (notify.mobile_app_sm_s928u) is RETIRED — never use
 binary_sensor.john_home, alaina_home, ella_home, michelle_home
 person.john_spencer, device_tracker.galaxy_s26_ultra
 michelle tracked via binary_sensor.michelle_actually_home only
+
+## THEME — kitchen_wall confirmed settings
+ha-view-sections-column-max-width: 2000px  ← REQUIRED, do not reduce
+ha-view-sections-column-min-width: 300px
+ha-view-sections-column-gap: 8px
+No card-mod-root-yaml needed. Simple theme vars only.
+
+## DASHBOARD — section 0 card order (authoritative)
+[0] clock-weather-card
+[1] mushroom-chips-card  
+[2] grid (2-col cameras)
+[3] grid (4-col scene buttons: Bright/Dim/Music/Night)
+[4] bubble-card media-player (album art, navigates to #music)
+NEVER rebuild piecemeal. Always replace sections[0]['cards'] entirely.
