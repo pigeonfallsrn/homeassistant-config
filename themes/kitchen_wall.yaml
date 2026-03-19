@@ -7,17 +7,10 @@ kitchen_wall:
   ha-view-sections-max-width: "none"
   # Force full width via card-mod on the sections container
   card-mod-root-yaml: |
-    .: |
-      hui-sections-view {
-        --ha-view-sections-column-max-width: 9999px;
-      }
     hui-sections-view$: |
-      .sections-container {
+      .grid {
         max-width: 100% !important;
-        padding: 0 4px !important;
       }
-      .section-column {
-        flex: 1 1 0% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
+      ha-view-sections {
+        --ha-view-sections-column-max-width: 9999px !important;
       }
