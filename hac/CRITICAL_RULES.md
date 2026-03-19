@@ -144,3 +144,10 @@ Note: HA sections view padding lives inside shadow DOM — document-level CSS
 may not reach it. If FKB customCSS does not eliminate bars, this is a
 shadow DOM isolation issue that cannot be solved from document-level CSS.
 True fix requires card-mod shadow DOM traversal with correct selectors.
+
+## Sections View Gutter — RESOLVED (Physical Bezel)
+CONFIRMED 2026-03-19: Black bars on left/right of kitchen tablet are the PHYSICAL BEZEL
+of the Samsung Galaxy Tab A9+, NOT CSS padding or sections view layout issues.
+Verified by opening FKB menu — dashboard content visible going edge-to-edge behind menu.
+ha-view-sections-column-max-width: 2000px in theme is correct and sufficient.
+DO NOT attempt further CSS fixes for this — it is hardware, not software.
