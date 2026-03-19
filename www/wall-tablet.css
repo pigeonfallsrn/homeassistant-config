@@ -1,4 +1,7 @@
-/* Remove sections view outer padding — eliminates left/right black bars */
+/* Override HA sections view column max-width before it applies */
+:root {
+  --ha-view-sections-column-max-width: 2000px !important;
+}
 hui-sections-view {
-  --ha-view-sections-column-max-width: 2000px;
+  --ha-view-sections-column-max-width: 2000px !important;
 }
