@@ -85,3 +85,14 @@ Tier 2 — Dated learnings (raw capture, needs promotion):
   hac/learnings/YYYYMMDD.md
 Rule: anything logged in learnings 2+ times MUST be promoted to Tier 1 same session.
 hac learn has NO deduplication — before logging ask: is this already in a Tier 1 file?
+
+
+## Confirmed Working Configuration (2026-03-19)
+- Scene buttons: Bright/Dim/Music/Night in 4-col grid ✅
+- Calendar: fills right column, 7 days, color-coded ✅  
+- Bubble Card media-player: album art at bottom of left column ✅
+- Music button: navigate to #music popup ✅ (popup open TBD)
+- Black bars: ha-view-sections-column-max-width: 2000px in theme reduces bars
+  Remaining fix: wall-tablet.css targeting hui-sections-view
+- Section 0 card order: [0]weather [1]chips [2]cameras [3]scene-grid [4]media-player
+- NEVER use piecemeal transforms — always rebuild sections[0]['cards'] entirely
