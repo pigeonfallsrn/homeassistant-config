@@ -1076,14 +1076,10 @@
   mode: restart
 - id: '1773361493420'
   alias: Girls → Bedtime Winddown Lighting
-  description: 'When either girl''s phone goes on the charger after 8:30pm while home,
-    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 10:15pm.
-    Research basis: AAP recommends teens lights-out by 10pm on school nights; 2200K
-    at <20% brightness suppresses cortisol and signals wind-down. Uses phone battery
-    state change to ''Charging'' as a reliable bedtime proxy. Auto-off via script
-    delay so both girls get their own countdown that restarts if they replug. Girls
-    can manually turn lights back on (bedroom_override covers that). Hallway is handled
-    separately by upstairs_hallway_motion_v2 time-aware logic.'
+  description: When either girl's phone goes on the charger after 8:30pm while home,
+    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 45min.
+    Uses binary_sensor.ella_home / binary_sensor.alaina_home (Phase 9.1 template sensors,
+    not legacy input_booleans).
   triggers:
   - platform: state
     entity_id: sensor.ellas_iphone_battery_state
@@ -1103,7 +1099,7 @@
       - condition: trigger
         id: ella_charging
       - condition: state
-        entity_id: input_boolean.ella_home
+        entity_id: binary_sensor.ella_home
         state: 'on'
       - condition: state
         entity_id: input_boolean.ella_bedroom_override
@@ -1133,7 +1129,7 @@
       - condition: trigger
         id: alaina_charging
       - condition: state
-        entity_id: input_boolean.alaina_home
+        entity_id: binary_sensor.alaina_home
         state: 'on'
       - condition: state
         entity_id: input_boolean.alaina_bedroom_override
@@ -1259,4 +1255,21 @@
       message: clear_notification
       data:
         tag: garage_auto_close
+  mode: single
+- id: '1773963591351'
+  alias: Reminder → Fix Ella iPhone HA Location Settings
+  description: One-time reminder to fix Ella's HA companion app location settings
+    so presence detection works reliably.
+  triggers:
+  - platform: time
+    at: '16:00:00'
+  conditions:
+  - condition: template
+    value_template: '{{ now().date() | string == ''2026-03-20'' }}'
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: "\U0001F4F1 Fix Ella's HA Location"
+      message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
+        set to Always + enable Background Location updates
   mode: single

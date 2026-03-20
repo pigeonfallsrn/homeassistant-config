@@ -1,0 +1,344 @@
+# HAC Knowledge Base - Structured Store
+# Single source of truth for learnings, dead ends, and decisions
+# Auto-managed by hac_knowledge.py — edit with care
+# Schema: id, category, summary, detail, times_hit, discovered, promoted, status
+
+meta:
+  version: "1.0"
+  created: "2026-03-19"
+  description: "Migrated from CRITICAL_RULES.md + learnings/"
+
+# ── ACTIVE LEARNINGS ──────────────────────────────────────────────────────────
+learnings:
+
+  - id: motion_mode_restart
+    category: MOTION
+    times_hit: 15
+    discovered: "2026-01-01"
+    promoted: true
+    status: active
+    summary: "Motion-triggered lights must use mode: restart"
+    detail: |
+      Always mode: restart for motion-triggered lights.
+      Combined sensors need delay_off 60s minimum to prevent double-fires.
+      Use combined binary_sensor, not OR-ing individual sensors (race condition).
+      Dual trigger pattern: motion ON starts, motion OFF with wait turns off.
+      Timeouts by room: transition 5-10min, active 8-20min, relaxation 15-45min.
+      Double-fire fix: check for orphan automations with same unique_id.
+    affects: ["packages/"]
+    tags: [motion, mode, double-fire, delay_off]
+
+  - id: motion_parallel_exception
+    category: MOTION
+    times_hit: 2
+    discovered: "2026-03-10"
+    promoted: false
+    status: active
+    summary: "mode: parallel for event-based notifications, not motion"
+    detail: |
+      mode: restart = motion-triggered lights (always).
+      mode: parallel with max: 2 = doorbell/package notifications
+      (need simultaneous firing from multiple cameras).
+      Do NOT apply restart rule to doorbell/package automations.
+    affects: ["packages/notifications_system.yaml"]
+    tags: [motion, mode, doorbell, parallel]
+
+  - id: inovelli_smart_bulb_mode
+    category: INOVELLI
+    times_hit: 15
+    discovered: "2026-01-01"
+    promoted: true
+    status: active
+    summary: "Inovelli Smart Bulb Mode param 52=1, requires toggle+air gap to write"
+    detail: |
+      Smart Bulb Mode: Param 52=1 + LED bar params 95-98 for Hue bulbs.
+      Config button cycling: use input_number + modulo, not input_select.
+      Parameters require toggle OFF->ON in ZHA UI then air gap to write.
+      fxlt blueprint fires ALL zha_events — filter by device_id or use unified blueprint.
+      VZM35-SN fans: Param 12 (auto-off) = 2700s for hardware safety backup.
+    affects: ["packages/"]
+    tags: [inovelli, zha, params, hue, sbm]
+
+  - id: inovelli_aux_switch_quirk
+    category: INOVELLI
+    times_hit: 3
+    discovered: "2026-02-23"
+    promoted: false
+    status: active
+    summary: "AUX DOWN sends direct off command instead of button_4_press scene event"
+    detail: |
+      AUX DOWN button sends direct Zigbee off command instead of button_4_press,
+      even with Aux switch scenes enabled on main VZM31-SN.
+      Fix: separate automation catching event_type: zha_event command: off.
+      AUX UP (button_5_press) works correctly after toggling Aux switch scenes off/on.
+      Button mapping: button_4=AUX DOWN, button_5=AUX UP, button_6=AUX CONFIG.
+    affects: ["packages/"]
+    tags: [inovelli, aux, zha_event, 3way]
+
+  - id: adaptive_lighting_hue_triple
+    category: AL
+    times_hit: 10
+    discovered: "2026-01-01"
+    promoted: true
+    status: active
+    summary: "Hue bulbs in AL require three specific settings or AL silently fails"
+    detail: |
+      ALL THREE required for Hue bulbs:
+        separate_turn_on_commands: true
+        take_over_control: true
+        detect_non_ha_changes: false
+      Create/delete AL instances via UI ONLY — no API exists.
+      Same make/model bulbs per AL instance.
+      Sleep mode: 1-5%, 2200K, 10pm-6am for bedrooms.
+    affects: ["packages/"]
+    tags: [adaptive_lighting, hue, configuration]
+
+  - id: yaml_template_duplicate_keys
+    category: YAML
+    times_hit: 4
+    discovered: "2026-03-14"
+    promoted: true
+    status: active
+    summary: "Duplicate top-level template: keys silently drop the second block"
+    detail: |
+      YAML silently drops duplicate top-level keys — second block becomes unavailable/restored.
+      Audit: grep -c '^template:' file.yaml must return 1.
+      delay_off invalid on state-based template sensors — silently kills sensor definition.
+      Unindented comments inside template: lists break YAML list parsing.
+      Entity registry orphans squat on canonical IDs -> new sensors get _2 suffix.
+    affects: ["packages/"]
+    tags: [yaml, template, duplicate, gotcha]
+
+  - id: yaml_python_transform_sandbox
+    category: YAML
+    times_hit: 6
+    discovered: "2026-02-01"
+    promoted: true
+    status: active
+    summary: "python_transform sandbox has critical restrictions — no import, str(), enumerate() etc"
+    detail: |
+      Sandbox restrictions (silent failures if violated):
+      No: import, isinstance, str(), enumerate(), next(), any(), all(), try/except, slice syntax.
+      Use .pop(index) for list deletion (higher indices first).
+      Use direct index access only.
+      NEVER list comprehension on root cards[] — silently wipes sections.
+      ALWAYS force_reload:True before transform to get current hash.
+      ONE comprehensive transform per section — never piecemeal.
+    affects: ["dashboards/"]
+    tags: [yaml, python_transform, dashboard, sandbox]
+
+  - id: matter_aqara_recommission
+    category: MATTER
+    times_hit: 5
+    discovered: "2026-01-01"
+    promoted: true
+    status: active
+    summary: "Matter recommission requires removing stale fabric from BOTH HA and Aqara app"
+    detail: |
+      Recommission fix: remove stale fabric from BOTH HA Matter AND Aqara app.
+      Use BOTH Matter + HomeKit integrations — different devices exposed by each.
+      M3 IR blaster does NOT expose to HA.
+      Locks: Matter only. Some sensors: HomeKit only.
+      Aqara Hub M3 MUST be on UDM Pro Port 4 — Port 2 causes unavailable cycles.
+    affects: ["packages/"]
+    tags: [matter, aqara, recommission, unifi]
+
+  - id: dashboard_storage_backup
+    category: DASHBOARD
+    times_hit: 8
+    discovered: "2026-02-01"
+    promoted: true
+    status: active
+    summary: "Storage-mode dashboard backup requires cp command — hac backup silently fails"
+    detail: |
+      hac backup does NOT work for storage-mode dashboards — always fails silently.
+      Correct backup:
+        cp /homeassistant/.storage/lovelace.kitchen_wall_v2 \
+           /homeassistant/hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
+      ha_config_set_dashboard requires config_hash matching current state.
+      Always ha_config_get_dashboard force_reload:True before any transform.
+    affects: [".storage/lovelace.kitchen_wall_v2"]
+    tags: [dashboard, backup, storage, kitchen-wall]
+
+  - id: hue_color_temp_kelvin
+    category: DASHBOARD
+    times_hit: 3
+    discovered: "2026-02-01"
+    promoted: false
+    status: active
+    summary: "Hue groups require color_temp_kelvin not kelvin (400 error otherwise)"
+    detail: |
+      Use color_temp_kelvin parameter, not kelvin — kelvin causes 400 error.
+      Hue room scenes control ALL lights in room including lamps.
+      For ceiling-only control: target specific Hue zone entity not room-wide scenes.
+      SBM switches must NEVER appear in light.turn_off actions — they power Hue bulbs.
+    affects: ["packages/"]
+    tags: [hue, color_temp, kelvin, sbm]
+
+  - id: busybox_grep_sed_limits
+    category: TERMINAL
+    times_hit: 8
+    discovered: "2026-01-01"
+    promoted: true
+    status: active
+    summary: "BusyBox grep/sed on HA Green have critical missing features"
+    detail: |
+      BusyBox grep: NO --include, NO long options.
+      Use: grep -rEl 'pattern' /path/ (not --include=*.yaml).
+      BusyBox sed: NO multi-line, NO complex scripts.
+      Use python3 heredoc for non-trivial file edits.
+      Never chain after python3 -c on same line.
+      Git errors (confused by unstable object): git gc --prune=now twice.
+    affects: ["all"]
+    tags: [terminal, busybox, grep, sed, zsh]
+
+  - id: presence_template_sensor_gotchas
+    category: PRESENCE
+    times_hit: 3
+    discovered: "2026-03-14"
+    promoted: true
+    status: active
+    summary: "Template binary_sensor presence gotchas — delay_off invalid, orphan IDs"
+    detail: |
+      delay_off is invalid on state-based template sensors — silently kills sensor.
+      Entity registry orphans squat on canonical IDs — new sensors get _2 suffix.
+      Fix orphans via two-step rename using ha_rename_entity.
+      Michelle tracked via binary_sensor.michelle_actually_home ONLY — no companion app.
+      Ella presence unreliable — tracks iPad not iPhone 17, tabled.
+    affects: ["packages/presence_system.yaml"]
+    tags: [presence, template, binary_sensor, entity_registry]
+
+  - id: mcp_tool_constraints
+    category: HAC
+    times_hit: 6
+    discovered: "2026-02-01"
+    promoted: true
+    status: active
+    summary: "HA MCP tools have non-obvious constraints that cause silent failures"
+    detail: |
+      ha_config_get_dashboard: requires force_reload:True for current state.
+      ha_config_set_dashboard: requires matching config_hash — stale hash = write failure.
+      ha_config_get_automation: returns config:null for ALL UI-created automations.
+      ha_config_set_script: NEVER use on YAML-defined scripts — creates conflicting UI duplicate.
+      ha_deep_search: may return stale cached results after restarts — verify with terminal grep.
+      ha_rename_entity: only viable path for entity registry changes.
+    affects: ["all"]
+    tags: [mcp, ha_config, automation, dashboard]
+
+  - id: music_assistant_spotify
+    category: AUDIO
+    times_hit: 2
+    discovered: "2026-02-01"
+    promoted: false
+    status: active
+    summary: "Music Assistant requires bare Spotify playlist IDs not spotify:// URIs"
+    detail: |
+      music_assistant.play_media requires bare Spotify playlist IDs (e.g. 37i9dQZF1DWZd79rJ6a7lp).
+      spotify://playlist/ID URI format causes 500 error.
+      radio_mode: true extends playlists infinitely with similar tracks.
+      Route through media_player.kitchen_2 (Music Assistant entity).
+    affects: ["packages/"]
+    tags: [music_assistant, spotify, media_player]
+
+  - id: notification_target_migration
+    category: ENTITY
+    times_hit: 2
+    discovered: "2026-03-14"
+    promoted: true
+    status: active
+    summary: "S24 Ultra notify target retired — all references must use S26 Ultra"
+    detail: |
+      RETIRED (never use): notify.mobile_app_sm_s928u (S24 Ultra).
+      Primary (confirmed): notify.mobile_app_john_s_s26_ultra.
+      Watch: notify.mobile_app_john_s_galaxy_watch8_classic_s7me.
+      Remaining migration: ~20 UI automations + 3 scripts still reference old target.
+    affects: ["packages/"]
+    tags: [notify, migration, s26_ultra]
+
+# ── DEAD ENDS ─────────────────────────────────────────────────────────────────
+dead_ends:
+
+  - id: sections_gutter_css_resource
+    status: resolved
+    resolved: "2026-03-19"
+    resolution: "card-mod-view-yaml in kitchen_wall theme targeting hui-sections-view shadow DOM"
+    summary: "Sections view gutter (black bars) — CSS resource files cannot fix this"
+    attempts:
+      - date: "2026-03-17"
+        method: "CSS resource file (--ha-view-sections-column-max-width)"
+        result: "loses CSS specificity race — loads too late"
+      - date: "2026-03-17"
+        method: "card-mod-root-yaml"
+        result: "runs too early before component init — fails"
+      - date: "2026-03-17"
+        method: "FKB customCSS"
+        result: "cannot pierce shadow DOM — document-level CSS blocked"
+      - date: "2026-03-19"
+        method: "card-mod-view-yaml hui-sections-view :host shadow DOM"
+        result: "WORKS — confirmed by user"
+
+  - id: bubble_card_popup_navigation
+    status: active
+    summary: "Bubble Card popup music button — hash navigation blocked by kiosk_mode"
+    attempts:
+      - date: "2026-03-17"
+        method: "navigate tap_action"
+        result: "failed — blocked"
+      - date: "2026-03-17"
+        method: "url with hash fragment"
+        result: "failed — blocked"
+      - date: "2026-03-17"
+        method: "browser_mod fire-dom-event"
+        result: "failed"
+      - date: "2026-03-17"
+        method: "root-level hidden trigger button + navigate"
+        result: "failed"
+    next_hypothesis: "kiosk_mode non_admin_settings intercepts hash navigation before Bubble Card sees it"
+    next_test: "temporarily set kiosk_mode:{} in dashboard, reload, test popup, then restore"
+
+  - id: govee2mqtt_lan_discovery
+    status: resolved
+    resolved: "2026-02-01"
+    resolution: "Govee H6076 commissioned via Matter on IoT VLAN — govee2mqtt confirmed dead end"
+    summary: "govee2mqtt cross-VLAN LAN discovery does not work — do not retry"
+    attempts:
+      - date: "2026-01-01"
+        method: "govee2mqtt LAN discovery"
+        result: "confirmed dead end — cross-VLAN discovery fails"
+
+  - id: hac_backup_storage_dashboards
+    status: resolved
+    resolved: "2026-02-01"
+    resolution: "Use direct cp command to hac/backups/ — hac backup only works for YAML packages"
+    summary: "hac backup command silently fails on storage-mode dashboards"
+    attempts:
+      - date: "2026-02-01"
+        method: "hac backup lovelace.kitchen_wall_v2"
+        result: "always fails silently — file not found in packages dir"
+
+# ── DECISIONS ─────────────────────────────────────────────────────────────────
+decisions:
+
+  - id: package_yaml_architecture
+    date: "2026-01-01"
+    summary: "Package-based YAML under /homeassistant/packages/ with git version control"
+    rationale: "Local control, auditable history, AI-friendly structure"
+    status: active
+
+  - id: presence_template_sensors
+    date: "2026-03-14"
+    summary: "Replaced 10 input_boolean helpers + 11 automations with template binary_sensors"
+    rationale: "Cleaner architecture, fewer moving parts, no automation race conditions"
+    status: active
+
+  - id: govee_matter_only
+    date: "2026-02-01"
+    summary: "Govee H6076 via Matter on IoT VLAN — govee2mqtt approach abandoned"
+    rationale: "govee2mqtt cross-VLAN confirmed dead end, Matter works reliably"
+    status: active
+
+  - id: fkb_service_control
+    date: "2026-03-14"
+    summary: "FKB configured via fully_kiosk.set_config HA service, not port 2323"
+    rationale: "Port 2323 unreachable cross-VLAN — HA service works without firewall changes"
+    status: active

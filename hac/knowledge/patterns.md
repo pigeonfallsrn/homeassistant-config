@@ -1,75 +1,56 @@
-# Reusable Patterns
-*Last updated: 2026-02-21*
+# HAC Patterns
+*Reusable implementation patterns — confirmed working*
+*Auto-referenced by CONTEXT.md | Updated via hac learn*
+
+## Motion Lighting
+- Always `mode: restart` for motion-triggered lights
+- `mode: parallel` with `max: 2` for event-based notifications (doorbell, package)
+- Combined `binary_sensor` with `delay_off: 60s` — never OR individual sensors
+- Dual trigger: motion ON starts timer, motion OFF with wait turns off
+- Timeouts: transition 5-10min, active 8-20min, relaxation 15-45min
+
+## Inovelli + Hue
+- Smart Bulb Mode: Param 52=1, LED params 95-98
+- Parameters need toggle OFF→ON in ZHA UI + air gap to write
+- SBM switches NEVER in `light.turn_off` actions — they power Hue bulbs
+- AUX DOWN sends direct `off` command — needs separate automation to catch it
+- Button mapping: button_4=AUX DOWN, button_5=AUX UP, button_6=AUX CONFIG
 
 ## Adaptive Lighting + Hue
-```yaml
-separate_turn_on_commands: true  # Required for Hue
-take_over_control: true          # Manual override detection
-detect_non_ha_changes: false     # Prevents Hue bridge polling conflicts
+- Three required settings (all or AL silently fails):
+  - `separate_turn_on_commands: true`
+  - `take_over_control: true`
+  - `detect_non_ha_changes: false`
+- Create/delete via UI only — no API
+- Same make/model bulbs per AL instance
+- Hue zones for ceiling-only control, not room-wide scenes
+
+## Dashboard Transforms
+- `ha_config_get_dashboard force_reload:True` before every transform
+- One comprehensive transform per section — never piecemeal
+- Direct index only: `config['views'][0]['sections'][0]['cards'][2]`
+- Reload + verify on tablet after every transform before proceeding
+- `python_transform` sandbox: no import, str(), enumerate(), any(), all(), try/except
+
+## Presence
+- Template `binary_sensor` — not `input_boolean` + automation
+- Michelle: `binary_sensor.michelle_actually_home` only (no companion app)
+- `delay_off` invalid on state-based template sensors — silently kills sensor
+- Orphan entity IDs: fix via `ha_rename_entity` two-step rename
+
+## Mobile → Desktop Handoff
+Capture format:
 ```
-Sleep mode: 1-5% brightness, 2200K or lower
-
-## Inovelli Smart Bulb Mode
-- **Hue bulbs:** Smart Bulb Mode ON (param 52 = 1)
-- **Dumb loads:** Smart Bulb Mode OFF
-- **3-way with aux:** Smart Bulb Mode OFF
-- Configure via: ZHA UI → Manage Clusters → InovelliVZM31SNCluster
-
-## AL Storage Architecture
-YAML defines config, runtime stored in `.storage/core.config_entries`
-To modify lights array:
-1. `ha core stop`
-2. Backup `.storage/core.config_entries`
-3. Edit lights array
-4. `ha core start`
-
-## Motion Automation (Dual-Trigger)
-```yaml
-mode: restart
-trigger:
-  - platform: state
-    entity_id: binary_sensor.room_motion
-    to: 'on'   # Separate automation for 'off' with for: delay
+[HA-IDEA] Where: [location] When: [time/context]
+Noticed: [behavior] Idea: [improvement]
 ```
+Process: `hac mcp` → paste capture → query state → implement or `hac table "idea"`
 
-## Inovelli → Hue Flow
-Inovelli → ZHA → HA → Hue Bridge → Hue Bulbs
-(Direct Zigbee binding not possible across coordinators)
-
-## A/V Automation Patterns
-
-### Fire TV + AVR Coordination
-```yaml
-# Dual trigger pattern - catch both playback start AND wake from standby
-trigger:
-  - platform: state
-    entity_id: media_player.fire_tv_xxx
-    to: "playing"
-    id: playing
-  - platform: state
-    entity_id: media_player.fire_tv_xxx
-    from: "standby"
-    to: "idle"
-    id: woke_up
-```
-
-### HDMI ARC Setup
-- Fire TV built-in to TV with HDMI eARC output
-- Receiver HDMI OUT connects to TV HDMI eARC
-- Audio travels FROM TV TO receiver via ARC
-- Receiver source is typically `AV1`, `AV4`, or `AUDIO` - NOT an HDMI input number
-- Check receiver display when audio works to confirm correct source name
-
-### Subwoofer Smart Plug Sync
-- Use 5-second delay on off to prevent cycling during quick power toggles
-- Add condition to only act if state differs (prevent redundant commands)
-- Mode: restart ensures timer resets on repeated triggers
-
-## UniFi Protect Smart Detection Triggers
-- **Use `event.*` entities** (not `binary_sensor.*`) for doorbell ring and vehicle triggers
-  - Event entities fire once per detection, carry confidence + zone metadata in attributes
-  - Binary sensors can go unavailable for ~1min during simultaneous detections
-  - Pattern: trigger on state change of `event.camera_name_doorbell` or `event.camera_name_vehicle`
-- **Package detection**: use `binary_sensor.*_package_detected` — no `event.*` equivalent exists
-- **G4 Doorbell Pro package camera**: `camera.*_package_camera` — dedicated close-up lens, use for snapshots
-- **Doorbell/package automations**: `mode: parallel` (not restart) — event-based, concurrent execution needed for multi-doorbell setups
+## LLM Task Routing
+| Task | Tool | Why |
+|------|------|-----|
+| YAML editing | Claude Desktop + MCP | Direct entity access |
+| Architecture | Claude Opus | Deep reasoning |
+| Voice capture | ChatGPT Mobile | Fast voice mode |
+| Research | Gemini | Long context, grounding |
+| Quick lookup | Claude Haiku | Fast |

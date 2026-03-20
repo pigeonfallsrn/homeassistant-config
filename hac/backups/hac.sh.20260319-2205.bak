@@ -1455,191 +1455,6 @@ TERMINAL RULES (hardwired)
 ===============================================================================
 MENUEOF
 }
-# ── HAC v10 ADDITIONS ─────────────────────────────────────────────────────────
-
-cmd_deadend() {
-    local subcmd="${1:-list}"
-    shift 2>/dev/null
-
-    case "$subcmd" in
-        list)
-            local status="${1:-active}"
-            echo "═══ Dead Ends [$status] ═══"
-            python3 /homeassistant/hac/hac_knowledge.py list_dead_ends "$status"
-            ;;
-        add)
-            [ -z "$1" ] && echo "Usage: hac deadend add <id> <summary> <method> <result> [hypothesis]" && return
-            local de_id="$1" summary="$2" method="$3" result="$4" hypothesis="${5:-}"
-            local out=$(python3 /homeassistant/hac/hac_knowledge.py add_dead_end "$de_id" "$summary" "$method" "$result" "$hypothesis")
-            log_ok "Dead end: $out"
-            ;;
-        resolve)
-            [ -z "$1" ] && echo "Usage: hac deadend resolve <id> <resolution>" && return
-            local de_id="$1" resolution="$2"
-            local out=$(python3 /homeassistant/hac/hac_knowledge.py resolve_dead_end "$de_id" "$resolution")
-            if [ "$out" = "RESOLVED" ]; then
-                log_ok "Resolved: $de_id"
-            else
-                log_warn "Not found: $de_id — check: hac deadend list all"
-            fi
-            ;;
-        all)
-            echo "═══ All Dead Ends ═══"
-            python3 /homeassistant/hac/hac_knowledge.py list_dead_ends all
-            ;;
-        *)
-            echo "Usage: hac deadend [list|add|resolve|all]"
-            ;;
-    esac
-}
-
-cmd_slice() {
-    local keyword="${1:-general}"
-    echo "═══════════════════════════════════════════════════════════════"
-    echo "  HAC Context Slice: $keyword"
-    echo "═══════════════════════════════════════════════════════════════"
-    python3 /homeassistant/hac/hac_knowledge.py slice "$keyword"
-    echo ""
-    echo "─── Promote candidates ───"
-    python3 /homeassistant/hac/hac_knowledge.py promote_candidates
-}
-
-cmd_close() {
-    echo "═══════════════════════════════════════════════════════════════"
-    echo "  HAC Session Close"
-    echo "═══════════════════════════════════════════════════════════════"
-    echo ""
-    local issues=0
-
-    # 1. Knowledge stats
-    echo "── Knowledge status ──"
-    python3 /homeassistant/hac/hac_knowledge.py stats
-    echo ""
-
-    # 2. Promote candidates check
-    local candidates=$(python3 /homeassistant/hac/hac_knowledge.py promote_candidates)
-    if echo "$candidates" | grep -q "\["; then
-        echo "── Promote candidates (times_hit >= 3, not yet in CRITICAL_RULES) ──"
-        echo "$candidates"
-        echo ""
-        printf "  Promote any to CRITICAL_RULES now? [y/N]: "
-        read -r promote_ans
-        if [ "$promote_ans" = "y" ] || [ "$promote_ans" = "Y" ]; then
-            echo "  Run: hac promote \"<text>\" for each item above"
-        fi
-        echo ""
-    fi
-
-    # 3. Git status check
-    echo "── Git status ──"
-    local git_status=$(git -C /homeassistant status --short 2>/dev/null)
-    if [ -z "$git_status" ]; then
-        log_ok "Nothing to commit — working tree clean"
-    else
-        echo "$git_status"
-        echo ""
-
-        # Auto-generate commit message from changed files
-        local changed_files=$(git -C /homeassistant diff --name-only HEAD 2>/dev/null | head -8 | tr '\n' ' ')
-        local new_files=$(git -C /homeassistant ls-files --others --exclude-standard 2>/dev/null | head -4 | tr '\n' ' ')
-        local auto_msg="hac: session $(date +%Y-%m-%d)"
-        if [ -n "$changed_files" ]; then
-            auto_msg="hac: update ${changed_files% }"
-        fi
-
-        printf "  Commit message [enter to use auto / type to override]:\n"
-        printf "  > $auto_msg\n"
-        printf "  > "
-        read -r commit_msg
-        if [ -z "$commit_msg" ]; then
-            commit_msg="$auto_msg"
-        fi
-
-        git -C /homeassistant add -A
-        git -C /homeassistant commit -m "$commit_msg"
-        log_ok "Committed: $commit_msg"
-        issues=0
-    fi
-    echo ""
-
-    # 4. Backup retention cull (keep 5 most recent per base filename)
-    echo "── Backup retention ──"
-    local culled=0
-    for base in hac.sh CRITICAL_RULES.md kitchen-wall-v2; do
-        local count=$(ls "$BACKUP_DIR"/${base}.* 2>/dev/null | wc -l)
-        if [ "$count" -gt 5 ]; then
-            local excess=$((count - 5))
-            ls "$BACKUP_DIR"/${base}.* 2>/dev/null | sort | head -"$excess" | while read f; do
-                rm -f "$f"
-                echo "  pruned: $(basename $f)"
-            done
-            culled=$((culled + excess))
-        fi
-    done
-    if [ "$culled" -eq 0 ]; then
-        log_ok "Backups within retention limit"
-    else
-        log_ok "Pruned $culled old backup(s)"
-    fi
-    echo ""
-
-    # 5. Active task reminder
-    echo "── Active task ──"
-    if [ -f "$HAC_DIR/ACTIVE.md" ]; then
-        head -4 "$HAC_DIR/ACTIVE.md"
-    fi
-    printf "\n  Update ACTIVE.md for next session? [y/N]: "
-    read -r active_ans
-    if [ "$active_ans" = "y" ] || [ "$active_ans" = "Y" ]; then
-        echo "  Run: hac active \"next task description\""
-    fi
-    echo ""
-
-    # 6. Export reminder
-    echo "── Export ──"
-    printf "  Run hac export to sync to Drive? [y/N]: "
-    read -r export_ans
-    if [ "$export_ans" = "y" ] || [ "$export_ans" = "Y" ]; then
-        if command -v hac >/dev/null 2>&1; then
-            hac export
-        else
-            log_warn "hac export not available in this context — run manually"
-        fi
-    fi
-    echo ""
-
-    echo "═══════════════════════════════════════════════════════════════"
-    echo "  Session closed $(date '+%Y-%m-%d %H:%M')"
-    echo "═══════════════════════════════════════════════════════════════"
-}
-
-
-
-
-# AI Insight Tracking
-hac_track_insight() {
-    if [ $# -lt 3 ]; then
-        echo "Usage: hac track 'Query Type' 'Question' 'Response'"
-        return 1
-    fi
-    
-    python3 /config/python_scripts/track_ai_insight.py "$1" "$2" "$3"
-}
-
-# Alias
-alias hac_track='hac_track_insight'
-
-# Snapshot before risky operations
-hac_snapshot() {
-    local name="${1:-HAC_$(date +%Y%m%d_%H%M%S)}"
-    ha backups partial --homeassistant --name "HAC: $name" --no-progress
-}
-
-# List recent HAC snapshots
-hac_rollback() {
-    ha backups list | grep -E "(slug|name.*HAC)" | head -20
-}
-
 case "${1:-}" in
     push) cmd_push;;
     q) cmd_q;;
@@ -1666,9 +1481,6 @@ case "${1:-}" in
     hygiene) cmd_hygiene;;
     active) shift; cmd_active "$*";;
     learn) shift; cmd_learn "$@";;
-    deadend) shift; cmd_deadend "$@";;
-    slice) cmd_slice "$2";;
-    close) cmd_close;;
     review) cmd_review "$2";;
     recall) cmd_recall "$2";;
     promote) shift; cmd_promote "$*";;
@@ -1691,8 +1503,30 @@ case "${1:-}" in
     pre)     shift; cmd_pre "$@";;
     help|--help|-h) cmd_help;;
     *) cmd_menu;;
-
-
 esac
 
 
+
+# AI Insight Tracking
+hac_track_insight() {
+    if [ $# -lt 3 ]; then
+        echo "Usage: hac track 'Query Type' 'Question' 'Response'"
+        return 1
+    fi
+    
+    python3 /config/python_scripts/track_ai_insight.py "$1" "$2" "$3"
+}
+
+# Alias
+alias hac_track='hac_track_insight'
+
+# Snapshot before risky operations
+hac_snapshot() {
+    local name="${1:-HAC_$(date +%Y%m%d_%H%M%S)}"
+    ha backups partial --homeassistant --name "HAC: $name" --no-progress
+}
+
+# List recent HAC snapshots
+hac_rollback() {
+    ha backups list | grep -E "(slug|name.*HAC)" | head -20
+}

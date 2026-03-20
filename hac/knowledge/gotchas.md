@@ -1,58 +1,49 @@
-# Gotchas (Learned Hard Way)
-*Last updated: 2026-02-21*
+# HAC Gotchas
+*Things that silently fail or behave unexpectedly*
+*Check here before debugging for more than 10 minutes*
 
-## Inovelli
-- fxlt blueprint triggers ALL zha_events, filters by device_id in condition
-  → All automations using blueprint fire on every button press
-  → Fix: Migrate to per-device-id trigger or MasterDevwi unified blueprint
-- Scene events (button_X_press) work even when smart_bulb_mode broken - independent features
-- Params must be toggled OFF/ON in ZHA UI to force write to device, then air gap
+## YAML Silent Failures
+- Duplicate top-level `template:` keys — second block silently dropped
+  - Audit: `grep -c '^template:' file.yaml` must return 1
+- `delay_off` on state-based template sensors — silently kills sensor definition
+- Unindented comments inside `template:` lists — breaks list parsing
+- `choose/condition:state` with template value — silently fails, use `if/condition:template`
+- YAML scripts override UI scripts with same ID (YAML wins silently)
 
-## Entity Management  
-- Entity purge requires UI - REST API returns 400
-- Orphaned entities: Settings → Entities → filter unavailable → bulk delete
-- No CLI method for entity registry cleanup
+## Dashboard Silent Failures
+- `python_transform` list comprehension on root `cards[]` — silently wipes sections
+- Piecemeal index-based transforms across multiple calls — indices shift silently
+- `ha_config_set_dashboard` with stale hash — write fails silently
+- `ha_config_set_script` on YAML-defined scripts — creates conflicting UI duplicate
+- `ha_deep_search` after restart — returns stale cached index, not current state
 
-## Notifications
-- Phone re-registration breaks notify service names
-- notify.mobile_app_john_s_phone → notify.mobile_app_sm_s928u
-- Future-proof: Use notify groups to abstract device names
+## Entity Registry
+- ZHA assigns generic entity_ids — always rename via `ha_rename_entity`
+- Orphan entities squat on canonical IDs — new sensors get `_2` suffix
+- `ha_rename_entity` two-step rename only holds until next restart if template
+  platform re-registers with same `unique_id`
+- `ha_config_get_automation` returns `config: null` for ALL UI-created automations
 
-## HA Green Recovery
-- Hung (ping works, SSH refused): Power cycle via UniFi switch port, not physical
+## BusyBox Terminal (HA Green)
+- `grep --include` flag does NOT exist — use `find | xargs grep`
+- `sed` multi-line does NOT work — use python3 heredoc
+- Never chain commands after `python3 -c` on same line
+- Git `confused by unstable object` — run `git gc --prune=now` twice
+- ZSH: escape `!` or use single quotes — double quotes with `!` break
 
-## ZSH Terminal
-- Always escape `!` or use single quotes
-- Never chain after `python3 -c` on same line
+## Hardware Gotchas
+- Aqara Hub M3: MUST be on UDM Pro Port 4 — Port 2 causes unavailable cycles
+- FKB auto-update causes random browser restarts — keep disabled
+- FKB port 2323 unreachable cross-VLAN — use `fully_kiosk.set_config` service
+- ratgdo van visor may need 2 presses — Security+ 2.0 serial bus timing, not a bug
+- HA Green at ~2.3x recommended entity count — long-term migration needed
 
-## DANGER ZONE - NEVER EDIT DIRECTLY
-These files will crash HA Core if malformed:
-- `.storage/core.config_entries` - Integration registry
-- `.storage/core.entity_registry` - Entity definitions  
-- `.storage/core.device_registry` - Device definitions
-- Any `.storage/*.json` - Internal HA databases
+## Music Assistant
+- `music_assistant.play_media` — bare Spotify playlist IDs only
+- `spotify://playlist/ID` URI format causes 500 error
+- Route through `media_player.kitchen_2` (MA entity), not direct Sonos
 
-**If you need to modify these, the answer is: YOU DONT.**
-Use UI or accept it cant be done programmatically.
-
-## UI-ONLY OPERATIONS (No API/CLI exists)
-- **Adaptive Lighting**: Create/delete entries (use UI config flow)
-- **ZHA**: Device pairing, network settings
-- **Hue**: Bridge linking, entertainment areas
-- **Matter**: Device commissioning
-- **Any integration config flow**: Must use UI wizard
-
-## SAFE OPERATIONS (API/CLI supported)
-- Automations: ha_config_set_automation or YAML
-- Scripts: ha_config_set_script or YAML
-- Helpers: ha_config_set_helper (most types)
-- Services: ha_call_service
-- Entity settings: ha_set_entity
-- Dashboards: ha_config_set_dashboard
-
-## UniFi Protect
-- Simultaneous person + vehicle detection can cause both binary_sensors to go unavailable ~1 min
-  → Workaround: use event.* entities instead of binary_sensor for triggers
-- `binary_sensor.*_vehicle_detected` showing unavailable may mean smart detection disabled in Protect app (not a HA issue)
-- Very Front Door: vehicle detection intentionally disabled (faces street/intersection — too noisy)
-- notify.mobile_app_sm_s928u = John's Galaxy S24 Ultra (current canonical notify target)
+## Notification Targets
+- RETIRED: `notify.mobile_app_sm_s928u` (S24 Ultra) — never use
+- Primary: `notify.mobile_app_john_s_s26_ultra`
+- Watch: `notify.mobile_app_john_s_galaxy_watch8_classic_s7me`
