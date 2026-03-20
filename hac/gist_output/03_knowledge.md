@@ -109,6 +109,8 @@ source: "com.amazon.firetv.youtube"
 - Prioritize touch targets for one-handed use
 
 ## Recent Session Learnings
+- 2026-03-19: DASHBOARD: Hue groups require color_temp_kelvin not kelvin — kelvin causes 400 error
+- 2026-03-19: INOVELLI: AUX DOWN sends direct Zigbee off instead of button_4_press — catch with separate zha_event automation
 - 2026-03-14: ENTITY: notify.mobile_app_john_s_s26_ultra is John's canonical phone notify target as of 2026-03-14. Next phone migration: find /homeassistant/packages -name '*.yaml' | xargs sed -i 's/mobile_app_john_s_s26_ultra/mobile_app_NEW_NAME/g' then update UI automations via MCP.
 - [2026-03-10 07:06] HAC: hac alias was missing from .zshrc after system update - fix: echo 'alias hac="/homeassistant/hac/hac.sh"' >> ~/.zshrc && source ~/.zshrc
 - [2026-03-10 07:06] YAML: BusyBox grep on HA Green does not support --include flag - use: find /homeassistant/packages -name '*.yaml' | xargs grep pattern
