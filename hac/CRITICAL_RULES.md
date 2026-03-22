@@ -142,57 +142,40 @@ Key config keys:
 FKB port 2323 blocked: tablet on IoT VLAN 192.168.21.x, PC on 192.168.1.x
 UniFi firewall blocks LAN->IoT inbound. HA has cross-VLAN access already.
 
-## Sections View Gutter — CONFIRMED FIX (2026-03-19)
-WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
+---
 
-/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
-  ha-view-sections-column-max-width: 2000px
-  ha-view-sections-column-min-width: 300px
-  ha-view-sections-column-gap: 8px
-  card-mod-view-yaml: |
-    hui-sections-view:
-      $: |
-        :host {
-          --ha-view-sections-column-max-width: 2000px !important;
-        }
+## ADAPTIVE LIGHTING — COLOR BEHAVIOR (Promoted 2026-03-22)
+Times Hit: 10+
 
-WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
-host level before HA sections view applies its default. card-mod-root-yaml runs
-too early and loses. CSS resource files lose specificity race. FKB customCSS
-cannot pierce shadow DOM.
+### Late-Night Red/Orange Lights
+- **Root cause**: AL `living_spaces` pushes full circadian color to Hue color bulbs. At ~22:00 CST color reaches hue 10° / rgb(255,43,0) — deep red. This is correct AL behavior, not a scene bleed.
+- **hot_tub_mode is NOT the cause** — always verify `input_boolean.hot_tub_mode` state before assuming scene bleed.
+- **Manual override**: tap Hue switch or `light.turn_on` with explicit `color_temp_kelvin`. Holds until next on/off cycle (take_over_control:true).
+- **Pending fixes**: (1) raise `min_color_temp_kelvin` floor on living_spaces AL instance; (2) disable adapt_color after time threshold via automation.
 
-After theme change: frontend.reload_themes + clear cache + reload tablet.
-DO NOT change this. DO NOT use any other approach.
+### hot_tub_mode Color Restore Gap
+- Off automations (`auto_reset_at_3am`, `auto_off_when_back_inside`) do NOT explicitly restore light color.
+- AL only corrects on next on/off cycle — lights can stay colored until then.
+- **Fix needed**: add `adaptive_lighting.apply_to_lights` or explicit `light.turn_on color_temp_kelvin` in hot tub mode off actions.
 
+---
 
-## FKB customCSS — Broader Selector Approach for Gutter
-Key: customCSS
-Broader CSS targeting all HA container elements:
-ha-panel-lovelace, .lovelace-container, ha-app-layout, hui-sections-view { padding: 0; margin: 0; }
-Note: HA sections view padding lives inside shadow DOM — document-level CSS
-may not reach it. If FKB customCSS does not eliminate bars, this is a
-shadow DOM isolation issue that cannot be solved from document-level CSS.
-True fix requires card-mod shadow DOM traversal with correct selectors.
+## LIGHTING HYGIENE (Promoted 2026-03-22)
 
-## Sections View Gutter — CONFIRMED FIX (2026-03-19)
-WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
+### Mode State Visibility Gap
+- No dashboard indicator for active AL color mode or when special modes last ran.
+- Backlog: Mushroom chips row on kitchen tablet — hot_tub_mode, sleep_mode, away state.
 
-/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
-  ha-view-sections-column-max-width: 2000px
-  ha-view-sections-column-min-width: 300px
-  ha-view-sections-column-gap: 8px
-  card-mod-view-yaml: |
-    hui-sections-view:
-      $: |
-        :host {
-          --ha-view-sections-column-max-width: 2000px !important;
-        }
+### Motion Lamp Automations — No Time Gate
+- `automation.living_room_lamps_adaptive_control` fires on `binary_sensor.downstairs_motion` with no time-of-night condition.
+- Color at turn-on = AL circadian value for that hour. Expected but can be surprising late at night.
 
-WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
-host level before HA sections view applies its default. card-mod-root-yaml runs
-too early and loses. CSS resource files lose specificity race. FKB customCSS
-cannot pierce shadow DOM.
+### Unavailable Light Entities (audit 2026-03-22 — investigate)
+- `light.upstairs_hallway_ceiling_1of3`, `2of3`, `3of3`
+- `light.very_front_door_ceiling_hallway`
+- `light.garage_opener_north_east`, `garage_opener_south_east`, `garage_opener_south_west`
+- `light.upstairs_hallway_east_wall_night_light`
 
-After theme change: frontend.reload_themes + clear cache + reload tablet.
-DO NOT change this. DO NOT use any other approach.
-
+### Entity Naming Mismatches (audit 2026-03-22 — cleanup needed)
+- `light.kitchen_west_wall_nightlight` friendly name → "Basement_Third Reality_Nightlight"
+- `light.kitchen_counter_night_light` friendly name → "Stairwell_Night_Light"
