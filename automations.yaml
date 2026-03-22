@@ -1027,8 +1027,9 @@
 - id: upstairs_hallway_motion_lighting_v2
   alias: Upstairs Hallway → Motion Lighting v2
   description: Time-aware motion lighting for upstairs hallway. After 9pm uses warm/dim
-    scene instead of Energize. Triggers on upstairs bathroom motion (the main traffic
-    sensor for hallway use). Mode restart prevents double-fires.
+    color_temp call instead of Hue Relax scene (scenes set xy mode which breaks AL
+    control). Triggers on upstairs bathroom motion (the main traffic sensor for hallway
+    use). Mode restart prevents double-fires.
   triggers:
   - platform: state
     entity_id: binary_sensor.upstairs_bathroom_motion
@@ -1041,8 +1042,12 @@
         before: '23:59:59'
       sequence:
       - target:
-          entity_id: scene.upstairs_hallway_relax
-        action: scene.turn_on
+          entity_id: light.upstairs_hallway
+        data:
+          brightness_pct: 30
+          color_temp_kelvin: 2700
+          transition: 2
+        action: light.turn_on
     - conditions:
       - condition: time
         after: 00:00:00
