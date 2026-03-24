@@ -1504,16 +1504,24 @@ cmd_slice() {
 
 
 cmd_wrap() {
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  HAC Session Wrap — 3-Question Review"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+    echo "  Before closing, answer these three questions:"
+    echo ""
+    echo "  1. NEW YAML/TOOL GOTCHA discovered today?"
+    echo "     → hac promote \"YAML: <what you learned>\""
+    echo ""
+    echo "  2. HIT A DEAD END worth documenting?"
+    echo "     → hac deadend \"<what failed and why>\""
+    echo ""
+    echo "  3. ANYTHING in BACKLOG now resolved or newly blocked?"
+    echo "     → Edit hac/BACKLOG_kitchen_dashboard.md manually"
+    echo ""
+    echo "  (Take 60 seconds to answer above, then press enter to close)"
+    read -r _dummy
     cmd_close
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "  Paste this into Claude to finish wrap:"
-    echo ""
-    local active=$(grep "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -1 | sed "s/TASK: //")
-    local commits=$(git -C /homeassistant log --oneline -2 2>/dev/null | tr "
-" " | ")
-    echo "  HAC WRAP $(date +%Y-%m-%d) | $active | commits: $commits"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 cmd_close() {
     echo "═══════════════════════════════════════════════════════════════"
