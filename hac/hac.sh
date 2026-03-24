@@ -730,19 +730,17 @@ cmd_review() {
 
 cmd_promote() {
     [ -z "$1" ] && echo "Usage: hac promote \"learning to add to knowledge base\"" && return
-    local kb_file="$HAC_DIR/gist_output/03_knowledge.md"
-    local section="## Recent Session Learnings"
-    
-    # Add learning above the "Recent Session Learnings" section
-    if grep -q "$section" "$kb_file" 2>/dev/null; then
-        sed -i "/$section/a - $(date '+%Y-%m-%d'): $1" "$kb_file"
-        log_ok "Promoted to 03_knowledge.md"
+    local cr_file="$HAC_DIR/CRITICAL_RULES.md"
+    local section="## Session Promotions"
+
+    # Append to CRITICAL_RULES.md under Session Promotions section
+    if grep -q "$section" "$cr_file" 2>/dev/null; then
+        echo "- $(date '+%Y-%m-%d'): $1" >> "$cr_file"
     else
-        echo "" >> "$kb_file"
-        echo "$section" >> "$kb_file"
-        echo "- $(date '+%Y-%m-%d'): $1" >> "$kb_file"
-        log_ok "Added new section + promoted to 03_knowledge.md"
+        printf "\n$section\n" >> "$cr_file"
+        echo "- $(date '+%Y-%m-%d'): $1" >> "$cr_file"
     fi
+    log_ok "Promoted to CRITICAL_RULES.md"
 }
 
 cmd_table() {
@@ -1504,6 +1502,27 @@ cmd_slice() {
     python3 /homeassistant/hac/hac_knowledge.py promote_candidates
 }
 
+
+cmd_wrap() {
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  HAC Session Wrap — 3-Question Review"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+    echo "  Before closing, answer these three questions:"
+    echo ""
+    echo "  1. NEW YAML/TOOL GOTCHA discovered today?"
+    echo "     → hac promote \"YAML: <what you learned>\""
+    echo ""
+    echo "  2. HIT A DEAD END worth documenting?"
+    echo "     → hac deadend \"<what failed and why>\""
+    echo ""
+    echo "  3. ANYTHING in BACKLOG now resolved or newly blocked?"
+    echo "     → Edit hac/BACKLOG_kitchen_dashboard.md manually"
+    echo ""
+    echo "  (Take 60 seconds to answer above, then press enter to close)"
+    read -r _dummy
+    cmd_close
+}
 cmd_close() {
     echo "═══════════════════════════════════════════════════════════════"
     echo "  HAC Session Close"
@@ -1668,6 +1687,7 @@ case "${1:-}" in
     learn) shift; cmd_learn "$@";;
     deadend) shift; cmd_deadend "$@";;
     slice) cmd_slice "$2";;
+    wrap) cmd_wrap;;
     close) cmd_close;;
     review) cmd_review "$2";;
     recall) cmd_recall "$2";;

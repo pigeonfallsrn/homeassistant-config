@@ -179,3 +179,7 @@ Times Hit: 10+
 ### Entity Naming Mismatches (audit 2026-03-22 — cleanup needed)
 - `light.kitchen_west_wall_nightlight` friendly name → "Basement_Third Reality_Nightlight"
 - `light.kitchen_counter_night_light` friendly name → "Stairwell_Night_Light"
+
+## Session Promotions
+- 2026-03-24: HAC: hac promote was silently writing to gist_output/03_knowledge.md which hac export overwrites on every run — fixed to write to CRITICAL_RULES.md under Session Promotions section
+- 2026-03-24: HAC: hac wrap added as hardwired session-close ritual — prints 3-question checklist (gotcha/deadend/backlog) then calls hac close — run this instead of hac close going forward
