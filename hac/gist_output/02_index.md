@@ -1,4 +1,4 @@
-# Automation Index - 2026-03-22 10:35
+# Automation Index - 2026-03-24 16:22
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -13,6 +13,7 @@ Fetch full YAML: `hac pkg <filename>`
 0 automations)
 - **ella_bedroom.yaml** (0
 0 automations)
+- **ella_living_room.yaml** (4 automations)
 - **entry_room_ceiling_motion.yaml** (1 automations)
 - **family_activities.yaml** (6 automations)
 - **garage_arrival_optimized.yaml** (3 automations)
@@ -83,6 +84,12 @@ Fetch full YAML: `hac pkg <filename>`
 ### climate_analytics.yaml
 
 ### ella_bedroom.yaml
+
+### ella_living_room.yaml
+18: ella_sleep_timer_set
+65: ella_sleep_timer_cancel
+81: ella_night_path_on
+114: ella_night_path_off
 
 ### entry_room_ceiling_motion.yaml
 12: entry_room_ceiling_motion_lighting
@@ -209,14 +216,14 @@ Fetch full YAML: `hac pkg <filename>`
 247: '1771854304476'
 287: '1771854392376'
 344: '1771858450789'
-393: '1771858469033'
-421: '1771858527176'
-459: '1771882149561'
-473: '1771901615355'
-506: 2nd_floor_bathroom_vanity_inovelli
-582: '1772045640891'
-651: '1772057917525'
-683: '1772070592354'
-727: '1772070611621'
-771: '1772074192238'
-827: 2nd_floor_bathroom_humidity_fan_v3
+403: '1771858469033'
+439: '1771858527176'
+477: '1771882149561'
+491: '1771901615355'
+524: 2nd_floor_bathroom_vanity_inovelli
+600: '1772045640891'
+669: '1772057917525'
+701: '1772070592354'
+745: '1772070611621'
+789: '1772074192238'
+845: 2nd_floor_bathroom_humidity_fan_v3

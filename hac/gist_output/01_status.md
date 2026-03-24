@@ -1,9 +1,9 @@
-# HA Status - 2026-03-22 10:35 CDT
-Version: 2026.3.3 | HAC: v9.1
+# HA Status - 2026-03-24 16:22 CDT
+Version: 2026.3.4 | HAC: v9.1
 
 ## People
 john_spencer: home
-alaina_spencer: home
+alaina_spencer: not_home
 ella_spencer: home
 [PERSON]: not_home
 jarrett_goetting: unknown
@@ -49,25 +49,22 @@ girls_home: unavailable
 both_girls_home: unavailable
 
 ## Recent Triggers (last 10)
-2026-03-22 09:50:25 calendar_refresh_school_in_session_now
-2026-03-22 09:50:25 calendar_refresh_school_tomorrow
-2026-03-22 09:50:25 occupancy_update_mode
-2026-03-22 09:50:25 kitchen_tablet_wake_on_kitchen_motion
-2026-03-22 09:50:25 kitchen_tablet_brightness_schedule
-2026-03-22 09:50:25 alaina_lights_off_when_leaving
-2026-03-22 09:50:25 ella_lights_off_when_leaving
-2026-03-22 09:50:25 google_sheets_export_on_startup
-2026-03-22 09:50:25 living_room_lamps_dim_after_20min_no_motion
-2026-03-22 09:50:25 living_room_lamps_adaptive_control
+2026-03-24 14:28:26 calendar_refresh_school_in_session_now
+2026-03-24 14:28:26 calendar_refresh_school_tomorrow
+2026-03-24 14:28:26 context_apply_on_occupancy_change
+2026-03-24 14:28:26 occupancy_update_mode
+2026-03-24 14:28:26 kitchen_tablet_wake_on_kitchen_motion
+2026-03-24 14:28:26 kitchen_tablet_brightness_schedule
+2026-03-24 14:28:26 alaina_lights_off_when_leaving
+2026-03-24 14:28:26 ella_lights_off_when_leaving
+2026-03-24 14:28:26 google_sheets_export_on_startup
+2026-03-24 14:28:26 family_alaina_arrived_home
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-⚠ entry_room_lamp_adaptive_lux_control: 6x
-⚠ kitchen_tablet_wake_on_kitchen_motion: 4x
-⚠ living_room_lamps_adaptive_control: 4x
-⚠ occupancy_update_mode: 4x
+
 ## Active Work
 # Active Work
 TASK: next: notify migration (20 UI automations + 3 scripts → s26_ultra), Inovelli blueprint consolidation, Bubble Card popup (test kiosk_mode:{} hypothesis)

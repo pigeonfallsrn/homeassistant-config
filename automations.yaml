@@ -343,14 +343,22 @@
   mode: single
 - id: '1771858450789'
   alias: Living Room - AVR On When Fire TV Active
-  description: Turn on AVR at 50% volume, set to AV1, Surround Decoder mode, and power
-    subwoofer when Fire TV wakes. Only triggers when AVR is off to preserve manual
-    volume adjustments.
+  description: 'Turn on AVR (AV1, Surround Decoder, 50% vol) and subwoofer when Fire
+    TV wakes from a cold off/standby/unavailable state. Guards: AVR must be off; Fire
+    TV must sustain the wake state for 10s to suppress transient ADB flashes. Does
+    NOT re-initialize if AVR is already on — prevents mid-session YNCA connection
+    interruption.'
   triggers:
   - id: fire_tv_playing
     platform: state
     entity_id: media_player.living_room_fire_tv_192_168_1_17
     to: playing
+    from:
+    - 'off'
+    - standby
+    - unavailable
+    for:
+      seconds: 10
   - id: fire_tv_woke_up
     platform: state
     entity_id: media_player.living_room_fire_tv_192_168_1_17
@@ -359,6 +367,8 @@
     - 'off'
     - standby
     - unavailable
+    for:
+      seconds: 10
   conditions:
   - condition: state
     entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
@@ -392,7 +402,10 @@
   mode: single
 - id: '1771858469033'
   alias: Living Room - AVR Off When Fire TV Idle
-  description: Turn off AVR and subwoofer after Fire TV idle/standby for 10 minutes
+  description: 'Turn off AVR and subwoofer when Fire TV has been idle/standby/off
+    for 20 continuous minutes. Ignores ''unavailable'' (ADB reconnect events) to prevent
+    false triggers during active Hulu sessions. Mode: restart so a new idle period
+    resets the timer if playback resumes and stops again.'
   triggers:
   - platform: state
     entity_id: media_player.living_room_fire_tv_192_168_1_17
@@ -401,11 +414,16 @@
     - standby
     - 'off'
     for:
-      minutes: 10
+      minutes: 20
   conditions:
   - condition: state
     entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
     state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+      state: unavailable
   actions:
   - parallel:
     - target:
