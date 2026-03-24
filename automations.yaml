@@ -1329,3 +1329,29 @@
       transition: 2
     action: adaptive_lighting.apply
   mode: single
+- id: '1774392438248'
+  alias: HAC Session Wrap Reminder
+  description: Reminds John to run hac wrap and start a new HAC session. Fires at
+    9pm if home. Tap notification opens Claude Project.
+  triggers:
+  - platform: time
+    at: '21:00:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.john_home
+    state: 'on'
+  actions:
+  - data:
+      title: HAC — session wrap due
+      message: Run hac wrap in terminal, then tap to start next session.
+      data:
+        tag: hac_wrap_reminder
+        channel: HAC
+        importance: default
+        url: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
+        actions:
+        - action: URI
+          title: Open Claude Project
+          uri: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: single

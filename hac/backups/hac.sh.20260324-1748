@@ -1628,31 +1628,6 @@ cmd_close() {
     echo ""
 
     echo "═══════════════════════════════════════════════════════════════"
-    # Write HANDOFF.md for next session orientation
-    local handoff="$HAC_DIR/HANDOFF.md"
-    local today=$(date '+%Y-%m-%d %H:%M')
-    local commits=$(git -C /homeassistant log --oneline -3 2>/dev/null | sed 's/^/  /')
-    local active=$(grep -A2 "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -3 | sed 's/^/  /')
-    local backlog=$(grep -m3 "^- \[" "$HAC_DIR/BACKLOG_kitchen_dashboard.md" 2>/dev/null | head -3 | sed 's/^/  /')
-    cat > "$handoff" << HANDOFF
-# HAC Handoff — $today
-
-## Last 3 commits
-$commits
-
-## Active tasks
-$active
-
-## Top backlog items
-$backlog
-
-## Start next session
-  cat /homeassistant/hac/HANDOFF.md   ← read this first
-  hac status                           ← who is home, last triggers
-  hac health                           ← check for errors
-HANDOFF
-    log_ok "HANDOFF.md written — cat hac/HANDOFF.md to orient next session"
-
     echo "  Session closed $(date '+%Y-%m-%d %H:%M')"
     echo "═══════════════════════════════════════════════════════════════"
 }
