@@ -1,14 +1,15 @@
-# HA Status - 2026-03-10 09:52 CDT
-Version: 2026.3.1 | HAC: v9.1
+# HA Status - 2026-03-22 10:35 CDT
+Version: 2026.3.3 | HAC: v9.1
 
 ## People
 john_spencer: home
-alaina_spencer: Whitehall School
-ella_spencer: [PERSON]’s House (40062 US Hwy 53)
+alaina_spencer: home
+ella_spencer: home
 [PERSON]: not_home
 jarrett_goetting: unknown
 jean_spencer: unknown
 owen_goetting: unknown
+kitchen_tablet: unknown
 
 ## Modes
 house_sleep_mode: off
@@ -39,37 +40,40 @@ alaina_bedroom_override: off
 school_tomorrow: on
 guest_present: off
 kids_bedtime_override: off
-john_home: on
-alaina_home: off
-ella_home: on
-michelle_home: off
-someone_home: on
-girls_home: on
-both_girls_home: off
+john_home: unavailable
+alaina_home: unavailable
+ella_home: unavailable
+michelle_home: unavailable
+someone_home: unavailable
+girls_home: unavailable
+both_girls_home: unavailable
 
 ## Recent Triggers (last 10)
-2026-03-10 07:12:12 upstairs_hallway_motion_lighting_v2
-2026-03-10 07:12:12 presence_update_someone_home
-2026-03-10 07:12:12 presence_update_occupancy_combinations
-2026-03-10 07:12:12 presence_update_girls_status
-2026-03-10 07:12:12 presence_alaina_away
-2026-03-10 07:12:12 presence_alaina_home
-2026-03-10 07:12:12 presence_john_away
-2026-03-10 07:12:12 presence_john_home
-2026-03-10 07:12:12 calendar_refresh_school_in_session_now
-2026-03-10 07:12:12 calendar_refresh_school_tomorrow
+2026-03-22 09:50:25 calendar_refresh_school_in_session_now
+2026-03-22 09:50:25 calendar_refresh_school_tomorrow
+2026-03-22 09:50:25 occupancy_update_mode
+2026-03-22 09:50:25 kitchen_tablet_wake_on_kitchen_motion
+2026-03-22 09:50:25 kitchen_tablet_brightness_schedule
+2026-03-22 09:50:25 alaina_lights_off_when_leaving
+2026-03-22 09:50:25 ella_lights_off_when_leaving
+2026-03-22 09:50:25 google_sheets_export_on_startup
+2026-03-22 09:50:25 living_room_lamps_dim_after_20min_no_motion
+2026-03-22 09:50:25 living_room_lamps_adaptive_control
 
 ## Errors (last 5)
 
 
 ## Double-Fires (last hour)
-
+⚠ entry_room_lamp_adaptive_lux_control: 6x
+⚠ kitchen_tablet_wake_on_kitchen_motion: 4x
+⚠ living_room_lamps_adaptive_control: 4x
+⚠ occupancy_update_mode: 4x
 ## Active Work
 # Active Work
-TASK: Monitoring: driveway lights (overnight) + doorbell/package notifications (next delivery). Next phase: 9.1 presence input_boolean → binary_sensor conversion
+TASK: next: notify migration (20 UI automations + 3 scripts → s26_ultra), Inovelli blueprint consolidation, Bubble Card popup (test kiosk_mode:{} hypothesis)
 NEXT: (define next step)
 BLOCKED: None
-UPDATED: 2026-03-10
+UPDATED: 2026-03-19
 
 ## Quick Context
 (add context here)

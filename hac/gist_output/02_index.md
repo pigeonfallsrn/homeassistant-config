@@ -1,4 +1,4 @@
-# Automation Index - 2026-03-10 09:52
+# Automation Index - 2026-03-22 10:35
 Fetch full YAML: `hac pkg <filename>`
 
 ## Package Files
@@ -37,7 +37,8 @@ Fetch full YAML: `hac pkg <filename>`
 - **occupancy_system.yaml** (8 automations)
 - **presence_display.yaml** (0
 0 automations)
-- **presence_system.yaml** (12 automations)
+- **presence_system.yaml** (0
+0 automations)
 - **upstairs_lighting.yaml** (1 automations)
 - **wifi_floor_presence.yaml** (0
 0 automations)
@@ -151,12 +152,12 @@ Fetch full YAML: `hac pkg <filename>`
 468: ella_lights_auto_off_midnight_weekend
 
 ### kitchen_tablet_dashboard.yaml
-236: kitchen_tablet_brightness_schedule
-277: kitchen_tablet_doorbell_popup
-310: kitchen_tablet_motion_wake
-331: kitchen_tablet_sleep_inactivity
-354: kitchen_tablet_wake_on_presence
-377: kitchen_tablet_sleep_when_away
+341: kitchen_tablet_brightness_schedule
+382: kitchen_tablet_doorbell_popup
+415: kitchen_tablet_motion_wake
+436: kitchen_tablet_sleep_inactivity
+459: kitchen_tablet_wake_on_presence
+482: kitchen_tablet_sleep_when_away
 
 ### lights_auto_off_safety.yaml
 15: safety_all_lights_off_nobody_home
@@ -173,10 +174,10 @@ Fetch full YAML: `hac pkg <filename>`
 228: low_battery_notification_actions
 268: critical_battery_alert
 315: bedtime_first_floor_lights_off_prompt
-359: bedtime_lights_notification_actions
-607: departure_garage_open_alert
-659: departure_garage_action_handler
-758: departure_garage_autoclear
+360: bedtime_lights_notification_actions
+608: departure_garage_open_alert
+660: departure_garage_action_handler
+759: departure_garage_autoclear
 
 ### occupancy_system.yaml
 375: update_occupancy_mode
@@ -191,21 +192,9 @@ Fetch full YAML: `hac pkg <filename>`
 ### presence_display.yaml
 
 ### presence_system.yaml
-136: john_home_detection
-149: john_away_detection
-168: alaina_home_detection
-180: alaina_away_detection
-198: ella_home_detection
-210: ella_away_detection
-229: michelle_home_detection
-243: michelle_away_detection
-261: update_girls_home_status
-305: update_occupancy_combinations
-369: update_someone_home
-407: recent_motion_detected
 
 ### upstairs_lighting.yaml
-8: upstairs_hallway_motion_lighting_v2
+12: upstairs_hallway_motion_lighting_v2
 
 ### wifi_floor_presence.yaml
 
