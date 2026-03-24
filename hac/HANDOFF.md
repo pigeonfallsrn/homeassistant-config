@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-24 17:50
+# HAC Handoff — 2026-03-24 17:52
 
 ## Last 3 commits
+  f4bcb0a hac: update hac/hac.sh
   1a3e3b2 hac: update automations.yaml hac/hac.sh
   294748c hac: update .HA_VERSION .ha_run.lock automations.yaml custom_components/tuya_local/__init__.py custom_components/tuya_local/config_flow.py custom_components/tuya_local/devices/README.md custom_components/tuya_local/devices/apricus_heat_pump_water_heater.yaml custom_components/tuya_local/devices/arknoah_aquarium_lights.yaml
-  f52c0eb hac: add workflow cheatsheet
 
 ## Active tasks
   TASK: next: notify migration (20 UI automations + 3 scripts → s26_ultra), Inovelli blueprint consolidation, Bubble Card popup (test kiosk_mode:{} hypothesis)

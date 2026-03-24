@@ -1599,12 +1599,24 @@ cmd_close() {
     if [ -f "$HAC_DIR/ACTIVE.md" ]; then
         head -4 "$HAC_DIR/ACTIVE.md"
     fi
-    log_ok "To update active task: hac active \"task\""
+    printf "\n  Update ACTIVE.md for next session? [y/N]: "
+    read -r active_ans
+    if [ "$active_ans" = "y" ] || [ "$active_ans" = "Y" ]; then
+        echo "  Run: hac active \"next task description\""
+    fi
     echo ""
 
     # 6. Export reminder
     echo "── Export ──"
-    log_ok "Run hac export manually if needed"
+    printf "  Run hac export to sync to Drive? [y/N]: "
+    read -r export_ans
+    if [ "$export_ans" = "y" ] || [ "$export_ans" = "Y" ]; then
+        if command -v hac >/dev/null 2>&1; then
+            hac export
+        else
+            log_warn "hac export not available in this context — run manually"
+        fi
+    fi
     echo ""
 
     echo "═══════════════════════════════════════════════════════════════"
