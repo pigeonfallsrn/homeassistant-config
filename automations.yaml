@@ -1278,3 +1278,36 @@
       message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
         set to Always + enable Background Location updates
   mode: single
+- id: '1774321433093'
+  alias: Living Room Lamps - Activity Boost
+  description: Restore full brightness when motion detected while dimmed
+  triggers:
+  - entity_id: binary_sensor.downstairs_motion
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.living_room_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  - condition: state
+    entity_id: light.living_room_east_floor_lamp
+    state: 'on'
+  - condition: numeric_state
+    entity_id: light.living_room_east_floor_lamp
+    attribute: brightness
+    below: 100
+  actions:
+  - data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      lights:
+      - light.living_room_east_floor_lamp
+      - light.living_room_lounge_lamp
+      transition: 2
+    action: adaptive_lighting.apply
+  mode: single
