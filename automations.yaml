@@ -1304,7 +1304,8 @@
   alias: 1st Floor Hallway → Bathroom Motion Lighting
   description: 'P1 outside 1st floor bathroom door. Vanity (TP-Link): always on with
     motion, off when clear. Hue ceiling: on only after sunset+30min, override off,
-    light already off. Mode restart handles re-entry during countdown.'
+    light already off. Minimum 8min on-time for ceiling protects against shower-entry
+    sensor clear.'
   mode: restart
   trigger:
   - platform: state
@@ -1355,6 +1356,16 @@
           transition: 3
       - condition: state
         entity_id: input_boolean.bathroom_1st_floor_manual_override
+        state: 'off'
+      - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+          to: 'on'
+        timeout:
+          minutes: 8
+        continue_on_timeout: true
+      - condition: state
+        entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
         state: 'off'
       - action: light.turn_off
         target:
