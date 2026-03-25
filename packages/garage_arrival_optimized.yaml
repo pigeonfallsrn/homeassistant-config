@@ -21,7 +21,7 @@ automation:
       # Primary: Phone enters approaching zone (< 800m from home)
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
-        below: 800
+        below: 1500
         id: approaching
       
       # Backup: Enter proximity zone while connected to car
@@ -39,8 +39,8 @@ automation:
       # Approaching home (not already there)
       - condition: numeric_state
         entity_id: sensor.john_distance_to_home
-        below: 1000
-        above: 50
+        below: 1600
+        above: 100
       
       # Not already home
       - condition: template
