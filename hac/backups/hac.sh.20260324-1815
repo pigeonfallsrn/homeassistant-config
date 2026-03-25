@@ -1554,8 +1554,13 @@ cmd_close() {
         local changed_files=$(git -C /homeassistant diff --name-only HEAD 2>/dev/null | head -8 | tr '\n' ' ')
         local new_files=$(git -C /homeassistant ls-files --others --exclude-standard 2>/dev/null | head -4 | tr '\n' ' ')
         local auto_msg="hac: session $(date +%Y-%m-%d)"
-        printf "  Commit message [enter for auto / type to override]:\n"
-        printf "  > $auto_msg\n  > "
+        if [ -n "$changed_files" ]; then
+            auto_msg="hac: update ${changed_files% }"
+        fi
+
+        printf "  Commit message [enter to use auto / type to override]:\n"
+        printf "  > $auto_msg\n"
+        printf "  > "
         read -r commit_msg
         if [ -z "$commit_msg" ]; then
             commit_msg="$auto_msg"
