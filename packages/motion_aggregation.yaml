@@ -77,7 +77,7 @@ template:
         unique_id: upstairs_hallway_motion_combined
         device_class: motion
         state: >
-          {{ is_state('binary_sensor.aqara_motion_sensor_p1_occupancy_2', 'on')
+          {{ is_state('binary_sensor.upstairs_hallway_aqara_motion_sensor_occupancy', 'on')
              or is_state('binary_sensor.upstairs_hallway_night_light_motion', 'on')
              or is_state('binary_sensor.upstairs_hallway_east_wall_night_light_motion', 'on') }}
         delay_off:
