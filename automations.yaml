@@ -1300,3 +1300,64 @@
           uri: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
     action: notify.mobile_app_john_s_s26_ultra
   mode: single
+- id: 1st_floor_hallway_bathroom_motion_lighting
+  alias: 1st Floor Hallway → Bathroom Motion Lighting
+  description: 'P1 outside 1st floor bathroom door. Vanity (TP-Link): always on with
+    motion, off when clear. Hue ceiling: on only after sunset+30min, override off,
+    light already off. Mode restart handles re-entry during countdown.'
+  mode: restart
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+    to: 'off'
+    id: motion_off
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
+        data:
+          brightness_pct: 80
+          transition: 1
+      - if:
+        - condition: sun
+          after: sunset
+          after_offset: 0:30:00
+        - condition: state
+          entity_id: input_boolean.bathroom_1st_floor_manual_override
+          state: 'off'
+        - condition: state
+          entity_id: light.1st_floor_bathroom
+          state: 'off'
+        then:
+        - action: light.turn_on
+          target:
+            entity_id: light.1st_floor_bathroom
+          data:
+            brightness_pct: 60
+            transition: 2
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
+        data:
+          transition: 3
+      - condition: state
+        entity_id: input_boolean.bathroom_1st_floor_manual_override
+        state: 'off'
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom
+        data:
+          transition: 3
