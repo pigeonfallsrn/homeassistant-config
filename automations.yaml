@@ -952,7 +952,7 @@
       filename: '{{ snapshot_path }}'
     action: camera.snapshot
   - data:
-      title: "\U0001F514 Doorbell — {{ doorbell_label }}"
+      title: 🔔 Doorbell — {{ doorbell_label }}
       message: Someone is at the {{ doorbell_label }}
       data:
         image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
@@ -1000,7 +1000,7 @@
       filename: '{{ snapshot_path }}'
     action: camera.snapshot
   - data:
-      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
+      title: 📦 Package Delivered — {{ doorbell_label }}
       message: A package was detected at the {{ doorbell_label }}
       data:
         image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
@@ -1042,61 +1042,6 @@
   actions:
   - action: script.ella_gentle_wake
   mode: single
-- id: upstairs_hallway_motion_lighting_v2
-  alias: Upstairs Hallway → Motion Lighting v2
-  description: Time-aware motion lighting for upstairs hallway. After 9pm uses warm/dim
-    color_temp call instead of Hue Relax scene (scenes set xy mode which breaks AL
-    control). Triggers on upstairs bathroom motion (the main traffic sensor for hallway
-    use). Mode restart prevents double-fires.
-  triggers:
-  - platform: state
-    entity_id: binary_sensor.upstairs_bathroom_motion
-    to: 'on'
-  actions:
-  - choose:
-    - conditions:
-      - condition: time
-        after: '21:00:00'
-        before: '23:59:59'
-      sequence:
-      - target:
-          entity_id: light.upstairs_hallway
-        data:
-          brightness_pct: 30
-          color_temp_kelvin: 2700
-          transition: 2
-        action: light.turn_on
-    - conditions:
-      - condition: time
-        after: 00:00:00
-        before: 06:00:00
-      sequence:
-      - target:
-          entity_id: light.upstairs_hallway
-        data:
-          brightness_pct: 10
-          color_temp_kelvin: 2200
-          transition: 2
-        action: light.turn_on
-    default:
-    - target:
-        entity_id: scene.upstairs_hallway_energize
-      action: scene.turn_on
-  - wait_for_trigger:
-    - platform: state
-      entity_id: binary_sensor.upstairs_bathroom_motion
-      to: 'off'
-    timeout:
-      minutes: 8
-    continue_on_timeout: true
-  - delay:
-      minutes: 2
-  - target:
-      entity_id: light.upstairs_hallway
-    data:
-      transition: 5
-    action: light.turn_off
-  mode: restart
 - id: '1773361493420'
   alias: Girls → Bedtime Winddown Lighting
   description: When either girl's phone goes on the charger after 8:30pm while home,
@@ -1196,7 +1141,7 @@
   actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: "\U0001F6AA Garage Still Open"
+      title: 🚪 Garage Still Open
       message: North door closing in 60s — tap to cancel
       data:
         tag: garage_auto_close
@@ -1226,7 +1171,7 @@
     then:
     - action: notify.mobile_app_john_s_s26_ultra
       data:
-        title: "\U0001F6AA Garage"
+        title: 🚪 Garage
         message: North door left open
         data:
           tag: garage_auto_close
@@ -1241,7 +1186,7 @@
         entity_id: cover.ratgdo32disco_fd8d8c_door
     - action: notify.mobile_app_john_s_s26_ultra
       data:
-        title: "\U0001F512 Garage"
+        title: 🔒 Garage
         message: North door closed
         data:
           tag: garage_auto_close
@@ -1258,7 +1203,7 @@
       entity_id: cover.ratgdo32disco_fd8d8c_door
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: "\U0001F512 Garage"
+      title: 🔒 Garage
       message: North door closed
       data:
         tag: garage_auto_close
@@ -1292,7 +1237,7 @@
   actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: "\U0001F4F1 Fix Ella's HA Location"
+      title: 📱 Fix Ella's HA Location
       message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
         set to Always + enable Background Location updates
   mode: single

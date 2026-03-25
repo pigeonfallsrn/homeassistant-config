@@ -11,7 +11,7 @@
 automation:
   - id: upstairs_hallway_motion_lighting_v2
     alias: "Upstairs Hallway → Motion Lighting v2"
-    description: "Time-aware motion lighting. Bright during day/active evening, warm dim after 21:30, nightlight after 23:00. Triggers on both hallway Aqara sensor and bathroom sensor. Ella dark-of-dark safe."
+    description: "Time-aware motion lighting. Triggers: hallway Aqara P1 + bathroom motion. 06:00-21:30=Energize, 21:30-23:00=70%/3000K, 23:00-06:00=10%/2200K. 2026-03-24: fixed stale P1 entity in motion_aggregation.yaml (was _2 orphan)."
     mode: restart
     trigger:
       - platform: state
