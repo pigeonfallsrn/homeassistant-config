@@ -730,19 +730,17 @@ cmd_review() {
 
 cmd_promote() {
     [ -z "$1" ] && echo "Usage: hac promote \"learning to add to knowledge base\"" && return
-    local kb_file="$HAC_DIR/gist_output/03_knowledge.md"
-    local section="## Recent Session Learnings"
-    
-    # Add learning above the "Recent Session Learnings" section
-    if grep -q "$section" "$kb_file" 2>/dev/null; then
-        sed -i "/$section/a - $(date '+%Y-%m-%d'): $1" "$kb_file"
-        log_ok "Promoted to 03_knowledge.md"
+    local cr_file="$HAC_DIR/CRITICAL_RULES.md"
+    local section="## Session Promotions"
+
+    # Append to CRITICAL_RULES.md under Session Promotions section
+    if grep -q "$section" "$cr_file" 2>/dev/null; then
+        echo "- $(date '+%Y-%m-%d'): $1" >> "$cr_file"
     else
-        echo "" >> "$kb_file"
-        echo "$section" >> "$kb_file"
-        echo "- $(date '+%Y-%m-%d'): $1" >> "$kb_file"
-        log_ok "Added new section + promoted to 03_knowledge.md"
+        printf "\n$section\n" >> "$cr_file"
+        echo "- $(date '+%Y-%m-%d'): $1" >> "$cr_file"
     fi
+    log_ok "Promoted to CRITICAL_RULES.md"
 }
 
 cmd_table() {
@@ -1455,55 +1453,185 @@ TERMINAL RULES (hardwired)
 ===============================================================================
 MENUEOF
 }
-case "${1:-}" in
-    push) cmd_push;;
-    q) cmd_q;;
-    gpt) cmd_gpt;;
-    gem) cmd_gem;;
-    gdrive) cmd_gdrive;;
-    sheets) cmd_sheets;;
-    sync) cmd_sync;;
-    export) cmd_export;;
-    prompt) cmd_prompt;;
-    mcp) cmd_mcp;;
-    project) project;;
-    research) cmd_research;;
-    status) cmd_status;;
-    pkg) cmd_pkg "$2";;
-    ids) cmd_ids "$2";;
-    backup) cmd_backup "$2";;
-    sed) shift; cmd_sed "$@";;
-    diff) cmd_diff "$2";;
-    restore) cmd_restore "$2" "$3";;
-    check) cmd_check;;
-    audit) cmd_audit;;
-    sanitize-test) python3 /config/hac/hac_sanitize.py test;;
-    hygiene) cmd_hygiene;;
-    active) shift; cmd_active "$*";;
-    learn) shift; cmd_learn "$@";;
-    review) cmd_review "$2";;
-    recall) cmd_recall "$2";;
-    promote) shift; cmd_promote "$*";;
-    table) shift; cmd_table "$*";;
-    errors) cmd_errors "$2";;
-    triggers) cmd_triggers "$2";;
-    health) cmd_health;;
-    ui-automations) cmd_ui_automations;;
-    doctor) cmd_doctor;;
-    init) cmd_init;;
-    migrate) cmd_migrate;;
-    diag)    cmd_diag "$2";;
-    fix)     cmd_fix;;
-    reload)  cmd_reload "$2";;
-    restart) cmd_do_restart;;
-    ghosts)  cmd_ghosts;;
-    purge)   cmd_purge;;
-    apply)   shift; cmd_apply "$*";;
-    issues)  cmd_issues;;
-    pre)     shift; cmd_pre "$@";;
-    help|--help|-h) cmd_help;;
-    *) cmd_menu;;
-esac
+# ── HAC v10 ADDITIONS ─────────────────────────────────────────────────────────
+
+cmd_deadend() {
+    local subcmd="${1:-list}"
+    shift 2>/dev/null
+
+    case "$subcmd" in
+        list)
+            local status="${1:-active}"
+            echo "═══ Dead Ends [$status] ═══"
+            python3 /homeassistant/hac/hac_knowledge.py list_dead_ends "$status"
+            ;;
+        add)
+            [ -z "$1" ] && echo "Usage: hac deadend add <id> <summary> <method> <result> [hypothesis]" && return
+            local de_id="$1" summary="$2" method="$3" result="$4" hypothesis="${5:-}"
+            local out=$(python3 /homeassistant/hac/hac_knowledge.py add_dead_end "$de_id" "$summary" "$method" "$result" "$hypothesis")
+            log_ok "Dead end: $out"
+            ;;
+        resolve)
+            [ -z "$1" ] && echo "Usage: hac deadend resolve <id> <resolution>" && return
+            local de_id="$1" resolution="$2"
+            local out=$(python3 /homeassistant/hac/hac_knowledge.py resolve_dead_end "$de_id" "$resolution")
+            if [ "$out" = "RESOLVED" ]; then
+                log_ok "Resolved: $de_id"
+            else
+                log_warn "Not found: $de_id — check: hac deadend list all"
+            fi
+            ;;
+        all)
+            echo "═══ All Dead Ends ═══"
+            python3 /homeassistant/hac/hac_knowledge.py list_dead_ends all
+            ;;
+        *)
+            echo "Usage: hac deadend [list|add|resolve|all]"
+            ;;
+    esac
+}
+
+cmd_slice() {
+    local keyword="${1:-general}"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  HAC Context Slice: $keyword"
+    echo "═══════════════════════════════════════════════════════════════"
+    python3 /homeassistant/hac/hac_knowledge.py slice "$keyword"
+    echo ""
+    echo "─── Promote candidates ───"
+    python3 /homeassistant/hac/hac_knowledge.py promote_candidates
+}
+
+
+cmd_wrap() {
+    cmd_close
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  Paste this into Claude to finish wrap:"
+    echo ""
+    local active=$(grep "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -1 | sed "s/TASK: //")
+    local commits=$(git -C /homeassistant log --oneline -2 2>/dev/null | tr "
+" " | ")
+    echo "  HAC WRAP $(date +%Y-%m-%d) | $active | commits: $commits"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+cmd_close() {
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "  HAC Session Close"
+    echo "═══════════════════════════════════════════════════════════════"
+    echo ""
+    local issues=0
+
+    # 1. Knowledge stats
+    echo "── Knowledge status ──"
+    python3 /homeassistant/hac/hac_knowledge.py stats
+    echo ""
+
+    # 2. Promote candidates check
+    local candidates=$(python3 /homeassistant/hac/hac_knowledge.py promote_candidates)
+    if echo "$candidates" | grep -q "\["; then
+        echo "── Promote candidates (times_hit >= 3, not yet in CRITICAL_RULES) ──"
+        echo "$candidates"
+        echo ""
+        printf "  Promote any to CRITICAL_RULES now? [y/N]: "
+        read -r promote_ans
+        if [ "$promote_ans" = "y" ] || [ "$promote_ans" = "Y" ]; then
+            echo "  Run: hac promote \"<text>\" for each item above"
+        fi
+        echo ""
+    fi
+
+    # 3. Git status check
+    echo "── Git status ──"
+    local git_status=$(git -C /homeassistant status --short 2>/dev/null)
+    if [ -z "$git_status" ]; then
+        log_ok "Nothing to commit — working tree clean"
+    else
+        echo "$git_status"
+        echo ""
+
+        # Auto-generate commit message from changed files
+        local changed_files=$(git -C /homeassistant diff --name-only HEAD 2>/dev/null | head -8 | tr '\n' ' ')
+        local new_files=$(git -C /homeassistant ls-files --others --exclude-standard 2>/dev/null | head -4 | tr '\n' ' ')
+        local auto_msg="hac: session $(date +%Y-%m-%d)"
+        printf "  Commit message [enter for auto / type to override]:\n"
+        printf "  > $auto_msg\n  > "
+        read -r commit_msg
+        if [ -z "$commit_msg" ]; then
+            commit_msg="$auto_msg"
+        fi
+
+        git -C /homeassistant add -A
+        git -C /homeassistant commit -m "$commit_msg"
+        log_ok "Committed: $commit_msg"
+        issues=0
+    fi
+    echo ""
+
+    # 4. Backup retention cull (keep 5 most recent per base filename)
+    echo "── Backup retention ──"
+    local culled=0
+    for base in hac.sh CRITICAL_RULES.md kitchen-wall-v2; do
+        local count=$(ls "$BACKUP_DIR"/${base}.* 2>/dev/null | wc -l)
+        if [ "$count" -gt 5 ]; then
+            local excess=$((count - 5))
+            ls "$BACKUP_DIR"/${base}.* 2>/dev/null | sort | head -"$excess" | while read f; do
+                rm -f "$f"
+                echo "  pruned: $(basename $f)"
+            done
+            culled=$((culled + excess))
+        fi
+    done
+    if [ "$culled" -eq 0 ]; then
+        log_ok "Backups within retention limit"
+    else
+        log_ok "Pruned $culled old backup(s)"
+    fi
+    echo ""
+
+    # 5. Active task reminder
+    echo "── Active task ──"
+    if [ -f "$HAC_DIR/ACTIVE.md" ]; then
+        head -4 "$HAC_DIR/ACTIVE.md"
+    fi
+    log_ok "To update active task: hac active \"task\""
+    echo ""
+
+    # 6. Export reminder
+    echo "── Export ──"
+    log_ok "Run hac export manually if needed"
+    echo ""
+
+    echo "═══════════════════════════════════════════════════════════════"
+    # Write HANDOFF.md for next session orientation
+    local handoff="$HAC_DIR/HANDOFF.md"
+    local today=$(date '+%Y-%m-%d %H:%M')
+    local commits=$(git -C /homeassistant log --oneline -3 2>/dev/null | sed 's/^/  /')
+    local active=$(grep -A2 "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -3 | sed 's/^/  /')
+    local backlog=$(grep -m3 "^- \[" "$HAC_DIR/BACKLOG_kitchen_dashboard.md" 2>/dev/null | head -3 | sed 's/^/  /')
+    cat > "$handoff" << HANDOFF
+# HAC Handoff — $today
+
+## Last 3 commits
+$commits
+
+## Active tasks
+$active
+
+## Top backlog items
+$backlog
+
+## Start next session
+  cat /homeassistant/hac/HANDOFF.md   ← read this first
+  hac status                           ← who is home, last triggers
+  hac health                           ← check for errors
+HANDOFF
+    log_ok "HANDOFF.md written — cat hac/HANDOFF.md to orient next session"
+
+    echo "  Session closed $(date '+%Y-%m-%d %H:%M')"
+    echo "═══════════════════════════════════════════════════════════════"
+}
+
 
 
 
@@ -1530,3 +1658,61 @@ hac_snapshot() {
 hac_rollback() {
     ha backups list | grep -E "(slug|name.*HAC)" | head -20
 }
+
+case "${1:-}" in
+    push) cmd_push;;
+    q) cmd_q;;
+    gpt) cmd_gpt;;
+    gem) cmd_gem;;
+    gdrive) cmd_gdrive;;
+    sheets) cmd_sheets;;
+    sync) cmd_sync;;
+    export) cmd_export;;
+    prompt) cmd_prompt;;
+    mcp) cmd_mcp;;
+    project) project;;
+    research) cmd_research;;
+    status) cmd_status;;
+    pkg) cmd_pkg "$2";;
+    ids) cmd_ids "$2";;
+    backup) cmd_backup "$2";;
+    sed) shift; cmd_sed "$@";;
+    diff) cmd_diff "$2";;
+    restore) cmd_restore "$2" "$3";;
+    check) cmd_check;;
+    audit) cmd_audit;;
+    sanitize-test) python3 /config/hac/hac_sanitize.py test;;
+    hygiene) cmd_hygiene;;
+    active) shift; cmd_active "$*";;
+    learn) shift; cmd_learn "$@";;
+    deadend) shift; cmd_deadend "$@";;
+    slice) cmd_slice "$2";;
+    wrap) cmd_wrap;;
+    close) cmd_close;;
+    review) cmd_review "$2";;
+    recall) cmd_recall "$2";;
+    promote) shift; cmd_promote "$*";;
+    table) shift; cmd_table "$*";;
+    errors) cmd_errors "$2";;
+    triggers) cmd_triggers "$2";;
+    health) cmd_health;;
+    ui-automations) cmd_ui_automations;;
+    doctor) cmd_doctor;;
+    init) cmd_init;;
+    migrate) cmd_migrate;;
+    diag)    cmd_diag "$2";;
+    fix)     cmd_fix;;
+    reload)  cmd_reload "$2";;
+    restart) cmd_do_restart;;
+    ghosts)  cmd_ghosts;;
+    purge)   cmd_purge;;
+    apply)   shift; cmd_apply "$*";;
+    issues)  cmd_issues;;
+    pre)     shift; cmd_pre "$@";;
+    help|--help|-h) cmd_help;;
+    *) cmd_menu;;
+
+
+esac
+
+

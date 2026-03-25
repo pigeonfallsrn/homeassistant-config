@@ -1,4 +1,4 @@
-# System Knowledge - 2026-03-24 16:22
+# System Knowledge - 2026-03-24 19:47
 
 ## Architecture Quick Ref
 - **Packages:** /config/packages/*.yaml
@@ -112,6 +112,8 @@ source: "com.amazon.firetv.youtube"
 
 ## Recent Session Learnings
 - [2026-03-24 16:22] GENERAL: FIRETV/YAMAHA AVR dropout fix 2026-03-24: Fire TV 4K ADB integration chatters idle/playing/unavailable constantly during Hulu — normal ADB polling behavior, not actual power state changes. Root causes: (1) AVR-on automation was triggering mid-session on idle->playing transitions, sending turn_on+source+volume to an already-on AVR, interrupting YNCA TCP connection causing brief unavailable blips. Fix: added from:[off,standby,unavailable] + for:10s debounce to on-triggers. (2) AVR-off 10min timer too short, firing during long Hulu ad breaks. Fix: extended to 20min. (3) Added not-unavailable condition to off automation to ignore ADB reconnect events. Backup: fae184df. Auto Power Standby on RX-V671 still needs physical fix via remote — requires TV + remote simultaneously.
+- [2026-03-24 16:49] HAC: Google Doc at docs.google.com/1AEjE0V5 is RETIRED — predates HAC v9, contains stale entity names (S24 Ultra notify target, /config/ paths). Do not reference. Authority is CRITICAL_RULES.md
+- [2026-03-24 19:47] GENERAL: YAMAHA RX-V671 Auto Power Down fix: Menu path is Setup → Function (wrench, page 1/4) → Auto Power Down — NOT Setup → Option as Yamaha docs suggest. Was set to 12 Hours, changed to Off. Setting persistent in receiver memory. Combined with HA automation fixes (from: guard + 10s debounce + 20min off-timer) this fully resolves AVR dropout during Hulu.
 
 ## Historical Learnings (last 30 lines)
 - [2026-03-17 20:26] YAML: Dashboard backup command: cp /homeassistant/.storage/lovelace.kitchen_wall_v2 /homeassistant/hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json — run before any dashboard editing session to preserve last known good state.

@@ -1,0 +1,1302 @@
+- id: alaina_led_strip_lights_button
+  alias: Alaina's LED Strip Lights Button
+  trigger:
+  - platform: state
+    entity_id: input_button.alaina_led_strip_lights
+  action:
+  - service: light.toggle
+    target:
+      entity_id: light.alaina_s_led_strips
+  mode: single
+- id: alaina_led_strip_auto_off
+  alias: Alaina's LED Strips - Auto Off at Midnight
+  description: Turn off Alaina's LED strips at midnight
+  trigger:
+  - platform: time
+    at: 00:00:00
+  condition: []
+  action:
+  - service: light.turn_off
+    target:
+      entity_id: light.alaina_s_led_strips
+  mode: single
+- id: '1771364980856'
+  alias: Front Driveway Inovelli - Hue Lights Control
+  description: Front Driveway Inovelli VZM30-SN controls Front Driveway Hue lights
+    via ZHA events
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: c0:9b:9e:ff:fe:d1:2d:4e
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "on" or (trigger.event.data.params.button
+          == "button_2" and trigger.event.data.params.press_type == "press") }}'
+      sequence:
+      - target:
+          entity_id: light.front_driveway
+        action: light.turn_on
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "off" or (trigger.event.data.params.button
+          == "button_1" and trigger.event.data.params.press_type == "press") }}'
+      sequence:
+      - target:
+          entity_id: light.front_driveway
+        action: light.turn_off
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.params.button == "button_3" and trigger.event.data.params.press_type
+          == "press" }}'
+      sequence:
+      - target:
+          entity_id: light.front_driveway
+        action: light.toggle
+  mode: single
+- id: '1771532178019'
+  alias: Entry Room Ceiling - Inovelli Controls Hue Lights
+  description: Entry Room Ceiling Inovelli VZM31-SN controls Entry Room Ceiling Hue
+    zone
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: d80c7fa6d013f0fd1cbdd6f67c6a1cac
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.entry_room_ceiling_light
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_ceiling_light
+        data:
+          brightness_pct: 100
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_ceiling_light
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_ceiling_light
+        data:
+          brightness_step_pct: 10
+- id: '1771556632224'
+  alias: Kitchen Lounge - Inovelli Controls Hue Ceiling
+  description: 'fxlt blueprint: Kitchen Lounge Inovelli VZM31-SN controls Hue ceiling
+    lights'
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 5e2d477e04d216ab91a0c2f1364ab118
+      button_1:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_off
+      button_2:
+      - target:
+          entity_id: light.kitchen_lounge
+        action: light.turn_on
+      button_1_hold:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_step_pct: -10
+        action: light.turn_on
+      button_2_hold:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_step_pct: 10
+        action: light.turn_on
+      button_2_double:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_pct: 100
+        action: light.turn_on
+      button_1_double:
+      - target:
+          entity_id: light.kitchen_lounge
+        data:
+          brightness_pct: 10
+        action: light.turn_on
+- id: '1771557081733'
+  alias: Kitchen Lounge - Aux Switch Controls Hue + Fan
+  description: 'Aux paddle=Hue lights, Config buttons CYCLE fan: press cycles low→med→high→off,
+    hold=off'
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_5_press
+    id: aux_up
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_4_press
+    id: aux_down
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_press
+    id: config_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_3_hold
+    id: config_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_press
+    id: aux_config_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 04:e3:e5:ff:fe:5f:55:c6
+      cluster_id: 64561
+      command: button_6_hold
+    id: aux_config_hold
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aux_up
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_lounge
+    - conditions:
+      - condition: trigger
+        id: aux_down
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.kitchen_lounge
+    - conditions:
+      - condition: trigger
+        id:
+        - config_press
+        - aux_config_press
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            state: 'off'
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 33
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 50
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 66
+        - conditions:
+          - condition: numeric_state
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            attribute: percentage
+            below: 80
+          sequence:
+          - action: fan.set_percentage
+            target:
+              entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+            data:
+              percentage: 100
+        default:
+        - action: fan.turn_off
+          target:
+            entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+    - conditions:
+      - condition: trigger
+        id:
+        - config_hold
+        - aux_config_hold
+      sequence:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
+  mode: single
+- id: '1771854304476'
+  alias: 2nd Floor Bathroom - Humidity Fan Control v2
+  description: Timer-based fan control. Turns on with hot water or high humidity.
+    Auto-off after 15min if humidity normalized, 30min max.
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.navien_water_flow
+    above: 0.5
+    for:
+      minutes: 2
+    id: hot_water
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
+    above: 65
+    id: high_humidity
+  conditions:
+  - condition: state
+    entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    state: 'off'
+  actions:
+  - action: fan.turn_on
+    target:
+      entity_id: fan.inovelli_vzm35_sn_fan
+  - delay:
+      minutes: 15
+  - if:
+    - condition: numeric_state
+      entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
+      below: 60
+    then:
+    - action: fan.turn_off
+      target:
+        entity_id: fan.inovelli_vzm35_sn_fan
+    else:
+    - delay:
+        minutes: 15
+    - action: fan.turn_off
+      target:
+        entity_id: fan.inovelli_vzm35_sn_fan
+  mode: restart
+- id: '1771854392376'
+  alias: 2nd Floor Bathroom - Fan Inovelli Paddle Control v2
+  description: Inovelli VZM35-SN paddle controls fan directly. Up=On, Down=Off. Sets
+    manual override to prevent humidity auto from interfering (resets after 30 min
+    via YAML automation).
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_2_press
+    id: up_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_1_press
+    id: down_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_2_hold
+    id: up_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 3eed85f7ca546a7ed7e24b0cfc6c818b
+      command: button_1_hold
+    id: down_hold
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up_press
+        - up_hold
+      sequence:
+      - target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+        action: fan.turn_on
+      - target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+        action: input_boolean.turn_on
+    - conditions:
+      - condition: trigger
+        id:
+        - down_press
+        - down_hold
+      sequence:
+      - target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+        action: fan.turn_off
+      - target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+        action: input_boolean.turn_on
+  mode: single
+- id: '1771858450789'
+  alias: Living Room - AVR On When Fire TV Active
+  description: 'Turn on AVR (AV1, Surround Decoder, 50% vol) and subwoofer when Fire
+    TV wakes from a cold off/standby/unavailable state. Guards: AVR must be off; Fire
+    TV must sustain the wake state for 10s to suppress transient ADB flashes. Does
+    NOT re-initialize if AVR is already on — prevents mid-session YNCA connection
+    interruption.'
+  triggers:
+  - id: fire_tv_playing
+    platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to: playing
+    from:
+    - 'off'
+    - standby
+    - unavailable
+    for:
+      seconds: 10
+  - id: fire_tv_woke_up
+    platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to: idle
+    from:
+    - 'off'
+    - standby
+    - unavailable
+    for:
+      seconds: 10
+  conditions:
+  - condition: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    state: 'off'
+  actions:
+  - parallel:
+    - sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+      - delay:
+          seconds: 3
+      - action: media_player.select_source
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          source: AV1
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          volume_level: 0.5
+      - action: media_player.select_sound_mode
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          sound_mode: Surround Decoder
+    - action: switch.turn_on
+      target:
+        entity_id: switch.living_room_subwoofer_plug
+  mode: single
+- id: '1771858469033'
+  alias: Living Room - AVR Off When Fire TV Idle
+  description: 'Turn off AVR and subwoofer when Fire TV has been idle/standby/off
+    for 20 continuous minutes. Ignores ''unavailable'' (ADB reconnect events) to prevent
+    false triggers during active Hulu sessions. Mode: restart so a new idle period
+    resets the timer if playback resumes and stops again.'
+  triggers:
+  - platform: state
+    entity_id: media_player.living_room_fire_tv_192_168_1_17
+    to:
+    - idle
+    - standby
+    - 'off'
+    for:
+      minutes: 20
+  conditions:
+  - condition: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+      state: unavailable
+  actions:
+  - parallel:
+    - target:
+        entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+      action: media_player.turn_off
+    - sequence:
+      - delay:
+          seconds: 5
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_off
+  mode: restart
+- id: '1771858527176'
+  alias: Living Room - Subwoofer Sync with AVR
+  description: Keep subwoofer power synced with AVR state as backup
+  triggers:
+  - platform: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    to: 'on'
+    id: avr_on
+  - platform: state
+    entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    to: 'off'
+    for:
+      seconds: 5
+    id: avr_off
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: avr_on
+      sequence:
+      - condition: state
+        entity_id: switch.living_room_subwoofer_plug
+        state: 'off'
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_on
+    - conditions:
+      - condition: trigger
+        id: avr_off
+      sequence:
+      - condition: state
+        entity_id: switch.living_room_subwoofer_plug
+        state: 'on'
+      - target:
+          entity_id: switch.living_room_subwoofer_plug
+        action: switch.turn_off
+  mode: restart
+- id: '1771882149561'
+  alias: Entry Room - AUX Switch Off Command
+  description: Catches AUX DOWN 'off' command that bypasses scene events
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: 'off'
+  actions:
+  - action: light.turn_off
+    target:
+      entity_id: light.entry_room_ceiling_light
+  mode: single
+- id: '1771901615355'
+  alias: Entry Room - AUX Switch Ceiling Control
+  description: AUX switch UP/DOWN controls Entry Room Ceiling Hue zone only (not lamp)
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: button_5_press
+    id: aux_up
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+      command: button_4_press
+    id: aux_down
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aux_up
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_ceiling_light
+    - conditions:
+      - condition: trigger
+        id: aux_down
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.entry_room_ceiling_light
+  mode: restart
+- id: 2nd_floor_bathroom_vanity_inovelli
+  alias: 2nd Floor Bathroom - Vanity Lights Inovelli Control
+  description: VZM30-SN paddle controls Hue vanity lights (3 bulbs). Up=On, Down=Off,
+    Hold=Dim.
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 18:0d:f9:ff:fe:34:58:66
+      command: 'on'
+    id: up_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 18:0d:f9:ff:fe:34:58:66
+      command: 'off'
+    id: down_press
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 18:0d:f9:ff:fe:34:58:66
+      command: move_with_on_off
+    id: up_hold
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 18:0d:f9:ff:fe:34:58:66
+      command: move
+    id: down_hold
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: up_press
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_vanity_1of3
+          - light.2nd_floor_bathroom_vanity_2of3
+          - light.2nd_floor_bathroom_vanity_3of3
+    - conditions:
+      - condition: trigger
+        id: down_press
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_vanity_1of3
+          - light.2nd_floor_bathroom_vanity_2of3
+          - light.2nd_floor_bathroom_vanity_3of3
+    - conditions:
+      - condition: trigger
+        id: up_hold
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_vanity_1of3
+          - light.2nd_floor_bathroom_vanity_2of3
+          - light.2nd_floor_bathroom_vanity_3of3
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: trigger
+        id: down_hold
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_vanity_1of3
+          - light.2nd_floor_bathroom_vanity_2of3
+          - light.2nd_floor_bathroom_vanity_3of3
+        data:
+          brightness_step_pct: -10
+  mode: restart
+- id: '1772045640891'
+  alias: Back Patio - Inovelli Controls Hue Lights
+  description: Back Patio Inovelli VZM30-SN controls Hue lights. Config press cycles
+    scenes (Energize→Relax→Nightlight), Config hold toggles Hot Tub Mode.
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_energize
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.back_patio
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
+      sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.back_patio_scene_index
+        data:
+          value: '{{ ((states(''input_number.back_patio_scene_index'') | int + 1)
+            % 3) }}'
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '0.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.back_patio_energize
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '1.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.back_patio_relax
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '2.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.back_patio_nightlight
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_3_hold'' }}'
+      sequence:
+      - action: input_boolean.toggle
+        target:
+          entity_id: input_boolean.hot_tub_mode
+  mode: single
+  max_exceeded: silent
+- id: '1772057917525'
+  alias: 1st Floor Bathroom - Inovelli Controls Hue Ceiling
+  description: 1st Floor Bathroom Inovelli VZM31-SN controls Hue ceiling lights via
+    blueprint
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_2:
+      - data:
+          brightness_pct: 100
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_1_hold:
+      - data:
+          brightness_step_pct: -10
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      button_2_hold:
+      - data:
+          brightness_step_pct: 10
+        action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+      inovelli_switch: 0600639e50d4e1ed71fdaa1ef789e678
+- id: '1772070592354'
+  alias: Kitchen Above Sink - Inovelli Controls Hue Light
+  description: Kitchen Above Sink Inovelli VZM30-SN controls Hue BR bulb via fxlt
+    blueprint
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 89ca030d64760ad87512e97d13a2737d
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.kitchen_above_sink_light
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_pct: 100
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_step_pct: 10
+      button_1_double:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_pct: 10
+      button_2_double:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_above_sink_light
+        data:
+          brightness_pct: 100
+- id: '1772070611621'
+  alias: Kitchen Chandelier - Inovelli Controls Hue Lights
+  description: Kitchen Above Table Chandelier Inovelli VZM30-SN controls 5-bulb Hue
+    chandelier group via fxlt blueprint
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.kitchen_chandelier
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_pct: 100
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_step_pct: 10
+      button_1_double:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_pct: 10
+      button_2_double:
+      - action: light.turn_on
+        target:
+          entity_id: light.kitchen_chandelier
+        data:
+          brightness_pct: 100
+- id: '1772074192238'
+  alias: 2nd Floor Bathroom Ceiling - Inovelli Controls Hue Lights
+  description: 2nd Floor Bathroom Ceiling Inovelli VZM30-SN controls 2 Hue ceiling
+    bulbs via fxlt blueprint
+  mode: single
+  max_exceeded: silent
+  use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+    input:
+      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+      button_2:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_pct: 100
+      button_1_hold:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: -10
+      button_2_hold:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_step_pct: 10
+      button_1_double:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_pct: 10
+      button_2_double:
+      - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom_ceiling_1of2
+          - light.2nd_floor_bathroom_ceiling_2of2
+        data:
+          brightness_pct: 100
+- id: 2nd_floor_bathroom_humidity_fan_v3
+  alias: 2nd Floor Bathroom - Humidity Fan Control v3
+  description: 'Derivative-based shower detection with safety guards. Triggers: humidity
+    rising >2%/min, OR absolute >70%, OR hot water flow. Safety: 30 min max runtime,
+    HA restart recovery, manual override.'
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+    above: 2
+    id: derivative_rising
+  - platform: numeric_state
+    entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+    above: 70
+    id: high_humidity
+  - platform: numeric_state
+    entity_id: sensor.navien_water_flow
+    above: 0.5
+    for:
+      minutes: 2
+    id: hot_water
+  - platform: homeassistant
+    event: start
+    id: ha_restart
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ha_restart
+      sequence:
+      - if:
+        - condition: state
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+          state: 'on'
+        - condition: numeric_state
+          entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+          below: 55
+        then:
+        - action: fan.turn_off
+          target:
+            entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    default:
+    - condition: state
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+      state: 'off'
+    - action: fan.turn_on
+      target:
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    - wait_for_trigger:
+      - platform: numeric_state
+        entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+        below: -1
+        for:
+          minutes: 3
+      - platform: numeric_state
+        entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+        below: 55
+      timeout:
+        minutes: 30
+      continue_on_timeout: true
+    - delay:
+        minutes: 5
+    - action: fan.turn_off
+      target:
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
+  mode: restart
+- id: front_driveway_motion_lights_on
+  alias: Front Driveway - Lights On When Motion (Dark)
+  description: 'Turn on driveway lights on vehicle or person detection after dark.
+    Uses AI detection instead of raw motion to prevent false positives from wind/animals.
+    Belt+suspenders: sunset-23:00 window + smart detection. Updated 2026-03-10.'
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_vehicle_detected
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_person_detected
+    to: 'on'
+  conditions:
+  - condition: sun
+    after: sunset
+    after_offset: 0:00:00
+  - condition: time
+    before: '23:00:00'
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.front_driveway
+  mode: single
+- id: '1773152820854'
+  alias: Doorbell Ring → Notification with Snapshot
+  description: Sends a push notification with camera snapshot to John when either
+    doorbell is pressed. Uses event entity trigger (not binary_sensor) for reliability.
+    Snapshots saved to www/doorbell/ and included in notification.
+  triggers:
+  - platform: state
+    entity_id: event.very_front_door_doorbell
+    alias: Very Front Door ring
+  - platform: state
+    entity_id: event.front_driveway_door_doorbell
+    alias: Front Driveway Door ring
+  actions:
+  - delay:
+      seconds: 2
+  - target:
+      entity_id: '{{ camera_entity }}'
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - data:
+      title: 🔔 Doorbell — {{ doorbell_label }}
+      message: Someone is at the {{ doorbell_label }}
+      data:
+        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
+        channel: Doorbell
+        importance: high
+        ttl: 0
+        priority: high
+        tag: doorbell_{{ doorbell_label | lower | replace(' ', '_') }}
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: parallel
+  max: 2
+  variables:
+    camera_entity: '{{ ''camera.very_front_door_high_resolution_channel'' if trigger.entity_id
+      == ''event.very_front_door_doorbell'' else ''camera.front_driveway_door_high_resolution_channel''
+      }}'
+    doorbell_label: '{{ ''Front Door'' if trigger.entity_id == ''event.very_front_door_doorbell''
+      else ''Driveway Door'' }}'
+    snapshot_path: '{{ ''/config/www/doorbell/snapshot_front.jpg'' if trigger.entity_id
+      == ''event.very_front_door_doorbell'' else ''/config/www/doorbell/snapshot_driveway.jpg''
+      }}'
+- id: '1773153864754'
+  alias: Doorbell Package Detected → Notification
+  description: Sends a push notification with package camera snapshot to John when
+    a package is detected at either doorbell. Daytime only (7am–10pm). Uses dedicated
+    package camera on G4 Doorbell Pro for reliable close-up snapshot.
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.very_front_door_package_detected
+    to: 'on'
+    alias: Very Front Door package detected
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_package_detected
+    to: 'on'
+    alias: Front Driveway Door package detected
+  conditions:
+  - condition: time
+    after: 07:00:00
+    before: '22:00:00'
+  actions:
+  - delay:
+      seconds: 3
+  - target:
+      entity_id: '{{ package_camera }}'
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - data:
+      title: 📦 Package Delivered — {{ doorbell_label }}
+      message: A package was detected at the {{ doorbell_label }}
+      data:
+        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
+        channel: Doorbell
+        importance: default
+        tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: parallel
+  max: 2
+  variables:
+    package_camera: '{{ ''camera.very_front_door_package_camera'' if trigger.entity_id
+      == ''binary_sensor.very_front_door_package_detected'' else ''camera.front_driveway_door_package_camera''
+      }}'
+    doorbell_label: '{{ ''Front Door'' if trigger.entity_id == ''binary_sensor.very_front_door_package_detected''
+      else ''Driveway Door'' }}'
+    snapshot_path: '{{ ''/config/www/doorbell/package_front.jpg'' if trigger.entity_id
+      == ''binary_sensor.very_front_door_package_detected'' else ''/config/www/doorbell/package_driveway.jpg''
+      }}'
+- id: '1773360880637'
+  alias: Ella - Wake With Echo Alarm
+  description: Mirrors alaina_wake_echo_alarm. Fires every minute, checks if Ella's
+    Echo alarm is in the active/ringing window (within last 2 min). Runs ella_gentle_wake
+    script to brighten lights at actual alarm time. Complements ella_gentle_wake_before_alarm
+    which fires 15 min prior.
+  triggers:
+  - platform: time_pattern
+    minutes: /1
+  conditions:
+  - condition: template
+    value_template: '{{ state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
+      ''status'') == ''ON'' or (as_timestamp(now()) - as_timestamp(state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
+      ''dismissed'') | default(''2000-01-01'', true))) | float(9999) < 120 }}'
+  - condition: state
+    entity_id: input_boolean.ella_home
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.ella_bedroom_override
+    state: 'off'
+  actions:
+  - action: script.ella_gentle_wake
+  mode: single
+- id: '1773361493420'
+  alias: Girls → Bedtime Winddown Lighting
+  description: When either girl's phone goes on the charger after 8:30pm while home,
+    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 45min.
+    Uses binary_sensor.ella_home / binary_sensor.alaina_home (Phase 9.1 template sensors,
+    not legacy input_booleans).
+  triggers:
+  - platform: state
+    entity_id: sensor.ellas_iphone_battery_state
+    to: Charging
+    id: ella_charging
+  - platform: state
+    entity_id: sensor.alainas_iphone_battery_state
+    to: Charging
+    id: alaina_charging
+  conditions:
+  - condition: time
+    after: '20:30:00'
+    before: '23:59:59'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ella_charging
+      - condition: state
+        entity_id: binary_sensor.ella_home
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: 'off'
+      - condition: state
+        entity_id: light.ella_s_bedroom
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.ella_s_bedroom
+        data:
+          brightness_pct: 15
+          color_temp_kelvin: 2200
+          transition: 30
+        action: light.turn_on
+      - delay:
+          minutes: 45
+      - condition: state
+        entity_id: input_boolean.ella_bedroom_override
+        state: 'off'
+      - target:
+          entity_id: light.ella_s_bedroom
+        data:
+          transition: 60
+        action: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: alaina_charging
+      - condition: state
+        entity_id: binary_sensor.alaina_home
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: 'off'
+      - condition: state
+        entity_id: light.alaina_s_bedroom
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          brightness_pct: 15
+          color_temp_kelvin: 2200
+          transition: 30
+        action: light.turn_on
+      - delay:
+          minutes: 45
+      - condition: state
+        entity_id: input_boolean.alaina_bedroom_override
+        state: 'off'
+      - target:
+          entity_id: light.alaina_s_bedroom
+        data:
+          transition: 60
+        action: light.turn_off
+  mode: parallel
+  max: 2
+- id: garage_auto_close_departure
+  alias: Garage - Auto Close North on Departure
+  description: When John leaves home and North garage door is open, send actionable
+    notification then auto-close after 60s unless cancelled.
+  triggers:
+  - platform: state
+    entity_id: person.john_spencer
+    to: not_home
+    from: home
+  conditions:
+  - condition: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    state: open
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: 🚪 Garage Still Open
+      message: North door closing in 60s — tap to cancel
+      data:
+        tag: garage_auto_close
+        ttl: 0
+        priority: high
+        actions:
+        - action: CANCEL_AUTO_CLOSE
+          title: KEEP OPEN
+        - action: CLOSE_NOW_DEPART
+          title: CLOSE NOW
+  - wait_for_trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CANCEL_AUTO_CLOSE
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CLOSE_NOW_DEPART
+    timeout:
+      seconds: 60
+    continue_on_timeout: true
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
+        == ''CANCEL_AUTO_CLOSE'' }}'
+    then:
+    - action: notify.mobile_app_john_s_s26_ultra
+      data:
+        title: 🚪 Garage
+        message: North door left open
+        data:
+          tag: garage_auto_close
+          timeout: 30
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
+        == ''CLOSE_NOW_DEPART'' }}'
+    then:
+    - action: cover.close_cover
+      target:
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+    - action: notify.mobile_app_john_s_s26_ultra
+      data:
+        title: 🔒 Garage
+        message: North door closed
+        data:
+          tag: garage_auto_close
+          timeout: 30
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is none }}'
+    then: []
+  - condition: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    state: open
+  - action: cover.close_cover
+    target:
+      entity_id: cover.ratgdo32disco_fd8d8c_door
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: 🔒 Garage
+      message: North door closed
+      data:
+        tag: garage_auto_close
+        timeout: 30
+  mode: single
+- id: garage_door_notifications_autoclear
+  alias: Garage - Auto-Clear Notifications on Close
+  description: When North garage door closes, dismiss the auto-close notification
+    from John's phone.
+  triggers:
+  - platform: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    to: closed
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      message: clear_notification
+      data:
+        tag: garage_auto_close
+  mode: single
+- id: '1773963591351'
+  alias: Reminder → Fix Ella iPhone HA Location Settings
+  description: One-time reminder to fix Ella's HA companion app location settings
+    so presence detection works reliably.
+  triggers:
+  - platform: time
+    at: '16:00:00'
+  conditions:
+  - condition: template
+    value_template: '{{ now().date() | string == ''2026-03-20'' }}'
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      title: 📱 Fix Ella's HA Location
+      message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
+        set to Always + enable Background Location updates
+  mode: single
+- id: '1774321433093'
+  alias: Living Room Lamps - Activity Boost
+  description: Restore full brightness when motion detected while dimmed
+  triggers:
+  - entity_id: binary_sensor.downstairs_motion
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.living_room_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  - condition: state
+    entity_id: light.living_room_east_floor_lamp
+    state: 'on'
+  - condition: numeric_state
+    entity_id: light.living_room_east_floor_lamp
+    attribute: brightness
+    below: 100
+  actions:
+  - data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      lights:
+      - light.living_room_east_floor_lamp
+      - light.living_room_lounge_lamp
+      transition: 2
+    action: adaptive_lighting.apply
+  mode: single
+- id: '1774392438248'
+  alias: HAC Session Wrap Reminder
+  description: Reminds John to run hac wrap and start a new HAC session. Fires at
+    9pm if home. Tap notification opens Claude Project.
+  triggers:
+  - platform: time
+    at: '21:00:00'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.john_home
+    state: 'on'
+  actions:
+  - data:
+      title: HAC — session wrap due
+      message: Run hac wrap in terminal, then tap to start next session.
+      data:
+        tag: hac_wrap_reminder
+        channel: HAC
+        importance: default
+        url: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
+        actions:
+        - action: URI
+          title: Open Claude Project
+          uri: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: single

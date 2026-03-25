@@ -1,4 +1,4 @@
-# HA Status - 2026-03-24 16:22 CDT
+# HA Status - 2026-03-24 19:47 CDT
 Version: 2026.3.4 | HAC: v9.1
 
 ## People
@@ -51,14 +51,14 @@ both_girls_home: unavailable
 ## Recent Triggers (last 10)
 2026-03-24 14:28:26 calendar_refresh_school_in_session_now
 2026-03-24 14:28:26 calendar_refresh_school_tomorrow
+2026-03-24 14:28:26 context_apply_on_time_change
 2026-03-24 14:28:26 context_apply_on_occupancy_change
 2026-03-24 14:28:26 occupancy_update_mode
-2026-03-24 14:28:26 kitchen_tablet_wake_on_kitchen_motion
-2026-03-24 14:28:26 kitchen_tablet_brightness_schedule
-2026-03-24 14:28:26 alaina_lights_off_when_leaving
-2026-03-24 14:28:26 ella_lights_off_when_leaving
-2026-03-24 14:28:26 google_sheets_export_on_startup
-2026-03-24 14:28:26 family_alaina_arrived_home
+2026-03-24 14:28:26 departure_clear_alert_on_return
+2026-03-24 14:28:26 departure_garage_open_alert
+2026-03-24 14:28:26 arrival_ella_home
+2026-03-24 14:28:26 arrival_john_home
+2026-03-24 14:28:26 safety_all_lights_off_when_nobody_home
 
 ## Errors (last 5)
 
@@ -67,10 +67,14 @@ both_girls_home: unavailable
 
 ## Active Work
 # Active Work
-TASK: next: notify migration (20 UI automations + 3 scripts → s26_ultra), Inovelli blueprint consolidation, Bubble Card popup (test kiosk_mode:{} hypothesis)
-NEXT: (define next step)
+TASK: notify migration (20 UI automations + 3 scripts → s26_ultra)
+NEXT: run hac ids + grep for sm_s928u across all packages
 BLOCKED: None
-UPDATED: 2026-03-19
+UPDATED: 2026-03-24
 
-## Quick Context
-(add context here)
+## Priority queue
+1. notify migration — silent failures on every alert until fixed
+2. disk cleanup — 76% full, recorder retention policy needed
+3. Inovelli blueprint consolidation — 8 automations → 1 blueprint
+4. Bubble Card popup — verify kiosk_mode test result
+5. Unavailable lights audit — 7 entities flagged since 2026-03-22
