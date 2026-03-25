@@ -9,8 +9,8 @@ template:
         state: >
           {% set home_lat = 44.42452455932065 %}
           {% set home_lon = -91.21117829649491 %}
-          {% set john_lat = state_attr('device_tracker.john_s_phone', 'latitude') | float(0) %}
-          {% set john_lon = state_attr('device_tracker.john_s_phone', 'longitude') | float(0) %}
+          {% set john_lat = state_attr('device_tracker.sm_s948u1_john_s_s26_ultra', 'latitude') | float(0) %}
+          {% set john_lon = state_attr('device_tracker.sm_s948u1_john_s_s26_ultra', 'longitude') | float(0) %}
           {% if john_lat == 0 or john_lon == 0 %}
             unknown
           {% else %}

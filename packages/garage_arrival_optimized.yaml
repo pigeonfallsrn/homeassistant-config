@@ -18,10 +18,11 @@ automation:
       
       Dashboard stays up until you arrive home or dismiss it.
     trigger:
-      # Primary: Bluetooth connection changes (car connection detected)
-      - platform: state
-        entity_id: sensor.john_s_phone_bluetooth_connection
-        id: bluetooth_change
+      # Primary: Phone enters approaching zone (< 800m from home)
+      - platform: numeric_state
+        entity_id: sensor.john_distance_to_home
+        below: 800
+        id: approaching
       
       # Backup: Enter proximity zone while connected to car
       - platform: numeric_state
@@ -30,11 +31,10 @@ automation:
         id: proximity
     
     condition:
-      # Must be connected to car Bluetooth (HandsFreeLink)
-      - condition: template
-        value_template: >
-          {% set connected = state_attr('sensor.john_s_phone_bluetooth_connection', 'connected_paired_devices') | default([]) %}
-          {{ connected | select('search', 'HandsFreeLink') | list | length > 0 }}
+      # Only trigger during reasonable hours (08:00 - 23:00)
+      - condition: time
+        after: "08:00:00"
+        before: "23:00:00"
       
       # Approaching home (not already there)
       - condition: numeric_state
