@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-24 19:29
+# HAC Handoff — 2026-03-26 09:26
 
 ## Last 3 commits
-  c8bc5a5 hac: session 2026-03-24
-  6bdb759 hac: promote AVR fix, archive stale files, update ACTIVE.md priorities
-  f4bcb0a hac: update hac/hac.sh
+  5b4db4e hac: session 2026-03-26
+  3a209b6 feat: add basement hallway ceiling switch to 1st floor hallway motion
+  ae0f02a fix: 1st floor bathroom hallway motion uses basement_hallway_motion_sensor_occupancy
 
 ## Active tasks
   TASK: notify migration (20 UI automations + 3 scripts → s26_ultra)
