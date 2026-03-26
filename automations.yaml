@@ -1427,7 +1427,29 @@
   - entity_id: binary_sensor.entry_room_motion
     platform: state
     to: 'on'
-- actions:
+- id: '1774539842937'
+  alias: Kitchen + Lounge — Motion Lighting
+  description: '3-tier time-based motion lighting for open-concept kitchen/lounge.
+    Day (06-21): full task lighting. Evening (21-23): warm ambient. Late night (23-06):
+    under-cabinet only. Hue group lights get bare turn_on — AL owns brightness/color_temp.
+    Dumb lights get explicit brightness. Suppresses off when TV playing. Respects
+    manual override. Triggers on EITHER kitchen_motion OR kitchen_lounge_motion.'
+  triggers:
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_lounge_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id:
+    - binary_sensor.kitchen_motion
+    - binary_sensor.kitchen_lounge_motion
+    to: 'off'
+    for:
+      minutes: 8
+    id: motion_off
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1438,145 +1460,129 @@
       sequence:
       - choose:
         - conditions:
-          - after: 06:00:00
+          - condition: time
+            after: 06:00:00
             before: '21:00:00'
-            condition: time
           sequence:
           - action: light.turn_on
-            data:
-              brightness_pct: 90
-              color_temp_kelvin: 3500
-              transition: 1
             target:
               entity_id: light.kitchen_chandelier
-          - action: light.turn_on
             data:
-              brightness_pct: 90
-              color_temp_kelvin: 3500
-              transition: 1
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_above_sink_light
-          - action: light.turn_on
             data:
-              brightness_pct: 100
-              transition: 1
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_ceiling_inovelli_vzm31_sn
-          - action: light.turn_on
             data:
               brightness_pct: 100
-              transition: 1
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_bar_pendant_lights
-          - action: light.turn_on
             data:
-              brightness_pct: 80
-              transition: 1
+              brightness_pct: 100
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.inovelli_vzm31_sn_4
+            data:
+              brightness_pct: 80
+              transition: 0
           - action: light.turn_on
+            target:
+              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
             data:
               brightness_pct: 70
               color_temp_kelvin: 3000
-              transition: 1
-            target:
-              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+              transition: 0
           - action: light.turn_on
-            data:
-              brightness_pct: 60
-              transition: 1
             target:
               entity_id: light.kitchen_govee_floor_lamp
-          - action: light.turn_on
             data:
-              brightness_pct: 80
-              color_temp_kelvin: 3500
-              transition: 1
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge
-          - action: light.turn_on
             data:
-              brightness_pct: 60
-              transition: 1
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge_lamp
+            data:
+              transition: 0
         - conditions:
-          - after: '21:00:00'
+          - condition: time
+            after: '21:00:00'
             before: '23:00:00'
-            condition: time
           sequence:
           - action: light.turn_on
-            data:
-              brightness_pct: 40
-              color_temp_kelvin: 2700
-              transition: 2
             target:
               entity_id: light.kitchen_chandelier
-          - action: light.turn_on
             data:
-              brightness_pct: 50
-              color_temp_kelvin: 2700
-              transition: 2
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_above_sink_light
-          - action: light.turn_on
             data:
-              brightness_pct: 60
-              transition: 2
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_ceiling_inovelli_vzm31_sn
-          - action: light.turn_on
             data:
-              brightness_pct: 50
-              transition: 2
+              brightness_pct: 60
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_bar_pendant_lights
-          - action: light.turn_on
             data:
-              brightness_pct: 40
-              transition: 2
+              brightness_pct: 50
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.inovelli_vzm31_sn_4
+            data:
+              brightness_pct: 40
+              transition: 0
           - action: light.turn_on
+            target:
+              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
             data:
               brightness_pct: 50
               color_temp_kelvin: 2500
-              transition: 2
-            target:
-              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+              transition: 0
           - action: light.turn_on
-            data:
-              brightness_pct: 35
-              transition: 2
             target:
               entity_id: light.kitchen_govee_floor_lamp
-          - action: light.turn_on
             data:
-              brightness_pct: 40
-              color_temp_kelvin: 2700
-              transition: 2
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge
-          - action: light.turn_on
             data:
-              brightness_pct: 50
-              transition: 2
+              transition: 0
+          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge_lamp
+            data:
+              transition: 0
         default:
         - action: light.turn_on
+          target:
+            entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
           data:
             brightness_pct: 6
             color_temp_kelvin: 2100
-            transition: 3
-          target:
-            entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+            transition: 0
         - action: light.turn_on
-          data:
-            brightness_pct: 12
-            transition: 3
           target:
             entity_id: light.inovelli_vzm31_sn_4
+          data:
+            brightness_pct: 12
+            transition: 0
     - conditions:
       - condition: trigger
         id: motion_off
@@ -1595,8 +1601,6 @@
           state: playing
       sequence:
       - action: light.turn_off
-        data:
-          transition: 0
         target:
           entity_id:
           - light.kitchen_chandelier
@@ -1608,28 +1612,9 @@
           - light.kitchen_govee_floor_lamp
           - light.kitchen_lounge
           - light.kitchen_lounge_lamp
-  alias: Kitchen + Lounge — Motion Lighting
-  description: '3-tier time-based motion lighting for open-concept kitchen/lounge.
-    Day (06-21): full task lighting. Evening (21-23): warm ambient. Late night (23-06):
-    under-cabinet only. Suppresses off when TV playing. Respects manual override.
-    Triggers on EITHER kitchen_motion OR kitchen_lounge_motion.'
-  id: '1774539842937'
+        data:
+          transition: 0
   mode: restart
-  triggers:
-  - entity_id:
-    - binary_sensor.kitchen_motion
-    - binary_sensor.kitchen_lounge_motion
-    id: motion_on
-    platform: state
-    to: 'on'
-  - entity_id:
-    - binary_sensor.kitchen_motion
-    - binary_sensor.kitchen_lounge_motion
-    for:
-      minutes: 8
-    id: motion_off
-    platform: state
-    to: 'off'
 - id: '1774543958639'
   alias: Living Room — Motion Lighting
   description: '3-tier motion lighting for living room. Day (06-22): all 4 Hue lamps
