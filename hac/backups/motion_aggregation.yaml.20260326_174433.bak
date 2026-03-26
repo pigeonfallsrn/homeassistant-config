@@ -52,7 +52,7 @@ template:
         device_class: motion
         state: >
           {{ is_state('binary_sensor.basement_hallway_motion_sensor_occupancy', 'on')
-             or is_state('binary_sensor.1st_floor_bathroom_motion', 'on') }}
+             or is_state('binary_sensor.1st_floor_bathroom_night_light_motion', 'on') }}
         delay_off:
           seconds: 30
 
@@ -63,7 +63,8 @@ template:
         unique_id: front_door_hallway_motion_combined
         device_class: motion
         state: >
-          {{ is_state('binary_sensor.very_front_door_motion_sensor_occupancy', 'on') }}
+          {{ is_state('binary_sensor.aqara_motion_sensor_p1_occupancy_6', 'on')
+             or is_state('binary_sensor.very_front_door_motion_sensor_occupancy', 'on') }}
         delay_off:
           seconds: 30
 
@@ -75,7 +76,8 @@ template:
         device_class: motion
         state: >
           {{ is_state('binary_sensor.upstairs_hallway_aqara_motion_sensor_occupancy', 'on')
-             or is_state('binary_sensor.upstairs_hallway_night_light_motion', 'on') }}
+             or is_state('binary_sensor.upstairs_hallway_night_light_motion', 'on')
+             or is_state('binary_sensor.upstairs_hallway_east_wall_night_light_motion', 'on') }}
         delay_off:
           seconds: 30
 
@@ -97,7 +99,7 @@ template:
         unique_id: upstairs_bathroom_motion_combined
         device_class: motion
         state: >
-          {{ is_state('binary_sensor.upstairs_bathroom_motion', 'on') }}
+          {{ is_state('binary_sensor.upstairs_bathroom_night_light_motion', 'on') }}
         delay_off:
           seconds: 30
 
@@ -110,7 +112,7 @@ template:
         state: >
           {{ is_state('binary_sensor.living_room_north_wall_west_nightlight_motion', 'on')
              or is_state('binary_sensor.living_room_north_wall_east_nightlight_motion', 'on')
-             }}
+             or is_state('binary_sensor.living_rm_loungemotionaware_area', 'on') }}
         delay_off:
           seconds: 30
         delay_on:
