@@ -184,3 +184,4 @@ Times Hit: 10+
 - 2026-03-24: HAC: hac promote was silently writing to gist_output/03_knowledge.md which hac export overwrites on every run — fixed to write to CRITICAL_RULES.md under Session Promotions section
 - 2026-03-24: HAC: hac wrap added as hardwired session-close ritual — prints 3-question checklist (gotcha/deadend/backlog) then calls hac close — run this instead of hac close going forward
 - 2026-03-24: AUDIO: FireTV ADB chatters idle/playing/unavailable during Hulu — normal behavior. Fix: (1) add from:[off,standby,unavailable]+for:10s debounce to AVR-on trigger, (2) extend AVR-off timer to 20min, (3) add not-unavailable condition to off automation. Backup: fae184df.
+- 2026-03-25: 1st floor hallway P1 automation: passthrough template, 8min shower guard, vanity immediate off, ceiling gated by sunset+override
