@@ -143,7 +143,7 @@ automation:
         entity_id: binary_sensor.aqara_door_and_window_sensor_door
         to: "off"
         for:
-          minutes: 10
+          minutes: 6
         id: door_closed
       - platform: time_pattern
         minutes: "/5"
@@ -401,7 +401,7 @@ automation:
     action:
       - service: adaptive_lighting.apply
         data:
-          entity_id: switch.adaptive_lighting_living_spaces
+          entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
           lights:
             - light.entry_room_hue_color_lamp
           transition: 2
@@ -417,7 +417,7 @@ automation:
         entity_id: binary_sensor.entry_room_motion
         to: "off"
         for:
-          minutes: 5
+          minutes: 3
     condition:
       - condition: state
         entity_id: input_boolean.entry_room_manual_override

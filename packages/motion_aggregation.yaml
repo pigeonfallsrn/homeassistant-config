@@ -12,7 +12,7 @@ template:
         unique_id: entry_room_motion_combined
         device_class: motion
         state: >
-          {{ is_state('binary_sensor.aqara_motion_sensor_p1_occupancy', 'on')
+          {{ is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on')
              or is_state('binary_sensor.entry_room_east_wall_nightlight_motion', 'on')
              or is_state('binary_sensor.entry_room_west_wall_nightlight_motion', 'on') }}
         delay_off:

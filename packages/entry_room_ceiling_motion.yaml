@@ -1,66 +1,84 @@
 # =============================================================================
-# ENTRY ROOM CEILING - MOTION AUTOMATION
+# ENTRY ROOM CEILING - MOTION LIGHTING
 # =============================================================================
-# Motion sensors: Aqara P1 + ThirdReality (aggregated)
-# Controls: light.entry_room
-# Adaptive Lighting: switch.adaptive_lighting_entry_room_ceiling
-# 
-# Lux-aware, manual override support, Wisconsin-optimized
+# Controls: light.entry_room_ceiling_light (Hue zone, 2x color bulbs)
+# Motion: binary_sensor.entry_room_motion (P1 + TR nightlights, 30s delay_off)
+# Override: input_boolean.entry_room_manual_override
+# Hot tub: FULL BYPASS when input_boolean.hot_tub_mode = on
+# Pattern: passthrough/hallway → mode: restart, 3-min off timeout
+# Tiers: 06:00-21:30 Energize | 21:30-23:00 70%/3000K | 23:00-06:00 15%/2200K
 # =============================================================================
 
 automation:
   - id: entry_room_ceiling_motion_lighting
-    alias: Entry Room - Ceiling Motion Lighting
-    description: 'Motion-activated with AL circadian control and lux awareness'
+    alias: "Entry Room - Ceiling Motion Lighting"
+    description: >
+      3-tier time-aware motion lighting for 3-door transition space.
+      Energize daytime, warm dim evening, nightlight late night.
+      Full bypass when hot_tub_mode active. Manual override respected.
+      3-min off timeout appropriate for pass-through coat/shoe room.
     mode: restart
     trigger:
       - platform: state
-        entity_id: binary_sensor.entry_room_motion  # Your aggregated motion
-        to: 'on'
+        entity_id: binary_sensor.entry_room_motion
+        to: "on"
         id: motion_on
       - platform: state
         entity_id: binary_sensor.entry_room_motion
-        to: 'off'
+        to: "off"
         for:
-          minutes: 4  # Extended timeout for 3-door transition zone
+          minutes: 3
         id: motion_off
-    
     condition:
-      # Don't auto-control if manual override active
       - condition: state
         entity_id: input_boolean.entry_room_manual_override
-        state: 'off'
-    
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
     action:
       - choose:
-          # ── MOTION ON ──
           - conditions:
               - condition: trigger
                 id: motion_on
             sequence:
-              # Optional: Check lux before turning on
               - choose:
                   - conditions:
-                      - condition: numeric_state
-                        entity_id: sensor.entry_room_east_wall_nightlight_illuminance  # Your ThirdReality lux
-                        below: 20  # Skip if sunny
+                      - condition: time
+                        after: "06:00:00"
+                        before: "21:30:00"
+                    sequence:
+                      - action: scene.turn_on
+                        target:
+                          entity_id: scene.entry_room_energize
+                        data:
+                          transition: 1
+                  - conditions:
+                      - condition: time
+                        after: "21:30:00"
+                        before: "23:00:00"
                     sequence:
                       - action: light.turn_on
                         target:
-                          entity_id: light.entry_room
-                      - action: adaptive_lighting.apply
-                        target:
-                          entity_id: switch.adaptive_lighting_entry_room_ceiling
-                # If too bright outside, skip
-                default: []
-          
-          # ── MOTION OFF ──
+                          entity_id: light.entry_room_ceiling_light
+                        data:
+                          brightness_pct: 70
+                          color_temp_kelvin: 3000
+                          transition: 2
+                default:
+                  - action: light.turn_on
+                    target:
+                      entity_id: light.entry_room_ceiling_light
+                    data:
+                      brightness_pct: 15
+                      color_temp_kelvin: 2200
+                      transition: 2
           - conditions:
               - condition: trigger
                 id: motion_off
             sequence:
               - action: light.turn_off
                 target:
-                  entity_id: light.entry_room
+                  entity_id: light.entry_room_ceiling_light
                 data:
                   transition: 5
