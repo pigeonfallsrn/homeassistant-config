@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-26 09:26
+# HAC Handoff — 2026-03-26 11:11
 
 ## Last 3 commits
-  5b4db4e hac: session 2026-03-26
-  3a209b6 feat: add basement hallway ceiling switch to 1st floor hallway motion
-  ae0f02a fix: 1st floor bathroom hallway motion uses basement_hallway_motion_sensor_occupancy
+  b48d4d9 fix(kitchen): motion trigger covers both kitchen + lounge sensors
+  55be03a docs: add session backups and learnings from entry room audit
+  7d2ce0b docs: update learnings, session log, and HANDOFF for entry room audit 2026-03-26
 
 ## Active tasks
   TASK: notify migration (20 UI automations + 3 scripts → s26_ultra)
