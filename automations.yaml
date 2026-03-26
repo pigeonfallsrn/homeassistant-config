@@ -952,7 +952,7 @@
       filename: '{{ snapshot_path }}'
     action: camera.snapshot
   - data:
-      title: 🔔 Doorbell — {{ doorbell_label }}
+      title: "\U0001F514 Doorbell — {{ doorbell_label }}"
       message: Someone is at the {{ doorbell_label }}
       data:
         image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
@@ -1000,7 +1000,7 @@
       filename: '{{ snapshot_path }}'
     action: camera.snapshot
   - data:
-      title: 📦 Package Delivered — {{ doorbell_label }}
+      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
       message: A package was detected at the {{ doorbell_label }}
       data:
         image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
@@ -1141,7 +1141,7 @@
   actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: 🚪 Garage Still Open
+      title: "\U0001F6AA Garage Still Open"
       message: North door closing in 60s — tap to cancel
       data:
         tag: garage_auto_close
@@ -1171,7 +1171,7 @@
     then:
     - action: notify.mobile_app_john_s_s26_ultra
       data:
-        title: 🚪 Garage
+        title: "\U0001F6AA Garage"
         message: North door left open
         data:
           tag: garage_auto_close
@@ -1186,7 +1186,7 @@
         entity_id: cover.ratgdo32disco_fd8d8c_door
     - action: notify.mobile_app_john_s_s26_ultra
       data:
-        title: 🔒 Garage
+        title: "\U0001F512 Garage"
         message: North door closed
         data:
           tag: garage_auto_close
@@ -1203,7 +1203,7 @@
       entity_id: cover.ratgdo32disco_fd8d8c_door
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: 🔒 Garage
+      title: "\U0001F512 Garage"
       message: North door closed
       data:
         tag: garage_auto_close
@@ -1237,7 +1237,7 @@
   actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
-      title: 📱 Fix Ella's HA Location
+      title: "\U0001F4F1 Fix Ella's HA Location"
       message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
         set to Always + enable Background Location updates
   mode: single
@@ -1397,3 +1397,33 @@
           entity_id: light.1st_floor_bathroom
         data:
           transition: 3
+- id: '1774537453732'
+  alias: Entry Room Lamp - On With Motion
+  description: Turns on entry room lamp when motion detected and applies AL for correct
+    color/brightness. No lux gate - hard off at 23:30 handles late night. Full bypass
+    when hot_tub_mode or manual override active.
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.entry_room_motion
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.entry_room_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.entry_room_hue_color_lamp
+  - action: adaptive_lighting.apply
+    data:
+      entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
+      lights:
+      - light.entry_room_hue_color_lamp
+      transition: 2
+  mode: restart
