@@ -1741,3 +1741,72 @@
         data:
           transition: 0
   mode: restart
+- id: '1774544318554'
+  alias: Upstairs Bathroom — Motion Lighting
+  description: '3-tier motion lighting for 2nd floor bathroom. Day (06-22): full bright/neutral
+    via Hue room group. Evening (22-23): warm dim. Late night (23-06): very dim warm
+    for overnight visits. 5min timeout. Physical Inovelli switches retain full override
+    via separate blueprint automations.'
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.upstairs_bathroom_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id: binary_sensor.upstairs_bathroom_motion
+    to: 'off'
+    for:
+      minutes: 5
+    id: motion_off
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      sequence:
+      - choose:
+        - conditions:
+          - condition: time
+            after: 06:00:00
+            before: '22:00:00'
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.2nd_floor_bathroom
+            data:
+              brightness_pct: 100
+              color_temp_kelvin: 4000
+              transition: 1
+        - conditions:
+          - condition: time
+            after: '22:00:00'
+            before: '23:00:00'
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.2nd_floor_bathroom
+            data:
+              brightness_pct: 50
+              color_temp_kelvin: 2700
+              transition: 2
+        default:
+        - action: light.turn_on
+          target:
+            entity_id: light.2nd_floor_bathroom
+          data:
+            brightness_pct: 15
+            color_temp_kelvin: 2200
+            transition: 3
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      - condition: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        state: 'off'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.2nd_floor_bathroom
+        data:
+          transition: 0
+  mode: restart
