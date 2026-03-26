@@ -1301,9 +1301,10 @@
     action: notify.mobile_app_john_s_s26_ultra
   mode: single
 - id: 1st_floor_hallway_vanity_motion
-  alias: 1st Floor Hallway → Vanity Motion
-  description: 'P1 outside bathroom: TP-Link vanity on with motion, off when clear.
-    Simple passthrough, no shower concern (hallway fixture only).'
+  alias: 1st Floor Hallway → Hallway + Vanity Motion
+  description: 'P1 (basement_hallway = 1st floor bathroom hallway): Hallway ceiling
+    (TP-Link HS200 switch) + vanity dimmer both on with motion, off when clear. No
+    lux/time gate - hallway light always useful. mode:restart fine, no shower concern.'
   mode: restart
   trigger:
   - platform: state
@@ -1326,6 +1327,9 @@
         data:
           brightness_pct: 80
           transition: 1
+      - action: switch.turn_on
+        target:
+          entity_id: switch.basement_hallway_smart_switch
     - conditions:
       - condition: trigger
         id: motion_off
@@ -1335,6 +1339,9 @@
           entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
         data:
           transition: 3
+      - action: switch.turn_off
+        target:
+          entity_id: switch.basement_hallway_smart_switch
 - id: 1st_floor_hallway_bathroom_ceiling_motion
   alias: 1st Floor Hallway → Bathroom Ceiling Motion
   description: 'P1 outside bathroom: Hue ceiling on after sunset+30min when override
