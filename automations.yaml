@@ -1795,3 +1795,78 @@
         data:
           transition: 0
   mode: restart
+- id: '1774557506471'
+  alias: 1st Floor Hallway + Bathroom — Motion Lighting
+  description: 'Hallway P1 (outside) + bathroom sensor (inside) both trigger on. Both
+    must clear for 5min before lights off. mode:restart so re-entry resets timer.
+    No time/sunset gate - hallway useful any time. Inovelli physical switch override
+    preserved via separate blueprint automation. Replaces: 1st_floor_hallway_bathroom_ceiling_motion
+    (mode:single + inline delay = ignored re-entry) and 1st_floor_hallway_vanity_motion
+    (no off delay = flicker).'
+  triggers:
+  - platform: state
+    entity_id:
+    - binary_sensor.1st_floor_bathroom_hallway_motion
+    - binary_sensor.1st_floor_bathroom_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id:
+    - binary_sensor.1st_floor_bathroom_hallway_motion
+    - binary_sensor.1st_floor_bathroom_motion
+    to: 'off'
+    for:
+      minutes: 5
+    id: motion_off
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      - condition: state
+        entity_id: input_boolean.bathroom_1st_floor_manual_override
+        state: 'off'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom
+        data:
+          brightness_pct: 80
+          color_temp_kelvin: 3500
+          transition: 0
+      - action: light.turn_on
+        target:
+          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
+        data:
+          brightness_pct: 80
+          transition: 0
+      - action: switch.turn_on
+        target:
+          entity_id: switch.basement_hallway_smart_switch
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      - condition: state
+        entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.1st_floor_bathroom_motion
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.bathroom_1st_floor_manual_override
+        state: 'off'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom
+        data:
+          transition: 0
+      - action: light.turn_off
+        target:
+          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
+        data:
+          transition: 0
+      - action: switch.turn_off
+        target:
+          entity_id: switch.basement_hallway_smart_switch
+  mode: restart
