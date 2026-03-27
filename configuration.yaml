@@ -162,3 +162,40 @@ automation:
       - service: shell_command.hac_export
 
 packages: !include_dir_named packages
+
+# Recorder - optimized retention and exclusions
+recorder:
+  purge_keep_days: 7
+  commit_interval: 30
+  exclude:
+    domains:
+      - update
+    entity_globs:
+      - sensor.*_battery_level
+      - sensor.*_battery
+      - sensor.*_linkquality
+      - sensor.*_lqi
+      - sensor.*_rssi
+      - sensor.*_signal_strength
+      - number.*_level
+      - number.*_timer
+      - number.*_delay
+      - number.*_timeout
+      - number.*_temperature_offset
+      - number.*_local_protection
+      - number.*_remote_protection
+      - sensor.*_voltage
+      - sensor.*_power_factor
+      - sensor.*_device_temperature
+      - button.*_identify
+      - button.*_ping
+    entities:
+      - sun.sun
+      - sensor.sun_next_dawn
+      - sensor.sun_next_dusk
+      - sensor.sun_next_midnight
+      - sensor.sun_next_noon
+      - sensor.sun_next_rising
+      - sensor.sun_next_setting
+      - sensor.sun_solar_elevation
+      - sensor.sun_solar_azimuth
