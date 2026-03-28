@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-26 11:11
+# HAC Handoff — 2026-03-27 20:49
 
 ## Last 3 commits
-  b48d4d9 fix(kitchen): motion trigger covers both kitchen + lounge sensors
-  55be03a docs: add session backups and learnings from entry room audit
-  7d2ce0b docs: update learnings, session log, and HANDOFF for entry room audit 2026-03-26
+  110cf6f hac: session 2026-03-27
+  fdd4aad fix: john_proximity - GPS accuracy gate to prevent teleport false fires
+  423ef9e recorder: add purge_keep_days:7, commit_interval:30, exclude noisy entities (update domain, battery/LQI/RSSI/signal sensors, number config, sun)
 
 ## Active tasks
   TASK: notify migration (20 UI automations + 3 scripts → s26_ultra)
