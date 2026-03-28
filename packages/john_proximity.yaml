@@ -1,5 +1,6 @@
 # John Proximity to Home
-# Triggers approaching home notification earlier
+# Debounced distance sensor - ignores GPS teleports < 3x accuracy radius
+# Updated: 2026-03-28
 
 template:
   - sensor:
@@ -11,8 +12,11 @@ template:
           {% set home_lon = -91.21117829649491 %}
           {% set john_lat = state_attr('device_tracker.sm_s948u1_john_s_s26_ultra', 'latitude') | float(0) %}
           {% set john_lon = state_attr('device_tracker.sm_s948u1_john_s_s26_ultra', 'longitude') | float(0) %}
+          {% set accuracy = state_attr('device_tracker.sm_s948u1_john_s_s26_ultra', 'gps_accuracy') | float(50) %}
           {% if john_lat == 0 or john_lon == 0 %}
             unknown
+          {% elif accuracy > 200 %}
+            {{ states('sensor.john_distance_to_home') | default('unknown') }}
           {% else %}
             {% set lat_diff = (home_lat - john_lat) * 111000 %}
             {% set lon_diff = (home_lon - john_lon) * 111000 * cos(home_lat * 3.14159 / 180) %}
