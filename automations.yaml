@@ -842,7 +842,32 @@
           - light.2nd_floor_bathroom_ceiling_2of2
       inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- actions:
+- id: 2nd_floor_bathroom_humidity_fan_v3
+  alias: 2nd Floor Bathroom — Humidity Fan Control v3
+  description: Shower detection with safe runtime cap. Humidity triggers (derivative
+    >2%/min or absolute >70%) always win over manual override — high humidity means
+    the fan is needed regardless. Hot water flow trigger respects override (non-shower
+    use case). Max 45min runtime prevents motor wear. Auto-off waits for humidity
+    to normalize then coasts 5min. HA restart cleans up stale on-state.
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+    above: 2
+    id: derivative_rising
+  - platform: numeric_state
+    entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+    above: 70
+    id: high_humidity
+  - platform: numeric_state
+    entity_id: sensor.navien_water_flow
+    above: 0.5
+    for:
+      minutes: 2
+    id: hot_water
+  - platform: homeassistant
+    event: start
+    id: ha_restart
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -852,62 +877,68 @@
         - condition: state
           entity_id: fan.2nd_floor_bathroom_exhaust_fan
           state: 'on'
-        - below: 55
-          condition: numeric_state
+        - condition: numeric_state
           entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+          below: 55
         then:
         - action: fan.turn_off
           target:
             entity_id: fan.2nd_floor_bathroom_exhaust_fan
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    - conditions:
+      - condition: trigger
+        id: hot_water
+      sequence:
+      - condition: state
+        entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+        state: 'off'
+      - action: fan.turn_on
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+      - continue_on_timeout: true
+        timeout:
+          minutes: 45
+        wait_for_trigger:
+        - platform: numeric_state
+          entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+          below: -1
+          for:
+            minutes: 3
+        - platform: numeric_state
+          entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
+          below: 55
+      - delay:
+          minutes: 5
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
     default:
-    - condition: state
-      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-      state: 'off'
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
     - action: fan.turn_on
       target:
         entity_id: fan.2nd_floor_bathroom_exhaust_fan
     - continue_on_timeout: true
       timeout:
-        minutes: 30
+        minutes: 45
       wait_for_trigger:
-      - below: -1
+      - platform: numeric_state
         entity_id: sensor.2nd_floor_bathroom_humidity_derivative
+        below: -1
         for:
           minutes: 3
-        platform: numeric_state
-      - below: 55
+      - platform: numeric_state
         entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-        platform: numeric_state
+        below: 55
     - delay:
         minutes: 5
     - action: fan.turn_off
       target:
         entity_id: fan.2nd_floor_bathroom_exhaust_fan
-  alias: 2nd Floor Bathroom - Humidity Fan Control v3
-  conditions: []
-  description: 'Derivative-based shower detection with safety guards. Triggers: humidity
-    rising >2%/min, OR absolute >70%, OR hot water flow. Safety: 30 min max runtime,
-    HA restart recovery, manual override.'
-  id: 2nd_floor_bathroom_humidity_fan_v3
   mode: restart
-  triggers:
-  - above: 2
-    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-    id: derivative_rising
-    platform: numeric_state
-  - above: 70
-    entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-    id: high_humidity
-    platform: numeric_state
-  - above: 0.5
-    entity_id: sensor.navien_water_flow
-    for:
-      minutes: 2
-    id: hot_water
-    platform: numeric_state
-  - event: start
-    id: ha_restart
-    platform: homeassistant
 - actions:
   - action: light.turn_on
     target:
@@ -1430,10 +1461,12 @@
 - id: '1774539842937'
   alias: Kitchen + Lounge — Motion Lighting
   description: '3-tier time-based motion lighting for open-concept kitchen/lounge.
-    Day (06-21): full task lighting. Evening (21-23): warm ambient. Late night (23-06):
-    under-cabinet only. Hue group lights get bare turn_on — AL owns brightness/color_temp.
-    Dumb lights get explicit brightness. Suppresses off when TV playing. Respects
-    manual override. Triggers on EITHER kitchen_motion OR kitchen_lounge_motion.'
+    Day (06-21): full task lighting, all lights auto. Evening (21-23): ambient only
+    — under-cabinet, lounge ceiling, lounge lamp auto; overhead kitchen lights (chandelier,
+    ceiling, pendants) manual-only. Late night (23-06): under-cabinet only. Hue group
+    lights get bare turn_on — AL owns brightness/color_temp. Dumb lights get explicit
+    brightness. Suppresses off when TV playing. Respects manual override. Triggers
+    on EITHER kitchen_motion OR kitchen_lounge_motion.'
   triggers:
   - platform: state
     entity_id:
@@ -1519,28 +1552,6 @@
             after: '21:00:00'
             before: '23:00:00'
           sequence:
-          - action: light.turn_on
-            target:
-              entity_id: light.kitchen_chandelier
-            data:
-              transition: 0
-          - action: light.turn_on
-            target:
-              entity_id: light.kitchen_above_sink_light
-            data:
-              transition: 0
-          - action: light.turn_on
-            target:
-              entity_id: light.kitchen_ceiling_inovelli_vzm31_sn
-            data:
-              brightness_pct: 60
-              transition: 0
-          - action: light.turn_on
-            target:
-              entity_id: light.kitchen_bar_pendant_lights
-            data:
-              brightness_pct: 50
-              transition: 0
           - action: light.turn_on
             target:
               entity_id: light.inovelli_vzm31_sn_4
@@ -1870,3 +1881,287 @@
         target:
           entity_id: switch.basement_hallway_smart_switch
   mode: restart
+- id: '1774572582641'
+  alias: Basement Hallway — Motion Lighting
+  description: Motion-activated hallway light. Hallway smart switch turns on when
+    motion detected, off after 10min no motion. mode:restart so re-entry resets timer.
+    No time tiers — basement is always dark. Fluorescent plug and workout Hue group
+    excluded (utility/intentional use only).
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.basement_hallway_motion_sensor_occupancy
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id: binary_sensor.basement_hallway_motion_sensor_occupancy
+    to: 'off'
+    for:
+      minutes: 10
+    id: motion_off
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.basement_hallway_smart_switch
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      - condition: state
+        entity_id: binary_sensor.basement_hallway_motion_sensor_occupancy
+        state: 'off'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.basement_hallway_smart_switch
+  mode: restart
+- id: '1774577899551'
+  alias: Midnight — All Lights Off
+  description: Hard off for all interior lights at midnight. Motion automations pick
+    back up normally after this (late night tiers). Excludes outdoor lights and nightlights
+    (those have their own schedules). Kids bedrooms excluded — they have their own
+    midnight autos.
+  triggers:
+  - platform: time
+    at: 00:00:00
+  actions:
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_chandelier
+      - light.kitchen_above_sink_light
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.kitchen_bar_pendant_lights
+      - light.inovelli_vzm31_sn_4
+      - light.kitchen_under_cabinet_aqara_t1_led_strip
+      - light.kitchen_govee_floor_lamp
+      - light.kitchen_lounge
+      - light.kitchen_lounge_lamp
+      - light.living_room_east_floor_lamp
+      - light.living_room_west_floor_lamp
+      - light.living_room_lounge_lamp
+      - light.living_room_table_lamps
+      - light.living_room_tv_led_strip
+      - light.entry_room_hue_color_lamp
+      - light.entry_room
+      - light.upstairs_hallway
+      - light.1st_floor_bathroom
+      - light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
+      - light.2nd_floor_bathroom
+      - light.master_bedroom
+      - light.master_bedroom_led_light_strip
+      - light.master_bedroom_wall_light
+      - light.master_bedroom_behind_tv_aqara_t1_led_strip
+      - light.living_room_lounge_ceiling_light
+  - action: switch.turn_off
+    target:
+      entity_id: switch.basement_hallway_smart_switch
+  mode: single
+- id: '1774662096455'
+  alias: Garage — Door Opened Arrival Notification
+  description: When North or South garage door opens and John is home (or just arrived),
+    send actionable notification to close/open the other door. Ratgdo-first design
+    — works even when GPS arrival fails. Replaces need to manually open the arriving
+    home dashboard.
+  triggers:
+  - platform: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    to: open
+    id: north_opened
+  - platform: state
+    entity_id: cover.ratgdo32disco_5735e8_door
+    to: open
+    id: south_opened
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.john_home
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: north_opened
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          title: "\U0001F513 North Garage Open"
+          message: North door is open
+          data:
+            tag: garage_door_open_north
+            group: garage
+            channel: Garage
+            importance: high
+            ttl: 0
+            priority: high
+            sticky: true
+            timeout: 300
+            notification_icon: mdi:garage-open-variant
+            actions:
+            - action: CLOSE_NORTH
+              title: "\U0001F512 Close North"
+            - action: OPEN_SOUTH
+              title: "\U0001F6AA Open South"
+            - action: OPEN_BOTH
+              title: "\U0001F6AA Both Open"
+            - action: DISMISS_NORTH
+              title: ✔️ All Good
+    - conditions:
+      - condition: trigger
+        id: south_opened
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          title: "\U0001F513 South Garage Open"
+          message: South door is open
+          data:
+            tag: garage_door_open_south
+            group: garage
+            channel: Garage
+            importance: high
+            ttl: 0
+            priority: high
+            sticky: true
+            timeout: 300
+            notification_icon: mdi:garage-open-variant
+            actions:
+            - action: CLOSE_SOUTH
+              title: "\U0001F512 Close South"
+            - action: OPEN_NORTH
+              title: "\U0001F6AA Open North"
+            - action: OPEN_BOTH_FROM_SOUTH
+              title: "\U0001F6AA Both Open"
+            - action: DISMISS_SOUTH
+              title: ✔️ All Good
+  mode: single
+- id: '1774662111280'
+  alias: Garage — Door Opened Notification Actions
+  description: Handles action button taps from the door-opened arrival notification.
+    Close/open individual doors or both.
+  triggers:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: CLOSE_NORTH
+    id: close_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: OPEN_SOUTH
+    id: open_south
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: OPEN_BOTH
+    id: open_both
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: CLOSE_SOUTH
+    id: close_south
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: OPEN_NORTH
+    id: open_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: OPEN_BOTH_FROM_SOUTH
+    id: open_both_from_south
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: DISMISS_NORTH
+    id: dismiss_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: DISMISS_SOUTH
+    id: dismiss_south
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: close_north
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_north
+    - conditions:
+      - condition: trigger
+        id: open_south
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.ratgdo32disco_5735e8_door
+    - conditions:
+      - condition: trigger
+        id: open_both
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.ratgdo32disco_5735e8_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_north
+    - conditions:
+      - condition: trigger
+        id: close_south
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.ratgdo32disco_5735e8_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_south
+    - conditions:
+      - condition: trigger
+        id: open_north
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+    - conditions:
+      - condition: trigger
+        id: open_both_from_south
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_south
+    - conditions:
+      - condition: trigger
+        id: dismiss_north
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_north
+    - conditions:
+      - condition: trigger
+        id: dismiss_south
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_south
+  mode: parallel
+  max: 5
