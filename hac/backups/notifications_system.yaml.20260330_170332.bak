@@ -647,7 +647,6 @@ automation:
             sticky: true
             persistent: true
             notification_icon: "mdi:garage-alert"
-            clickAction: "/arriving-home"
             color: "#F44336"
             actions:
               - action: "DEPARTURE_CLOSE_ALL"
@@ -739,7 +738,6 @@ automation:
                     importance: high
                     sticky: true
                     persistent: true
-                    clickAction: "/arriving-home"
                     actions:
                       - action: "DEPARTURE_CLOSE_ALL"
                         title: "🔒 Close All"

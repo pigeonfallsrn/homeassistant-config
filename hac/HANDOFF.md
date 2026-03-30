@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-30 12:37
+# HAC Handoff — 2026-03-30 12:42
 
 ## Last 3 commits
+  7b4f4f5 hac: add HA audit playbook stub - full content to be added next session
   e9f22ef hac: session 2026-03-30
   a8d7d54 hac: session learnings 2026-03-30 tooling build
-  620089f hac: fix health untriggered section, add health_automations.py helper
 
 ## Active tasks
   TASK: NEXT SESSION: notification audit — inventory all active notifications, which automation fires each, what buttons do, which open overview (fix clickAction), which are ghost/dead. Also: relocate garage_north_door + garage_south_door Aqara sensors to useful locations. Resume room audit: Alaina, Ella, Basement, Master Bedroom after notification audit.

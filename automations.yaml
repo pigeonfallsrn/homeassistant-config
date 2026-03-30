@@ -962,7 +962,19 @@
   - entity_id: binary_sensor.front_driveway_door_person_detected
     platform: state
     to: 'on'
-- actions:
+- id: '1773152820854'
+  alias: Doorbell Ring → Notification with Snapshot
+  description: Sends a push notification with camera snapshot to John when either
+    doorbell is pressed. Uses event entity trigger (not binary_sensor) for reliability.
+    Snapshots saved to www/doorbell/ and included in notification.
+  triggers:
+  - alias: Very Front Door ring
+    entity_id: event.very_front_door_doorbell
+    platform: state
+  - alias: Front Driveway Door ring
+    entity_id: event.front_driveway_door_doorbell
+    platform: state
+  actions:
   - delay:
       seconds: 2
   - action: camera.snapshot
@@ -979,22 +991,11 @@
         priority: high
         tag: doorbell_{{ doorbell_label | lower | replace(' ', '_') }}
         ttl: 0
+        clickAction: entityId:{{ click_entity }}
       message: Someone is at the {{ doorbell_label }}
       title: "\U0001F514 Doorbell — {{ doorbell_label }}"
-  alias: Doorbell Ring → Notification with Snapshot
-  description: Sends a push notification with camera snapshot to John when either
-    doorbell is pressed. Uses event entity trigger (not binary_sensor) for reliability.
-    Snapshots saved to www/doorbell/ and included in notification.
-  id: '1773152820854'
   max: 2
   mode: parallel
-  triggers:
-  - alias: Very Front Door ring
-    entity_id: event.very_front_door_doorbell
-    platform: state
-  - alias: Front Driveway Door ring
-    entity_id: event.front_driveway_door_doorbell
-    platform: state
   variables:
     camera_entity: '{{ ''camera.very_front_door_high_resolution_channel'' if trigger.entity_id
       == ''event.very_front_door_doorbell'' else ''camera.front_driveway_door_high_resolution_channel''
@@ -1003,6 +1004,9 @@
       else ''Driveway Door'' }}'
     snapshot_path: '{{ ''/config/www/doorbell/snapshot_front.jpg'' if trigger.entity_id
       == ''event.very_front_door_doorbell'' else ''/config/www/doorbell/snapshot_driveway.jpg''
+      }}'
+    click_entity: '{{ ''camera.very_front_door_high_resolution_channel'' if trigger.entity_id
+      == ''event.very_front_door_doorbell'' else ''camera.front_driveway_door_high_resolution_channel''
       }}'
 - actions:
   - delay:
@@ -1255,23 +1259,6 @@
   - entity_id: cover.ratgdo32disco_fd8d8c_door
     platform: state
     to: closed
-- actions:
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      message: Grab Ella's iPhone → HA app → Settings → Companion App → Location →
-        set to Always + enable Background Location updates
-      title: "\U0001F4F1 Fix Ella's HA Location"
-  alias: Reminder → Fix Ella iPhone HA Location Settings
-  conditions:
-  - condition: template
-    value_template: '{{ now().date() | string == ''2026-03-20'' }}'
-  description: One-time reminder to fix Ella's HA companion app location settings
-    so presence detection works reliably.
-  id: '1773963591351'
-  mode: single
-  triggers:
-  - at: '16:00:00'
-    platform: time
 - actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
@@ -1966,6 +1953,7 @@
             sticky: true
             timeout: 300
             notification_icon: mdi:garage-open-variant
+            clickAction: /arriving-home
             actions:
             - action: CLOSE_NORTH
               title: "\U0001F512 Close North"
@@ -1993,6 +1981,7 @@
             sticky: true
             timeout: 300
             notification_icon: mdi:garage-open-variant
+            clickAction: /arriving-home
             actions:
             - action: CLOSE_SOUTH
               title: "\U0001F512 Close South"
