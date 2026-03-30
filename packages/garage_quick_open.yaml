@@ -12,7 +12,7 @@ automation:
     alias: "Garage - Walk-in Door Quick Open"
     trigger:
       - platform: state
-        entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+        entity_id: binary_sensor.garage_entry_room_walk_in_door_aqara_door_sensor_door
         to: "on"
     condition:
       - condition: state
