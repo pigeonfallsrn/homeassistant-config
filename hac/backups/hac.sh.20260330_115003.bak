@@ -980,29 +980,46 @@ cmd_prompt() {
 }
 
 cmd_mcp() {
-    echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo "HAC v$HAC_VERSION - CLAUDE MCP SESSION — $(date '+%Y-%m-%d %H:%M')"
-    echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo ""
-    echo "## HANDOFF"
-    cat "$HAC_DIR/HANDOFF.md" 2>/dev/null || echo "No HANDOFF.md found"
-    echo ""
-    echo "## RECENT COMMITS"
-    GIT_PAGER=cat git -C /homeassistant log --oneline -5 2>/dev/null || echo "Git unavailable"
-    echo ""
-    echo "## CONFIG CHECK"
-    ha core check 2>/dev/null || echo "ha core check unavailable"
-    echo ""
-    echo "## CRITICAL RULES SUMMARY"
-    head -30 "$HAC_DIR/CRITICAL_RULES.md" 2>/dev/null || echo "No CRITICAL_RULES.md found"
-    echo ""
-    echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo "CLAUDE INSTRUCTION: You are starting a Home Assistant MCP session."
-    echo "MCP server is connected at http://192.168.1.3:8123."
-    echo "Read the HANDOFF above, confirm the active task, check HA core status,"
-    echo "then ask what we are working on today or confirm ready to proceed"
-    echo "with the active task shown above. DO NOT just say good morning."
-    echo "═══════════════════════════════════════════════════════════════════════════════"
+    local gist_id=$(get_gist_id)
+    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
+    
+    cat << PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+HAC v9.1 - CLAUDE 4.5 MCP SESSION
+═══════════════════════════════════════════════════════════════════════════════
+
+## ⚠️ CRITICAL RULES (read before any edit)
+**BEFORE EDITS**: \`hac backup <file>\` — NON-NEGOTIABLE
+**TERMINAL**: Escape \`!\` in ZSH, paths use \`/homeassistant/\`
+**MOTION**: Always \`mode: restart\`, use combined sensors with \`delay_off: 60s\`
+**INOVELLI**: Smart Bulb Mode=param 52, params need toggle+air gap to write
+**ADAPTIVE LIGHTING**: UI-only create/delete, Hue needs separate_turn_on_commands+take_over_control+detect_non_ha_changes:false
+**NEVER EDIT**: \`.storage/*.json\` files directly
+
+## System
+$(grep -A4 "^## System" "$HAC_DIR/CONTEXT.md" 2>/dev/null | tail -4 || echo "HA Green | MCP Connected")
+
+## Active Work
+$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -10 || echo "None - run: hac active 'task'")
+
+## Commands
+| Action | Command |
+|--------|---------|
+| Full rules | \`cat /homeassistant/hac/CRITICAL_RULES.md\` |
+| Patterns | \`cat /homeassistant/hac/knowledge/patterns.md\` |
+| Gotchas | \`cat /homeassistant/hac/knowledge/gotchas.md\` |
+| Today's log | \`cat /homeassistant/hac/learnings/$(date +%Y%m%d).md\` |
+
+## Session Rules
+1. \`hac backup <file>\` before edits
+2. \`hac learn "CATEGORY" "insight"\` (MOTION, INOVELLI, AL, YAML, ZHA, HAC)
+3. \`hac active "task"\` to update focus
+4. MCP for live state/services, terminal for files/YAML
+
+## Links
+- Gist: $gist_url
+═══════════════════════════════════════════════════════════════════════════════
+PROMPT
 }
 cmd_research() {
     local gist_id=$(get_gist_id)
