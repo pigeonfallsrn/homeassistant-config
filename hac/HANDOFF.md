@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-29 14:49
+# HAC Handoff — 2026-03-29 17:25
 
 ## Last 3 commits
+  6fed435 hac: session 2026-03-29
+  acf0d06 chore: remove 14 ghost automation entities (stop/surgery/start pattern)
   ec41942 hac: session 2026-03-29
-  3ef72af chore: remove 14 ghost automation entities from entity registry
-  22377ad hac: session 2026-03-29
 
 ## Active tasks
   TASK: room audit: Alaina, Ella, Master Bedroom, Basement remaining
