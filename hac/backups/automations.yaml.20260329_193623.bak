@@ -1273,6 +1273,39 @@
   - at: '16:00:00'
     platform: time
 - actions:
+  - action: adaptive_lighting.apply
+    data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      lights:
+      - light.living_room_east_floor_lamp
+      - light.living_room_lounge_lamp
+      transition: 2
+  alias: Living Room Lamps - Activity Boost
+  conditions:
+  - condition: state
+    entity_id: input_boolean.living_room_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  - condition: state
+    entity_id: light.living_room_east_floor_lamp
+    state: 'on'
+  - attribute: brightness
+    below: 100
+    condition: numeric_state
+    entity_id: light.living_room_east_floor_lamp
+  description: Restore full brightness when motion detected while dimmed
+  id: '1774321433093'
+  mode: single
+  triggers:
+  - entity_id: binary_sensor.downstairs_motion
+    to: 'on'
+    trigger: state
+- actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
       data:

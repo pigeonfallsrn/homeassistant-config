@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-29 17:25
+# HAC Handoff — 2026-03-29 19:04
 
 ## Last 3 commits
-  6fed435 hac: session 2026-03-29
-  acf0d06 chore: remove 14 ghost automation entities (stop/surgery/start pattern)
-  ec41942 hac: session 2026-03-29
+  f61ed4a hac: session 2026-03-29
+  52b3ff0 fix: rotate ha_api_token (old token exposed)
+  466c221 fix: remove self-banned 192.168.1.3 from ip_bans, update ha_api_token
 
 ## Active tasks
   TASK: room audit: Alaina, Ella, Master Bedroom, Basement remaining
