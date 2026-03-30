@@ -29,18 +29,25 @@ automation:
     action:
       - service: notify.mobile_app_john_s_s26_ultra
         data:
-          title: "🚪 Walk-in Door Opened"
-          message: "Open garage door?"
+          title: "🚪 Garage"
+          message: "Walk-in door opened — open the van door?"
           data:
             tag: "garage_quick_open"
             ttl: 0
             priority: high
-            timeout: 60
+            timeout: 30
+            sticky: false
+            clickAction: "noAction"
             actions:
               - action: "QUICK_OPEN_NORTH"
-                title: "NORTH"
+                title: "🚗 Open North"
+                uri: "noAction"
               - action: "QUICK_OPEN_SOUTH"
-                title: "SOUTH"
+                title: "🚪 Open South"
+                uri: "noAction"
+              - action: "URI"
+                title: "❌ Dismiss"
+                uri: "noAction"
     mode: single
 
   # ===========================================================================
