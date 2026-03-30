@@ -779,68 +779,6 @@ cmd_health() {
     echo ""
     echo "Config Check:"
     ha core check 2>&1 | head -3
-    echo ""
-    echo "=== Untriggered Automations ==="
-    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 << 'PYEOF2'
-import json, sys
-from datetime import datetime, timezone, timedelta
-try:
-    states = json.load(sys.stdin)
-    automations = [s for s in states if s["entity_id"].startswith("automation.")]
-    never, stale_30, stale_7 = [], [], []
-    now = datetime.now(timezone.utc)
-    cutoff_30 = now - timedelta(days=30)
-    cutoff_7 = now - timedelta(days=7)
-    for a in automations:
-        lt = a["attributes"].get("last_triggered")
-        name = a["attributes"].get("friendly_name", a["entity_id"])
-        if not lt:
-            never.append(name)
-        else:
-            try:
-                ts = datetime.fromisoformat(lt.replace("Z","+00:00"))
-                if ts < cutoff_30: stale_30.append((name, ts.strftime("%Y-%m-%d")))
-                elif ts < cutoff_7: stale_7.append((name, ts.strftime("%Y-%m-%d")))
-            except: never.append(name)
-    print(f"  Never triggered: {len(never)}")
-    for n in sorted(never)[:10]: print(f"    ⚠ {n}")
-    if len(never) > 10: print(f"    ... and {len(never)-10} more (run hac health --full)")
-    print(f"  Not triggered >30d: {len(stale_30)}")
-    for n,d in sorted(stale_30)[:5]: print(f"    ○ {n} (last: {d})")
-    if len(stale_30) > 5: print(f"    ... and {len(stale_30)-5} more")
-    print(f"  Not triggered >7d: {len(stale_7)}")
-except Exception as e:
-    print(f"  Error: {e}")
-PYEOF2
-    echo ""
-    echo "=== Dead Notify References ==="
-    count=$(grep -r "sm_s928u" /homeassistant/packages/ /homeassistant/automations.yaml 2>/dev/null | wc -l | tr -d " ")
-    if [ "$count" -gt 0 ]; then
-        echo "  ⚠ RETIRED S24 (sm_s928u): $count refs still in YAML"
-        grep -rl "sm_s928u" /homeassistant/packages/ /homeassistant/automations.yaml 2>/dev/null | while read f; do echo "    → $(basename $f)"; done
-    else
-        echo "  ✓ No dead notify targets found"
-    fi
-    echo ""
-    echo "=== Unavailable Entities ==="
-    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 -c "
-import json,sys
-try:
-    s=json.load(sys.stdin)
-    u=[x for x in s if x['state'] in ('unavailable','unknown') and not x['entity_id'].startswith(('automation.','scene.','script.','group.'))]
-    by_domain={}
-    for e in u:
-        d=e['entity_id'].split('.')[0]
-        by_domain[d]=by_domain.get(d,0)+1
-    print(f'  Total unavailable/unknown: {len(u)}')
-    for d,c in sorted(by_domain.items(),key=lambda x:-x[1])[:8]:
-        print(f'    {d}: {c}')
-except Exception as e:
-    print(f'  Error: {e}')
-"
-    echo "$(date +%Y-%m-%d)" > /homeassistant/hac/.last_health_check
-    echo ""
-    echo "✓ Health check complete — $(date '+%Y-%m-%d %H:%M')"
 }
 
 cmd_init() {
@@ -1065,92 +1003,7 @@ cmd_mcp() {
     echo "then ask what we are working on today or confirm ready to proceed"
     echo "with the active task shown above. DO NOT just say good morning."
     echo "═══════════════════════════════════════════════════════════════════════════════"
-    echo ""
-    echo "## SYSTEM CONTEXT"
-    echo "Van: 2012 Honda Odyssey | HFL BT MAC 00:0A:30:9A:20:F5 | BT audio only, no Android Auto"
-    echo "Network: UniFi UDM Pro SE | Main 192.168.1.x | IoT VLAN 192.168.21.x"
-    echo "Notify ACTIVE: notify.mobile_app_john_s_s26_ultra"
-    echo "Notify DEAD - NEVER USE: notify.mobile_app_sm_s928u"
-    echo "SBM switches: NEVER in light.turn_off actions (see CRITICAL_RULES)"
-    echo "Privacy: no GPS/MAC/IP in exports or gists"
-    echo ""
-    echo "## MCP CANNOT SEE - DO NOT ASSUME"
-    echo "X YAML file contents - use terminal grep, not MCP"
-    echo "X Presence accuracy - person.john_spencer lags 5-10min"
-    echo "X ESPHome flash state / firmware / OTA logs"
-    echo "X UniFi topology / VLAN assignments / AP locations"
-    echo "! ha_deep_search may return stale cached index - terminal grep is authoritative"
-    echo "! last_triggered != automation is correct or useful"
-    echo ""
-    echo "## ROUTING - Which AI for What"
-    echo "YAML edits / entity debug / fix  -> this session (MCP + terminal)"
-    echo "Bulk audit 170 automations       -> hac gem (Gemini 2.5 Pro, 1M context)"
-    echo "Spreadsheet / trend analysis     -> hac gpt (ChatGPT Code Interpreter)"
-    echo "Research / best practice         -> hac project (Claude.ai browser)"
-    echo ""
-    if [ -f "/homeassistant/hac/.last_health_check" ]; then
-        last=$(cat /homeassistant/hac/.last_health_check)
-        now_ts=$(date +%s)
-        last_ts=$(date -d "$last" +%s 2>/dev/null || echo $now_ts)
-        days=$(( (now_ts - last_ts) / 86400 ))
-        if [ "$days" -gt 14 ]; then
-            echo "HEALTH CHECK OVERDUE: last run $last (${days}d ago) - run: hac health"
-        else
-            echo "Last health check: $last (${days}d ago)"
-        fi
-    else
-        echo "HEALTH CHECK NEVER RUN - run: hac health"
-    fi
 }
-cmd_route() {
-    cat << 'ROUTE'
-═══════════════════════════════════════════════════════════════
-HAC ROUTING - Which AI for What?
-═══════════════════════════════════════════════════════════════
-YAML edits / automation fix / entity debug
-  -> hac mcp (Claude Desktop + MCP, LOCAL DEV connector)
-  -> Direct file access + live HA states
-
-Bulk audit 100+ automations / large context analysis
-  -> hac gem (Gemini 2.5 Pro, 1M token context)
-  -> Upload: hac export then paste LLM JSON
-
-Spreadsheet / export / trend analysis
-  -> hac gpt (ChatGPT Code Interpreter)
-  -> Upload FULL Excel from hac export
-
-Research / best practice / planning
-  -> hac project (Claude.ai browser)
-  -> Web search + HA community access
-
-Quick question / no context needed
-  -> Claude.ai browser (no context paste needed)
-
-TOKEN EFFICIENCY RULES
-  hac pkg <file>      Load one package only
-  hac health --quick  Red flags only, fast
-  hac mcp             Full context for complex work
-  Never paste full config to Claude.ai browser
-═══════════════════════════════════════════════════════════════
-ROUTE
-}
-
-cmd_update() {
-    echo "=== HA Release Check ==="
-    local current=$(ha core info 2>/dev/null | grep -i version | head -1)
-    echo "Current: $current"
-    echo ""
-    echo "Fetching latest release info..."
-    local latest=$(curl -s --max-time 10 "https://version.home-assistant.io/stable.json" 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); print('Latest: ' + d.get('homeassistant','unknown'))" 2>/dev/null || echo "Latest: check https://www.home-assistant.io/blog/")
-    echo "$latest"
-    echo ""
-    echo "Domains to watch for your system:"
-    echo "  esphome | notify | template | zha | matter | cover | ratgdo"
-    echo ""
-    echo "Release notes: https://www.home-assistant.io/blog/categories/release-notes/"
-    echo "Breaking changes: https://www.home-assistant.io/docs/installation/updates/"
-}
-
 cmd_research() {
     local gist_id=$(get_gist_id)
     [ -z "$gist_id" ] && log_warn "No gist - run 'hac push' first" && return
@@ -1473,7 +1326,7 @@ sync_to_gdrive() {
 }
 cmd_sheets() {
     echo "Exporting to Google Sheets..."
-    /usr/bin/python3 /homeassistant/python_scripts/export_to_sheets.py
+    /config/python_scripts/venv/bin/python /config/python_scripts/export_to_sheets.py
     if [ $? -eq 0 ]; then
         echo ""
         echo "✓ Export complete!"
@@ -1550,9 +1403,7 @@ DURING SESSION - Useful commands
   hac status    | Quick system overview (presence, recent triggers)
   hac pkg FILE  | View YAML with line numbers (e.g., hac pkg lighting)
   hac ids FILE  | List automation IDs + line numbers
-  hac health    | Untriggered automations, dead refs, unavailable entities
-  hac route     | Which AI for which task (MCP/Gemini/GPT/Claude.ai)
-  hac update    | Check HA release notes for breaking changes
+  hac health    | Check integrations + double-fire issues
   hac doctor    | Full system diagnostics
 
 EDITING - Safe workflow
@@ -1793,8 +1644,6 @@ case "${1:-}" in
     gem) cmd_gem;;
     gdrive) cmd_gdrive;;
     sheets) cmd_sheets;;
-    route) cmd_route;;
-    update) cmd_update;;
     sync) cmd_sync;;
     export) cmd_export;;
     prompt) cmd_prompt;;

@@ -1,12 +1,12 @@
-# HAC Handoff — 2026-03-30 11:36
+# HAC Handoff — 2026-03-30 12:17
 
 ## Last 3 commits
-  f0ebc03 hac: session 2026-03-30
-  5381afc garage: fix walk-in door sensor entity ID (renamed during room audit)
-  7cad6e9 garage: walk-in door notification - no overview, 30s timeout, dismiss button
+  2a2f9fa hac: add improvement spec for next tooling session
+  57d95b3 hac: cmd_mcp now outputs live HANDOFF + git log + core check + explicit Claude instruction
+  669dc31 knowledge: garage session learnings 2026-03-30
 
 ## Active tasks
-  TASK: room audit: Alaina, Ella, Master Bedroom, Basement remaining
+  TASK: NEXT SESSION: notification audit — inventory all active notifications, which automation fires each, what buttons do, which open overview (fix clickAction), which are ghost/dead. Also: relocate garage_north_door + garage_south_door Aqara sensors to useful locations. Resume room audit: Alaina, Ella, Basement, Master Bedroom after notification audit.
   NEXT: (define next step)
   BLOCKED: None
 

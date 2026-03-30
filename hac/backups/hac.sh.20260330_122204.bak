@@ -980,46 +980,29 @@ cmd_prompt() {
 }
 
 cmd_mcp() {
-    local gist_id=$(get_gist_id)
-    local gist_url="https://gist.githubusercontent.com/pigeonfallsrn/$gist_id/raw"
-    
-    cat << PROMPT
-═══════════════════════════════════════════════════════════════════════════════
-HAC v9.1 - CLAUDE 4.5 MCP SESSION
-═══════════════════════════════════════════════════════════════════════════════
-
-## ⚠️ CRITICAL RULES (read before any edit)
-**BEFORE EDITS**: \`hac backup <file>\` — NON-NEGOTIABLE
-**TERMINAL**: Escape \`!\` in ZSH, paths use \`/homeassistant/\`
-**MOTION**: Always \`mode: restart\`, use combined sensors with \`delay_off: 60s\`
-**INOVELLI**: Smart Bulb Mode=param 52, params need toggle+air gap to write
-**ADAPTIVE LIGHTING**: UI-only create/delete, Hue needs separate_turn_on_commands+take_over_control+detect_non_ha_changes:false
-**NEVER EDIT**: \`.storage/*.json\` files directly
-
-## System
-$(grep -A4 "^## System" "$HAC_DIR/CONTEXT.md" 2>/dev/null | tail -4 || echo "HA Green | MCP Connected")
-
-## Active Work
-$(cat "$HAC_DIR/ACTIVE.md" 2>/dev/null | grep -v "^#" | head -10 || echo "None - run: hac active 'task'")
-
-## Commands
-| Action | Command |
-|--------|---------|
-| Full rules | \`cat /homeassistant/hac/CRITICAL_RULES.md\` |
-| Patterns | \`cat /homeassistant/hac/knowledge/patterns.md\` |
-| Gotchas | \`cat /homeassistant/hac/knowledge/gotchas.md\` |
-| Today's log | \`cat /homeassistant/hac/learnings/$(date +%Y%m%d).md\` |
-
-## Session Rules
-1. \`hac backup <file>\` before edits
-2. \`hac learn "CATEGORY" "insight"\` (MOTION, INOVELLI, AL, YAML, ZHA, HAC)
-3. \`hac active "task"\` to update focus
-4. MCP for live state/services, terminal for files/YAML
-
-## Links
-- Gist: $gist_url
-═══════════════════════════════════════════════════════════════════════════════
-PROMPT
+    echo "═══════════════════════════════════════════════════════════════════════════════"
+    echo "HAC v$HAC_VERSION - CLAUDE MCP SESSION — $(date '+%Y-%m-%d %H:%M')"
+    echo "═══════════════════════════════════════════════════════════════════════════════"
+    echo ""
+    echo "## HANDOFF"
+    cat "$HAC_DIR/HANDOFF.md" 2>/dev/null || echo "No HANDOFF.md found"
+    echo ""
+    echo "## RECENT COMMITS"
+    GIT_PAGER=cat git -C /homeassistant log --oneline -5 2>/dev/null || echo "Git unavailable"
+    echo ""
+    echo "## CONFIG CHECK"
+    ha core check 2>/dev/null || echo "ha core check unavailable"
+    echo ""
+    echo "## CRITICAL RULES SUMMARY"
+    head -30 "$HAC_DIR/CRITICAL_RULES.md" 2>/dev/null || echo "No CRITICAL_RULES.md found"
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════════════════════"
+    echo "CLAUDE INSTRUCTION: You are starting a Home Assistant MCP session."
+    echo "MCP server is connected at http://192.168.1.3:8123."
+    echo "Read the HANDOFF above, confirm the active task, check HA core status,"
+    echo "then ask what we are working on today or confirm ready to proceed"
+    echo "with the active task shown above. DO NOT just say good morning."
+    echo "═══════════════════════════════════════════════════════════════════════════════"
 }
 cmd_research() {
     local gist_id=$(get_gist_id)
@@ -1343,7 +1326,7 @@ sync_to_gdrive() {
 }
 cmd_sheets() {
     echo "Exporting to Google Sheets..."
-    /config/python_scripts/venv/bin/python /config/python_scripts/export_to_sheets.py
+    /usr/bin/python3 /homeassistant/python_scripts/export_to_sheets.py
     if [ $? -eq 0 ]; then
         echo ""
         echo "✓ Export complete!"
@@ -1504,24 +1487,16 @@ cmd_slice() {
 
 
 cmd_wrap() {
-    echo "═══════════════════════════════════════════════════════════════"
-    echo "  HAC Session Wrap — 3-Question Review"
-    echo "═══════════════════════════════════════════════════════════════"
-    echo ""
-    echo "  Before closing, answer these three questions:"
-    echo ""
-    echo "  1. NEW YAML/TOOL GOTCHA discovered today?"
-    echo "     → hac promote \"YAML: <what you learned>\""
-    echo ""
-    echo "  2. HIT A DEAD END worth documenting?"
-    echo "     → hac deadend \"<what failed and why>\""
-    echo ""
-    echo "  3. ANYTHING in BACKLOG now resolved or newly blocked?"
-    echo "     → Edit hac/BACKLOG_kitchen_dashboard.md manually"
-    echo ""
-    echo "  (Take 60 seconds to answer above, then press enter to close)"
-    read -r _dummy
     cmd_close
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  Paste this into Claude to finish wrap:"
+    echo ""
+    local active=$(grep "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -1 | sed "s/TASK: //")
+    local commits=$(git -C /homeassistant log --oneline -2 2>/dev/null | tr "
+" " | ")
+    echo "  HAC WRAP $(date +%Y-%m-%d) | $active | commits: $commits"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 cmd_close() {
     echo "═══════════════════════════════════════════════════════════════"
@@ -1562,17 +1537,7 @@ cmd_close() {
         local changed_files=$(git -C /homeassistant diff --name-only HEAD 2>/dev/null | head -8 | tr '\n' ' ')
         local new_files=$(git -C /homeassistant ls-files --others --exclude-standard 2>/dev/null | head -4 | tr '\n' ' ')
         local auto_msg="hac: session $(date +%Y-%m-%d)"
-        if [ -n "$changed_files" ]; then
-            auto_msg="hac: update ${changed_files% }"
-        fi
-
-        printf "  Commit message [enter to use auto / type to override]:\n"
-        printf "  > $auto_msg\n"
-        printf "  > "
-        read -r commit_msg
-        if [ -z "$commit_msg" ]; then
-            commit_msg="$auto_msg"
-        fi
+        commit_msg="$auto_msg"
 
         git -C /homeassistant add -A
         git -C /homeassistant commit -m "$commit_msg"
@@ -1607,27 +1572,40 @@ cmd_close() {
     if [ -f "$HAC_DIR/ACTIVE.md" ]; then
         head -4 "$HAC_DIR/ACTIVE.md"
     fi
-    printf "\n  Update ACTIVE.md for next session? [y/N]: "
-    read -r active_ans
-    if [ "$active_ans" = "y" ] || [ "$active_ans" = "Y" ]; then
-        echo "  Run: hac active \"next task description\""
-    fi
+    log_ok "To update active task: hac active \"task\""
     echo ""
 
     # 6. Export reminder
     echo "── Export ──"
-    printf "  Run hac export to sync to Drive? [y/N]: "
-    read -r export_ans
-    if [ "$export_ans" = "y" ] || [ "$export_ans" = "Y" ]; then
-        if command -v hac >/dev/null 2>&1; then
-            hac export
-        else
-            log_warn "hac export not available in this context — run manually"
-        fi
-    fi
+    log_ok "Run hac export manually if needed"
     echo ""
 
     echo "═══════════════════════════════════════════════════════════════"
+    # Write HANDOFF.md for next session orientation
+    local handoff="$HAC_DIR/HANDOFF.md"
+    local today=$(date '+%Y-%m-%d %H:%M')
+    local commits=$(git -C /homeassistant log --oneline -3 2>/dev/null | sed 's/^/  /')
+    local active=$(grep -A2 "^TASK:" "$HAC_DIR/ACTIVE.md" 2>/dev/null | head -3 | sed 's/^/  /')
+    local backlog=$(grep -m3 "^- \[" "$HAC_DIR/BACKLOG_kitchen_dashboard.md" 2>/dev/null | head -3 | sed 's/^/  /')
+    cat > "$handoff" << HANDOFF
+# HAC Handoff — $today
+
+## Last 3 commits
+$commits
+
+## Active tasks
+$active
+
+## Top backlog items
+$backlog
+
+## Start next session
+  cat /homeassistant/hac/HANDOFF.md   ← read this first
+  hac status                           ← who is home, last triggers
+  hac health                           ← check for errors
+HANDOFF
+    log_ok "HANDOFF.md written — cat hac/HANDOFF.md to orient next session"
+
     echo "  Session closed $(date '+%Y-%m-%d %H:%M')"
     echo "═══════════════════════════════════════════════════════════════"
 }
