@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-30 11:06
+# HAC Handoff — 2026-03-30 11:36
 
 ## Last 3 commits
-  ce9f1f4 hac: session 2026-03-30
-  4215bfb garage arrival: add HandsFreeLink BT condition
-  7e4fe46 garage: unlock-on-reconnect + auto-close 60s->30s
+  f0ebc03 hac: session 2026-03-30
+  5381afc garage: fix walk-in door sensor entity ID (renamed during room audit)
+  7cad6e9 garage: walk-in door notification - no overview, 30s timeout, dismiss button
 
 ## Active tasks
   TASK: room audit: Alaina, Ella, Master Bedroom, Basement remaining
