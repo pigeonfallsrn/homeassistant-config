@@ -781,37 +781,9 @@ cmd_health() {
     ha core check 2>&1 | head -3
     echo ""
     echo "=== Untriggered Automations ==="
-    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null | python3 << 'PYEOF2'
-import json, sys
-from datetime import datetime, timezone, timedelta
-try:
-    states = json.load(sys.stdin)
-    automations = [s for s in states if s["entity_id"].startswith("automation.")]
-    never, stale_30, stale_7 = [], [], []
-    now = datetime.now(timezone.utc)
-    cutoff_30 = now - timedelta(days=30)
-    cutoff_7 = now - timedelta(days=7)
-    for a in automations:
-        lt = a["attributes"].get("last_triggered")
-        name = a["attributes"].get("friendly_name", a["entity_id"])
-        if not lt:
-            never.append(name)
-        else:
-            try:
-                ts = datetime.fromisoformat(lt.replace("Z","+00:00"))
-                if ts < cutoff_30: stale_30.append((name, ts.strftime("%Y-%m-%d")))
-                elif ts < cutoff_7: stale_7.append((name, ts.strftime("%Y-%m-%d")))
-            except: never.append(name)
-    print(f"  Never triggered: {len(never)}")
-    for n in sorted(never)[:10]: print(f"    ⚠ {n}")
-    if len(never) > 10: print(f"    ... and {len(never)-10} more (run hac health --full)")
-    print(f"  Not triggered >30d: {len(stale_30)}")
-    for n,d in sorted(stale_30)[:5]: print(f"    ○ {n} (last: {d})")
-    if len(stale_30) > 5: print(f"    ... and {len(stale_30)-5} more")
-    print(f"  Not triggered >7d: {len(stale_7)}")
-except Exception as e:
-    print(f"  Error: {e}")
-PYEOF2
+    curl -s "http://supervisor/core/api/states" -H "Authorization: Bearer $SUPERVISOR_TOKEN" 2>/dev/null > /tmp/ha_states_health.json
+    python3 /homeassistant/hac/scripts/health_automations.py /tmp/ha_states_health.json
+    rm -f /tmp/ha_states_health.json
     echo ""
     echo "=== Dead Notify References ==="
     count=$(grep -r "sm_s928u" /homeassistant/packages/ /homeassistant/automations.yaml 2>/dev/null | wc -l | tr -d " ")
