@@ -46,6 +46,13 @@ automation:
       - condition: template
         value_template: "{{ states('person.john_spencer') != 'home' }}"
       
+      # Must be connected to Honda HandsFreeLink = physically in the van
+      # Prevents false triggers when walking, moped, golf cart, etc.
+      - condition: template
+        value_template: >
+          {{ state_attr('sensor.john_s_s26_ultra_bluetooth_connection',
+             'connected_paired_devices') | select('search', '00:0A:30:9A:20:F5') | list | count > 0 }}
+      
       # At least one door is closed
       - condition: or
         conditions:
