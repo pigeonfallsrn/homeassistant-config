@@ -347,14 +347,14 @@ learnings:
   discovered: '2026-03-14'
   promoted: true
   status: active
-  summary: S24 Ultra notify target retired — all references must use S26 Ultra
+  summary: S24 Ultra notify target retired — migration COMPLETE 2026-03-28
   detail: 'RETIRED (never use): notify.mobile_app_sm_s928u (S24 Ultra).
 
     Primary (confirmed): notify.mobile_app_john_s_s26_ultra.
 
     Watch: notify.mobile_app_john_s_galaxy_watch8_classic_s7me.
 
-    Remaining migration: ~20 UI automations + 3 scripts still reference old target.
+    Migration complete 2026-03-28 — zero sm_s928u refs remain in packages or UI automations.
 
     '
   affects:
@@ -383,7 +383,9 @@ dead_ends:
     method: card-mod-view-yaml hui-sections-view :host shadow DOM
     result: WORKS — confirmed by user
 - id: bubble_card_popup_navigation
-  status: active
+  status: resolved
+  resolved: '2026-03-17'
+  resolution: music popup resolved via more-info tap_action on media_player.kitchen_2 — hash nav abandoned
   summary: Bubble Card popup music button — hash navigation blocked by kiosk_mode
   attempts:
   - date: '2026-03-17'

@@ -185,3 +185,21 @@ Times Hit: 10+
 - 2026-03-24: HAC: hac wrap added as hardwired session-close ritual — prints 3-question checklist (gotcha/deadend/backlog) then calls hac close — run this instead of hac close going forward
 - 2026-03-24: AUDIO: FireTV ADB chatters idle/playing/unavailable during Hulu — normal behavior. Fix: (1) add from:[off,standby,unavailable]+for:10s debounce to AVR-on trigger, (2) extend AVR-off timer to 20min, (3) add not-unavailable condition to off automation. Backup: fae184df.
 - 2026-03-25: 1st floor hallway P1 automation: passthrough template, 8min shower guard, vanity immediate off, ceiling gated by sunset+override
+
+
+## Ghost Entity Registry Surgery (CRITICAL)
+- MUST use: ha core stop → edit /homeassistant/.storage/core.entity_registry → ha core start
+- NEVER use ha core restart — HA flushes in-memory state back to .storage on shutdown, overwrites edits
+- Pattern: filter data.data.entities by unique_id, write back, then ha core start
+
+## ip_bans Self-Ban Pattern
+- 192.168.1.3 (HA Green loopback) can be auto-banned if REST API fires with bad token 3x
+- ip_bans.yaml is read at startup ONLY — editing file does not flush in-memory ban list
+- Fix: edit ip_bans.yaml to remove self, then ha core restart
+- Debug order: 1) check ip_bans.yaml for self-ban 2) verify token is populated 3) restart
+
+## REST DELETE UI Automations (ZSH)
+- Single-line curl required — multi-line heredoc splits incorrectly in ZSH
+- Format: curl -s -o /dev/null -w "%{http_code}" -X DELETE "http://192.168.1.3:8123/api/config/automation/config/{unique_id}" -H "Authorization: Bearer TOKEN"
+- Token must be real Long-Lived Access Token from HA Profile → Security tab
+- Ghost entities from deleted YAML automations clear on next HA restart — REST DELETE is cosmetic only

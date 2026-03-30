@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-29 19:04
+# HAC Handoff — 2026-03-29 22:34
 
 ## Last 3 commits
+  c788840 session: re-enable living room motion lighting, remove activity_boost_2 YAML block, disable duplicate midnight auto + stale lamp autos
   f61ed4a hac: session 2026-03-29
   52b3ff0 fix: rotate ha_api_token (old token exposed)
-  466c221 fix: remove self-banned 192.168.1.3 from ip_bans, update ha_api_token
 
 ## Active tasks
   TASK: room audit: Alaina, Ella, Master Bedroom, Basement remaining
