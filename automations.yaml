@@ -2132,3 +2132,27 @@
             tag: garage_door_open_south
   mode: parallel
   max: 5
+- id: '1774885017404'
+  alias: Garage - Unlock Remotes on Ratgdo Reconnect
+  description: Both ratgdo boards come back from reboot with lock_remotes in locked
+    state (read from opener hardware NVRAM). This automation fires immediately when
+    either board reconnects from unavailable and sends unlock to both. Prevents keypad/remote
+    lockout after any ratgdo reboot, OTA, or HA restart.
+  triggers:
+  - platform: state
+    entity_id:
+    - lock.ratgdo32disco_fd8d8c_lock_remotes
+    - lock.ratgdo32disco_5735e8_lock_remotes
+    from: unavailable
+    to: locked
+  actions:
+  - target:
+      entity_id:
+      - lock.ratgdo32disco_fd8d8c_lock_remotes
+      - lock.ratgdo32disco_5735e8_lock_remotes
+    action: lock.unlock
+  - data:
+      title: "Garage \U0001F513"
+      message: Ratgdo rebooted — remotes auto-unlocked.
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: parallel
