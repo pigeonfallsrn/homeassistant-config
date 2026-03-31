@@ -21,18 +21,18 @@ template:
       - name: "Garage North Door Alert Active"
         unique_id: garage_north_door_alert_active
         state: >
+          {% set snooze = states('input_datetime.garage_north_snooze_until') %}
+          {% set snooze_ts = as_timestamp(snooze, 0) %}
           {{ is_state('cover.ratgdo32disco_fd8d8c_door', 'open') and
-             now() > states('input_datetime.garage_north_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
-        delay_on:
-          minutes: 1
+             now().timestamp() > snooze_ts }}
           
       - name: "Garage South Door Alert Active"
         unique_id: garage_south_door_alert_active
         state: >
+          {% set snooze = states('input_datetime.garage_south_snooze_until') %}
+          {% set snooze_ts = as_timestamp(snooze, 0) %}
           {{ is_state('cover.ratgdo32disco_5735e8_door', 'open') and
-             now() > states('input_datetime.garage_south_snooze_until') | as_datetime | default(now() - timedelta(days=1), true) }}
-        delay_on:
-          minutes: 1
+             now().timestamp() > snooze_ts }}
 
 alert:
   garage_north_door_open:
