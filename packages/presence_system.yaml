@@ -158,3 +158,84 @@ template:
         state: >
           {{ is_state('binary_sensor.apollo_r_pro_1_748020_ld2450_presence', 'on')
              or is_state('binary_sensor.apollo_r_pro_1_748020_ld2412_presence', 'on') }}
+
+      # ───────────────────────────────────────────────────────────────
+      # LOCATION-SPECIFIC SENSORS
+      # Rebuilt 2026-03-30 - were orphaned after presence system refactor
+      # In-bed: home + upstairs AP BSSID (70:a7:41/72:a7:41) + after 21:00
+      # At Mom's: zone.michelles_house OR BSSID prefix 60:22:32/62:22:32
+      # At School: zone.whitehall_school
+      # ───────────────────────────────────────────────────────────────
+
+      - name: "Alaina In Bed"
+        unique_id: alaina_in_bed
+        device_class: occupancy
+        icon: mdi:sleep
+        state: >
+          {% set at_home = is_state('binary_sensor.alaina_home', 'on') %}
+          {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
+          {% set upstairs = bssid[:8] in ['70:a7:41', '72:a7:41'] %}
+          {% set late = now().hour >= 21 or now().hour < 6 %}
+          {{ at_home and upstairs and late }}
+        availability: >
+          {{ states('binary_sensor.alaina_home') not in ['unavailable', 'unknown']
+             and states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+
+      - name: "Ella In Bed"
+        unique_id: ella_in_bed
+        device_class: occupancy
+        icon: mdi:sleep
+        state: >
+          {% set at_home = is_state('binary_sensor.ella_home', 'on') %}
+          {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
+          {% set upstairs = bssid[:8] in ['70:a7:41', '72:a7:41'] %}
+          {% set late = now().hour >= 21 or now().hour < 6 %}
+          {{ at_home and upstairs and late }}
+        availability: >
+          {{ states('binary_sensor.ella_home') not in ['unavailable', 'unknown']
+             and states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+
+      - name: "Alaina at Mom's"
+        unique_id: alaina_at_moms
+        device_class: presence
+        icon: mdi:home-account
+        state: >
+          {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
+          {% set bssid_moms = bssid[:8] in ['60:22:32', '62:22:32'] %}
+          {% set zone_moms = is_state('person.alaina_spencer', 'Michelle's House (40062 US Hwy 53)') %}
+          {{ bssid_moms or zone_moms }}
+        availability: >
+          {{ states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown']
+             or states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
+
+      - name: "Ella at Mom's"
+        unique_id: ella_at_moms
+        device_class: presence
+        icon: mdi:home-account
+        state: >
+          {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
+          {% set bssid_moms = bssid[:8] in ['60:22:32', '62:22:32'] %}
+          {% set zone_moms = is_state('person.ella_spencer', 'Michelle's House (40062 US Hwy 53)') %}
+          {{ bssid_moms or zone_moms }}
+        availability: >
+          {{ states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown']
+             or states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
+
+      - name: "Alaina at School"
+        unique_id: alaina_at_school
+        device_class: presence
+        icon: mdi:school
+        state: >
+          {{ is_state('person.alaina_spencer', 'Whitehall School') }}
+        availability: >
+          {{ states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
+
+      - name: "Ella at School"
+        unique_id: ella_at_school
+        device_class: presence
+        icon: mdi:school
+        state: >
+          {{ is_state('person.ella_spencer', 'Whitehall School') }}
+        availability: >
+          {{ states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
+
