@@ -1,30 +1,21 @@
-# HAC Handoff — 2026-03-30 23:xx
+# HAC Handoff — 2026-03-31 17:23
 
 ## Last 3 commits
-  See: git log --oneline -5
+  c77f0d3 hac: session 2026-03-31
+  e1f2bbc session-close: presence fixes - alaina/ella staleness + traci zone radius
+  d094b6a fix: simplify alaina_home + ella_home - remove 30min tracker staleness check
 
 ## Active tasks
-  TASK: Verify at_mom_s sensors fire on next custody change (iPhone location poll pending)
-  TASK: person.john_spencer UI — still needs swap from S24 → S26 tracker
-  NEXT: presence audit continuation or begin backlog
+  TASK: NEXT SESSION: Aqara sensor relocation — move garage_north_door + garage_south_door sensors to useful locations. Then room audit: Alaina, Ella, Basement, Master Bedroom. Backlog: read top of notifications_system.yaml (battery + bedtime automations unaudited), investigate 6 notify calls in adaptive_lighting_entry_lamp.yaml, review departure double-notification on North door (auto-close + departure alert both fire on same departure event)
+  NEXT: (define next step)
   BLOCKED: None
 
-## What was done this session (2026-03-30)
-  PRESENCE FIX 1: alaina_home + ella_home - removed 30min tracker staleness check
-    Both now simply is_state('person.x', 'home') — no more unavailable when phone offline
-  PRESENCE FIX 2: zone.traci_s_house radius 76m → 150m (was too tight for iPhone GPS drift)
-    Zone coordinates confirmed correct: 44.3625/-91.4173 = 35918 Ash St Independence WI
-  ENTITY IDs CONFIRMED: at_mom_s sensors are alaina_at_mom_s / ella_at_mom_s (apostrophe=underscore)
-  TOKEN NOTE: ha_api_token in secrets.yaml gets 403 on zone/template REST endpoints — use UI or ha CLI
-
-## Known issues / next session priorities
-  1. at_mom_s sensors off pending iPhone location poll — verify fires on next arrival/departure
-  2. both_girls_at_mom_s + any_girl_at_mom_s — state=unavailable (restored ghost entries)
-     These are orphaned registry entries, no YAML backing them — clean up or rebuild
-  3. person.john_spencer still references S24 tracker in UI — swap to device_tracker.galaxy_s26_ultra
+## Top backlog items
+  - [x] Music popup: RESOLVED — more-info on media_player.kitchen_2. Confirmed 2026-03-17.
+  - [ ] Calendar: verify fills full right column with dense_section_placement:false — check on tablet after next reload.
+  - [ ] Doorbell popup: automation on event.front_driveway_door_doorbell triggers browser_mod.popup on tablet showing camera feed. Guard with input_boolean.kitchen_tablet_doorbell_popup_active. Needs browser_mod installed first.
 
 ## Start next session
-  cat /homeassistant/hac/HANDOFF.md
-  hac status
-  hac health
-
+  cat /homeassistant/hac/HANDOFF.md   ← read this first
+  hac status                           ← who is home, last triggers
+  hac health                           ← check for errors
