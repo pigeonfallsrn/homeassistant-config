@@ -1,0 +1,231 @@
+# ═══════════════════════════════════════════════════════════
+# Presence Detection System - 40154 Hwy 53
+# Multi-method detection: WiFi + Motion + Geo + Mobile App
+# Created: 2026-01-19
+# ═══════════════════════════════════════════════════════════
+
+template:
+  - binary_sensor:
+      - name: "House Motion Active"
+        unique_id: house_motion_active
+        device_class: motion
+        state: >
+          {{
+            is_state('binary_sensor.aqara_motion_sensor_p1_occupancy', 'on') or
+            is_state('binary_sensor.garage_north_wall_nightlight_motion', 'on') or
+            is_state('binary_sensor.ratgdo32disco_5735e8_motion', 'on') or
+            is_state('binary_sensor.ratgdo32disco_fd8d8c_motion', 'on')
+          }}
+        icon: mdi:motion-sensor
+
+  - sensor:
+      - name: "People Home Count"
+        unique_id: people_home_count_sensor
+        state: >
+          {% set count = 0 %}
+          {% if is_state('binary_sensor.john_home', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('binary_sensor.alaina_home', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('binary_sensor.ella_home', 'on') %}{% set count = count + 1 %}{% endif %}
+          {% if is_state('binary_sensor.michelle_home', 'on') %}{% set count = count + 1 %}{% endif %}
+          {{ count }}
+        icon: mdi:counter
+      
+      - name: "House Occupancy State"
+        unique_id: house_occupancy_state_sensor
+        state: >
+          {% set john = is_state('binary_sensor.john_home', 'on') %}
+          {% set alaina = is_state('binary_sensor.alaina_home', 'on') %}
+          {% set ella = is_state('binary_sensor.ella_home', 'on') %}
+          {% set michelle = is_state('binary_sensor.michelle_home', 'on') %}
+          
+          {% if john and alaina and ella and michelle %}
+            Full House
+          {% elif john and alaina and ella %}
+            John + Girls
+          {% elif john and michelle %}
+            John + Michelle
+          {% elif alaina and ella %}
+            Girls Only
+          {% elif john %}
+            John Only
+          {% elif alaina %}
+            Alaina Only
+          {% elif ella %}
+            Ella Only
+          {% elif michelle %}
+            Michelle Only
+          {% elif john and alaina %}
+            John + Alaina
+          {% elif john and ella %}
+            John + Ella
+          {% else %}
+            Empty
+          {% endif %}
+        icon: >
+          {% set count = states('sensor.people_home_count') | int %}
+          {% if count == 0 %}mdi:home-outline
+          {% elif count == 1 %}mdi:home-account
+          {% elif count == 2 %}mdi:home-group
+          {% else %}mdi:home-group-plus
+          {% endif %}
+
+  - binary_sensor:
+      - name: "John Home"
+        unique_id: presence_john_home
+        state: "{{ is_state('person.john_spencer', 'home') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Alaina Home"
+        unique_id: presence_alaina_home
+        state: >
+          {{ is_state('person.alaina_spencer', 'home') and
+             (now() - states.device_tracker.alaina_s_iphone_17.last_updated).total_seconds() < 1800 }}
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Ella Home"
+        unique_id: presence_ella_home
+        state: >
+          {{ is_state('person.ella_spencer', 'home') and
+             (now() - states.device_tracker.ellas_iphone.last_updated).total_seconds() < 1800 }}
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Michelle Home"
+        unique_id: presence_michelle_home
+        state: "{{ is_state('binary_sensor.michelle_actually_home', 'on') }}"
+        device_class: presence
+        icon: mdi:account
+
+      - name: "Someone Home"
+        unique_id: presence_someone_home
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') or
+             is_state('binary_sensor.alaina_home', 'on') or
+             is_state('binary_sensor.ella_home', 'on') or
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-account
+
+      - name: "Girls Home"
+        unique_id: presence_girls_home
+        state: >
+          {{ is_state('binary_sensor.alaina_home', 'on') or
+             is_state('binary_sensor.ella_home', 'on') }}
+        device_class: presence
+        icon: mdi:account-multiple
+
+      - name: "Both Girls Home"
+        unique_id: presence_both_girls_home
+        state: >
+          {{ is_state('binary_sensor.alaina_home', 'on') and
+             is_state('binary_sensor.ella_home', 'on') }}
+        device_class: presence
+        icon: mdi:account-multiple
+
+      - name: "John And Girls"
+        unique_id: presence_john_and_girls
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             (is_state('binary_sensor.alaina_home', 'on') or
+              is_state('binary_sensor.ella_home', 'on')) }}
+        device_class: presence
+        icon: mdi:home-group
+
+      - name: "John And Michelle"
+        unique_id: presence_john_and_michelle
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-heart
+
+      - name: "Full House"
+        unique_id: presence_full_house
+        state: >
+          {{ is_state('binary_sensor.john_home', 'on') and
+             is_state('binary_sensor.alaina_home', 'on') and
+             is_state('binary_sensor.ella_home', 'on') and
+             is_state('binary_sensor.michelle_home', 'on') }}
+        device_class: presence
+        icon: mdi:home-group
+
+      - name: "Entry Room Occupied"
+        unique_id: entry_room_occupied
+        device_class: occupancy
+        icon: mdi:door-open
+        state: >
+          {{ is_state('binary_sensor.apollo_r_pro_1_748020_ld2450_presence', 'on')
+             or is_state('binary_sensor.apollo_r_pro_1_748020_ld2412_presence', 'on') }}
+
+      # ───────────────────────────────────────────────────────────────
+      # LOCATION-SPECIFIC SENSORS
+      # Rebuilt 2026-03-30 - were orphaned after presence system refactor
+      # In-bed: home + upstairs AP BSSID (70:a7:41/72:a7:41) + after 21:00
+      # At Mom's: zone.traci_s_house (Traci = Alaina/Ella mom, Independence)
+      # At School: zone.whitehall_school
+      # ───────────────────────────────────────────────────────────────
+
+      - name: "Alaina In Bed"
+        unique_id: alaina_in_bed
+        device_class: occupancy
+        icon: mdi:sleep
+        state: >
+          {% set at_home = is_state('binary_sensor.alaina_home', 'on') %}
+          {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
+          {% set upstairs = bssid[:8] in ['70:a7:41', '72:a7:41'] %}
+          {% set late = now().hour >= 21 or now().hour < 6 %}
+          {{ at_home and upstairs and late }}
+        availability: >
+          {{ states('binary_sensor.alaina_home') not in ['unavailable', 'unknown']
+             or states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+
+      - name: "Ella In Bed"
+        unique_id: ella_in_bed
+        device_class: occupancy
+        icon: mdi:sleep
+        state: >
+          {% set at_home = is_state('binary_sensor.ella_home', 'on') %}
+          {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
+          {% set upstairs = bssid[:8] in ['70:a7:41', '72:a7:41'] %}
+          {% set late = now().hour >= 21 or now().hour < 6 %}
+          {{ at_home and upstairs and late }}
+        availability: >
+          {{ states('binary_sensor.ella_home') not in ['unavailable', 'unknown']
+             or states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+
+      - name: "Alaina at Mom's"
+        unique_id: alaina_at_moms
+        device_class: presence
+        icon: mdi:home-account
+        state: >
+          {{ is_state('person.alaina_spencer', "Traci's House") }}
+        availability: >
+          {{ states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
+      - name: "Ella at Mom's"
+        unique_id: ella_at_moms
+        device_class: presence
+        icon: mdi:home-account
+        state: >
+          {{ is_state('person.ella_spencer', "Traci's House") }}
+        availability: >
+          {{ states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
+      - name: "Alaina at School"
+        unique_id: alaina_at_school
+        device_class: presence
+        icon: mdi:school
+        state: >
+          {{ is_state('person.alaina_spencer', 'Whitehall School') }}
+        availability: >
+          {{ states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
+
+      - name: "Ella at School"
+        unique_id: ella_at_school
+        device_class: presence
+        icon: mdi:school
+        state: >
+          {{ is_state('person.ella_spencer', 'Whitehall School') }}
+        availability: >
+          {{ states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
+

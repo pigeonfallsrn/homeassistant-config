@@ -236,3 +236,14 @@ Times Hit: 10+
 - **Michelle** = John's girlfriend. Lives 40062 US Hwy 53. `zone.michelles_house`. Mother of Jarrett and Owen.
 - **at_mom_s sensors** must use `zone.traci_s_house` — never `zone.michelles_house`.
 - BSSID `60:22:32`/`62:22:32` = Michelle's house WiFi. Never use for girls' mom detection.
+
+## Ghost Entity Registry Surgery — AMENDED (2026-03-31)
+Previous rule said `ha core stop/start`. Today's correct procedure:
+1. Filter by `entity_id` NOT `unique_id` — unique_ids may not match entity_id stem
+2. Scrub BOTH files in same python3 pass:
+   - `/homeassistant/.storage/core.entity_registry` → remove from `data.entities`
+   - `/homeassistant/.storage/core.restore_state` → remove from `data` by `state.entity_id`
+3. `ha core check && ha core restart`
+4. Verify with `integration_entities('template')` — NOT `states()` (stale restore_state fools it)
+BusyBox grep: NEVER recurse from `/homeassistant/` root — times out on HA Green.
+Scope to subdirectory (e.g., `/homeassistant/packages/`) or use targeted path list.
