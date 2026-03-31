@@ -1,5 +1,5 @@
 # Active Work
-TASK: NEXT SESSION: notification audit — inventory all active notifications, which automation fires each, what buttons do, which open overview (fix clickAction), which are ghost/dead. Also: relocate garage_north_door + garage_south_door Aqara sensors to useful locations. Resume room audit: Alaina, Ella, Basement, Master Bedroom after notification audit.
+TASK: NEXT SESSION: Aqara sensor relocation — move garage_north_door + garage_south_door sensors to useful locations. Then room audit: Alaina, Ella, Basement, Master Bedroom. Backlog: read top of notifications_system.yaml (battery + bedtime automations unaudited), investigate 6 notify calls in adaptive_lighting_entry_lamp.yaml, review departure double-notification on North door (auto-close + departure alert both fire on same departure event)
 NEXT: (define next step)
 BLOCKED: None
 UPDATED: 2026-03-30
