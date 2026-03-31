@@ -218,3 +218,21 @@ Times Hit: 10+
 
 **RULE: `unavailable` on YAML-owned sensor = `cat` the file FIRST, never diagnose from MCP state alone.**
 **RULE: After MCP edits any package-file automation, always remove it from YAML before restart.**
+
+## GARAGE/ARRIVAL AUTOMATIONS (Times Hit: 3+)
+- **BT/sensor as TRIGGER not just condition** — if distance threshold already crossed when you get in vehicle, numeric_state never re-fires. Always add the connect event as a direct trigger.
+- **mode: restart for arrival automations** — not mode: single. False-start connects (parking lots, brief stops) lock out the real arrival with single mode.
+- **Door-opened race condition** — GPS lags 15-30s at zone boundary. Never use `binary_sensor.X_home` alone as condition on door-open trigger. Use recency template: `is_state('binary_sensor.john_home', 'on') or (as_timestamp(now()) - as_timestamp(states.person.john_spencer.last_changed)) < 120`
+- **Package YAML + MCP edit = restart conflict** — after MCP writes an automation to UI store, remove it from package YAML before next restart or duplicate entity conflict occurs.
+
+## TEMPLATE SENSOR AVAILABILITY (Times Hit: 3+)
+- **Use OR not AND** in availability templates when either dep alone is sufficient. AND means one unavailable dep kills the whole sensor and everything downstream.
+- **Ghost registry entries** — when template sensor YAML is deleted, entity registry entry survives. New YAML definition with same unique_id won't claim it cleanly. Fix: delete registry entry via Python, HA recreates on restart.
+- **template.reload only reloads UI templates** — package YAML templates require `ha core restart` to re-register after changes.
+- **Orphaned sensors = unavailable forever** — if sensor is `unavailable` for >24h with no state changes, YAML definition is likely missing. `grep -rn 'unique_id.*entity_name' packages/` to confirm.
+
+## FAMILY CONTEXT — NEVER MIX THESE
+- **Traci** = Alaina and Ella's mother. Lives Independence WI. `zone.traci_s_house` = at_mom_s for girls.
+- **Michelle** = John's girlfriend. Lives 40062 US Hwy 53. `zone.michelles_house`. Mother of Jarrett and Owen.
+- **at_mom_s sensors** must use `zone.traci_s_house` — never `zone.michelles_house`.
+- BSSID `60:22:32`/`62:22:32` = Michelle's house WiFi. Never use for girls' mom detection.
