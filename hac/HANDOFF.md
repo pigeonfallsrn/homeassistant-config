@@ -6,7 +6,7 @@
   e9f22ef hac: session 2026-03-30
 
 ## Active tasks
-  TASK: Resume room audit — Alaina, Ella, Basement, Master Bedroom. Also: audit kitchen_samsung_tablet_wall_mount notify target (still active device?). Notification audit COMPLETE.
+  TASK: NEXT SESSION: presence audit — alaina_in_bed, alaina_at_mom_s, alaina_at_school templates (unavailable). Confirm kitchen_samsung_tablet_wall_mount notify target still active. Notification audit COMPLETE. Room audits COMPLETE: Alaina, Ella, Basement, Master Bedroom.
   NEXT: (define next step)
   BLOCKED: None
 
