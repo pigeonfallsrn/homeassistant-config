@@ -203,3 +203,18 @@ Times Hit: 10+
 - Format: curl -s -o /dev/null -w "%{http_code}" -X DELETE "http://192.168.1.3:8123/api/config/automation/config/{unique_id}" -H "Authorization: Bearer TOKEN"
 - Token must be real Long-Lived Access Token from HA Profile → Security tab
 - Ghost entities from deleted YAML automations clear on next HA restart — REST DELETE is cosmetic only
+
+## ⚠️  MCP BLIND SPOTS — TERMINAL REQUIRED FIRST (Times Hit: 5+)
+*MCP sees entity states but NOT YAML source, deps, or config store origin.*
+
+| Symptom in MCP | Why MCP lies | Fix |
+|---|---|---|
+| template binary_sensor = `unavailable` | Sees state not source/deps | `cat` defining YAML, check deps |
+| `ha_config_get_automation` = RESOURCE_NOT_FOUND | Package YAML autos not in UI store | `cat packages/file.yaml` |
+| `ha_deep_search` returns sub-IDs (north/south) | Stale cache index | terminal grep authoritative |
+| notify target looks valid | Dead mobile_app targets persist in registry | `grep mobile_app_X .storage/` |
+| Duplicate unique_ids same file | Second def silently wins, first = unavailable | `grep -c unique_id file.yaml` |
+| Package auto + MCP edit = conflict | Both load on restart, stale YAML wins | Remove from YAML after MCP update |
+
+**RULE: `unavailable` on YAML-owned sensor = `cat` the file FIRST, never diagnose from MCP state alone.**
+**RULE: After MCP edits any package-file automation, always remove it from YAML before restart.**
