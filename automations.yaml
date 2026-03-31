@@ -1916,10 +1916,17 @@
   mode: single
 - id: '1774662096455'
   alias: Garage — Door Opened Arrival Notification
-  description: When North or South garage door opens and John is home (or just arrived),
-    send actionable notification to close/open the other door. Ratgdo-first design
-    — works even when GPS arrival fails. Replaces need to manually open the arriving
-    home dashboard.
+  description: 'When North or South garage door opens and John is home (or just arrived
+    within 2 min), send actionable notification to close/open the other door.
+
+
+    Ratgdo-first design — works even when GPS arrival fails.
+
+    Fix: replaced binary_sensor.john_home == on condition with recency template
+
+    (home OR became home within 120s) to close the GPS lag race condition.
+
+    Root cause: door opened 8:02:45, john_home flipped 8:03:03 — 18s gap.'
   triggers:
   - platform: state
     entity_id: cover.ratgdo32disco_fd8d8c_door
@@ -1930,9 +1937,9 @@
     to: open
     id: south_opened
   conditions:
-  - condition: state
-    entity_id: binary_sensor.john_home
-    state: 'on'
+  - condition: template
+    value_template: "{{ is_state('binary_sensor.john_home', 'on') or\n   (as_timestamp(now())
+      - as_timestamp(states.person.john_spencer.last_changed)) < 120 }}"
   actions:
   - choose:
     - conditions:
@@ -2145,3 +2152,87 @@
       message: Ratgdo rebooted — remotes auto-unlocked.
     action: notify.mobile_app_john_s_s26_ultra
   mode: parallel
+- id: garage_arrival_smart_popup
+  alias: Garage - Smart Arrival Dashboard Popup
+  description: 'Shows garage control notification when approaching home in the van.
+
+
+    Trigger paths:
+
+    1. HFL BT MAC connects → fires if within 8km and not home (covers ''already close
+    when you get in the van'')
+
+    2. Distance drops below 1500m → fires if HFL currently connected and not home
+
+    3. Distance drops below 800m → backup if HFL connected and not home
+
+
+    mode: restart so Anderson St. false-start connects don''t block the real arrival.
+
+    Fix for: HFL connects after distance threshold already crossed (race condition
+    on short trips).'
+  triggers:
+  - platform: state
+    entity_id: sensor.john_s_s26_ultra_bluetooth_connection
+    id: hfl_connected
+  - platform: numeric_state
+    entity_id: sensor.john_distance_to_home
+    below: 1500
+    id: approaching
+  - platform: numeric_state
+    entity_id: sensor.john_distance_to_home
+    below: 800
+    id: proximity
+  conditions:
+  - condition: time
+    after: 08:00:00
+    before: '23:00:00'
+  - condition: template
+    value_template: '{{ states(''person.john_spencer'') != ''home'' }}'
+  - condition: template
+    value_template: '{{ state_attr(''sensor.john_s_s26_ultra_bluetooth_connection'',
+      ''connected_paired_devices'') | select(''search'', ''00:0A:30:9A:20:F5'') |
+      list | count > 0 }}'
+  - condition: template
+    value_template: "{% if trigger.id == 'hfl_connected' %}\n  {{ states('sensor.john_distance_to_home')
+      | float(99999) < 8000 }}\n{% else %}\n  {{ states('sensor.john_distance_to_home')
+      | float(99999) < 1600 and states('sensor.john_distance_to_home') | float(99999)
+      > 100 }}\n{% endif %}"
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: cover.ratgdo32disco_fd8d8c_door
+      state: closed
+    - condition: state
+      entity_id: cover.ratgdo32disco_5735e8_door
+      state: closed
+  actions:
+  - data:
+      title: "\U0001F697 Arriving Home"
+      message: '{{ (states(''sensor.john_distance_to_home'') | float(0) / 1000) |
+        round(1) }}km away — Open garage door?'
+      data:
+        tag: garage_arrival_dashboard
+        group: garage
+        channel: Garage Arrival
+        importance: high
+        ttl: 0
+        priority: high
+        sticky: true
+        timeout: 300
+        notification_icon: mdi:garage-variant
+        color: '#03A9F4'
+        actions:
+        - action: GARAGE_OPEN_NORTH
+          title: "\U0001F6AA OPEN NORTH"
+        - action: GARAGE_OPEN_SOUTH
+          title: "\U0001F6AA OPEN SOUTH"
+        - action: GARAGE_OPEN_BOTH
+          title: "\U0001F6AA OPEN BOTH"
+        - action: GARAGE_DISMISS
+          title: ❌ Dismiss
+        visibility: public
+        persistent: true
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: restart
+  max_exceeded: silent
