@@ -1,33 +1,30 @@
-# HAC Handoff — 2026-03-30 22:15
+# HAC Handoff — 2026-03-30 23:xx
 
 ## Last 3 commits
   See: git log --oneline -5
 
 ## Active tasks
-  TASK: Verify 6 rebuilt presence sensors fire correctly on next custody change (girls arrive home or go to Traci's)
-  TASK: Fix binary_sensor.alaina_home upstream — simplify to just is_state('person.alaina_spencer', 'home'), remove 30min tracker age check that causes unavailable when phone offline
-  TASK: Verify zone.traci_s_house radius covers Independence address — if ella_at_mom_s doesn't fire when girls are there, adjust radius
+  TASK: Verify at_mom_s sensors fire on next custody change (iPhone location poll pending)
+  TASK: person.john_spencer UI — still needs swap from S24 → S26 tracker
   NEXT: presence audit continuation or begin backlog
   BLOCKED: None
 
 ## What was done this session (2026-03-30)
-  GARAGE ARRIVAL: 3 bugs fixed — HFL BT connect as direct trigger, mode restart,
-    120s GPS recency template on door-opened notification. Package YAML cleaned.
-  PRESENCE AUDIT: 6 orphaned sensors rebuilt in presence_system.yaml
-    alaina/ella: in_bed (BSSID upstairs), at_moms (zone.traci_s_house), at_school (zone.whitehall_school)
-    Fixed availability AND->OR. Cleared ghost registry entries. All 6 now live as 'off'.
-  CRITICAL_RULES: MCP BLIND SPOTS section added + GARAGE/ARRIVAL + TEMPLATE SENSOR AVAILABILITY + FAMILY CONTEXT
-  TABLET NOTIFY: mobile_app_kitchen_samsung_tablet_wall_mount confirmed active in traces.
+  PRESENCE FIX 1: alaina_home + ella_home - removed 30min tracker staleness check
+    Both now simply is_state('person.x', 'home') — no more unavailable when phone offline
+  PRESENCE FIX 2: zone.traci_s_house radius 76m → 150m (was too tight for iPhone GPS drift)
+    Zone coordinates confirmed correct: 44.3625/-91.4173 = 35918 Ash St Independence WI
+  ENTITY IDs CONFIRMED: at_mom_s sensors are alaina_at_mom_s / ella_at_mom_s (apostrophe=underscore)
+  TOKEN NOTE: ha_api_token in secrets.yaml gets 403 on zone/template REST endpoints — use UI or ha CLI
 
 ## Known issues / next session priorities
-  1. binary_sensor.alaina_home goes unavailable when Alaina's phone offline >30min
-     Fix: simplify template in presence_system.yaml line 81-83 to just person state
-  2. ella_person shows Michelle's House zone when girls at Traci's — GPS zone overlap?
-     Check zone.michelles_house radius vs Independence distance
-  3. MCP HANDOFF note: package YAML automations return RESOURCE_NOT_FOUND from MCP —
-     always use terminal cat for package file contents
+  1. at_mom_s sensors off pending iPhone location poll — verify fires on next arrival/departure
+  2. both_girls_at_mom_s + any_girl_at_mom_s — state=unavailable (restored ghost entries)
+     These are orphaned registry entries, no YAML backing them — clean up or rebuild
+  3. person.john_spencer still references S24 tracker in UI — swap to device_tracker.galaxy_s26_ultra
 
 ## Start next session
-  cat /homeassistant/hac/HANDOFF.md   ← read this first
-  hac status                           ← who is home, last triggers
-  hac health                           ← check for errors
+  cat /homeassistant/hac/HANDOFF.md
+  hac status
+  hac health
+
