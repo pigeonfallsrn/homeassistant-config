@@ -163,7 +163,7 @@ template:
       # LOCATION-SPECIFIC SENSORS
       # Rebuilt 2026-03-30 - were orphaned after presence system refactor
       # In-bed: home + upstairs AP BSSID (70:a7:41/72:a7:41) + after 21:00
-      # At Mom's: zone.michelles_house OR BSSID prefix 60:22:32/62:22:32
+      # At Mom's: zone.traci_s_house (Traci = Alaina/Ella mom, Independence)
       # At School: zone.whitehall_school
       # ───────────────────────────────────────────────────────────────
 
@@ -200,27 +200,17 @@ template:
         device_class: presence
         icon: mdi:home-account
         state: >
-          {% set bssid = states('sensor.alainas_iphone_bssid') | default('', true) %}
-          {% set bssid_moms = bssid[:8] in ['60:22:32', '62:22:32'] %}
-          {% set zone_moms = is_state('person.alaina_spencer', 'Michelle's House (40062 US Hwy 53)') %}
-          {{ bssid_moms or zone_moms }}
+          {{ is_state('person.alaina_spencer', "Traci's House") }}
         availability: >
-          {{ states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown']
-             or states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
-
+          {{ states('person.alaina_spencer') not in ['unavailable', 'unknown'] }}
       - name: "Ella at Mom's"
         unique_id: ella_at_moms
         device_class: presence
         icon: mdi:home-account
         state: >
-          {% set bssid = states('sensor.ellas_iphone_bssid') | default('', true) %}
-          {% set bssid_moms = bssid[:8] in ['60:22:32', '62:22:32'] %}
-          {% set zone_moms = is_state('person.ella_spencer', 'Michelle's House (40062 US Hwy 53)') %}
-          {{ bssid_moms or zone_moms }}
+          {{ is_state('person.ella_spencer', "Traci's House") }}
         availability: >
-          {{ states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown']
-             or states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
-
+          {{ states('person.ella_spencer') not in ['unavailable', 'unknown'] }}
       - name: "Alaina at School"
         unique_id: alaina_at_school
         device_class: presence
