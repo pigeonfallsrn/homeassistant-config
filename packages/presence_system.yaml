@@ -179,7 +179,7 @@ template:
           {{ at_home and upstairs and late }}
         availability: >
           {{ states('binary_sensor.alaina_home') not in ['unavailable', 'unknown']
-             and states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+             or states('sensor.alainas_iphone_bssid') not in ['unavailable', 'unknown'] }}
 
       - name: "Ella In Bed"
         unique_id: ella_in_bed
@@ -193,7 +193,7 @@ template:
           {{ at_home and upstairs and late }}
         availability: >
           {{ states('binary_sensor.ella_home') not in ['unavailable', 'unknown']
-             and states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown'] }}
+             or states('sensor.ellas_iphone_bssid') not in ['unavailable', 'unknown'] }}
 
       - name: "Alaina at Mom's"
         unique_id: alaina_at_moms
