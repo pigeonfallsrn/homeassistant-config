@@ -1244,21 +1244,62 @@
     from: home
     platform: state
     to: not_home
-- actions:
+- id: garage_door_notifications_autoclear
+  alias: Garage - Auto-Clear Notifications on Close
+  description: 'When either garage door closes, clear all associated notification
+    tags from John''s phone. Prevents stale sticky notifications accumulating in the
+    notification shade.
+
+
+    2026-03-31: expanded from North-only/auto-close-only to both doors + all garage
+    tags (arrival, auto-close, quick-open, close-confirm). Each trigger clears its
+    door-specific arrival tag plus shared tags.'
+  triggers:
+  - platform: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    to: closed
+    id: north
+  - platform: state
+    entity_id: cover.ratgdo32disco_5735e8_door
+    to: closed
+    id: south
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: north
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_north
+    - conditions:
+      - condition: trigger
+        id: south
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_open_south
   - action: notify.mobile_app_john_s_s26_ultra
     data:
+      message: clear_notification
       data:
         tag: garage_auto_close
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
       message: clear_notification
-  alias: Garage - Auto-Clear Notifications on Close
-  description: When North garage door closes, dismiss the auto-close notification
-    from John's phone.
-  id: garage_door_notifications_autoclear
-  mode: single
-  triggers:
-  - entity_id: cover.ratgdo32disco_fd8d8c_door
-    platform: state
-    to: closed
+      data:
+        tag: garage_quick_open
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      message: clear_notification
+      data:
+        tag: garage_close_confirm
+  mode: parallel
+  max: 2
 - actions:
   - action: notify.mobile_app_john_s_s26_ultra
     data:
@@ -1420,7 +1461,9 @@
     ceiling, pendants) manual-only. Late night (23-06): under-cabinet only. Hue group
     lights get bare turn_on — AL owns brightness/color_temp. Dumb lights get explicit
     brightness. Suppresses off when TV playing. Respects manual override. Triggers
-    on EITHER kitchen_motion OR kitchen_lounge_motion.'
+    on EITHER kitchen_motion OR kitchen_lounge_motion. 2026-03-31: bumped off timer
+    8→12 min to reduce premature shutoff during passive occupancy (P1 blind time ~90s,
+    sitting-still dead zones).'
   triggers:
   - platform: state
     entity_id:
@@ -1434,7 +1477,7 @@
     - binary_sensor.kitchen_lounge_motion
     to: 'off'
     for:
-      minutes: 8
+      minutes: 12
     id: motion_off
   actions:
   - choose:
@@ -1916,17 +1959,22 @@
   mode: single
 - id: '1774662096455'
   alias: Garage — Door Opened Arrival Notification
-  description: 'When North or South garage door opens and John is home (or just arrived
-    within 2 min), send actionable notification to close/open the other door.
+  description: 'When North or South garage door opens during an arrival window, send
+    actionable notification.
 
 
     Ratgdo-first design — works even when GPS arrival fails.
 
-    Fix: replaced binary_sensor.john_home == on condition with recency template
+    Original fix (2025): replaced john_home == on with recency template (home OR became
+    home within 120s) to close GPS lag race condition. Root cause: door opened 8:02:45,
+    john_home flipped 8:03:03 — 18s gap.
 
-    (home OR became home within 120s) to close the GPS lag race condition.
 
-    Root cause: door opened 8:02:45, john_home flipped 8:03:03 — 18s gap.'
+    2026-03-31 fix: tightened condition from ''john_home on OR person changed <120s''
+    to ''person OR john_home last_changed <180s''. Old condition fired on ANY door
+    open while home (e.g. someone entering, testing). New condition only fires during
+    a genuine arrival window — either entity must have changed within 3 min. 180s
+    chosen for GPS lag headroom.'
   triggers:
   - platform: state
     entity_id: cover.ratgdo32disco_fd8d8c_door
@@ -1938,8 +1986,9 @@
     id: south_opened
   conditions:
   - condition: template
-    value_template: "{{ is_state('binary_sensor.john_home', 'on') or\n   (as_timestamp(now())
-      - as_timestamp(states.person.john_spencer.last_changed)) < 120 }}"
+    value_template: "{{ (as_timestamp(now()) - as_timestamp(states.person.john_spencer.last_changed))
+      < 180\n   or\n   (as_timestamp(now()) - as_timestamp(states.binary_sensor.john_home.last_changed))
+      < 180 }}"
   actions:
   - choose:
     - conditions:
