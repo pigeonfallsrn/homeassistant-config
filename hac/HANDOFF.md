@@ -1,9 +1,9 @@
-# HAC Handoff — 2026-03-31 17:23
+# HAC Handoff — 2026-03-31 17:24
 
 ## Last 3 commits
+  219b767 hac: session 2026-03-31
   c77f0d3 hac: session 2026-03-31
   e1f2bbc session-close: presence fixes - alaina/ella staleness + traci zone radius
-  d094b6a fix: simplify alaina_home + ella_home - remove 30min tracker staleness check
 
 ## Active tasks
   TASK: NEXT SESSION: Aqara sensor relocation — move garage_north_door + garage_south_door sensors to useful locations. Then room audit: Alaina, Ella, Basement, Master Bedroom. Backlog: read top of notifications_system.yaml (battery + bedtime automations unaudited), investigate 6 notify calls in adaptive_lighting_entry_lamp.yaml, review departure double-notification on North door (auto-close + departure alert both fire on same departure event)
