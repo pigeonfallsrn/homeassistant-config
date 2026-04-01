@@ -1,183 +1,217 @@
 # Automation Index & Package Structure
-*Generated: 2026-02-13*
+*Generated: 2026-03-31 — replaces stale 2026-02-13 version*
 
-## Package Files & Automation IDs
-
-## adaptive_lighting_entry_lamp.yaml
-87: extended_evening_auto_set
-109: extended_evening_auto_clear
-123: hot_tub_mode_auto_reset
-138: hot_tub_mode_auto_off_when_done
-183: arrival_adaptive_lighting_on
-233: entry_room_lamp_adaptive_control
-336: entry_room_lamp_activity_boost
-372: entry_room_lamp_no_motion_dim
-406: entry_room_lamp_no_motion_off
-432: entry_room_lamp_hard_off
-455: adaptive_lighting_global_off
-478: hot_tub_mode_notification
-501: hot_tub_mode_notification_actions
-
-## adaptive_lighting_kitchen_lounge_lamp.yaml
-31: kitchen_lounge_lamp_adaptive_control
-134: kitchen_lounge_lamp_activity_boost
-170: kitchen_lounge_lamp_no_motion_dim
-204: kitchen_lounge_lamp_no_motion_off
-230: kitchen_lounge_lamp_hard_off
-
-## adaptive_lighting_living_room.yaml
-32: living_room_lamps_adaptive_control
-144: living_room_lamps_activity_boost
-181: living_room_lamps_no_motion_dim
-222: living_room_lamps_no_motion_off
-255: living_room_lamps_hard_off
-285: global_everyone_left_lamps_off
-
-## ap_presence_hybrid.yaml
-
-## aqara_sensor_names.yaml
-
-## climate_analytics.yaml
-
-## ella_bedroom.yaml
-
-## entry_room_ceiling_motion.yaml
-12: entry_room_ceiling_motion_lighting
-
-## family_activities.yaml
-278: family_ella_arrived_home
-292: family_alaina_arrived_home
-306: family_ella_left_for_activity
-318: family_alaina_left_for_activity
-330: family_daily_reset
-345: family_increment_grades
-
-## garage_arrival_optimized.yaml
-11: garage_arrival_smart_popup
-94: garage_arrival_action_handler
-194: garage_arrival_autoclear
-
-## garage_door_alerts.yaml
-98: garage_door_alert_actions
-223: garage_door_reset_snooze_on_close
-
-## garage_lighting_automation_fixed.yaml
-18: garage_master_lights_on_fixed
-77: garage_master_lights_off_fixed
-
-## garage_notifications_consolidated.yaml
-8: garage_door_opened_close_option
-48: garage_door_close_action_handler
-83: garage_door_notifications_autoclear
-
-## garage_quick_open.yaml
-11: garage_quick_open_walkin
-49: garage_auto_close_departure
-149: garage_quick_open_action_handler
-188: garage_quick_open_clear
-212: arrival_lights_approaching
-
-## google_sheets_sync.yaml
-25: 'google_sheets_export_daily'
-36: 'google_sheets_export_startup'
-48: 'google_sheets_export_manual'
-
-## hac_session_log.yaml
-
-## humidity_smart_alerts.yaml
-63: humidity_smart_shower_alert
-108: humidity_smart_actions
-224: humidity_fan_unpause
-245: humidity_fan_block_when_paused
-
-## john_proximity.yaml
-
-## kids_bedroom_automation.yaml
-207: ella_gentle_wake_automation
-235: alaina_gentle_wake_automation
-263: ella_school_night_bedtime
-298: alaina_school_night_bedtime
-329: ella_lights_hard_off_school
-348: alaina_lights_hard_off_school
-367: ella_lights_off_when_leaving
-386: alaina_lights_off_when_leaving
-405: kids_lights_off_everyone_away
-419: kids_bedroom_override_reset
-435: alaina_lights_auto_off_midnight_weekend
-468: ella_lights_auto_off_midnight_weekend
-
-## kitchen_tablet_dashboard.yaml
-236: kitchen_tablet_brightness_schedule
-277: kitchen_tablet_doorbell_popup
-310: kitchen_tablet_motion_wake
-331: kitchen_tablet_sleep_inactivity
-354: kitchen_tablet_wake_on_presence
-377: kitchen_tablet_sleep_when_away
-
-## lights_auto_off_safety.yaml
-15: safety_all_lights_off_nobody_home
-67: safety_main_areas_no_motion_off
-100: safety_midnight_all_lights_off
-
-## motion_aggregation.yaml
-
-## notifications_system.yaml
-10: arrival_notification_john
-51: arrival_notification_ella
-69: arrival_notification_actions
-114: low_battery_daily_digest
-150: low_battery_notification_actions
-190: critical_battery_alert
-237: bedtime_first_floor_lights_off_prompt
-281: bedtime_lights_notification_actions
-
-## occupancy_system.yaml
-374: update_occupancy_mode
-397: apply_context_on_occupancy_change
-408: apply_context_on_time_change
-420: apply_context_on_overlay_change
-436: refresh_school_tomorrow
-468: refresh_school_in_session_now
-505: upstairs_hallway_motion_lighting_OLD_DISABLED
-570: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
-611: morning_wake_master_bedroom
-
-## presence_display.yaml
-
-## presence_system.yaml
-136: john_home_detection
-149: john_away_detection
-168: alaina_home_detection
-180: alaina_away_detection
-198: ella_home_detection
-210: ella_away_detection
-229: michelle_home_detection
-243: michelle_away_detection
-261: update_girls_home_status
-305: update_occupancy_combinations
-369: update_someone_home
-407: recent_motion_detected
-
-## upstairs_lighting.yaml
-39: upstairs_hallway_motion_lighting_v2
+## Quick Reference
+- **Total automations (MCP count):** 156
+- **Package files:** 30 (in /homeassistant/packages/)
+- **Standalone automation files:** 9 (in /homeassistant/automations/)
+- **Notify target (active):** notify.mobile_app_john_s_s26_ultra
+- **Notify target (DEAD - never use):** notify.mobile_app_sm_s928u
 
 ---
 
-## Architecture Notes
+## Standalone Automations (/homeassistant/automations/)
 
-# Automation Architecture
+### 1st_floor_bathroom_inovelli.yaml
+- L14: 1st Floor Bathroom - Ceiling Switch Controls All Lights
+- L71: 1st Floor Bathroom - Reset Light Override (30 min)
 
-## Structure (151 total)
-- packages/ (121) - Feature-based organization
-- automations/ (25) - Room-specific Inovelli controls  
-- automations.yaml (4) - UI-created
-- configuration.yaml (1) - HAC export
+### 2nd_floor_bathroom_inovelli.yaml
+- L17: 2nd Floor Bathroom - Ceiling Lights Inovelli Control
+- L82: 2nd Floor Bathroom - Vanity Lights Inovelli Control
+- L139: 2nd Floor Bathroom - Reset Fan Override (30 min)
+- L153: 2nd Floor Bathroom - Reset Light Override (30 min)
+- L170: 2nd Floor Bathroom - Fan Pre-trigger (Hot Water Flow)
 
-## Major Systems
-- Adaptive Lighting: 24 automations across 3 packages
-- Garage: 15 automations (arrival, alerts, quick-open)
-- Kids: 18 automations (bedrooms, schedules)
-- Presence: 23 automations (occupancy, tracking)
-- Kitchen Tablet: 12 automations
+### alaina_wake_echo_alarm.yaml
+- L2: Alaina - Wake With Echo Alarm
 
-All version-controlled in Git, fully searchable, excellent organization.
+### entry_room_aux.yaml
+- L14: Entry Room - AUX Switch Time-Based Control
+- L80: Entry Room - Reset Light Override (30 min)
+
+### exterior_lights_auto_off.yaml
+- L2:  Front Driveway - Lights On When Motion (Dark)
+- L35: Front Driveway - Auto Off After No Motion
+- L56: Garage - Auto Off After No Motion
+- L77: Garage - Lights On When Walk-in Door Opens
+
+### first_person_home.yaml
+- L3: First Person Home After Dark → Entry Lights On
+
+### kitchen_inovelli.yaml
+- L16:  Kitchen - Chandelier Time-Based Control
+- L73:  Kitchen Lounge - Dimmer Time-Based Control
+- L168: Kitchen Table - Reset Light Override (30 min)
+- L182: Kitchen Lounge - Reset Light Override (30 min)
+
+### living_room_av.yaml
+- L3: Living Room TV OFF → Full AV System OFF
+
+---
+
+## Package Automations (/homeassistant/packages/)
+*Note: Packages use alias: not id: at top level. Line numbers = automation start.*
+
+### adaptive_lighting_entry_lamp.yaml (626 lines)
+⚠️ Contains 6 notify calls — unusual for an AL package, review
+- Entry lamp adaptive control, activity boost, dim, off, hard-off sequences
+- Hot tub mode notification + action handler
+- Trigger IDs: door_closed, periodic_check, nobody_home, person_arrived,
+  garage_opened, front_door_opened, motion, hot_tub_toggle, bedtime_on,
+  turn_off, snooze_30, snooze_60
+
+### adaptive_lighting_kitchen_lounge_lamp.yaml (248 lines)
+- Kitchen lounge lamp adaptive control, activity boost, dim, off, hard-off
+- Trigger IDs: motion, hot_tub_toggle, bedtime_on
+
+### adaptive_lighting_living_room.yaml (303 lines)
+- Living room lamps adaptive control, activity boost, dim, off, hard-off
+- Trigger IDs: motion, hot_tub_toggle, bedtime_on
+
+### ap_presence_hybrid.yaml (237 lines)
+- AP-based presence detection (WiFi/BT hybrid)
+- No top-level automation IDs (template sensors only)
+
+### aqara_sensor_names.yaml
+- Sensor rename/alias definitions only, no automations
+
+### climate_analytics.yaml (141 lines) — last modified Mar 14
+- Climate data collection/logging automations
+- No top-level automation IDs
+
+### ella_bedroom.yaml (238 lines)
+- Ella bedroom lighting automations
+- Aliases: Ella - Gentle Wake Before Alarm, Ella - Lights Auto Off Midnight,
+  Ella - Lights Off 10:30 PM, Ella - Lights Off When Leaving,
+  Ella - School Night Bedtime, Ella - Night Path On/Off,
+  Ella - Sleep Timer Set/Cancel, Ella - Wind-down Override
+
+### ella_living_room.yaml (137 lines)
+- Ella living room context automations
+
+### entry_room_ceiling_motion.yaml (package)
+- Trigger IDs: motion_on, motion_off
+
+### family_activities.yaml (378 lines)
+- Aliases: Arrival - Ella Home, Arrival - Alaina Home,
+  family_ella_left_for_activity, family_alaina_left_for_activity,
+  family_daily_reset, family_increment_grades
+- Calendar → Refresh School In Session Now / School Tomorrow
+
+### garage_arrival_optimized.yaml
+- Aliases: Arrival - Driveway & Garage Lights When Approaching,
+  Arrival - Handle Notification Actions, Arrival - John Home
+- Action trigger IDs: north, south, both, dismiss
+
+### garage_door_alerts.yaml (254 lines)
+- Aliases: Departure - Garage Open Alert, Departure - Handle Garage Actions,
+  Departure - Clear Alert on Return
+- Action trigger IDs: close_north/south, snooze_15/60_north/south
+
+### garage_lighting_automation_fixed.yaml (130 lines)
+- Garage lighting automations (fixed version)
+
+### garage_motion_combined.yaml (183 lines — motion_aggregation)
+- Combined motion sensor aggregation for garage
+
+### garage_notifications_consolidated.yaml
+- Action trigger IDs: north, south (open/close notifications consolidated)
+
+### garage_quick_open.yaml (239 lines)
+- Aliases: garage_door_quick_open_north_door_notification
+- Action trigger IDs: left_zone, wifi_disconnect, cancelled, close_now,
+  returned, north, south
+
+### google_sheets_sync.yaml — last modified Mar 14
+⚠️ Confirm active use or archive — consuming API quota if running
+
+### hac_session_log.yaml
+- HAC session logging automation
+
+### humidity_smart_alerts.yaml (259 lines)
+- Aliases: humidity_alert_2nd_floor_low_or_high, humidity_handle_notification_actions
+- Action trigger IDs: skip_10, skip_30, skip_12h, dismiss, pause_15,
+  pause_12h_old
+
+### john_proximity.yaml
+- John proximity/BT HFL detection automations
+
+### kids_bedroom_automation.yaml (499 lines)
+- Aliases: Alaina - Gentle Wake Before Alarm, Alaina - Lights Auto Off Midnight,
+  Alaina - Lights Off 10:30 PM, Alaina - Lights Off When Leaving,
+  Alaina - School Night Bedtime, Alaina Gentle Wake, Alaina Lights Off,
+  Alaina School Night, Ella Gentle Wake, Ella Lights Off, Ella School Night,
+  Apply Lighting Context, Bedtime - Handle Light Actions,
+  Bedtime - Prompt to Turn Off 1st Floor Lights
+
+### kitchen_tablet_dashboard.yaml (509 lines)
+- Aliases: Apply Tablet Context, kitchen_tablet_power_off_when_everyone_away,
+  kitchen_tablet_wake_when_someone_arrives
+- Action trigger IDs: front_door, driveway
+
+### lights_auto_off_safety.yaml (131 lines)
+- Global lights-off safety net automations
+
+### motion_aggregation.yaml (183 lines)
+- Combined motion binary_sensor templates
+
+### notifications_system.yaml (773 lines) ⚠️ UNAUDITED TOP SECTION
+- Battery alerts: Critical Battery - Immediate Alert
+- Bedtime: Bedtime - Prompt to Turn Off 1st Floor Lights, Bedtime - Handle Light Actions
+- Action trigger IDs: open_north/south, lights_on, disarm, dismiss, snooze,
+  all_off, first_floor, outside, pause_15m, pause_12h, ac_on, close_all,
+  snooze_30, ignore
+⚠️ Top of file (battery + bedtime automations) NOT YET AUDITED
+
+### occupancy_system.yaml (549 lines)
+- Aliases: Context → Apply on Occupancy Change, Context → Apply on Overlay Change,
+  Context → Apply on Time Change
+- Core occupancy state machine
+
+### presence_display.yaml
+- Presence display/dashboard template sensors
+
+### presence_system.yaml (229 lines)
+- Core presence template binary_sensors
+- Persons tracked: john_spencer, alaina_spencer, ella_spencer
+- States checked: home, Traci's House, Whitehall School
+- 39 template/trigger references
+
+### upstairs_lighting.yaml
+- Trigger IDs: motion_on, motion_off (upstairs hallway)
+
+### wifi_floor_presence.yaml (237 lines)
+- Per-floor WiFi AP presence detection
+
+---
+
+## Key Helpers In Use
+
+### input_boolean (YAML-defined, active)
+alaina_bedroom_override, alaina_had_activity_today, alaina_winddown_override,
+bathroom_fan_paused, dad_bedtime_mode, ella_bedroom_override,
+ella_had_activity_today, ella_winddown_override, entry_room_manual_override,
+extended_evening, guest_present, hot_tub_mode, kids_bedtime_override,
+kids_wake_lights_enabled, kitchen_lounge_manual_override,
+kitchen_tablet_doorbell_popup, kitchen_tablet_screen_control,
+living_room_manual_override, party_mode, preserve_night_vision,
+school_in_session_now, school_tomorrow
+⚠️ turn_on / turn_off / turn_ appear in grep — likely artifact of service calls, not real helpers
+
+### Zones (all radii verified 2026-03-31)
+- home: 41m | Michelle's: 34m | Jean's: 75m (bumped from 12m)
+- Anderson St: 75m (bumped from 7m) | TCHCC: 197m
+- Traci's: 150m (bumped 2026-03-30) | Whitehall School: 139m
+
+---
+
+## Known Issues / Open Items
+- [ ] notifications_system.yaml top section (battery/bedtime) unaudited
+- [ ] 6 notify calls in adaptive_lighting_entry_lamp.yaml — investigate
+- [ ] Departure double-notification: North door auto-close + departure alert both fire on same event
+- [ ] orphan_automations.txt (Feb 2026) is stale — needs fresh audit pass
+- [ ] google_sheets_sync.yaml — confirm active use or archive
+- [ ] browser_mod not installed — blocks doorbell popup + calendar dense_section_placement
+- [ ] 92 device trackers — ghost/duplicate audit pending
+- [ ] 3 persons with no device trackers: Jarrett, Owen, Jean
