@@ -247,3 +247,78 @@ Previous rule said `ha core stop/start`. Today's correct procedure:
 4. Verify with `integration_entities('template')` — NOT `states()` (stale restore_state fools it)
 BusyBox grep: NEVER recurse from `/homeassistant/` root — times out on HA Green.
 Scope to subdirectory (e.g., `/homeassistant/packages/`) or use targeted path list.
+
+## GARAGE NOTIFICATION OVERLAP — MULTI-SYSTEM CONFLICT (Fixed 2026-04-02)
+- THREE systems were all firing simultaneously on cover open: consolidated, alert, auto-close
+- FIX 1: alert binary sensors MUST include presence check — door open AND not home
+- FIX 2: alerts must use skip_first: true — false fires instantly, conflicts with auto-close
+- FIX 3: garage_door_opened_close_option is DISABLED (initial_state: false) — redundant with alert system
+- NEVER re-enable garage_door_opened_close_option without removing the alert system first
+- Alert system (garage_door_alerts.yaml) is the ONLY "door is open" notification path
+- Auto-close (garage_quick_open.yaml) is the ONLY departure notification path
+- Verify before any garage edit: grep -n 'skip_first\|initial_state\|not is_state.*home' /homeassistant/packages/garage_door_alerts.yaml /homeassistant/packages/garage_notifications_consolidated.yaml
+
+
+## GARAGE REMOTE/KEYPAD DEAD — ROOT CAUSE IS OBSTRUCTION (Not lock_remotes)
+- RECURRING: Jan 2026, Feb 2026, Mar 2026, Apr 2026 — same root cause every time
+- SYMPTOM: Van remote/keypad dead, solid orange keypad light, eyes completely dark
+- lock_remotes IS A RED HERRING — has never been the actual cause, stop chasing it
+- FIRST CHECK ALWAYS: ha_get_states on both obstruction sensors before anything else
+  binary_sensor.ratgdo32disco_fd8d8c_obstruction (North — chronic)
+  binary_sensor.ratgdo32disco_5735e8_obstruction (South — healthy)
+
+## NORTH DOOR OBSTRUCTION — CORRECT DIAGNOSIS (revised 2026-04-02)
+- PATTERN: off→on bouncing dozens of times/day every 1-2 seconds — NOT a wiring splice
+- DB history confirms: 7 days of constant off→on in same second — intermittent wire
+  would show extended off periods; this never does
+- ROOT CAUSE: ratgdo32disco_fd8d8c firmware false-reporting obstruction continuously
+  South board (5735e8) is identical hardware/wiring and is completely healthy
+- EYES GOING DARK: power loss to sensor circuit — ratgdo board cutting sensor power
+  during obstruction-check loop; cycling the door resets sensor power (LiftMaster
+  cycles 12V to sensor circuit during door operation)
+- WORKAROUND: Open/close door once to reset sensor power → eyes come back on
+- HA COMMANDS STILL WORK when obstructed — only physical remotes/keypads are blocked
+- ALERT: automation.garage_obstruction_alert fires after 30s sustained (filters
+  the constant false bounces); South fires after 10s
+- PERMANENT FIX OPTIONS (in order of likelihood to resolve):
+  1. Flash ratgdo North board (fd8d8c) to latest ESPHome firmware — most likely fix
+  2. Check/reseat North board wiring at opener terminals (not the sensor run itself)
+  3. Replace North ratgdo board — South is healthy so it's board-specific
+  4. Check ratgdo GitHub issues for obstruction false-positive reports on this chipset
+- DO NOT: re-splice sensor wire runs — South is fine on same wiring
+
+## GARAGE DIAGNOSTIC FAST-PATH — PASTE THIS FIRST IN ANY FUTURE SESSION
+# Run this before ANY garage troubleshooting — answers 90% of questions immediately:
+# ha_get_states: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+#                binary_sensor.ratgdo32disco_5735e8_obstruction
+#                lock.ratgdo32disco_fd8d8c_lock_remotes
+#                lock.ratgdo32disco_5735e8_lock_remotes
+#                cover.ratgdo32disco_fd8d8c_door
+#                cover.ratgdo32disco_5735e8_door
+# Decision tree:
+#   obstruction = ON  → firmware issue on North board, NOT wiring, NOT lock_remotes
+#   lock = locked     → send lock.unlock to both (but verify obstruction first)
+#   cover = open      → check auto_close automation fired correctly
+
+## NORTH DOOR OBSTRUCTION AUTO-RESET
+- automation.garage_north_obstruction_auto_reset handles it automatically now
+- Trigger: obstruction sustained >2min + door closed
+- Step 1: query_status (soft reset, often clears it)
+- Step 2: if still stuck → open/close cycle (restores 12V to sensor circuit)
+- Step 3: if still stuck → notifies with firmware flash URL
+- Firmware URL: http://ratgdo32disco-fd8d8c.local (flash via ESPHome web UI)
+- DO NOT manually cycle door at night — automation handles it silently
+
+## NEVER AUTO-CYCLE GARAGE DOOR FROM AUTOMATION (Hard lesson 2026-04-02)
+- Auto-reset automation caused 9 unintended open/close cycles in 16 minutes
+- FAILURE: obstruction bounces off->on every 1-2 seconds perpetually
+  for: 2min debounce does NOT work — sensor never truly clears so automation loops
+- RULE: NEVER trigger cover.open/close from obstruction sensor state — ever
+- RULE: Any door-actuating automation MUST have ALL of:
+  1. person.john_spencer == home condition
+  2. time 07:00-22:00 guard
+  3. input_boolean confirmation flag (human must enable it)
+  4. mode: single + explicit cooldown
+  5. max_runs counter helper to prevent looping
+- Obstruction is a FIRMWARE problem — only safe HA response is NOTIFY, never actuate
+- auto-reset automation (1775168359961) permanently deleted — DO NOT recreate
