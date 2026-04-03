@@ -331,3 +331,48 @@ Scope to subdirectory (e.g., `/homeassistant/packages/`) or use targeted path li
 - Obstruction alert re-enabled post-flash (safe now — no more false bounce spam)
 - If obstruction bouncing EVER returns: reflash to latest ratgdo firmware first
 - South board (5735e8): healthy throughout, never touched, firmware unchanged
+
+## SESSION HANDOFF — 2026-04-02 (Long night — read this first)
+
+### WHAT WAS FIXED TONIGHT
+1. clickAction regression (3rd time) — /lovelace/garage added to departure notification
+2. Garage notification overlap — 3-system conflict eliminated
+3. ratgdo North board (fd8d8c) — flashed v1394, chronic obstruction bounce FIXED
+4. Auto-cycling door disaster — automation I created caused 9 cycles, deleted+rules added
+5. 3 orphaned automations disabled — departure_garage_open_alert, departure_handle_garage_actions, garage_door_close_action_handler
+
+### SYSTEM STATE RIGHT NOW
+- Both doors: closed
+- Obstruction bouncing: STOPPED (post v1394 flash, confirmed by DB)
+- Obstruction alert: ON and safe (30s debounce filters any residual)
+- 3 disabled automations: off via MCP stub — survive restarts now
+- All git commits: a5a35a8, 60c1029, 01b1bee, f0f3384, e7aa87d
+
+### FIRST TEST TOMORROW
+Van remote should work — obstruction firmware was the only blocker
+
+### PENDING WORK (deferred, not urgent)
+1. Kitchen lighting audit — motion snappiness, P1 sensor consolidation,
+   manual override trumping automations. Questions were asked but not answered:
+   - Which zones = "first floor P1" — kitchen+lounge+entry or add living room?
+   - What feels awkward — passthrough flickering or slow response?
+   - Manual override: Option A/B/C (see earlier in session)
+   - Is binary_sensor.downstairs_motion a group sensor or physical?
+2. hac CLI missing from PATH — find and fix (run: find / -name hac -type f 2>/dev/null)
+3. Garage automation final cleanup — 3 disabled stubs still in package YAML,
+   could be fully removed eventually but low priority
+
+### MCP LIMITATIONS LEARNED TONIGHT
+- ha_config_remove_automation ONLY deletes UI-created automations, not package YAML
+- Package automations with unique_id survive restarts from YAML even if YAML edited
+- ha_config_set_automation CAN overwrite package automations with stubs (initial_state:false)
+- BusyBox sed does NOT support multiline {n;a\} syntax — use python3 for multi-line edits
+- HA config check output swallows terminal verify output — always MCP-verify after restart
+- Bouncing sensors (off->on same second) cannot be debounced with for: timers
+- NEVER actuate garage door from automation without: home + time + boolean flag + single mode
+
+### RATGDO STATUS
+- North (fd8d8c): v1394 flashed 2026-04-02, obstruction bounce resolved
+- South (5735e8): healthy, untouched, do not flash
+- OTA URL: http://ratgdo32disco-fd8d8c.local
+- Next firmware check: https://github.com/ratgdo/esphome-ratgdo/releases/latest
