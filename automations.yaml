@@ -2179,28 +2179,34 @@
   max: 5
 - id: '1774885017404'
   alias: Garage - Unlock Remotes on Ratgdo Reconnect
-  description: Both ratgdo boards come back from reboot with lock_remotes in locked
-    state (read from opener hardware NVRAM). This automation fires immediately when
-    either board reconnects from unavailable and sends unlock to both. Prevents keypad/remote
-    lockout after any ratgdo reboot, OTA, or HA restart.
+  description: 'Fires on ANY ratgdo reconnect from unavailable — regardless of reported
+    lock state. Previous version only triggered on unavailable→locked which missed
+    cases where board reports unlocked but hardware is still locked. Sends unlock
+    to both boards on every reconnect as a safety net. 2026-04-02: fixed trigger to
+    remove ''to: locked'' filter.'
   triggers:
   - platform: state
     entity_id:
     - lock.ratgdo32disco_fd8d8c_lock_remotes
     - lock.ratgdo32disco_5735e8_lock_remotes
     from: unavailable
-    to: locked
   actions:
-  - target:
+  - action: lock.unlock
+    target:
       entity_id:
       - lock.ratgdo32disco_fd8d8c_lock_remotes
       - lock.ratgdo32disco_5735e8_lock_remotes
-    action: lock.unlock
-  - data:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
       title: "Garage \U0001F513"
-      message: Ratgdo rebooted — remotes auto-unlocked.
-    action: notify.mobile_app_john_s_s26_ultra
+      message: Ratgdo reconnected — remotes auto-unlocked.
+      data:
+        tag: garage_ratgdo_reconnect
+        ttl: 0
+        priority: high
+        clickAction: /lovelace/garage
   mode: parallel
+  max: 10
 - id: garage_arrival_smart_popup
   alias: Garage - Smart Arrival Dashboard Popup
   description: 'Shows garage control notification when approaching home in the van.
@@ -2285,3 +2291,90 @@
     action: notify.mobile_app_john_s_s26_ultra
   mode: restart
   max_exceeded: silent
+- id: '1775094930161'
+  alias: Living Room — Ella Overnight Auto-Off at Midnight
+  description: 'One-shot midnight kill: turns off all living room lights. Created
+    for Ella sleepover 2026-04-01. Self-disables after firing.'
+  triggers:
+  - platform: time
+    at: 00:00:00
+  actions:
+  - target:
+      entity_id:
+      - light.living_room_floor_lamps
+      - light.living_room_table_lamps
+      - light.living_room_lamp_1_of_2
+      - light.living_room_lamp_2_of_2
+      - light.living_room_lounge_lamp
+      - light.living_room_tv_led_strip
+      - light.living_room_north_wall_east_nightlight
+      - light.living_room_north_wall_west_nightlight
+      - light.inovelli_vzm36_light_3
+      - light.inovelli_vzm36_light_4
+    action: light.turn_off
+  - target:
+      entity_id: automation.living_room_ella_overnight_auto_off_at_midnight
+    action: automation.turn_off
+  mode: single
+- id: '1775167876287'
+  alias: Garage - Obstruction Alert (North Door Chronic)
+  description: 'Alerts when obstruction goes ON and STAYS on for 30s — filters out
+    the constant 0-1 second false bounces that happen dozens of times per day on North
+    door (fd8d8c). Only fires on genuine sustained obstruction. Root cause: ratgdo32disco_fd8d8c
+    firmware false-reporting, not wiring. South door (5735e8) is healthy.'
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.ratgdo32disco_fd8d8c_obstruction
+    to: 'on'
+    for:
+      seconds: 30
+  - platform: state
+    entity_id: binary_sensor.ratgdo32disco_5735e8_obstruction
+    to: 'on'
+    for:
+      seconds: 10
+  actions:
+  - data:
+      title: ⚠️ Garage Obstruction
+      message: '{{ ''North'' if trigger.entity_id == ''binary_sensor.ratgdo32disco_fd8d8c_obstruction''
+        else ''South'' }} door obstruction sustained — remotes and keypad will not
+        work. Try cycling the door once to reset sensor power.'
+      data:
+        tag: garage_obstruction
+        channel: Garage Alerts
+        clickAction: /lovelace/garage
+        ttl: 0
+        priority: high
+        sticky: true
+    action: notify.mobile_app_john_s_s26_ultra
+  mode: parallel
+- id: departure_garage_open_alert
+  alias: Departure - Garage Open Alert
+  description: DISABLED 2026-04-02 — orphaned, replaced by garage_auto_close_departure
+    in garage_quick_open.yaml
+  triggers:
+  - platform: state
+    entity_id: input_boolean.kitchen_lounge_manual_override
+    to: unavailable
+  actions: []
+  initial_state: false
+- id: departure_garage_action_handler
+  alias: Departure - Handle Garage Actions
+  description: DISABLED 2026-04-02 — orphaned, parent automation departure_garage_open_alert
+    disabled
+  triggers:
+  - entity_id: input_boolean.kitchen_lounge_manual_override
+    platform: state
+    to: unavailable
+  actions: []
+  initial_state: false
+- id: garage_door_close_action_handler
+  alias: Garage - Close Action Handler (Consolidated)
+  description: DISABLED 2026-04-02 — orphaned, CLOSE_NORTH_NOW/CLOSE_SOUTH_NOW actions
+    no longer sent by any active automation
+  triggers:
+  - entity_id: input_boolean.kitchen_lounge_manual_override
+    platform: state
+    to: unavailable
+  actions: []
+  initial_state: false
