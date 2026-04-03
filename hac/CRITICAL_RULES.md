@@ -376,3 +376,12 @@ Van remote should work — obstruction firmware was the only blocker
 - South (5735e8): healthy, untouched, do not flash
 - OTA URL: http://ratgdo32disco-fd8d8c.local
 - Next firmware check: https://github.com/ratgdo/esphome-ratgdo/releases/latest
+
+## RATGDO STATUS OBSTRUCTION TOGGLE — PERMANENT WORKAROUND (2026-04-03)
+- Firmware 2026.3.1 still bounces obstruction every 1-2 hours (reduced from every few seconds)
+- PERMANENT FIX: Toggle "Status obstruction" OFF in ratgdo web UI
+- URL: http://ratgdo32disco-fd8d8c.local → Status obstruction row → toggle Off
+- Physical LiftMaster safety beam still works independently — toggling this off is SAFE
+- After any ratgdo restart/OTA: check Status obstruction is still OFF
+- DO NOT rely on binary_sensor.ratgdo32disco_fd8d8c_obstruction in HA — always false-positive
+- Root cause: North board hardware issue, not firmware-fixable
