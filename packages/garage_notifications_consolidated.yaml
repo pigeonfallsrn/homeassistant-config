@@ -7,6 +7,7 @@ automation:
   # === DOOR OPENED - SHOW CLOSE BUTTON ===
   - id: garage_door_opened_close_option
     alias: "Garage - Door Opened (Show Close Button)"
+    initial_state: false
     description: "When either door opens while home, show notification with large close button"
     trigger:
       - platform: state
@@ -45,41 +46,6 @@ automation:
     max: 2
 
   # === CLOSE ACTION HANDLER ===
-  - id: garage_door_close_action_handler
-    alias: "Garage - Close Action Handler (Consolidated)"
-    description: "Handles close button presses for both doors"
-    trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "CLOSE_NORTH_NOW"
-        id: north
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "CLOSE_SOUTH_NOW"
-        id: south
-    action:
-      - service: cover.close_cover
-        target:
-          entity_id: "{{ 'cover.ratgdo32disco_fd8d8c_door' if trigger.id == 'north' else 'cover.ratgdo32disco_5735e8_door' }}"
-      - service: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: "clear_notification"
-          data:
-            tag: "garage_{{ trigger.id }}_close"
-      - service: notify.mobile_app_john_s_s26_ultra
-        data:
-          title: "✅ Garage"
-          message: "{{ 'North' if trigger.id == 'north' else 'South' }} door closing..."
-          data:
-            tag: "garage_close_confirm"
-            timeout: 5
-            ttl: 0
-    mode: parallel
-    max: 2
-
-  # === AUTO-CLEAR NOTIFICATIONS ===
   - id: garage_door_notifications_autoclear
     alias: "Garage - Auto-Clear Notifications on Close"
     description: "Clear all garage notifications when doors close"
