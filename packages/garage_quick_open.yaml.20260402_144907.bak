@@ -73,7 +73,6 @@ automation:
             tag: "garage_auto_close"
             ttl: 0
             priority: high
-            clickAction: "/lovelace/garage"
             actions:
               - action: "CANCEL_AUTO_CLOSE"
                 title: "KEEP OPEN"

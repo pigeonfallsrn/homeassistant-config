@@ -24,7 +24,6 @@ template:
           {% set snooze = states('input_datetime.garage_north_snooze_until') %}
           {% set snooze_ts = as_timestamp(snooze, 0) %}
           {{ is_state('cover.ratgdo32disco_fd8d8c_door', 'open') and
-             not is_state('person.john_spencer', 'home') and
              now().timestamp() > snooze_ts }}
           
       - name: "Garage South Door Alert Active"
@@ -33,7 +32,6 @@ template:
           {% set snooze = states('input_datetime.garage_south_snooze_until') %}
           {% set snooze_ts = as_timestamp(snooze, 0) %}
           {{ is_state('cover.ratgdo32disco_5735e8_door', 'open') and
-             not is_state('person.john_spencer', 'home') and
              now().timestamp() > snooze_ts }}
 
 alert:
@@ -47,7 +45,7 @@ alert:
       - 30
       - 60
     can_acknowledge: true
-    skip_first: true
+    skip_first: false
     title: "🚗 Garage North Door Open"
     message: "North garage door has been open for {{ relative_time(states.cover.ratgdo32disco_fd8d8c_door.last_changed) }}"
     done_message: "clear_notification"
@@ -76,7 +74,7 @@ alert:
       - 30
       - 60
     can_acknowledge: true
-    skip_first: true
+    skip_first: false
     title: "🚗 Garage South Door Open"
     message: "South garage door has been open for {{ relative_time(states.cover.ratgdo32disco_5735e8_door.last_changed) }}"
     done_message: "clear_notification"
