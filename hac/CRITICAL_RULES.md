@@ -322,3 +322,12 @@ Scope to subdirectory (e.g., `/homeassistant/packages/`) or use targeted path li
   5. max_runs counter helper to prevent looping
 - Obstruction is a FIRMWARE problem — only safe HA response is NOTIFY, never actuate
 - auto-reset automation (1775168359961) permanently deleted — DO NOT recreate
+
+## RATGDO NORTH DOOR FIRMWARE FIX — CONFIRMED RESOLVED 2026-04-02
+- Flashed v1394 (v32disco-esp32.ota.bin) via OTA at ~20:16 local time
+- DB confirms: zero obstruction bounces after 20:16:35 — complete silence
+- Before flash: dozens of off->on bounces per hour, every day, since Jan 2026
+- After flash: board came back online, obstruction = on (static), no more bouncing
+- Obstruction alert re-enabled post-flash (safe now — no more false bounce spam)
+- If obstruction bouncing EVER returns: reflash to latest ratgdo firmware first
+- South board (5735e8): healthy throughout, never touched, firmware unchanged
