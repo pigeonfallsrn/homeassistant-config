@@ -39,7 +39,6 @@ automation:
             sticky: true
             timeout: 300
             notification_icon: "mdi:home-import-outline"
-            clickAction: "/lovelace/garage"
             color: "#4CAF50"
             actions:
               - action: "ARRIVAL_OPEN_NORTH"
@@ -48,7 +47,7 @@ automation:
                 title: "🚪 South"
               - action: "URI"
                 title: "📱 Dashboard"
-                uri: "/lovelace/garage"
+                uri: "/lovelace/arriving-home"
     mode: single
 # DISABLED - 
 # DISABLED -   - id: arrival_notification_alaina
