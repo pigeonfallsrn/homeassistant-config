@@ -35,3 +35,4 @@ zigbee.db*
 .cache/
 ip_bans.yaml
 www/community/
+hac/.last_health_check
