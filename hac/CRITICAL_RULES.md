@@ -401,3 +401,10 @@ Van remote should work — obstruction firmware was the only blocker
 - File: v32disco-esp32.ota.bin from https://github.com/ratgdo/esphome-ratgdo/releases/latest
 - South had ESPHome dropout 2026-04-03 — possibly firmware-related
 - After flash: verify cover.ratgdo32disco_5735e8_door updates normally
+
+## BOTH RATGDO BOARDS NOW ON 2026.3.1 (2026-04-03)
+- South (5735e8): flashed successfully via ratgdo installer page OTA firmware
+- North (fd8d8c): flashed 2026-04-02
+- Both boards healthy, communicating, locks unlocked
+- North still has hardware obstruction bounce — cosmetic only, door operates fine
+- South obstruction: clean (off) post-flash
