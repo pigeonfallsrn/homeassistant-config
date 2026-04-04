@@ -429,3 +429,50 @@ Van remote should work — obstruction firmware was the only blocker
 ### clickAction verify command
 grep -rn 'clickAction' /homeassistant/packages/garage*.yaml \
   /homeassistant/packages/notifications_system.yaml
+
+## SYSTEM AUDIT 2026-04-04 — SESSION HANDOFF
+
+### Completed This Session
+- Both ratgdo boards on 2026.3.1 ✅
+- Notification architecture finalized — one tag per scenario ✅
+- Garage automation audit complete — 21 active, 3 disabled stubs ✅
+- Backup created: afd36e7c (Pre_System_Audit_2026-04-04)
+
+### NEXT SESSION 1 — configuration.yaml fixes (HIGH PRIORITY)
+Dead entity references silently breaking templates in configuration.yaml:
+- Lines 38-39: person.alaina → person.alaina_spencer
+                person.ella → person.ella_spencer
+- Line 45: device_tracker.alaina_iphone → device_tracker.alaina_s_iphone
+           device_tracker.ella_iphone → device_tracker.ellas_iphone
+           device_tracker.john_s24 → device_tracker.sm_s948u1_john_s_s26_ultra
+Real entity IDs confirmed: person.alaina_spencer, person.ella_spencer,
+  device_tracker.alaina_s_iphone, device_tracker.alaina_s_iphone_17,
+  device_tracker.ellas_iphone, device_tracker.sm_s948u1_john_s_s26_ultra
+
+START NEXT SESSION WITH:
+  grep -n 'person.alaina\|person.ella\|john_s24\|alaina_iphone\|ella_iphone' \
+    /homeassistant/configuration.yaml
+
+### NEXT SESSION 2 — Git push to GitHub (SAFETY CRITICAL)
+- 229+ commits never pushed to remote — total loss if HA Green fails
+- Need GitHub private repo + git remote add origin + git push
+- START: cd /homeassistant && git remote -v && git log --oneline | wc -l
+
+### NEXT SESSION 3 — Kitchen lighting audit
+Questions already answered in prior session — ready to implement:
+- Motion snappiness: transition:0 already set, investigate P1 sensor placement
+- P1 zones: kitchen + lounge + entry as first floor combined
+- Manual override: Option A (switch press → override on, resets after no motion)
+- downstairs_motion: clarify if group or physical, been ON since yesterday
+
+### NEXT SESSION 4 — Cleanup
+- Remove 8 .bak files from packages/ (git is the backup)
+- Recorder: add cover.ratgdo* glob to exclude per-second ESPHome polling
+- Automation categories in HA UI (159 automations, no organization)
+- Presence tracker cleanup: verify/remove stale S24 tracker
+
+### SYSTEM STATE RIGHT NOW
+- HA 2026.4.0, OS 17.1 — both current
+- 3,206 entities, 159 automations, 30 packages, 560MB DB
+- All updates current, no errors in logs
+- Disk: 19GB/28GB used (71%)
