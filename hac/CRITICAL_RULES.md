@@ -494,3 +494,32 @@ Questions already answered in prior session — ready to implement:
 - WORKING METHOD: MCP → ha_call_service(shell_command, git_push, return_response=True)
 - shell_command.git_push = 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
 - GIT_TERMINAL_PROMPT=0 required or git fails silently with no output
+
+
+## MCP SHELL_COMMANDS — REGISTERED COMMANDS (2026-04-04)
+All callable via ha_call_service(shell_command, <name>, return_response=True, wait=True)
+
+| Command | Does |
+|---|---|
+| git_push | push origin main — ALWAYS use via MCP, never terminal |
+| git_status | list commits pending vs origin/main |
+| git_last_commit | HEAD hash + message (--oneline) |
+| read_critical_rules | cat /config/hac/CRITICAL_RULES.md |
+| read_handoff | cat /config/hac/HANDOFF.md |
+| mcp_session_init | git_status + git_last_commit in one call |
+
+## SHELL_COMMAND YAML — HARD RULES (Times Hit: 3+ this session)
+- NEVER use {{ }} Jinja2 templates in shell_command values in configuration.yaml
+  HA resolves templates at config load time — undefined var = silent registration
+  failure for the ENTIRE shell_command block. Use static paths only.
+  WRONG: read_file: 'cat {{ filepath }}'
+  RIGHT: read_critical_rules: 'cat /config/hac/CRITICAL_RULES.md'
+- ha core check returns NON-ZERO for "Successful config (partial)" due to
+  map/packages integration warnings. This BREAKS && chains. Never use
+  ha core check as a gate: cmd && ha core check && ha core restart
+  Instead: run ha core check to validate visually, then restart in separate step.
+- After any restart, test NEW commands first (not git_push — it persists from old
+  load). If new commands return 400 Bad Request, config did NOT load. Restart again.
+- Restart via MCP: ha_call_service(homeassistant, restart, wait=False) → expect
+  504 timeout (normal — HA cuts connection). CONNECTION_FAILED on next call = still
+  booting. 400 on new command = booted but config load failed.
