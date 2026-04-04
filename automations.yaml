@@ -2425,3 +2425,12 @@
         target:
           entity_id: button.ratgdo32disco_fd8d8c_restart
   mode: single
+- id: '1775269879608'
+  alias: TEMP - Git Push to GitHub
+  description: One-time automation to push git commits. Delete after use.
+  triggers:
+  - platform: event
+    event_type: TRIGGER_GIT_PUSH
+  actions:
+  - action: shell_command.git_push_to_github
+  mode: single
