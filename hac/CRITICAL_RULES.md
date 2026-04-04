@@ -300,15 +300,6 @@ Scope to subdirectory (e.g., `/homeassistant/packages/`) or use targeted path li
 #   lock = locked     → send lock.unlock to both (but verify obstruction first)
 #   cover = open      → check auto_close automation fired correctly
 
-## NORTH DOOR OBSTRUCTION AUTO-RESET
-- automation.garage_north_obstruction_auto_reset handles it automatically now
-- Trigger: obstruction sustained >2min + door closed
-- Step 1: query_status (soft reset, often clears it)
-- Step 2: if still stuck → open/close cycle (restores 12V to sensor circuit)
-- Step 3: if still stuck → notifies with firmware flash URL
-- Firmware URL: http://ratgdo32disco-fd8d8c.local (flash via ESPHome web UI)
-- DO NOT manually cycle door at night — automation handles it silently
-
 ## NEVER AUTO-CYCLE GARAGE DOOR FROM AUTOMATION (Hard lesson 2026-04-02)
 - Auto-reset automation caused 9 unintended open/close cycles in 16 minutes
 - FAILURE: obstruction bounces off->on every 1-2 seconds perpetually
@@ -385,14 +376,6 @@ Van remote should work — obstruction firmware was the only blocker
 - After any ratgdo restart/OTA: check Status obstruction is still OFF
 - DO NOT rely on binary_sensor.ratgdo32disco_fd8d8c_obstruction in HA — always false-positive
 - Root cause: North board hardware issue, not firmware-fixable
-
-## SOUTH RATGDO FIRMWARE — NEEDS FLASH (2026-04-03)
-- South board (5735e8) still on 2025.8.4 — same firmware that caused North issues
-- North board (fd8d8c) on 2026.3.1 — flashed 2026-04-02, working correctly
-- South board needs same v1394 flash: http://ratgdo32disco-5735e8.local
-- File: v32disco-esp32.ota.bin from https://github.com/ratgdo/esphome-ratgdo/releases/latest
-- South had ESPHome dropout 2026-04-03 — possibly firmware-related
-- After flash: verify cover.ratgdo32disco_5735e8_door updates normally
 
 ## SOUTH RATGDO FIRMWARE — NEEDS FLASH (2026-04-03)
 - South board (5735e8) still on 2025.8.4 — same firmware that caused North issues
@@ -523,3 +506,68 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
 - Restart via MCP: ha_call_service(homeassistant, restart, wait=False) → expect
   504 timeout (normal — HA cuts connection). CONNECTION_FAILED on next call = still
   booting. 400 on new command = booted but config load failed.
+## SECURITY/PRIVACY (Audited 2026-04-04)
+
+### Cloudflare Tunnel
+- trusted_proxies: 172.30.33.0/24 = standard Cloudflared Docker range (internal only) OK
+- use_x_forwarded_for: true required — verify this is present in configuration.yaml http: block
+- Zero Trust Access: NOT configured — HA login page exposed directly to internet
+  FIX: CF dashboard > Zero Trust > Access > Add Self-hosted > ha.myhomehub13.xyz
+       Policy: allow email=pigeonfallsrn@gmail.com
+       Bypass rule: path=/api/* (required for mobile app background webhooks)
+- WAF rate limiting: NOT configured — add rule: /api/auth/* 5 req/min/IP (CF > Security > WAF)
+- Country blocking: optional free-tier hardening in CF Security > WAF
+
+### SSH Add-on (a0d7b954_ssh v23.0.6, port 2222)
+- Port 2222 OK  protected: true OK  password auth: STILL ENABLED — FIX REQUIRED
+- FIX: Add-on Config tab — set password: "" (empty string disables password auth entirely)
+  Add authorized_keys list with your ed25519 public key
+  Generate on PC: ssh-keygen -t ed25519 -C "ha-ssh"
+  Paste ~/.ssh/id_ed25519.pub content into the authorized_keys field in add-on config
+  Apply + restart add-on + test connection before confirming password is disabled
+
+### Long-Lived Access Tokens
+- Git PAT lives in /config/.git/config in plaintext — visible to anyone with shell access
+  FIX: Replace with fine-grained PAT (GitHub Settings > Developer Settings > Fine-grained PATs)
+       Scope: pigeonfallsrn/homeassistant-config ONLY, Contents=Read+Write, 1-year expiry
+       Update URL: git -C /config remote set-url origin https://NEW_TOKEN@github.com/pigeonfallsrn/homeassistant-config.git
+  Set calendar reminder to rotate PAT annually
+- Audit all LLATs via HA Profile > Security tab — name/describe each, revoke unused
+- Token audit command (terminal): cat /homeassistant/.storage/auth.json | python3 -c "import sys,json; d=json.load(sys.stdin); [print(t.get('name','?'), t.get('created_at','?')) for t in d.get('data',{}).get('refresh_tokens',[]) if t.get('token_type')=='long_lived_access_token']"
+
+### Webhooks
+- Default local_only: true since HA 2023.9 — not on Nabu Casa so SniTun CVE does not apply OK
+- One-time audit: grep -rn 'local_only\|webhook_id' /homeassistant/packages/
+- RULE: NEVER create webhooks that trigger cover.* or lock.* actions (HA official guidance)
+- RULE: Webhook IDs = treat like passwords — unique, non-guessable, never copy from public blueprints
+
+### Recorder PII / DB Size
+- 92 device_tracker.* entities log GPS coordinates, MACs, IPs — HIGH PII, high poll rate
+- cover.ratgdo* and sensor.ratgdo*: ~1 state/sec ESPHome polling inflating DB (already in backlog)
+- Recommended recorder exclude (configuration.yaml — requires ha core restart after adding):
+    recorder:
+      exclude:
+        entity_globs:
+          - cover.ratgdo*
+          - sensor.ratgdo*
+          - device_tracker.*
+          - sensor.sun*
+          - weather.*
+        entities:
+          - sensor.last_boot
+          - sun.sun
+          - sensor.date
+- person.* entities: LOW volume (only changes on zone entry) — OK to keep for history
+- DB at 560MB / 19GB disk (71%) — excluding above will meaningfully slow DB growth rate
+
+### External Integrations Posture
+- Spotify Connect add-on: local LAN only OK
+- Music Assistant: local OK
+- ESPHome (ratgdo): local OK
+- No Nabu Casa, no Google Assistant cloud, no Alexa cloud bridge OK
+- Local-first architecture = minimal external cloud attack surface — good posture
+
+### CVE Verification
+- CVE-2026-34205 (2026-03-27): Unauthenticated add-on endpoints via host network mode
+  Fixed in Supervisor 2026.03.2 — verify: ha supervisor info | grep version (expect >= 2026.03.2)
+  HAOS 17.1 / Core 2026.4.0 should already include this fix

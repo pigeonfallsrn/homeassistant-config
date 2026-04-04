@@ -33,7 +33,7 @@ Step 5 — Commit + push:
 ## Top backlog items (priority order)
   1. [ ] configuration.yaml dead entity refs — person.alaina/ella, device_tracker.john_s24
          Fix: sed/python replace with confirmed real IDs (see CRITICAL_RULES.md)
-  2. [ ] South ratgdo firmware flash — http://ratgdo32disco-5735e8.local — v1394 OTA
+  2. [x] South ratgdo firmware flash — DONE 2026-04-03, both boards on 2026.3.1
   3. [ ] Kitchen lighting audit — P1 zones, manual override Option A, downstairs_motion group?
   4. [ ] Aqara sensor relocation — garage_north_door + garage_south_door
   5. [ ] Recorder: exclude cover.ratgdo* glob (per-second ESPHome polling)
@@ -42,6 +42,13 @@ Step 5 — Commit + push:
   8. [ ] Doorbell popup: browser_mod.popup on tablet. Needs browser_mod installed first.
   9. [ ] Calendar: verify right column fills with dense_section_placement:false on tablet
   10.[ ] Presence tracker cleanup: verify/remove stale S24 tracker
+  11.[ ] SSH: disable password auth — add-on Config tab: password: "", add authorized_keys
+  12.[ ] Cloudflare Zero Trust Access policy — add email-OTP for ha.myhomehub13.xyz, bypass /api/*
+  13.[ ] Cloudflare WAF — rate limit /api/auth/* (5 req/min/IP)
+  14.[ ] Git PAT — replace with fine-grained PAT, scope to 1 repo, Contents only, 1-year expiry
+  15.[ ] Recorder excludes — add device_tracker.*, cover.ratgdo*, sensor.ratgdo*, weather.* globs
+  16.[ ] Verify CVE-2026-34205: ha supervisor info | grep version (expect >= 2026.03.2)
+  17.[ ] HA LLAT audit — Profile > Security tab, name all tokens, revoke any unknown/unused
 
 ## System state (2026-04-04)
   HA 2026.4.0, OS 17.1 — both current
