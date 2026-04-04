@@ -571,3 +571,21 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
 - CVE-2026-34205 (2026-03-27): Unauthenticated add-on endpoints via host network mode
   Fixed in Supervisor 2026.03.2 — verify: ha supervisor info | grep version (expect >= 2026.03.2)
   HAOS 17.1 / Core 2026.4.0 should already include this fix
+
+## COMMUNITY AUDIT 2026-04-04 — CONFIRMED CLEAN (don't re-audit these)
+- configuration.yaml dead entity refs: grep -n confirms ZERO hits — config is clean
+- Legacy template syntax (platform: template): grep -rn confirms ZERO hits in packages/
+  All template entities already use modern template: syntax — no 2026.6 migration needed
+- .bak files in packages/: all 8 deleted, committed 16cf433, pushed
+- Recorder: purge_keep_days:7 + commit_interval:30 + entity_glob excludes = optimal for HA Green
+- auto_repack: true (default) confirmed — DB compacts every 2nd Sunday automatically
+- LEGACY TEMPLATE DEADLINE: 2026.6 (June 2026) — platform:template stops working entirely
+  Detection: grep -rn 'platform: template' /homeassistant/packages/ (should return zero)
+  Fix syntax: sensor: - platform: template → template: - sensor: - name: ...
+  ESPHome platform:template is NOT affected — only HA internal config files
+
+## KASA INTEGRATION — AUTH EXPIRY PATTERN
+- TP-Link Kasa cloud tokens expire periodically — shows as Repair error
+- Fix: Settings > Devices & Services > TP-Link Kasa > Re-authenticate (UI only, 2 min)
+- Not a security issue, not urgent, but clutters Repairs dashboard
+- Affected devices this session: Basement_Hallway HS200, Kitchen_Table_Chandelier HS220
