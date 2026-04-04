@@ -150,7 +150,8 @@ timer: !include timer.yaml
 
 # HAC Master Context Excel Auto-Export
 shell_command:
-  hac_export: 'bash -c "cd /homeassistant/hac && ./hac.sh export"'
+  hac_export: 'bash -c "cd /config/hac && ./hac.sh export"'
+  git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
 
 automation:
   - alias: "HAC: Daily Master Context Export"
