@@ -408,3 +408,24 @@ Van remote should work — obstruction firmware was the only blocker
 - Both boards healthy, communicating, locks unlocked
 - North still has hardware obstruction bounce — cosmetic only, door operates fine
 - South obstruction: clean (off) post-flash
+
+## GARAGE NOTIFICATION ARCHITECTURE — FINAL 2026-04-04
+### One tag per scenario — no stacking
+- ARRIVING (HFL/distance): tag=garage_arrival_dashboard, clickAction=/lovelace/garage
+- ARRIVED HOME: tag=arrival_john, clickAction=/lovelace/garage
+- DOOR OPENS AT ARRIVAL: tag=arrival_john (OVERWRITES welcome home — no stack)
+- DEPARTURE+OPEN: tag=garage_auto_close, clickAction=/lovelace/garage
+- ALERT (5min open, away): tag=garage_door_north/south, skip_first:true
+- WALK-IN DOOR: tag=garage_quick_open, clickAction=noAction
+
+### Tag ownership — never duplicate
+- arrival_john: notifications_system.yaml arrival_notification_john
+  + garage_door_opened_arrival_notification (overwrites)
+- garage_arrival_dashboard: garage_smart_arrival_dashboard_popup only
+- garage_auto_close: garage_auto_close_north_on_departure only
+- garage_door_north/south: native alert system only
+- garage_quick_open: garage_walk_in_door_quick_open only
+
+### clickAction verify command
+grep -rn 'clickAction' /homeassistant/packages/garage*.yaml \
+  /homeassistant/packages/notifications_system.yaml
