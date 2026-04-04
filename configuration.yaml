@@ -195,6 +195,10 @@ recorder:
       - sensor.*_device_temperature
       - button.*_identify
       - button.*_ping
+      - cover.ratgdo*
+      - sensor.ratgdo*
+      - device_tracker.*
+      - weather.*
     entities:
       - sun.sun
       - sensor.sun_next_dawn
