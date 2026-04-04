@@ -1959,36 +1959,22 @@
   mode: single
 - id: '1774662096455'
   alias: Garage — Door Opened Arrival Notification
-  description: 'When North or South garage door opens during an arrival window, send
-    actionable notification.
-
-
-    Ratgdo-first design — works even when GPS arrival fails.
-
-    Original fix (2025): replaced john_home == on with recency template (home OR became
-    home within 120s) to close GPS lag race condition. Root cause: door opened 8:02:45,
-    john_home flipped 8:03:03 — 18s gap.
-
-
-    2026-03-31 fix: tightened condition from ''john_home on OR person changed <120s''
-    to ''person OR john_home last_changed <180s''. Old condition fired on ANY door
-    open while home (e.g. someone entering, testing). New condition only fires during
-    a genuine arrival window — either entity must have changed within 3 min. 180s
-    chosen for GPS lag headroom.'
+  description: 'When North or South garage door opens during arrival window, overwrite
+    arrival_john tag instead of stacking a 3rd notification. 2026-04-04: tag changed
+    from garage_door_open_north/south to arrival_john.'
   triggers:
-  - platform: state
-    entity_id: cover.ratgdo32disco_fd8d8c_door
-    to: open
+  - entity_id: cover.ratgdo32disco_fd8d8c_door
     id: north_opened
-  - platform: state
-    entity_id: cover.ratgdo32disco_5735e8_door
+    platform: state
     to: open
+  - entity_id: cover.ratgdo32disco_5735e8_door
     id: south_opened
+    platform: state
+    to: open
   conditions:
   - condition: template
-    value_template: "{{ (as_timestamp(now()) - as_timestamp(states.person.john_spencer.last_changed))
-      < 180\n   or\n   (as_timestamp(now()) - as_timestamp(states.binary_sensor.john_home.last_changed))
-      < 180 }}"
+    value_template: '{{ (as_timestamp(now()) - as_timestamp(states.person.john_spencer.last_changed))
+      < 180 }}'
   actions:
   - choose:
     - conditions:
@@ -1998,9 +1984,9 @@
       - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "\U0001F513 North Garage Open"
-          message: North door is open
+          message: Arrived home — North door is open
           data:
-            tag: garage_door_open_north
+            tag: arrival_john
             group: garage
             channel: Garage
             importance: high
@@ -2009,14 +1995,12 @@
             sticky: true
             timeout: 300
             notification_icon: mdi:garage-open-variant
-            clickAction: /arriving-home
+            clickAction: /lovelace/garage
             actions:
             - action: CLOSE_NORTH
               title: "\U0001F512 Close North"
             - action: OPEN_SOUTH
               title: "\U0001F6AA Open South"
-            - action: OPEN_BOTH
-              title: "\U0001F6AA Both Open"
             - action: DISMISS_NORTH
               title: ✔️ All Good
     - conditions:
@@ -2026,9 +2010,9 @@
       - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "\U0001F513 South Garage Open"
-          message: South door is open
+          message: Arrived home — South door is open
           data:
-            tag: garage_door_open_south
+            tag: arrival_john
             group: garage
             channel: Garage
             importance: high
@@ -2037,14 +2021,12 @@
             sticky: true
             timeout: 300
             notification_icon: mdi:garage-open-variant
-            clickAction: /arriving-home
+            clickAction: /lovelace/garage
             actions:
             - action: CLOSE_SOUTH
               title: "\U0001F512 Close South"
             - action: OPEN_NORTH
               title: "\U0001F6AA Open North"
-            - action: OPEN_BOTH_FROM_SOUTH
-              title: "\U0001F6AA Both Open"
             - action: DISMISS_SOUTH
               title: ✔️ All Good
   mode: single
@@ -2210,34 +2192,20 @@
 - id: garage_arrival_smart_popup
   alias: Garage - Smart Arrival Dashboard Popup
   description: 'Shows garage control notification when approaching home in the van.
-
-
-    Trigger paths:
-
-    1. HFL BT MAC connects → fires if within 8km and not home (covers ''already close
-    when you get in the van'')
-
-    2. Distance drops below 1500m → fires if HFL currently connected and not home
-
-    3. Distance drops below 800m → backup if HFL connected and not home
-
-
-    mode: restart so Anderson St. false-start connects don''t block the real arrival.
-
-    Fix for: HFL connects after distance threshold already crossed (race condition
-    on short trips).'
+    clickAction fixed to /lovelace/garage (was /arriving-home). 2026-04-04: fixed
+    clickAction regression.'
   triggers:
-  - platform: state
-    entity_id: sensor.john_s_s26_ultra_bluetooth_connection
+  - entity_id: sensor.john_s_s26_ultra_bluetooth_connection
     id: hfl_connected
-  - platform: numeric_state
+    platform: state
+  - below: 1500
     entity_id: sensor.john_distance_to_home
-    below: 1500
     id: approaching
-  - platform: numeric_state
+    platform: numeric_state
+  - below: 800
     entity_id: sensor.john_distance_to_home
-    below: 800
     id: proximity
+    platform: numeric_state
   conditions:
   - condition: time
     after: 08:00:00
@@ -2263,34 +2231,35 @@
       state: closed
   actions:
   - data:
-      title: "\U0001F697 Arriving Home"
-      message: '{{ (states(''sensor.john_distance_to_home'') | float(0) / 1000) |
-        round(1) }}km away — Open garage door?'
       data:
-        tag: garage_arrival_dashboard
-        group: garage
-        channel: Garage Arrival
-        importance: high
-        ttl: 0
-        priority: high
-        sticky: true
-        timeout: 300
-        notification_icon: mdi:garage-variant
-        color: '#03A9F4'
         actions:
         - action: GARAGE_OPEN_NORTH
-          title: "\U0001F6AA OPEN NORTH"
+          title: "\U0001F511 North"
         - action: GARAGE_OPEN_SOUTH
-          title: "\U0001F6AA OPEN SOUTH"
+          title: "\U0001F511 South"
         - action: GARAGE_OPEN_BOTH
-          title: "\U0001F6AA OPEN BOTH"
+          title: "\U0001F511 Both"
         - action: GARAGE_DISMISS
           title: ❌ Dismiss
-        visibility: public
+        channel: Garage Arrival
+        clickAction: /lovelace/garage
+        color: '#03A9F4'
+        group: garage
+        importance: high
+        notification_icon: mdi:garage-variant
         persistent: true
+        priority: high
+        sticky: true
+        tag: garage_arrival_dashboard
+        timeout: 300
+        ttl: 0
+        visibility: public
+      message: '{{ (states(''sensor.john_distance_to_home'') | float(0) / 1000) |
+        round(1) }}km away — Open garage door?'
+      title: "\U0001F697 Arriving Home"
     action: notify.mobile_app_john_s_s26_ultra
-  mode: restart
   max_exceeded: silent
+  mode: restart
 - id: '1775094930161'
   alias: Living Room — Ella Overnight Auto-Off at Midnight
   description: 'One-shot midnight kill: turns off all living room lights. Created
@@ -2378,3 +2347,81 @@
     to: unavailable
   actions: []
   initial_state: false
+- id: '1775262164737'
+  alias: Garage - Ratgdo Board Watchdog
+  description: Monitors both ratgdo boards for ESPHome connection dropouts. If either
+    cover entity goes unavailable or stops updating for >2 hours, sends alert and
+    attempts board restart. South board (5735e8) had a 24hr silent dropout 2026-04-03
+    — board was pingable but ESPHome API had died.
+  triggers:
+  - platform: state
+    entity_id:
+    - cover.ratgdo32disco_fd8d8c_door
+    - cover.ratgdo32disco_5735e8_door
+    to: unavailable
+    for:
+      minutes: 5
+    id: unavailable
+  - platform: template
+    value_template: '{{ (as_timestamp(now()) - as_timestamp(states.cover.ratgdo32disco_5735e8_door.last_changed))
+      > 7200 and not is_state(''cover.ratgdo32disco_5735e8_door'', ''unavailable'')
+      }}'
+    for:
+      minutes: 1
+    id: south_stale
+  - platform: template
+    value_template: '{{ (as_timestamp(now()) - as_timestamp(states.cover.ratgdo32disco_fd8d8c_door.last_changed))
+      > 7200 and not is_state(''cover.ratgdo32disco_fd8d8c_door'', ''unavailable'')
+      }}'
+    for:
+      minutes: 1
+    id: north_stale
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: unavailable
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          title: ⚠️ Ratgdo Board Offline
+          message: '{{ trigger.to_state.attributes.friendly_name }} went unavailable.
+            Attempting restart...'
+          data:
+            tag: ratgdo_watchdog
+            clickAction: /lovelace/garage
+            ttl: 0
+            priority: high
+    - conditions:
+      - condition: trigger
+        id: south_stale
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          title: ⚠️ South Ratgdo Stale
+          message: South board hasn't reported in 2+ hours. Restarting board...
+          data:
+            tag: ratgdo_watchdog
+            clickAction: /lovelace/garage
+            ttl: 0
+            priority: high
+      - action: button.press
+        target:
+          entity_id: button.ratgdo32disco_5735e8_restart
+    - conditions:
+      - condition: trigger
+        id: north_stale
+      sequence:
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          title: ⚠️ North Ratgdo Stale
+          message: North board hasn't reported in 2+ hours. Restarting board...
+          data:
+            tag: ratgdo_watchdog
+            clickAction: /lovelace/garage
+            ttl: 0
+            priority: high
+      - action: button.press
+        target:
+          entity_id: button.ratgdo32disco_fd8d8c_restart
+  mode: single

@@ -35,14 +35,14 @@ template:
         state: >
           {{ is_state('person.john_spencer', 'home') or 
              is_state('person.michelle', 'home') or 
-             is_state('person.alaina', 'home') or 
-             is_state('person.ella', 'home') }}
+             is_state('person.alaina_spencer', 'home') or 
+             is_state('person.ella_spencer', 'home') }}
   
   - sensor:
       - name: "2nd Floor AP Clients"
         unique_id: 2nd_floor_ap_clients
         state: >
-          {% set devices = ['device_tracker.alaina_iphone','device_tracker.ella_iphone','device_tracker.john_s24'] %}
+          {% set devices = ['device_tracker.alaina_s_iphone','device_tracker.ellas_iphone','device_tracker.galaxy_s26_ultra'] %}
           {{ devices | select('is_state', 'home') | list | count }}
         unit_of_measurement: "devices"
 

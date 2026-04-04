@@ -33,3 +33,5 @@ __pycache__/
 *.pyc
 zigbee.db*
 .cache/
+ip_bans.yaml
+www/community/
