@@ -1,0 +1,133 @@
+# First Floor Motion Lighting — Zone Consolidation
+# Created: 2026-04-04
+# Zone A: first_floor_main_motion — kitchen P1 + west kitchen TR + entry P1 (12min)
+# Zone B: first_floor_hallway_motion — basement hall P1 + very front hall P1 (5min)
+# Uses template: syntax (same as motion_aggregation.yaml — confirmed working)
+# REQUIRES: ha core restart (package YAML)
+
+template:
+  - binary_sensor:
+      - name: "First Floor Main Motion"
+        unique_id: first_floor_main_motion
+        device_class: motion
+        state: >
+          {{ is_state('binary_sensor.kitchen_aqara_motion_sensor_p1_occupancy', 'on')
+             or is_state('binary_sensor.west_kitchen_sensor_motion_sensor_occupancy', 'on')
+             or is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on') }}
+
+      - name: "First Floor Hallway Motion"
+        unique_id: first_floor_hallway_motion
+        device_class: motion
+        state: >
+          {{ is_state('binary_sensor.basement_hallway_motion_sensor_occupancy', 'on')
+             or is_state('binary_sensor.very_front_door_motion_sensor_occupancy', 'on') }}
+
+input_boolean:
+  kitchen_manual_override:
+    name: "Kitchen Manual Override"
+    icon: mdi:hand-back-right
+
+automation:
+  - id: kitchen_ceiling_motion_lighting
+    alias: "Kitchen Ceiling — Motion Lighting"
+    description: >
+      3-tier time-aware motion lighting for kitchen chandelier + above sink.
+      Energize (06:00-21:30) / warm dim (21:30-23:00) / nightlight (23:00-06:00).
+      12-min auto-off suppressed when kitchen_manual_override is on.
+      Hot tub mode: full bypass.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "on"
+        id: motion_on
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "off"
+        for:
+          minutes: 12
+        id: motion_off
+    condition:
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: "off"
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: motion_on
+            sequence:
+              - choose:
+                  - conditions:
+                      - condition: time
+                        after: "06:00:00"
+                        before: "21:30:00"
+                    sequence:
+                      - action: light.turn_on
+                        target:
+                          entity_id:
+                            - light.kitchen_chandelier
+                            - light.kitchen_above_sink_light
+                        data:
+                          brightness_pct: 100
+                          color_temp_kelvin: 4000
+                          transition: 0
+                  - conditions:
+                      - condition: time
+                        after: "21:30:00"
+                        before: "23:00:00"
+                    sequence:
+                      - action: light.turn_on
+                        target:
+                          entity_id:
+                            - light.kitchen_chandelier
+                            - light.kitchen_above_sink_light
+                        data:
+                          brightness_pct: 60
+                          color_temp_kelvin: 3000
+                          transition: 0
+                default:
+                  - action: light.turn_on
+                    target:
+                      entity_id:
+                        - light.kitchen_chandelier
+                        - light.kitchen_above_sink_light
+                    data:
+                      brightness_pct: 20
+                      color_temp_kelvin: 2200
+                      transition: 0
+          - conditions:
+              - condition: trigger
+                id: motion_off
+              - condition: state
+                entity_id: input_boolean.kitchen_manual_override
+                state: "off"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.kitchen_chandelier
+                    - light.kitchen_above_sink_light
+                data:
+                  transition: 5
+
+  - id: kitchen_manual_override_auto_clear
+    alias: "Kitchen Manual Override — Auto-Clear on No Motion"
+    description: >
+      Clears kitchen_manual_override after 12min of no motion.
+      Ensures kitchen resets to motion-control after person leaves.
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "off"
+        for:
+          minutes: 12
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_manual_override
+        state: "on"
+    action:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.kitchen_manual_override
