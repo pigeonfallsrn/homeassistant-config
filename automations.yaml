@@ -2434,3 +2434,220 @@
   actions:
   - action: shell_command.git_push_to_github
   mode: single
+- id: kitchen_lounge_lamp_adaptive_control
+  alias: Kitchen Lounge Lamp - Adaptive Control
+  description: 'Manages lamp based on motion, lux, presence, time, and modes. Updated
+    2026-04-05: now uses first_floor_main_motion (combined P1+TR) instead of kitchen_lounge_motion
+    (TR only) — fixes slow response when motion detected by kitchen P1 but not west
+    TR sensor.'
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.first_floor_main_motion
+    to: 'on'
+    id: motion
+  - platform: state
+    entity_id: input_boolean.hot_tub_mode
+    id: hot_tub_toggle
+  - platform: state
+    entity_id: input_boolean.dad_bedtime_mode
+    to: 'on'
+    id: bedtime_on
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kitchen_lounge_manual_override
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: light.kitchen_lounge_lamp
+        data:
+          rgb_color:
+          - 255
+          - 30
+          - 0
+          brightness_pct: 5
+          transition: 2
+        action: light.turn_on
+      - target:
+          entity_id: switch.adaptive_lighting_living_spaces
+        action: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: bedtime_on
+      sequence:
+      - target:
+          entity_id: light.kitchen_lounge_lamp
+        data:
+          brightness_pct: 10
+          color_temp_kelvin: 2200
+          transition: 60
+        action: light.turn_on
+      - delay:
+          minutes: 15
+      - target:
+          entity_id: light.kitchen_lounge_lamp
+        data:
+          transition: 60
+        action: light.turn_off
+    - conditions:
+      - condition: trigger
+        id: motion
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.dad_bedtime_mode
+        state: 'off'
+      - condition: numeric_state
+        entity_id: sensor.kitchen_lounge_average_lux
+        below: input_number.kitchen_lounge_lux_threshold
+      sequence:
+      - target:
+          entity_id: switch.adaptive_lighting_living_spaces
+        action: switch.turn_on
+      - target:
+          entity_id: light.kitchen_lounge_lamp
+        data:
+          brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int
+            }}'
+        action: light.turn_on
+    - conditions:
+      - condition: trigger
+        id: hot_tub_toggle
+      - condition: state
+        entity_id: input_boolean.hot_tub_mode
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: switch.adaptive_lighting_living_spaces
+        action: switch.turn_on
+      - data:
+          entity_id: switch.adaptive_lighting_living_spaces
+          lights:
+          - light.kitchen_lounge_lamp
+          transition: 5
+        action: adaptive_lighting.apply
+  mode: restart
+- id: kitchen_lounge_lamp_activity_boost
+  alias: Kitchen Lounge Lamp - Activity Boost
+  description: 'Restore full brightness when motion detected while dimmed. Updated
+    2026-04-05: uses first_floor_main_motion.'
+  triggers:
+  - entity_id: binary_sensor.first_floor_main_motion
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kitchen_lounge_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  - condition: state
+    entity_id: light.kitchen_lounge_lamp
+    state: 'on'
+  - attribute: brightness
+    below: 100
+    condition: numeric_state
+    entity_id: light.kitchen_lounge_lamp
+  actions:
+  - data:
+      entity_id: switch.adaptive_lighting_living_spaces
+      lights:
+      - light.kitchen_lounge_lamp
+      transition: 2
+    action: adaptive_lighting.apply
+  mode: single
+- id: kitchen_lounge_lamp_no_motion_dim
+  alias: Kitchen Lounge Lamp - Dim After 8min No Motion
+  description: 'Dim lamp after 8min no motion. Updated 2026-04-05: uses first_floor_main_motion.'
+  triggers:
+  - entity_id: binary_sensor.first_floor_main_motion
+    for:
+      minutes: 8
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kitchen_lounge_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: light.kitchen_lounge_lamp
+    state: 'on'
+  - above: 50
+    attribute: brightness
+    condition: numeric_state
+    entity_id: light.kitchen_lounge_lamp
+  actions:
+  - data:
+      brightness_pct: 20
+      transition: 60
+    target:
+      entity_id: light.kitchen_lounge_lamp
+    action: light.turn_on
+  mode: single
+- id: kitchen_lounge_lamp_no_motion_off
+  alias: Kitchen Lounge Lamp - Off After 20min No Motion
+  description: 'Turn off lamp after 20min no motion. Updated 2026-04-05: uses first_floor_main_motion.'
+  triggers:
+  - entity_id: binary_sensor.first_floor_main_motion
+    for:
+      minutes: 20
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kitchen_lounge_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: light.kitchen_lounge_lamp
+    state: 'on'
+  actions:
+  - data:
+      transition: 60
+    target:
+      entity_id: light.kitchen_lounge_lamp
+    action: light.turn_off
+  mode: single
+- id: kitchen_manual_override_inovelli_trigger
+  alias: Kitchen Manual Override — Inovelli 2x Tap Set
+  description: Double-tap UP on kitchen chandelier or above-sink Inovelli switch sets
+    kitchen_manual_override ON. Prevents motion automation from turning lights off
+    mid-task. Override clears automatically after 12min of no motion via kitchen_manual_override_auto_clear.
+  triggers:
+  - event_data:
+      command: button_2_double
+      device_id: 17a59d3c437c3475f22c29dd2b76777a
+    event_type: zha_event
+    id: chandelier_2x_up
+    platform: event
+  - event_data:
+      command: button_2_double
+      device_id: 89ca030d64760ad87512e97d13a2737d
+    event_type: zha_event
+    id: sink_2x_up
+    platform: event
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.kitchen_manual_override
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      data:
+        priority: high
+        tag: kitchen_override
+        ttl: 0
+      message: Motion auto-off suppressed. Clears after 12min no motion.
+      title: Kitchen Override ON
+  mode: single
