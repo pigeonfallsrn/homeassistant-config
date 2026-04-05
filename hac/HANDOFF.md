@@ -16,8 +16,13 @@ Step 6: git add -A && git commit / then MCP git_push
   NONE — all high-priority items resolved or confirmed clean this session
 
 ## Top backlog items (priority order)
-  1. [ ] Kitchen lighting audit — P1 zones (kitchen+lounge+entry), manual override Option A,
-         clarify binary_sensor.downstairs_motion (group or physical? been ON since 2026-04-02)
+  1. [x] Kitchen lighting — P1 consolidation + manual override DONE (2026-04-05)
+         - binary_sensor.first_floor_main_motion: kitchen P1 + west kitchen TR + entry P1
+         - binary_sensor.first_floor_hallway_motion: basement hall P1 + very front P1
+         - automation.kitchen_ceiling_motion_lighting: 3-tier time-aware, 12min, mode:restart
+         - input_boolean.kitchen_manual_override: 2x up-tap either chandelier/sink Inovelli
+         - 4 lamp automations updated to first_floor_main_motion (was kitchen_lounge_motion only)
+         - downstairs_motion: CONFIRMED template sensor in motion_aggregation.yaml, working correctly
   2. [ ] Automation categories in HA UI — 159 automations, 0 categories
          Suggested scheme: Lighting / Presence / Garage / Notifications / Security /
          Climate / Media / Maintenance / Kids / Disabled-Archive
@@ -52,7 +57,7 @@ Step 6: git add -A && git commit / then MCP git_push
   3,206 entities, 159 automations, 30 packages (0 .bak files)
   Disk: ~19GB/28GB (71%) — DB excludes now reducing growth rate
   Both ratgdo boards: 2026.3.1, North obstruction toggle OFF (hardware workaround)
-  Git: clean, pushed to github.com/pigeonfallsrn/homeassistant-config (16cf433)
+  Git: clean, pushed to github.com/pigeonfallsrn/homeassistant-config (19a315e)
   2 Repairs open: Kasa HS200 + HS220 auth expiry (UI fix needed)
 
 ## shell_command registry (all confirmed working 2026-04-04)

@@ -180,6 +180,16 @@ Times Hit: 10+
 - `light.kitchen_west_wall_nightlight` friendly name → "Basement_Third Reality_Nightlight"
 - `light.kitchen_counter_night_light` friendly name → "Stairwell_Night_Light"
 
+
+## BINARY_SENSOR GROUP — delay_off NOT SUPPORTED (Times Hit: 1)
+- `platform: group` binary sensors do NOT support `delay_off` parameter
+- Adding `delay_off` to a group sensor causes the ENTIRE binary_sensor: block to fail silently
+- The input_boolean: and automation: blocks in the same package file still load fine
+- Fix: use `template:` binary_sensor instead — confirmed working in motion_aggregation.yaml
+- Pattern: template OR-logic sensors have no delay_off either; put debounce on the automation
+  (mode: restart + for: timer on the motion_off trigger is sufficient)
+- DETECTION: new binary_sensor group entity = 404 after restart → strip delay_off and restart
+
 ## Session Promotions
 - 2026-03-24: HAC: hac promote was silently writing to gist_output/03_knowledge.md which hac export overwrites on every run — fixed to write to CRITICAL_RULES.md under Session Promotions section
 - 2026-03-24: HAC: hac wrap added as hardwired session-close ritual — prints 3-question checklist (gotcha/deadend/backlog) then calls hac close — run this instead of hac close going forward
