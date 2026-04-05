@@ -190,6 +190,12 @@ Times Hit: 10+
   (mode: restart + for: timer on the motion_off trigger is sufficient)
 - DETECTION: new binary_sensor group entity = 404 after restart → strip delay_off and restart
 
+## HAC CLI — PATH FIX (confirmed 2026-04-05)
+- Script lives at: /homeassistant/hac/hac.sh
+- Fix: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac && chmod +x /homeassistant/hac/hac.sh
+- Permanent — survives reboots. Run once after any HAOS reinstall.
+- Duplicate at /homeassistant/scripts/hac.sh — canonical is /homeassistant/hac/hac.sh
+
 ## Session Promotions
 - 2026-03-24: HAC: hac promote was silently writing to gist_output/03_knowledge.md which hac export overwrites on every run — fixed to write to CRITICAL_RULES.md under Session Promotions section
 - 2026-03-24: HAC: hac wrap added as hardwired session-close ritual — prints 3-question checklist (gotcha/deadend/backlog) then calls hac close — run this instead of hac close going forward
