@@ -2158,17 +2158,6 @@
             tag: garage_door_open_south
   mode: parallel
   max: 5
-- id: '1774885017404'
-  alias: Garage - Unlock Remotes on Ratgdo Reconnect [DISABLED - firmware stable]
-  triggers:
-  - at: 03:00:00
-    platform: time
-  conditions:
-  - condition: template
-    value_template: '{{ false }}'
-  actions: []
-  initial_state: false
-  mode: single
 - id: garage_arrival_smart_popup
   alias: Garage - Smart Arrival Dashboard Popup
   description: 'Shows garage control notification when approaching home in the van.
@@ -2264,79 +2253,6 @@
   - target:
       entity_id: automation.living_room_ella_overnight_auto_off_at_midnight
     action: automation.turn_off
-  mode: single
-- id: '1775167876287'
-  alias: Garage - Obstruction Alert (North Door Chronic)
-  description: 'Alerts when obstruction goes ON and STAYS on for 30s — filters out
-    the constant 0-1 second false bounces that happen dozens of times per day on North
-    door (fd8d8c). Only fires on genuine sustained obstruction. Root cause: ratgdo32disco_fd8d8c
-    firmware false-reporting, not wiring. South door (5735e8) is healthy.'
-  triggers:
-  - platform: state
-    entity_id: binary_sensor.ratgdo32disco_fd8d8c_obstruction
-    to: 'on'
-    for:
-      seconds: 30
-  - platform: state
-    entity_id: binary_sensor.ratgdo32disco_5735e8_obstruction
-    to: 'on'
-    for:
-      seconds: 10
-  actions:
-  - data:
-      title: ⚠️ Garage Obstruction
-      message: '{{ ''North'' if trigger.entity_id == ''binary_sensor.ratgdo32disco_fd8d8c_obstruction''
-        else ''South'' }} door obstruction sustained — remotes and keypad will not
-        work. Try cycling the door once to reset sensor power.'
-      data:
-        tag: garage_obstruction
-        channel: Garage Alerts
-        clickAction: /lovelace/garage
-        ttl: 0
-        priority: high
-        sticky: true
-    action: notify.mobile_app_john_s_s26_ultra
-  mode: parallel
-- id: departure_garage_open_alert
-  alias: Departure - Garage Open Alert
-  description: DISABLED 2026-04-02 — orphaned, replaced by garage_auto_close_departure
-    in garage_quick_open.yaml
-  triggers:
-  - platform: state
-    entity_id: input_boolean.kitchen_lounge_manual_override
-    to: unavailable
-  actions: []
-  initial_state: false
-- id: departure_garage_action_handler
-  alias: Departure - Handle Garage Actions
-  description: DISABLED 2026-04-02 — orphaned, parent automation departure_garage_open_alert
-    disabled
-  triggers:
-  - entity_id: input_boolean.kitchen_lounge_manual_override
-    platform: state
-    to: unavailable
-  actions: []
-  initial_state: false
-- id: garage_door_close_action_handler
-  alias: Garage - Close Action Handler (Consolidated)
-  description: DISABLED 2026-04-02 — orphaned, CLOSE_NORTH_NOW/CLOSE_SOUTH_NOW actions
-    no longer sent by any active automation
-  triggers:
-  - entity_id: input_boolean.kitchen_lounge_manual_override
-    platform: state
-    to: unavailable
-  actions: []
-  initial_state: false
-- id: '1775262164737'
-  alias: Garage - Ratgdo Board Watchdog [DISABLED - firmware stable]
-  triggers:
-  - platform: time
-    at: 03:00:00
-  conditions:
-  - condition: template
-    value_template: '{{ false }}'
-  actions: []
-  initial_state: false
   mode: single
 - id: '1775269879608'
   alias: TEMP - Git Push to GitHub

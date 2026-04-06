@@ -4,49 +4,7 @@
 # ============================================================================
 
 automation:
-  # === DOOR OPENED - SHOW CLOSE BUTTON ===
-  - id: garage_door_opened_close_option
-    alias: "Garage - Door Opened (Show Close Button)"
-    unique_id: auto_d471473ed97245b1
-    initial_state: false
-    description: "When either door opens while home, show notification with large close button"
-    trigger:
-      - platform: state
-        entity_id: cover.ratgdo32disco_fd8d8c_door
-        to: "open"
-        id: north
-      - platform: state
-        entity_id: cover.ratgdo32disco_5735e8_door
-        to: "open"
-        id: south
-    condition:
-      - condition: state
-        entity_id: person.john_spencer
-        state: "home"
-    action:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          title: "🚗 {{ 'North' if trigger.id == 'north' else 'South' }} Door Open"
-          message: "Tap to close"
-          data:
-            tag: "garage_{{ trigger.id }}_close"
-            channel: "Garage Doors"
-            importance: high
-            ttl: 0
-            priority: high
-            sticky: false
-            timeout: 120
-            actions:
-              - action: "CLOSE_{{ trigger.id | upper }}_NOW"
-                title: "🚪 CLOSE DOOR"
-                # iOS specific - requires iOS Companion App 2023.1+
-                destructive: false
-                # Android specific
-                icon_url: "https://github.com/home-assistant/assets/raw/master/logo/logo-small.png"
-    mode: parallel
-    max: 2
 
-  # === CLOSE ACTION HANDLER ===
   - id: garage_door_notifications_autoclear
     alias: "Garage - Auto-Clear Notifications on Close"
     unique_id: auto_82a07bca007047d9
