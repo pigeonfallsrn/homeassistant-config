@@ -619,3 +619,69 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
 - Do NOT interpret post-deletion Repairs as new problems — count vs deleted automations first
 - adaptive_lighting_entry_lamp.yaml: 14 automations ALL failing as of 2026-04-06
   File exists but ALL broken — surgery required, this is S2 first task
+
+## ha core check — KeyError: triggers (FALSE POSITIVE, 2026-04-06)
+- `ha core check` run from SSH terminal while HA is starting returns
+  `KeyError: 'triggers'` for ALL automations — NOT a real config error
+- This is a timing issue: trigger registry not populated when check validator runs
+- REAL signal is at the BOTTOM of output:
+  "Successful config (partial)" + General Warnings: map + packages only = GREEN
+- The massive "Failed config: automation:" dump is the false positive — ignore it
+- NEVER use `ha core check && ...` as a gate — always returns non-zero, breaks chains
+- Correct workflow: run check → read bottom → restart separately if green
+
+## input_boolean SUB-FIELDS IN YAML — KILLS ENTIRE FILE (Times Hit: 2)
+- If input_boolean is registered in config store AND defined in YAML with sub-fields
+  (name:, icon:, initial:), the ENTIRE package file fails to load
+- ALL automations in that file show "failed to set up" / "unavailable"
+- Root cause: duplicate registration conflict between YAML definition and config store
+- Fix: strip sub-fields from YAML definition — leave only `helper_id:` with no children
+  WRONG: `hot_tub_mode:\n  name: Hot Tub Mode\n  icon: mdi:hot-tub`
+  RIGHT: `hot_tub_mode:`
+- Detection: multiple automations in same file all fail → check input_boolean block first
+- One-liner fix: python3 replace old block with stripped version
+
+## EMPTY YAML AUTOMATION STUB — CONFIG ERROR (2026-04-06)
+- A YAML automation block with only `- id: some_id` and no alias/trigger/action
+  causes config validation errors for that file
+- Detection: search for `- id: ` lines with nothing following in same block
+- Fix: single-line removal — `lines = [l for l in lines if 'stub_id' not in l]`
+- Found: `humidity_alert_2nd_floor` in notifications_system.yaml line 460
+
+## TRIAGE INSIGHT — MCP "unavailable" ≠ BROKEN SYSTEM (2026-04-06)
+- Large numbers of "unavailable" automations in MCP are almost always ghost registry
+  entries from old YAML-based automations that were renamed/moved/deleted
+- The actual YAML automations load fine — only the stale registry entries show unavailable
+- Confirmed: config dump showed full system working while MCP showed ~40 unavailable
+- Ghost entries self-clear on restart — DO NOT attempt MCP deletes on unavailable autos
+  without first checking YAML ownership with grep
+- Pattern: if ALL autos in one file are unavailable → file-level issue (helpers, syntax)
+  If random autos across files → ghost registry entries, clear on restart
+
+## TRIAGE — REVISED AUTOMATION COUNT (2026-04-06)
+- System has more working automations than triage inventory suggested
+- Config dump revealed working automations previously thought dead:
+  arrival_notification_john, arrival_notification_ella, arrival_notification_actions
+  bedtime_first_floor_lights_off_prompt, bedtime_lights_notification_actions
+  kitchen_manual_override_auto_clear (NOT broken — was ghost)
+  safety_all_lights_off_nobody_home, safety_main_areas_no_motion_off, safety_midnight_all_lights_off
+  update_occupancy_mode, apply_context_*, apply_context_on_time_change
+  refresh_school_tomorrow, refresh_school_in_session_now
+  ella/alaina: sleep_timer, night_path, gentle_wake, school_night, lights_off, weekend_midnight_off
+  garage: all 7 kept automations confirmed working
+  google_sheets: all 3 confirmed working
+  humidity: smart_shower_alert, smart_actions, fan_unpause, fan_block_when_paused
+  upstairs_hallway_motion_lighting_v2 confirmed working
+- Triage categories remaining: upstairs lighting, occupancy deep-dive, safety confirm,
+  Google Sheets verify, HAC/utility
+
+## ADAPTIVE_LIGHTING_ENTRY_LAMP.YAML — ARCHITECTURE SUMMARY (2026-04-06)
+- 560-line file contains FOUR systems:
+  1. Entry Lamp Chain (motion/lux/time/mode control) — all automations WORKING post-fix
+  2. Hot Tub Mode (auto-reset, auto-off, living room lamp, notification + actions)
+  3. Extended Evening Mode (auto-set Fri/Sat/holiday at 18:00, auto-clear at 04:00)
+  4. Arrival AL Welcome (entry lamp on arrival, 3 triggers: person/garage/front door)
+- Template sensors in file: evening_lamp_off_time, evening_lamp_max_brightness,
+  entry_room_average_lux — all required by lamp chain automations
+- Hot tub mode turn_off/turn_on refs stale entity IDs (15min vs 5min in alias) — cosmetic bug
+- DO NOT delete this file — all 14 automations are functional and desired
