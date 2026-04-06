@@ -62,6 +62,7 @@ automation:
   # ===========================================================================
   - id: humidity_smart_shower_alert
     alias: "Humidity - Smart Shower Alert (Low House Humidity)"
+    unique_id: auto_b77a291537244bd7
     trigger:
       - platform: state
         entity_id: binary_sensor.shower_detected
@@ -80,7 +81,7 @@ automation:
         entity_id: input_boolean.bathroom_fan_paused
         state: "off"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🚿 Shower + Low Humidity"
           message: >
@@ -107,6 +108,7 @@ automation:
   # ===========================================================================
   - id: humidity_smart_actions
     alias: "Humidity - Smart Alert Actions"
+    unique_id: auto_f8f345a1d7bb4e1b
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -145,30 +147,30 @@ automation:
               - condition: trigger
                 id: skip_10
             sequence:
-              - service: input_boolean.turn_on
+              - action: input_boolean.turn_on
                 target:
                   entity_id: input_boolean.bathroom_fan_paused
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=10) }}"
-              - service: fan.turn_off
+              - action: fan.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
               - condition: trigger
                 id: skip_30
             sequence:
-              - service: input_boolean.turn_on
+              - action: input_boolean.turn_on
                 target:
                   entity_id: input_boolean.bathroom_fan_paused
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=30) }}"
-              - service: fan.turn_off
+              - action: fan.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
@@ -179,39 +181,39 @@ automation:
                   - condition: trigger
                     id: pause_12h_old
             sequence:
-              - service: input_boolean.turn_on
+              - action: input_boolean.turn_on
                 target:
                   entity_id: input_boolean.bathroom_fan_paused
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(hours=12) }}"
-              - service: fan.turn_off
+              - action: fan.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
           - conditions:
               - condition: trigger
                 id: pause_15
             sequence:
-              - service: input_boolean.turn_on
+              - action: input_boolean.turn_on
                 target:
                   entity_id: input_boolean.bathroom_fan_paused
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.bathroom_fan_pause_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: fan.turn_off
+              - action: fan.turn_off
                 target:
                   entity_id: fan.inovelli_vzm35_sn_fan
       # Clear notification
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:
             tag: "humidity_shower_alert"
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:
@@ -223,6 +225,7 @@ automation:
   # ===========================================================================
   - id: humidity_fan_unpause
     alias: "Humidity - Unpause Fan When Time Expires"
+    unique_id: auto_5f16fc28c9b24214
     trigger:
       - platform: time_pattern
         minutes: "/1"
@@ -234,7 +237,7 @@ automation:
         value_template: >
           {{ now() > states('input_datetime.bathroom_fan_pause_until') | as_datetime }}
     action:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.bathroom_fan_paused
     mode: single
@@ -244,6 +247,7 @@ automation:
   # ===========================================================================
   - id: humidity_fan_block_when_paused
     alias: "Humidity - Block Fan Auto-On When Paused"
+    unique_id: auto_494249c0a92d4886
     trigger:
       - platform: state
         entity_id: fan.inovelli_vzm35_sn_fan
@@ -253,7 +257,7 @@ automation:
         entity_id: input_boolean.bathroom_fan_paused
         state: "on"
     action:
-      - service: fan.turn_off
+      - action: fan.turn_off
         target:
           entity_id: fan.inovelli_vzm35_sn_fan
     mode: single

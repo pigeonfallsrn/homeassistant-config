@@ -10,6 +10,7 @@ automation:
   # ===========================================================================
   - id: garage_quick_open_walkin
     alias: "Garage - Walk-in Door Quick Open"
+    unique_id: auto_2c31c9da7c5d45ee
     trigger:
       - platform: state
         entity_id: binary_sensor.garage_entry_room_walk_in_door_aqara_door_sensor_door
@@ -27,7 +28,7 @@ automation:
             entity_id: cover.ratgdo32disco_5735e8_door
             state: "closed"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🚪 Garage"
           message: "Walk-in door opened — open the van door?"
@@ -55,6 +56,7 @@ automation:
   # ===========================================================================
   - id: garage_auto_close_departure
     alias: "Garage - Auto Close North on Departure"
+    unique_id: auto_49de33af96ac43b6
     trigger:
       - platform: state
         entity_id: person.john_spencer
@@ -65,7 +67,7 @@ automation:
         entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "open"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🚪 Garage Still Open"
           message: "North door closing in 60s — tap to cancel"
@@ -101,7 +103,7 @@ automation:
           - condition: template
             value_template: "{{ wait.trigger and wait.trigger.id == 'cancelled' }}"
         then:
-          - service: notify.mobile_app_john_s_s26_ultra
+          - action: notify.mobile_app_john_s_s26_ultra
             data:
               message: "clear_notification"
               data:
@@ -111,7 +113,7 @@ automation:
           - condition: template
             value_template: "{{ wait.trigger and wait.trigger.id == 'returned' }}"
         then:
-          - service: notify.mobile_app_john_s_s26_ultra
+          - action: notify.mobile_app_john_s_s26_ultra
             data:
               title: "🏠 Welcome Back"
               message: "Auto-close cancelled"
@@ -123,10 +125,10 @@ automation:
           - condition: template
             value_template: "{{ wait.trigger and wait.trigger.id == 'close_now' }}"
         then:
-          - service: cover.close_cover
+          - action: cover.close_cover
             target:
               entity_id: cover.ratgdo32disco_fd8d8c_door
-          - service: notify.mobile_app_john_s_s26_ultra
+          - action: notify.mobile_app_john_s_s26_ultra
             data:
               message: "clear_notification"
               data:
@@ -135,10 +137,10 @@ automation:
       - condition: state
         entity_id: cover.ratgdo32disco_fd8d8c_door
         state: "open"
-      - service: cover.close_cover
+      - action: cover.close_cover
         target:
           entity_id: cover.ratgdo32disco_fd8d8c_door
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🔒 Garage"
           message: "North door closed"
@@ -152,6 +154,7 @@ automation:
   # ===========================================================================
   - id: garage_quick_open_action_handler
     alias: "Garage - Quick Open Action Handler"
+    unique_id: auto_1ae8077e1a314c8b
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -169,17 +172,17 @@ automation:
               - condition: trigger
                 id: north
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
           - conditions:
               - condition: trigger
                 id: south
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:
@@ -191,6 +194,7 @@ automation:
   # ===========================================================================
   - id: garage_quick_open_clear
     alias: "Garage - Clear Quick Open When Door Opens"
+    unique_id: auto_886c03d0a9454e67
     trigger:
       - platform: state
         entity_id:
@@ -198,12 +202,12 @@ automation:
           - cover.ratgdo32disco_5735e8_door
         to: "open"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:
             tag: "garage_quick_open"
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:
@@ -215,6 +219,7 @@ automation:
   # ===========================================================================
   - id: arrival_lights_approaching
     alias: "Arrival - Driveway & Garage Lights When Approaching"
+    unique_id: auto_34c76d8bae294924
     trigger:
       - platform: numeric_state
         entity_id: sensor.john_distance_to_home
@@ -226,7 +231,7 @@ automation:
         after: sunset
         after_offset: "-00:30:00"
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.front_driveway

@@ -17,6 +17,7 @@ input_select:
 automation:
   - id: ella_sleep_timer_set
     alias: "Ella - Sleep Timer Set"
+    unique_id: auto_722a452875864089
     description: "When Ella sets a sleep timer, wait then turn off TV and dim lights"
     mode: restart
     trigger:
@@ -36,10 +37,10 @@ automation:
             {% else %}0{% endif %}
       - delay:
           minutes: "{{ minutes }}"
-      - service: media_player.turn_off
+      - action: media_player.turn_off
         target:
           entity_id: media_player.living_room_tv
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.living_room_lounge_lamp
@@ -50,13 +51,13 @@ automation:
           transition: 60
       - delay:
           seconds: 65
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room_lounge
             - light.living_room_floor_lamps
             - light.living_room_table_lamps
-      - service: input_select.select_option
+      - action: input_select.select_option
         target:
           entity_id: input_select.ella_sleep_timer
         data:
@@ -64,6 +65,7 @@ automation:
 
   - id: ella_sleep_timer_cancel
     alias: "Ella - Sleep Timer Cancel"
+    unique_id: auto_e7c4293871904479
     description: "Cancel sleep timer when set back to Off"
     mode: single
     trigger:
@@ -71,15 +73,16 @@ automation:
         entity_id: input_select.ella_sleep_timer
         to: "Off"
     action:
-      - service: automation.turn_off
+      - action: automation.turn_off
         target:
           entity_id: automation.ella_sleep_timer_set
-      - service: automation.turn_on
+      - action: automation.turn_on
         target:
           entity_id: automation.ella_sleep_timer_set
 
   - id: ella_night_path_on
     alias: "Ella - Night Path Lights On"
+    unique_id: auto_c8f4425093004103
     description: "Dim safety lighting: living room lounge lamp + 1st floor bathroom when motion detected at night"
     mode: restart
     trigger:
@@ -96,14 +99,14 @@ automation:
         entity_id: binary_sensor.someone_home
         state: "on"
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.living_room_lounge_lamp
         data:
           brightness_pct: 5
           color_temp_kelvin: 2200
           transition: 2
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.1st_floor_bathroom
         data:
@@ -113,6 +116,7 @@ automation:
 
   - id: ella_night_path_off
     alias: "Ella - Night Path Lights Off"
+    unique_id: auto_de251b2cc2bb48a9
     description: "Turn off night path lights 3 min after motion clears"
     mode: restart
     trigger:
@@ -128,7 +132,7 @@ automation:
         after: "21:00:00"
         before: "06:00:00"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room_lounge_lamp

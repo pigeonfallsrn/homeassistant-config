@@ -13,6 +13,7 @@ automation:
   # ===========================================================================
   - id: garage_arrival_action_handler
     alias: "Garage - Arrival Action Handler"
+    unique_id: auto_1860db87528d4a81
     description: "Handles all garage open actions from arrival dashboard"
     trigger:
       - platform: event
@@ -41,15 +42,15 @@ automation:
               - condition: trigger
                 id: north
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "garage_arrival_dashboard"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   title: "\u2705 Opening North Door"
                   message: "Garage door opening..."
@@ -60,15 +61,15 @@ automation:
               - condition: trigger
                 id: south
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "garage_arrival_dashboard"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   title: "\u2705 Opening South Door"
                   message: "Garage door opening..."
@@ -79,17 +80,17 @@ automation:
               - condition: trigger
                 id: both
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id:
                     - cover.ratgdo32disco_fd8d8c_door
                     - cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "garage_arrival_dashboard"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   title: "\u2705 Opening Both Doors"
                   message: "Garage doors opening..."
@@ -100,7 +101,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -113,13 +114,14 @@ automation:
   # ===========================================================================
   - id: garage_arrival_autoclear
     alias: "Garage - Clear Arrival Dashboard on Arrival"
+    unique_id: auto_51187ef5ebaa46dd
     description: "Automatically dismisses garage dashboard when you arrive home"
     trigger:
       - platform: state
         entity_id: person.john_spencer
         to: "home"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           message: "clear_notification"
           data:

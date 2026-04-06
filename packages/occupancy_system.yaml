@@ -170,7 +170,7 @@ script:
             value_template: "{{ occupancy == 'Empty' }}"
         then:
           # All AL instances to sleep mode, minimal brightness
-          - service: switch.turn_on
+          - action: switch.turn_on
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -179,7 +179,7 @@ script:
                 - switch.adaptive_lighting_sleep_mode_upstairs_hallway
                 - switch.adaptive_lighting_sleep_mode_kitchen_table
           # Optional: Turn off non-essential lights
-          - service: light.turn_off
+          - action: light.turn_off
             target:
               entity_id:
                 - light.living_room_tv_smart_light_strip
@@ -192,10 +192,10 @@ script:
             value_template: "{{ occupancy == 'John Only' }}"
         then:
           # Living spaces normal, rest minimal
-          - service: switch.turn_off
+          - action: switch.turn_off
             target:
               entity_id: switch.adaptive_lighting_sleep_mode_living_spaces
-          - service: switch.turn_on
+          - action: switch.turn_on
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_kids_rooms
@@ -205,11 +205,11 @@ script:
               - condition: template
                 value_template: "{{ time_ctx in ['evening', 'night'] }}"
             then:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.adaptive_lighting_sleep_mode_entry_room_ceiling_lights
             else:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.adaptive_lighting_sleep_mode_entry_room_ceiling_lights
       
@@ -219,12 +219,12 @@ script:
             value_template: "{{ occupancy == 'Kids Only' }}"
         then:
           # Kids rooms active, living spaces minimal
-          - service: switch.turn_off
+          - action: switch.turn_off
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_kids_rooms
                 - switch.adaptive_lighting_sleep_mode_upstairs_hallway
-          - service: switch.turn_on
+          - action: switch.turn_on
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -233,7 +233,7 @@ script:
               - condition: template
                 value_template: "{{ bedtime }}"
             then:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_kids_rooms
@@ -250,19 +250,19 @@ script:
                 value_template: "{{ bedtime }}"
             then:
               # Bedtime: dim kids areas, normal living spaces
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_kids_rooms
                     - switch.adaptive_lighting_sleep_mode_upstairs_hallway
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_living_spaces
                     - switch.adaptive_lighting_sleep_mode_entry_room_ceiling_lights
             else:
               # Normal: all areas active
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -282,7 +282,7 @@ script:
                 value_template: "{{ time_ctx == 'night' }}"
             then:
               # Night mode for all
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -292,7 +292,7 @@ script:
                     - switch.adaptive_lighting_sleep_mode_kitchen_table
             else:
               # Daytime: all normal
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id:
                     - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -307,7 +307,7 @@ script:
             value_template: "{{ guest }}"
         then:
           # Ensure living spaces and entry are welcoming
-          - service: switch.turn_off
+          - action: switch.turn_off
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -319,7 +319,7 @@ script:
             value_template: "{{ night_vision }}"
         then:
           # Force all to sleep mode (deep red/dim)
-          - service: switch.turn_on
+          - action: switch.turn_on
             target:
               entity_id:
                 - switch.adaptive_lighting_sleep_mode_living_spaces
@@ -359,7 +359,7 @@ script:
             {% endif %}
       
       # Load URL on tablet
-      - service: fully_kiosk.load_url
+      - action: fully_kiosk.load_url
         target:
           entity_id: media_player.kitchen_wall_a9_tablet
         data:
@@ -374,6 +374,7 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: update_occupancy_mode
     alias: "Occupancy → Update Mode"
+    unique_id: auto_4d642f086afb4665
     mode: single
     max_exceeded: silent
     trigger:
@@ -386,7 +387,7 @@ automation:
         for:
           seconds: 30  # Debounce
     action:
-      - service: input_select.select_option
+      - action: input_select.select_option
         target:
           entity_id: input_select.occupancy_mode
         data:
@@ -397,17 +398,19 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: apply_context_on_occupancy_change
     alias: "Context → Apply on Occupancy Change"
+    unique_id: auto_fcdf823abd874188
     mode: single
     max_exceeded: silent
     trigger:
       - platform: state
         entity_id: input_select.occupancy_mode
     action:
-      - service: script.apply_lighting_context
-      - service: script.apply_tablet_context
+      - action: script.apply_lighting_context
+      - action: script.apply_tablet_context
   
   - id: apply_context_on_time_change
     alias: "Context → Apply on Time Change"
+    unique_id: auto_6881f8c739024d43
     mode: single
     max_exceeded: silent
     trigger:
@@ -416,10 +419,11 @@ automation:
         for:
           seconds: 5
     action:
-      - service: script.apply_lighting_context
+      - action: script.apply_lighting_context
   
   - id: apply_context_on_overlay_change
     alias: "Context → Apply on Overlay Change"
+    unique_id: auto_22e1cf76e0004ba0
     mode: single
     max_exceeded: silent
     trigger:
@@ -429,13 +433,14 @@ automation:
           - input_boolean.guest_present
           - input_boolean.kids_bedtime_override
     action:
-      - service: script.apply_lighting_context
+      - action: script.apply_lighting_context
   
   # ─────────────────────────────────────────────────────────
   # CALENDAR SNAPSHOT REFRESH
   # ─────────────────────────────────────────────────────────
   - id: refresh_school_tomorrow
     alias: "Calendar → Refresh School Tomorrow"
+    unique_id: auto_c4c73204638a4fe0
     mode: single
     max_exceeded: silent
     trigger:
@@ -444,7 +449,7 @@ automation:
       - platform: homeassistant
         event: start
     action:
-      - service: calendar.get_events
+      - action: calendar.get_events
         data:
           start_date_time: >
             {{ (now() + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00') }}
@@ -462,19 +467,20 @@ automation:
           is_weekend: >
             {{ (now() + timedelta(days=1)).weekday() >= 5 }}
       
-      - service: input_boolean.turn_{{ 'off' if (has_no_school or is_weekend) else 'on' }}
+      - action: input_boolean.turn_{{ 'off' if (has_no_school or is_weekend) else 'on' }}
         target:
           entity_id: input_boolean.school_tomorrow
   
   - id: refresh_school_in_session_now
     alias: "Calendar → Refresh School In Session Now"
+    unique_id: auto_3e4a12ece80a4961
     mode: single
     max_exceeded: silent
     trigger:
       - platform: time_pattern
         hours: "/1"  # Hourly check
     action:
-      - service: calendar.get_events
+      - action: calendar.get_events
         data:
           start_date_time: >
             {{ now().strftime('%Y-%m-%d 00:00:00') }}
@@ -492,7 +498,7 @@ automation:
           is_weekend: >
             {{ now().weekday() >= 5 }}
       
-      - service: input_boolean.turn_{{ 'off' if (has_no_school or is_weekend) else 'on' }}
+      - action: input_boolean.turn_{{ 'off' if (has_no_school or is_weekend) else 'on' }}
         target:
           entity_id: input_boolean.school_in_session_now
   
@@ -508,6 +514,7 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: 2nd_floor_bathroom_night_lighting_DISABLED_20260126_DISABLED_20260126
     alias: "Upstairs Bathroom → Night Lighting"
+    unique_id: auto_f5c72502208a4afa
     mode: restart
     trigger:
       - platform: state
@@ -521,7 +528,7 @@ automation:
         entity_id: light.2nd_floor_bathroom
         state: "off"
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.2nd_floor_bathroom
         data:
@@ -541,7 +548,7 @@ automation:
       - delay:
           minutes: 5
       # Gentle fade out
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id: light.2nd_floor_bathroom
         data:

@@ -99,6 +99,7 @@ automation:
   # === ACTION HANDLER ===
   - id: garage_door_alert_actions
     alias: "Garage Door - Alert Action Handler"
+    unique_id: auto_7eeb493d797641c5
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -137,10 +138,10 @@ automation:
               - condition: trigger
                 id: close_north
             sequence:
-              - service: cover.close_cover
+              - action: cover.close_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -150,10 +151,10 @@ automation:
               - condition: trigger
                 id: close_south
             sequence:
-              - service: cover.close_cover
+              - action: cover.close_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -163,12 +164,12 @@ automation:
               - condition: trigger
                 id: snooze_15_north
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_north_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -178,12 +179,12 @@ automation:
               - condition: trigger
                 id: snooze_15_south
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_south_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -193,12 +194,12 @@ automation:
               - condition: trigger
                 id: snooze_60_north
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_north_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=60) }}"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -208,12 +209,12 @@ automation:
               - condition: trigger
                 id: snooze_60_south
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_south_snooze_until
                 data:
                   datetime: "{{ now() + timedelta(minutes=60) }}"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -224,6 +225,7 @@ automation:
   # === RESET SNOOZE WHEN DOOR CLOSES ===
   - id: garage_door_reset_snooze_on_close
     alias: "Garage Door - Reset Snooze on Close"
+    unique_id: auto_7d5a33bd7ba64d4c
     trigger:
       - platform: state
         entity_id: cover.ratgdo32disco_fd8d8c_door
@@ -239,7 +241,7 @@ automation:
               - condition: trigger
                 id: north
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_north_snooze_until
                 data:
@@ -248,7 +250,7 @@ automation:
               - condition: trigger
                 id: south
             sequence:
-              - service: input_datetime.set_datetime
+              - action: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.garage_south_snooze_until
                 data:

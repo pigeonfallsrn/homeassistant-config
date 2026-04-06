@@ -8,18 +8,12 @@
 
 input_number:
   living_room_lux_threshold:
-    name: Living Room Lux Threshold
     min: 10
     max: 200
     step: 10
     initial: 50
     unit_of_measurement: lx
     icon: mdi:brightness-5
-
-input_boolean:
-  living_room_manual_override:
-    name: Living Room Manual Override
-    initial: false
 
 # =============================================================================
 # AUTOMATIONS
@@ -31,6 +25,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: living_room_lamps_adaptive_control
     alias: "Living Room Lamps - Adaptive Control"
+    unique_id: auto_d11f88a6aa114c42
     description: "Manages lamps based on motion, lux, presence, time, and modes"
     mode: restart
     trigger:
@@ -57,7 +52,7 @@ automation:
                 entity_id: input_boolean.hot_tub_mode
                 state: "on"
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target:
                   entity_id:
                     - light.living_room_east_floor_lamp
@@ -66,7 +61,7 @@ automation:
                   rgb_color: [255, 30, 0]
                   brightness_pct: 5
                   transition: 2
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.adaptive_lighting_living_spaces
 
@@ -75,7 +70,7 @@ automation:
               - condition: trigger
                 id: bedtime_on
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target:
                   entity_id:
                     - light.living_room_east_floor_lamp
@@ -86,7 +81,7 @@ automation:
                   transition: 60
               - delay:
                   minutes: 15
-              - service: light.turn_off
+              - action: light.turn_off
                 target:
                   entity_id:
                     - light.living_room_east_floor_lamp
@@ -108,10 +103,10 @@ automation:
                 entity_id: sensor.living_room_average_lux
                 below: input_number.living_room_lux_threshold
             sequence:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.adaptive_lighting_living_spaces
-              - service: light.turn_on
+              - action: light.turn_on
                 target:
                   entity_id:
                     - light.living_room_east_floor_lamp
@@ -127,10 +122,10 @@ automation:
                 entity_id: input_boolean.hot_tub_mode
                 state: "off"
             sequence:
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.adaptive_lighting_living_spaces
-              - service: adaptive_lighting.apply
+              - action: adaptive_lighting.apply
                 data:
                   entity_id: switch.adaptive_lighting_living_spaces
                   lights:
@@ -143,6 +138,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: living_room_lamps_activity_boost
     alias: "Living Room Lamps - Activity Boost"
+    unique_id: auto_8f4734478da64ce9
     description: "Restore full brightness when motion detected while dimmed"
     trigger:
       - platform: state
@@ -166,7 +162,7 @@ automation:
         attribute: brightness
         below: 100
     action:
-      - service: adaptive_lighting.apply
+      - action: adaptive_lighting.apply
         data:
           entity_id: switch.adaptive_lighting_living_spaces
           lights:
@@ -180,6 +176,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: living_room_lamps_no_motion_dim
     alias: "Living Room Lamps - Dim After 15min No Motion"
+    unique_id: auto_268a9c70e6894c79
     trigger:
       - platform: state
         entity_id: binary_sensor.downstairs_motion
@@ -206,7 +203,7 @@ automation:
         attribute: brightness
         above: 50
     action:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.living_room_east_floor_lamp
@@ -221,6 +218,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: living_room_lamps_no_motion_off
     alias: "Living Room Lamps - Off After 45min No Motion"
+    unique_id: auto_527f4965b38b4601
     trigger:
       - platform: state
         entity_id: binary_sensor.downstairs_motion
@@ -240,7 +238,7 @@ automation:
             entity_id: light.living_room_lounge_lamp
             state: "on"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room_east_floor_lamp
@@ -254,6 +252,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: living_room_lamps_hard_off
     alias: "Living Room Lamps - Hard Off at Evening End"
+    unique_id: auto_10917cc5ddf741ec
     trigger:
       - platform: time
         at: sensor.evening_lamp_off_time
@@ -270,7 +269,7 @@ automation:
         entity_id: input_boolean.hot_tub_mode
         state: "off"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room_east_floor_lamp
@@ -284,13 +283,14 @@ automation:
   # ---------------------------------------------------------------------------
   - id: global_everyone_left_lamps_off
     alias: "Global - All Adaptive Lamps Off When Everyone Leaves"
+    unique_id: auto_e7999fd786e746eb
     description: "Master switch - turns off all adaptive-managed lamps when house is empty"
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_home
         to: "off"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.entry_room_hue_color_lamp

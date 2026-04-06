@@ -8,7 +8,7 @@ script:
     alias: "Ella Lights Off"
     icon: mdi:lightbulb-off
     sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.ella_s_ceiling_light_1_of_3
@@ -23,20 +23,20 @@ script:
     alias: "Ella School Night"
     icon: mdi:bed-clock
     sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.ella_s_ceiling_light_1_of_3
             - light.ella_s_ceiling_light_2_of_3
             - light.ella_s_ceiling_light_3_of_3
             - light.ella_s_led_lights
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.ella_s_bedside_lamp
         data:
           brightness_pct: 5
           color_temp_kelvin: 2000
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.ella_s_wall_light
         data:
@@ -44,7 +44,7 @@ script:
           color_temp_kelvin: 2000
       - delay:
           minutes: 30
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.ella_s_wall_light
@@ -55,7 +55,7 @@ script:
     alias: "Ella Gentle Wake"
     icon: mdi:weather-sunset-up
     sequence:
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.ella_s_ceiling_light_1_of_3
@@ -66,7 +66,7 @@ script:
           color_temp_kelvin: 2200
       - delay:
           seconds: 30
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.ella_s_ceiling_light_1_of_3
@@ -78,7 +78,7 @@ script:
           transition: 60
       - delay:
           seconds: 90
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id:
             - light.ella_s_ceiling_light_1_of_3

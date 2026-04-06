@@ -14,6 +14,7 @@ automation:
   # ===========================================================================
   - id: safety_all_lights_off_nobody_home
     alias: "Safety - All Lights Off When Nobody Home"
+    unique_id: auto_00fe5a03dce8417a
     trigger:
       - platform: state
         entity_id: binary_sensor.anyone_home
@@ -22,7 +23,7 @@ automation:
           minutes: 5
     action:
       # Main living areas
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room
@@ -40,23 +41,23 @@ automation:
             - light.very_front_door
             - light.basement
       # Kids rooms (scripts handle their lights)
-      - service: script.alaina_lights_off
-      - service: script.ella_lights_off
+      - action: script.alaina_lights_off
+      - action: script.ella_lights_off
       # Master bedroom
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.master_bedroom
             - light.master_bedroom_wall_light
             - light.master_bedroom_behind_tv_aqara_t1_led_strip
       # Bathrooms
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.1st_floor_bathroom
             - light.2nd_floor_bathroom
       # Turn off bathroom fan too
-      - service: switch.turn_off
+      - action: switch.turn_off
         target:
           entity_id: switch.upstairs_bathroom_fan
     mode: single
@@ -66,6 +67,7 @@ automation:
   # ===========================================================================
   - id: safety_main_areas_no_motion_off
     alias: "Safety - Main Areas Off After 30 Min No Motion"
+    unique_id: auto_7f59d2d056e54af7
     trigger:
       - platform: state
         entity_id:
@@ -83,7 +85,7 @@ automation:
         after: "23:00:00"
         before: "05:00:00"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room
@@ -99,6 +101,7 @@ automation:
   # ===========================================================================
   - id: safety_midnight_all_lights_off
     alias: "Safety - Midnight All Main Lights Off"
+    unique_id: auto_cc8e6aa64e8d4b48
     trigger:
       - platform: time
         at: "00:00:00"
@@ -111,7 +114,7 @@ automation:
         entity_id: input_boolean.extended_evening
         state: "off"
     action:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.living_room

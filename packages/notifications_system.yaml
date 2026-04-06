@@ -9,6 +9,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_john
     alias: "Arrival - John Home"
+    unique_id: auto_ee2c85b9c29e44e7
     description: >
       Unified arrival notification with garage controls.
       Consolidated from separate notification + garage systems 2026-02-20.
@@ -22,7 +23,7 @@ automation:
         value_template: >
           {{ (as_timestamp(now()) - as_timestamp(trigger.from_state.last_changed)) > 300 }}
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🏠 Welcome Home"
           message: >
@@ -64,16 +65,16 @@ automation:
 # DISABLED -           message: "Alaina arrived home at {{ now().strftime('%I:%M %p') }}"
 # DISABLED -           data:
 # DISABLED -             tag: "arrival_alaina"
-    mode: single
 
   - id: arrival_notification_ella
     alias: "Arrival - Ella Home"
+    unique_id: auto_2cc79cee16e448f6
     trigger:
       - platform: state
         entity_id: person.ella_spencer
         to: "home"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "Ella Arrived"
           message: "Ella arrived home at {{ now().strftime('%I:%M %p') }}"
@@ -86,6 +87,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_actions
     alias: "Arrival - Handle Notification Actions"
+    unique_id: auto_f1bfeecf5f464934
     description: "Handles all arrival notification actions including garage doors"
     trigger:
       - platform: event
@@ -119,15 +121,15 @@ automation:
               - condition: trigger
                 id: open_north
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_fd8d8c_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   title: "✅ North Garage"
                   message: "Opening..."
@@ -138,15 +140,15 @@ automation:
               - condition: trigger
                 id: open_south
             sequence:
-              - service: cover.open_cover
+              - action: cover.open_cover
                 target:
                   entity_id: cover.ratgdo32disco_5735e8_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "arrival_john"
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   title: "✅ South Garage"
                   message: "Opening..."
@@ -157,12 +159,12 @@ automation:
               - condition: trigger
                 id: lights_on
             sequence:
-              - service: light.turn_on
+              - action: light.turn_on
                 target:
                   entity_id:
                     - light.entry_room_hue_color_lamp
                     - light.living_room_east_floor_lamp
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -171,7 +173,7 @@ automation:
               - condition: trigger
                 id: disarm
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -180,7 +182,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -192,6 +194,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: low_battery_daily_digest
     alias: "Low Battery - Daily Digest"
+    unique_id: auto_bf1fc7a6f6db41a1
     trigger:
       - platform: time
         at: "09:00:00"
@@ -212,7 +215,7 @@ automation:
             {{ ns.devices }}
       - condition: template
         value_template: "{{ low_batteries | length > 0 }}"
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "🔋 Low Battery Alert"
           message: "{{ low_batteries | length }} device(s) need attention:\n{{ low_batteries | join('\n') }}"
@@ -228,6 +231,7 @@ automation:
 
   - id: low_battery_notification_actions
     alias: "Low Battery - Handle Notification Actions"
+    unique_id: auto_10ca32b869d3474d
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -245,7 +249,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -255,7 +259,7 @@ automation:
               - condition: trigger
                 id: snooze
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -268,6 +272,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: critical_battery_alert
     alias: "Critical Battery - Immediate Alert"
+    unique_id: auto_f6eb93f251294e2e
     trigger:
       - platform: numeric_state
         entity_id:
@@ -297,7 +302,7 @@ automation:
           - sensor.lumi_lumi_sensor_wleak_aq1_battery
         below: 10
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "⚠️ Critical Battery"
           message: "{{ trigger.to_state.name }} is at {{ trigger.to_state.state }}%"
@@ -315,6 +320,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: bedtime_first_floor_lights_off_prompt
     alias: "Bedtime - Prompt to Turn Off 1st Floor Lights"
+    unique_id: auto_84d13e559b39464b
     trigger:
       - trigger: state
         entity_id: device_tracker.galaxy_s26_ultra
@@ -341,7 +347,7 @@ automation:
             entity_id: light.back_patio
             state: "on"
     action:
-      - service: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_john_s_s26_ultra
         data:
           title: "Heading to Bed?"
           message: "1st floor or outside lights are still on."
@@ -360,6 +366,7 @@ automation:
 
   - id: bedtime_lights_notification_actions
     alias: "Bedtime - Handle Light Actions"
+    unique_id: auto_88180c6002f848c1
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -387,7 +394,7 @@ automation:
               - condition: trigger
                 id: all_off
             sequence:
-              - service: light.turn_off
+              - action: light.turn_off
                 target:
                   entity_id:
                     - light.entry_room
@@ -397,7 +404,7 @@ automation:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -407,14 +414,14 @@ automation:
               - condition: trigger
                 id: first_floor
             sequence:
-              - service: light.turn_off
+              - action: light.turn_off
                 target:
                   entity_id:
                     - light.entry_room
                     - light.living_room
                     - light.kitchen_lounge
                     - light.1st_floor_bathroom
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -424,13 +431,13 @@ automation:
               - condition: trigger
                 id: outside
             sequence:
-              - service: light.turn_off
+              - action: light.turn_off
                 target:
                   entity_id:
                     - light.front_driveway
                     - light.back_patio
                     - light.very_front_door
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -440,7 +447,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -450,7 +457,7 @@ automation:
   # ---------------------------------------------------------------------------
   # Humidity Alert - 2nd Floor Average
   # ---------------------------------------------------------------------------
-#DISABLED   - id: humidity_alert_2nd_floor
+  - id: humidity_alert_2nd_floor
 #DISABLED     alias: "Humidity Alert - 2nd Floor Low or High"
 #DISABLED     trigger:
 #DISABLED       # Low humidity check every hour
@@ -515,8 +522,9 @@ automation:
 #DISABLED                       - action: "HUMIDITY_DISMISS"
 #DISABLED                         title: "Dismiss"
 #DISABLED 
-#DISABLED   - id: humidity_notification_actions
+  - id: humidity_notification_actions
     alias: "Humidity - Handle Notification Actions"
+    unique_id: auto_aafc806fc9dc461c
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -544,17 +552,17 @@ automation:
               - condition: trigger
                 id: pause_15m
             sequence:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "humidity_alert"
               - delay:
                   minutes: 15
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.upstairs_bathroom_fan
 
@@ -562,17 +570,17 @@ automation:
               - condition: trigger
                 id: pause_12h
             sequence:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: switch.upstairs_bathroom_fan
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
                     tag: "humidity_alert"
               - delay:
                   hours: 12
-              - service: switch.turn_on
+              - action: switch.turn_on
                 target:
                   entity_id: switch.upstairs_bathroom_fan
 
@@ -580,13 +588,13 @@ automation:
               - condition: trigger
                 id: ac_on
             sequence:
-              - service: climate.set_temperature
+              - action: climate.set_temperature
                 target:
                   entity_id: climate.upstairs_hallway_mini_split
                 data:
                   temperature: 74
                   hvac_mode: cool
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:
@@ -596,7 +604,7 @@ automation:
               - condition: trigger
                 id: dismiss
             sequence:
-              - service: notify.mobile_app_john_s_s26_ultra
+              - action: notify.mobile_app_john_s_s26_ultra
                 data:
                   message: "clear_notification"
                   data:

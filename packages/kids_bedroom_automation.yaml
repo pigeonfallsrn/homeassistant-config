@@ -120,7 +120,7 @@ script:
     alias: "Alaina Lights Off"
     icon: mdi:lightbulb-off
     sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.alaina_s_bedroom
@@ -134,18 +134,18 @@ script:
     alias: "Alaina School Night"
     icon: mdi:bed-clock
     sequence:
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.alaina_s_ceiling_lights
             - light.alaina_s_led_light_strip_1
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedside_lamp
         data:
           brightness_pct: 5
           color_temp_kelvin: 2000
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedroom_echo_glow
         data:
@@ -153,7 +153,7 @@ script:
           rgb_color: [255, 100, 50]
       - delay:
           minutes: 30
-      - service: light.turn_off
+      - action: light.turn_off
         target:
           entity_id:
             - light.alaina_s_bedside_lamp
@@ -164,13 +164,13 @@ script:
     icon: mdi:weather-sunset-up
     sequence:
       # Phase 1: Very dim warm (5%)
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedroom
         data:
           brightness_pct: 5
           color_temp_kelvin: 2200
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedroom_echo_glow
         data:
@@ -179,7 +179,7 @@ script:
       - delay:
           seconds: 30
       # Phase 2: Warmer, brighter (30%)
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedroom
         data:
@@ -189,7 +189,7 @@ script:
       - delay:
           seconds: 90
       # Phase 3: Full brightness (80%)
-      - service: light.turn_on
+      - action: light.turn_on
         target:
           entity_id: light.alaina_s_bedroom
         data:
@@ -206,6 +206,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_gentle_wake_automation
     alias: "Ella - Gentle Wake Before Alarm"
+    unique_id: auto_a01cd695d3bf45de
     description: "Start gentle wake lights 15 minutes before Echo alarm"
     trigger:
       - platform: numeric_state
@@ -226,7 +227,7 @@ automation:
         after: "05:00:00"
         before: "09:00:00"
     action:
-      - service: script.ella_gentle_wake
+      - action: script.ella_gentle_wake
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -234,6 +235,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_gentle_wake_automation
     alias: "Alaina - Gentle Wake Before Alarm"
+    unique_id: auto_a0251baf68174b34
     description: "Start gentle wake lights 15 minutes before Echo alarm"
     trigger:
       - platform: numeric_state
@@ -254,7 +256,7 @@ automation:
         after: "05:00:00"
         before: "09:00:00"
     action:
-      - service: script.alaina_gentle_wake
+      - action: script.alaina_gentle_wake
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -262,6 +264,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_school_night_bedtime
     alias: "Ella - School Night Bedtime"
+    unique_id: auto_00c8c6881d72463c
     description: "Dim lights on school nights at 9:30 PM"
     trigger:
       - platform: time
@@ -289,7 +292,7 @@ automation:
             entity_id: light.ella_s_led_lights
             state: "on"
     action:
-      - service: script.ella_school_night
+      - action: script.ella_school_night
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -297,6 +300,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_school_night_bedtime
     alias: "Alaina - School Night Bedtime"
+    unique_id: auto_81a540a475ea4ba1
     description: "Dim lights on school nights at 9:30 PM"
     trigger:
       - platform: time
@@ -320,7 +324,7 @@ automation:
             entity_id: light.alaina_s_ceiling_lights
             state: "on"
     action:
-      - service: script.alaina_school_night
+      - action: script.alaina_school_night
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -328,6 +332,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_hard_off_school
     alias: "Ella - Lights Off 10:30 PM School Nights"
+    unique_id: auto_89a57a9e3ee548b5
     trigger:
       - platform: time
         at: "22:30:00"
@@ -339,7 +344,7 @@ automation:
         entity_id: input_boolean.ella_bedroom_override
         state: "off"
     action:
-      - service: script.ella_lights_off
+      - action: script.ella_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -347,6 +352,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_hard_off_school
     alias: "Alaina - Lights Off 10:30 PM School Nights"
+    unique_id: auto_7a468d28f0b44bd1
     trigger:
       - platform: time
         at: "22:30:00"
@@ -358,7 +364,7 @@ automation:
         entity_id: input_boolean.alaina_bedroom_override
         state: "off"
     action:
-      - service: script.alaina_lights_off
+      - action: script.alaina_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -366,6 +372,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_off_when_leaving
     alias: "Ella - Lights Off When Leaving"
+    unique_id: auto_481db899a9d145ae
     trigger:
       - platform: state
         entity_id: binary_sensor.ella_home
@@ -377,7 +384,7 @@ automation:
         entity_id: input_boolean.ella_bedroom_override
         state: "off"
     action:
-      - service: script.ella_lights_off
+      - action: script.ella_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -385,6 +392,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_off_when_leaving
     alias: "Alaina - Lights Off When Leaving"
+    unique_id: auto_f612c13cce254845
     trigger:
       - platform: state
         entity_id: binary_sensor.alaina_home
@@ -396,7 +404,7 @@ automation:
         entity_id: input_boolean.alaina_bedroom_override
         state: "off"
     action:
-      - service: script.alaina_lights_off
+      - action: script.alaina_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -404,13 +412,14 @@ automation:
   # ---------------------------------------------------------------------------
   - id: kids_lights_off_everyone_away
     alias: "Kids - Lights Off When Everyone Away"
+    unique_id: auto_94ece0c3ded24a6d
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_home
         to: "off"
     action:
-      - service: script.ella_lights_off
-      - service: script.alaina_lights_off
+      - action: script.ella_lights_off
+      - action: script.alaina_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -418,11 +427,12 @@ automation:
   # ---------------------------------------------------------------------------
   - id: kids_bedroom_override_reset
     alias: "Kids - Bedroom Override Reset"
+    unique_id: auto_5089bc96defe4843
     trigger:
       - platform: time
         at: "04:00:00"
     action:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id:
             - input_boolean.ella_bedroom_override
@@ -434,6 +444,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_auto_off_midnight_weekend
     alias: "Alaina - Lights Auto Off Midnight (Fri/Sat)"
+    unique_id: auto_500833d8404e4b60
     trigger:
       - platform: time
         at: "00:00:00"
@@ -459,7 +470,7 @@ automation:
             entity_id: light.alaina_s_floor_govee_lamp
             state: "on"
     action:
-      - service: script.alaina_lights_off
+      - action: script.alaina_lights_off
     mode: single
 
   # ---------------------------------------------------------------------------
@@ -467,6 +478,7 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_auto_off_midnight_weekend
     alias: "Ella - Lights Auto Off Midnight (Fri/Sat)"
+    unique_id: auto_ddfbdc016a5e4b13
     trigger:
       - platform: time
         at: "00:00:00"
@@ -495,5 +507,5 @@ automation:
             entity_id: light.ella_s_wall_light
             state: "on"
     action:
-      - service: script.ella_lights_off
+      - action: script.ella_lights_off
     mode: single

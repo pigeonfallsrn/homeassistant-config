@@ -22,13 +22,10 @@ template:
           {{ is_state('binary_sensor.basement_hallway_motion_sensor_occupancy', 'on')
              or is_state('binary_sensor.very_front_door_motion_sensor_occupancy', 'on') }}
 
-input_boolean:
-  kitchen_manual_override:
-    icon: mdi:hand-back-right
-
 automation:
   - id: kitchen_manual_override_auto_clear
     alias: "Kitchen Manual Override — Auto-Clear on No Motion"
+    unique_id: auto_e344fe2832614779
     description: >
       Clears kitchen_manual_override after 12min of no motion.
       Ensures kitchen resets to motion-control after person leaves.

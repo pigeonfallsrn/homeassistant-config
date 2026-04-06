@@ -277,13 +277,14 @@ template:
 automation:
   - id: family_ella_arrived_home
     alias: "Family → Ella Arrived Home"
+    unique_id: auto_f58fb699e5814e11
     mode: single
     trigger:
       - platform: state
         entity_id: binary_sensor.ella_home
         to: "on"
     action:
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.ella_last_arrived_home
         data:
@@ -291,13 +292,14 @@ automation:
 
   - id: family_alaina_arrived_home
     alias: "Family → Alaina Arrived Home"
+    unique_id: auto_cca293e800d843ad
     mode: single
     trigger:
       - platform: state
         entity_id: binary_sensor.alaina_home
         to: "on"
     action:
-      - service: input_datetime.set_datetime
+      - action: input_datetime.set_datetime
         target:
           entity_id: input_datetime.alaina_last_arrived_home
         data:
@@ -305,36 +307,39 @@ automation:
 
   - id: family_ella_left_for_activity
     alias: "Family → Ella Left for Activity"
+    unique_id: auto_ec4ca12ce7654263
     mode: single
     trigger:
       - platform: state
         entity_id: binary_sensor.ella_at_activity
         to: "on"
     action:
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.ella_had_activity_today
 
   - id: family_alaina_left_for_activity
     alias: "Family → Alaina Left for Activity"
+    unique_id: auto_27e5b6eff6cd4bcc
     mode: single
     trigger:
       - platform: state
         entity_id: binary_sensor.alaina_at_activity
         to: "on"
     action:
-      - service: input_boolean.turn_on
+      - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.alaina_had_activity_today
 
   - id: family_daily_reset
     alias: "Family → Daily Reset"
+    unique_id: auto_2ea6854239de4701
     mode: single
     trigger:
       - platform: time
         at: "04:00:00"
     action:
-      - service: input_boolean.turn_off
+      - action: input_boolean.turn_off
         target:
           entity_id:
             - input_boolean.ella_had_activity_today
@@ -344,6 +349,7 @@ automation:
 
   - id: family_increment_grades
     alias: "Family → Increment Grades (New School Year)"
+    unique_id: auto_030eccd917f94465
     mode: single
     trigger:
       - platform: time
@@ -352,27 +358,27 @@ automation:
       - condition: template
         value_template: "{{ now().month == 8 and now().day == 15 }}"
     action:
-      - service: input_number.set_value
+      - action: input_number.set_value
         target:
           entity_id: input_number.ella_grade
         data:
           value: "{{ states('input_number.ella_grade') | int + 1 }}"
-      - service: input_number.set_value
+      - action: input_number.set_value
         target:
           entity_id: input_number.alaina_grade
         data:
           value: "{{ states('input_number.alaina_grade') | int + 1 }}"
-      - service: input_number.set_value
+      - action: input_number.set_value
         target:
           entity_id: input_number.jarrett_grade
         data:
           value: "{{ states('input_number.jarrett_grade') | int + 1 }}"
-      - service: input_number.set_value
+      - action: input_number.set_value
         target:
           entity_id: input_number.owen_grade
         data:
           value: "{{ states('input_number.owen_grade') | int + 1 }}"
-      - service: persistent_notification.create
+      - action: persistent_notification.create
         data:
           title: "🎒 New School Year"
           message: "Grades auto-incremented. Verify and update sport calendars if needed."
