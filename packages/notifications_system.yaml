@@ -457,7 +457,6 @@ automation:
   # ---------------------------------------------------------------------------
   # Humidity Alert - 2nd Floor Average
   # ---------------------------------------------------------------------------
-  - id: humidity_alert_2nd_floor
 #DISABLED     alias: "Humidity Alert - 2nd Floor Low or High"
 #DISABLED     trigger:
 #DISABLED       # Low humidity check every hour
