@@ -611,3 +611,11 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
 - Fix: Settings > Devices & Services > TP-Link Kasa > Re-authenticate (UI only, 2 min)
 - Not a security issue, not urgent, but clutters Repairs dashboard
 - Affected devices this session: Basement_Hallway HS200, Kitchen_Table_Chandelier HS220
+
+## TRIAGE — YAML FILE DELETION CREATES REPAIR ENTRIES (2026-04-06)
+- Deleting a YAML package file without restarting creates "failed to set up" Repairs
+- This is cosmetic — all entries from deleted files clear on next restart
+- Pattern: delete files → commit → push → restart → verify repairs count drops
+- Do NOT interpret post-deletion Repairs as new problems — count vs deleted automations first
+- adaptive_lighting_entry_lamp.yaml: 14 automations ALL failing as of 2026-04-06
+  File exists but ALL broken — surgery required, this is S2 first task
