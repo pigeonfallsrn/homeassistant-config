@@ -8,11 +8,7 @@
 
 input_boolean:
   hot_tub_mode:
-    name: Hot Tub Mode
-    icon: mdi:hot-tub
   extended_evening:
-    name: Extended Evening Mode
-    icon: mdi:weather-night-partly-cloudy
 
 input_number:
   entry_room_lux_threshold:
