@@ -720,3 +720,66 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
   Fix script lives at /homeassistant/hac/fix_pkg_unique_id.py — permanent, reusable
 - After fix: git add packages/ && git commit && git push via MCP → restart → verify Repairs = 0
 - RULE: After ANY session using ha_config_set_automation on package files, run the detection grep before wrap
+
+## INOVELLI ECOSYSTEM AUDIT 2026-04-07 — FULL INVENTORY
+
+### Device Inventory (confirmed via ha_get_entity, 2026-04-07)
+
+VZM31-SN Smart Bulb Mode (Tier 1 — controls Hue bulbs, load always-on):
+- light.entry_room_ceiling_light_inovelli_smart_dimmer_switch  device_id: d80c7fa6
+- light.kitchen_lounge_inovelli_smart_dimmer                   device_id: 5e2d477e
+- light.kitchen_above_table_chandelier_inovelli                device_id: 17a59d3c
+- light.above_kitchen_sink_inovelli_switch                     device_id: 89ca030d
+
+VZM31-SN Dumb Load (Tier 2 — direct dimmer control, cuts power to load):
+- light.kitchen_ceiling_inovelli_vzm31_sn      kitchen ceiling can LEDs
+- light.kitchen_bar_pendant_lights             kitchen bar pendants (device_id: da86388f)
+- light.inovelli_vzm31_sn_4                   NEEDS RENAME -> kitchen_under_cabinet_lights_inovelli
+- light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn
+- light.back_door_patio_light_inovelli_switch
+- light.front_driveway_inovelli
+
+VZM35-SN Fan Switch:
+- light.inovelli_vzm35_sn_light (friendly: 2nd Floor Bathroom Fan) device_id: 3eed85f7
+
+VZM36 Fan/Light Canopy Modules:
+- light.kitchen_lounge_light_fan_inovelli_vzm36_light + _2 (Kitchen Lounge)
+- light.inovelli_vzm36_light_3 + _4 (Living Room — two instances, investigate)
+
+### RECOMMENDED BLUEPRINT (2026-04-07)
+Use Rohan unified blueprint — supports VZM31-SN + VZM35-SN + VZM30-SN (updated Dec 2024)
+https://community.home-assistant.io/t/zha-inovelli-blue-series-switch-for-dimmer-vzm-31-fan-vzm-35-and-on-off-vzm-30-switches/627953
+REPLACES fxlt blueprint (VZM31-SN only, fires ALL zha_events — DO NOT USE)
+One automation per switch handles all multi-tap/hold/release actions
+Queued variant available if double-event firing occurs
+
+### TWO ARCHITECTURES — NEVER MIX
+Smart Bulb Mode (Tier 1 — Hue bulbs):
+- Param 52 = 1: load always-on, paddle sends Zigbee commands
+- Bind switch EP2 to ZHA group with Hue bulbs (direct, no HA needed)
+- HA/AL controls the HUE entity, NOT the switch entity
+- AL works perfectly — load never cuts so bulb always receives
+
+Dumb Load (Tier 2 — cans, pendants, under-cabinet):
+- Param 52 = 0: switch cuts/restores power
+- HA sends explicit brightness_pct to SWITCH entity
+- NEVER add to AL instance — AL fights native dimmer level control
+- LOCAL_RAMP_RATE (param 1/7) = physical paddle speed
+- min_dim_level too low = LED flicker; tune per fixture
+
+### AL CONFLICT — CURRENT VIOLATIONS (fix via Kitchen Table pencil edit)
+These Tier 2 dumb-load switches are wrongly inside Kitchen Table AL:
+  light.kitchen_ceiling_inovelli_vzm31_sn
+  light.kitchen_bar_pendant_lights
+  light.inovelli_vzm31_sn_4
+Remove them, keep only: kitchen_chandelier, kitchen_above_sink_light, kitchen_lounge, kitchen_lounge_lamp
+
+### ZHA ENDPOINTS (VZM31-SN)
+EP1 = receives commands FROM HA
+EP2 = transmits commands (bind to ZHA group for bulb control)
+EP3 = config button (fw 2.17+, bind to fan/second device)
+
+### FIRMWARE
+Latest stable: v3.04 (Dec 2025)
+Check: https://community.inovelli.com/t/blue-series-2-1-firmware-changelog-vzm31-sn/12326
+After any firmware update: re-verify param 52 Smart Bulb Mode setting
