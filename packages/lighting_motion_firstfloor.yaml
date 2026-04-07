@@ -46,3 +46,64 @@ automation:
           entity_id:
             - input_boolean.kitchen_manual_override
             - input_boolean.kitchen_lounge_manual_override
+
+  # ─────────────────────────────────────────────────────────
+  # KITCHEN CORE ZONE — Motion Lighting (Tier 1: Hue only)
+  # Lounge ceiling (Hue fan bulbs) + lounge lamp
+  # Shared fate with kitchen — open concept, one zone
+  # Lux-gated: only fires below 200 lux (TR nightlight sensor)
+  # AL manages color/temp — no brightness/color params here
+  # Added: 2026-04-06
+  # ─────────────────────────────────────────────────────────
+  - id: kitchen_lounge_motion_on
+    alias: "Kitchen Lounge — On with Motion"
+    unique_id: auto_kitchen_lounge_motion_on
+    description: >
+      Turns on kitchen lounge Hue lights when first_floor_main_motion
+      detects activity and lux is below 200. No color/brightness params
+      set — AL takes over immediately after turn_on.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "on"
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.kitchen_counter_night_light_illuminance
+        below: 200
+      - condition: state
+        entity_id: input_boolean.kitchen_lounge_manual_override
+        state: "off"
+    action:
+      - action: light.turn_on
+        target:
+          entity_id:
+            - light.kitchen_lounge_ceiling_1of2
+            - light.kitchen_lounge_ceiling_2of2
+            - light.kitchen_lounge_lamp
+
+  - id: kitchen_lounge_motion_off
+    alias: "Kitchen Lounge — Off No Motion"
+    unique_id: auto_kitchen_lounge_motion_off
+    description: >
+      Turns off kitchen lounge Hue lights after 12min of no motion.
+      mode: restart resets the clock on any motion re-entry.
+      Matches the 12min timeout of kitchen_manual_override_auto_clear.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "off"
+        for:
+          minutes: 12
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_lounge_manual_override
+        state: "off"
+    action:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_lounge_ceiling_1of2
+            - light.kitchen_lounge_ceiling_2of2
+            - light.kitchen_lounge_lamp
