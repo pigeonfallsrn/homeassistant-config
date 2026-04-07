@@ -17,7 +17,6 @@ input_select:
 automation:
   - id: ella_sleep_timer_set
     alias: "Ella - Sleep Timer Set"
-    unique_id: auto_722a452875864089
     description: "When Ella sets a sleep timer, wait then turn off TV and dim lights"
     mode: restart
     trigger:
@@ -65,7 +64,6 @@ automation:
 
   - id: ella_sleep_timer_cancel
     alias: "Ella - Sleep Timer Cancel"
-    unique_id: auto_e7c4293871904479
     description: "Cancel sleep timer when set back to Off"
     mode: single
     trigger:
@@ -82,7 +80,6 @@ automation:
 
   - id: ella_night_path_on
     alias: "Ella - Night Path Lights On"
-    unique_id: auto_c8f4425093004103
     description: "Dim safety lighting: living room lounge lamp + 1st floor bathroom when motion detected at night"
     mode: restart
     trigger:
@@ -116,7 +113,6 @@ automation:
 
   - id: ella_night_path_off
     alias: "Ella - Night Path Lights Off"
-    unique_id: auto_de251b2cc2bb48a9
     description: "Turn off night path lights 3 min after motion clears"
     mode: restart
     trigger:

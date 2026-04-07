@@ -99,7 +99,6 @@ automation:
   # === ACTION HANDLER ===
   - id: garage_door_alert_actions
     alias: "Garage Door - Alert Action Handler"
-    unique_id: auto_7eeb493d797641c5
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -225,7 +224,6 @@ automation:
   # === RESET SNOOZE WHEN DOOR CLOSES ===
   - id: garage_door_reset_snooze_on_close
     alias: "Garage Door - Reset Snooze on Close"
-    unique_id: auto_7d5a33bd7ba64d4c
     trigger:
       - platform: state
         entity_id: cover.ratgdo32disco_fd8d8c_door

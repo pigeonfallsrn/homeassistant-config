@@ -14,7 +14,6 @@ automation:
   # ===========================================================================
   - id: safety_all_lights_off_nobody_home
     alias: "Safety - All Lights Off When Nobody Home"
-    unique_id: auto_00fe5a03dce8417a
     trigger:
       - platform: state
         entity_id: binary_sensor.anyone_home
@@ -67,7 +66,6 @@ automation:
   # ===========================================================================
   - id: safety_main_areas_no_motion_off
     alias: "Safety - Main Areas Off After 30 Min No Motion"
-    unique_id: auto_7f59d2d056e54af7
     trigger:
       - platform: state
         entity_id:
@@ -101,7 +99,6 @@ automation:
   # ===========================================================================
   - id: safety_midnight_all_lights_off
     alias: "Safety - Midnight All Main Lights Off"
-    unique_id: auto_cc8e6aa64e8d4b48
     trigger:
       - platform: time
         at: "00:00:00"

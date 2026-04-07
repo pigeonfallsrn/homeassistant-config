@@ -82,7 +82,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: extended_evening_auto_set
     alias: "Extended Evening - Auto Set for Weekends/Holidays"
-    unique_id: auto_d84e523d3dd742ca
     trigger:
       - platform: time
         at: "18:00:00"
@@ -105,7 +104,6 @@ automation:
 
   - id: extended_evening_auto_clear
     alias: "Extended Evening - Auto Clear at 4am"
-    unique_id: auto_0abb1fc5d9864cef
     trigger:
       - platform: time
         at: "04:00:00"
@@ -120,7 +118,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: hot_tub_mode_auto_reset
     alias: "Hot Tub Mode - Auto Reset at 3am"
-    unique_id: auto_f9b94142a9f84142
     trigger:
       - platform: time
         at: "03:00:00"
@@ -136,7 +133,6 @@ automation:
 
   - id: hot_tub_mode_auto_off_when_done
     alias: "Hot Tub Mode - Auto Off When Back Inside"
-    unique_id: auto_54e00c525ace48af
     description: "Turn off hot tub mode when back door closed 10 min OR nobody home"
     trigger:
       - platform: state
@@ -184,7 +180,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: hot_tub_mode_living_room_lamp
     alias: "Hot Tub Mode - Turn Off Living Room Lamp"
-    unique_id: auto_50385015a5854346
     description: "Living room lounge lamp is visible from patio - turn off when in hot tub"
     trigger:
       - platform: state
@@ -200,7 +195,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_adaptive_lighting_on
     alias: "Arrival - Adaptive Lighting Welcome"
-    unique_id: auto_137d206ef2ed49dd
     description: "Turn on entry lamp when someone arrives after dark"
     trigger:
       - platform: state
@@ -251,7 +245,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: entry_room_lamp_adaptive_control
     alias: "Entry Room Lamp - Adaptive Control"
-    unique_id: auto_6f4d5f650e9141c0
     description: "Manages lamp based on motion, lux, presence, time, and modes"
     mode: restart
     trigger:
@@ -379,7 +372,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: entry_room_lamp_activity_boost
     alias: "Entry Room Lamp - Activity Boost"
-    unique_id: auto_4f025b7b2c5f48d9
     description: "Restore full brightness when motion detected while dimmed"
     trigger:
       - platform: state
@@ -416,7 +408,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: entry_room_lamp_no_motion_dim
     alias: "Entry Room Lamp - Dim After 5min No Motion"
-    unique_id: auto_f1ba2d0704b6431f
     trigger:
       - platform: state
         entity_id: binary_sensor.entry_room_motion
@@ -451,7 +442,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: entry_room_lamp_no_motion_off
     alias: "Entry Room Lamp - Off After 10min No Motion"
-    unique_id: auto_ae299d3863074dbb
     trigger:
       - platform: state
         entity_id: binary_sensor.entry_room_motion
@@ -478,7 +468,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: entry_room_lamp_hard_off
     alias: "Entry Room Lamp - Hard Off at Evening End"
-    unique_id: auto_0abdce87a5ba4857
     trigger:
       - platform: time
         at: sensor.evening_lamp_off_time
@@ -502,7 +491,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: adaptive_lighting_global_off
     alias: "Adaptive Lighting - Off When Nobody Home or Late Night"
-    unique_id: auto_c377ea70573145ff
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_home
@@ -526,7 +514,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: hot_tub_mode_notification
     alias: "Hot Tub Mode - Reminder Notification"
-    unique_id: auto_5fa0210347084ec9
     trigger:
       - platform: state
         entity_id: input_boolean.hot_tub_mode
@@ -550,7 +537,6 @@ automation:
 
   - id: hot_tub_mode_notification_actions
     alias: "Hot Tub Mode - Handle Notification Actions"
-    unique_id: auto_6763dca90d184a75
     trigger:
       - platform: event
         event_type: mobile_app_notification_action

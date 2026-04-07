@@ -9,7 +9,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_john
     alias: "Arrival - John Home"
-    unique_id: auto_ee2c85b9c29e44e7
     description: >
       Unified arrival notification with garage controls.
       Consolidated from separate notification + garage systems 2026-02-20.
@@ -68,7 +67,6 @@ automation:
 
   - id: arrival_notification_ella
     alias: "Arrival - Ella Home"
-    unique_id: auto_2cc79cee16e448f6
     trigger:
       - platform: state
         entity_id: person.ella_spencer
@@ -87,7 +85,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: arrival_notification_actions
     alias: "Arrival - Handle Notification Actions"
-    unique_id: auto_f1bfeecf5f464934
     description: "Handles all arrival notification actions including garage doors"
     trigger:
       - platform: event
@@ -194,7 +191,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: low_battery_daily_digest
     alias: "Low Battery - Daily Digest"
-    unique_id: auto_bf1fc7a6f6db41a1
     trigger:
       - platform: time
         at: "09:00:00"
@@ -231,7 +227,6 @@ automation:
 
   - id: low_battery_notification_actions
     alias: "Low Battery - Handle Notification Actions"
-    unique_id: auto_10ca32b869d3474d
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -272,7 +267,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: critical_battery_alert
     alias: "Critical Battery - Immediate Alert"
-    unique_id: auto_f6eb93f251294e2e
     trigger:
       - platform: numeric_state
         entity_id:
@@ -320,7 +314,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: bedtime_first_floor_lights_off_prompt
     alias: "Bedtime - Prompt to Turn Off 1st Floor Lights"
-    unique_id: auto_84d13e559b39464b
     trigger:
       - trigger: state
         entity_id: device_tracker.galaxy_s26_ultra
@@ -366,7 +359,6 @@ automation:
 
   - id: bedtime_lights_notification_actions
     alias: "Bedtime - Handle Light Actions"
-    unique_id: auto_88180c6002f848c1
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -523,7 +515,6 @@ automation:
 #DISABLED 
   - id: humidity_notification_actions
     alias: "Humidity - Handle Notification Actions"
-    unique_id: auto_aafc806fc9dc461c
     trigger:
       - platform: event
         event_type: mobile_app_notification_action

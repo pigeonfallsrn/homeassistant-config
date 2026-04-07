@@ -340,7 +340,6 @@ script:
 automation:
   - id: kitchen_tablet_brightness_schedule
     alias: "Kitchen Tablet - Brightness Schedule"
-    unique_id: auto_b2a10f792cc646d9
     mode: single
     trigger:
       - platform: time
@@ -382,7 +381,6 @@ automation:
 
   - id: kitchen_tablet_doorbell_popup
     alias: "Kitchen Tablet - Doorbell Camera Popup"
-    unique_id: auto_40459adc354646b1
     trigger:
       - platform: state
         entity_id: binary_sensor.very_front_door_doorbell
@@ -416,7 +414,6 @@ automation:
 
   - id: kitchen_tablet_motion_wake
     alias: "Kitchen Tablet - Wake on Kitchen Motion"
-    unique_id: auto_a10d33b872f745a8
     trigger:
       - platform: state
         entity_id:
@@ -438,7 +435,6 @@ automation:
 
   - id: kitchen_tablet_sleep_inactivity
     alias: "Kitchen Tablet - Sleep After Inactivity"
-    unique_id: auto_db858d7a9ac14816
     trigger:
       - platform: state
         entity_id: sensor.kitchen_wall_a9_tablet
@@ -462,7 +458,6 @@ automation:
 # ============================================================================
   - id: kitchen_tablet_wake_on_presence
     alias: "Kitchen Tablet - Wake on Presence"
-    unique_id: auto_4fe4a338b71a44d6
     description: "Wake tablet when someone is home"
     trigger:
       - platform: state
@@ -486,7 +481,6 @@ automation:
 
   - id: kitchen_tablet_sleep_when_away
     alias: "Kitchen Tablet - Sleep When Away"
-    unique_id: auto_3e22a1c3a4ff4d3a
     description: "Turn off tablet screen when no one home"
     trigger:
       - platform: state

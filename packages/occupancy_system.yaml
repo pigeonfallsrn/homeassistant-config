@@ -374,7 +374,6 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: update_occupancy_mode
     alias: "Occupancy → Update Mode"
-    unique_id: auto_4d642f086afb4665
     mode: single
     max_exceeded: silent
     trigger:
@@ -398,7 +397,6 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: apply_context_on_occupancy_change
     alias: "Context → Apply on Occupancy Change"
-    unique_id: auto_fcdf823abd874188
     mode: single
     max_exceeded: silent
     trigger:
@@ -410,7 +408,6 @@ automation:
   
   - id: apply_context_on_time_change
     alias: "Context → Apply on Time Change"
-    unique_id: auto_6881f8c739024d43
     mode: single
     max_exceeded: silent
     trigger:
@@ -423,7 +420,6 @@ automation:
   
   - id: apply_context_on_overlay_change
     alias: "Context → Apply on Overlay Change"
-    unique_id: auto_22e1cf76e0004ba0
     mode: single
     max_exceeded: silent
     trigger:
@@ -440,7 +436,6 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: refresh_school_tomorrow
     alias: "Calendar → Refresh School Tomorrow"
-    unique_id: auto_c4c73204638a4fe0
     mode: single
     max_exceeded: silent
     trigger:
@@ -473,7 +468,6 @@ automation:
   
   - id: refresh_school_in_session_now
     alias: "Calendar → Refresh School In Session Now"
-    unique_id: auto_3e4a12ece80a4961
     mode: single
     max_exceeded: silent
     trigger:

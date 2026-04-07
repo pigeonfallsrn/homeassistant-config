@@ -12,7 +12,6 @@
 automation:
   - id: entry_room_ceiling_motion_lighting
     alias: "Entry Room - Ceiling Motion Lighting"
-    unique_id: auto_0c2b53bd268c4d20
     description: >
       3-tier time-aware motion lighting for 3-door transition space.
       Energize daytime, warm dim evening, nightlight late night.

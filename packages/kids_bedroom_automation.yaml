@@ -206,7 +206,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_gentle_wake_automation
     alias: "Ella - Gentle Wake Before Alarm"
-    unique_id: auto_a01cd695d3bf45de
     description: "Start gentle wake lights 15 minutes before Echo alarm"
     trigger:
       - platform: numeric_state
@@ -235,7 +234,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_gentle_wake_automation
     alias: "Alaina - Gentle Wake Before Alarm"
-    unique_id: auto_a0251baf68174b34
     description: "Start gentle wake lights 15 minutes before Echo alarm"
     trigger:
       - platform: numeric_state
@@ -264,7 +262,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_school_night_bedtime
     alias: "Ella - School Night Bedtime"
-    unique_id: auto_00c8c6881d72463c
     description: "Dim lights on school nights at 9:30 PM"
     trigger:
       - platform: time
@@ -300,7 +297,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_school_night_bedtime
     alias: "Alaina - School Night Bedtime"
-    unique_id: auto_81a540a475ea4ba1
     description: "Dim lights on school nights at 9:30 PM"
     trigger:
       - platform: time
@@ -332,7 +328,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_hard_off_school
     alias: "Ella - Lights Off 10:30 PM School Nights"
-    unique_id: auto_89a57a9e3ee548b5
     trigger:
       - platform: time
         at: "22:30:00"
@@ -352,7 +347,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_hard_off_school
     alias: "Alaina - Lights Off 10:30 PM School Nights"
-    unique_id: auto_7a468d28f0b44bd1
     trigger:
       - platform: time
         at: "22:30:00"
@@ -372,7 +366,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_off_when_leaving
     alias: "Ella - Lights Off When Leaving"
-    unique_id: auto_481db899a9d145ae
     trigger:
       - platform: state
         entity_id: binary_sensor.ella_home
@@ -392,7 +385,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_off_when_leaving
     alias: "Alaina - Lights Off When Leaving"
-    unique_id: auto_f612c13cce254845
     trigger:
       - platform: state
         entity_id: binary_sensor.alaina_home
@@ -412,7 +404,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: kids_lights_off_everyone_away
     alias: "Kids - Lights Off When Everyone Away"
-    unique_id: auto_94ece0c3ded24a6d
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_home
@@ -427,7 +418,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: kids_bedroom_override_reset
     alias: "Kids - Bedroom Override Reset"
-    unique_id: auto_5089bc96defe4843
     trigger:
       - platform: time
         at: "04:00:00"
@@ -444,7 +434,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: alaina_lights_auto_off_midnight_weekend
     alias: "Alaina - Lights Auto Off Midnight (Fri/Sat)"
-    unique_id: auto_500833d8404e4b60
     trigger:
       - platform: time
         at: "00:00:00"
@@ -478,7 +467,6 @@ automation:
   # ---------------------------------------------------------------------------
   - id: ella_lights_auto_off_midnight_weekend
     alias: "Ella - Lights Auto Off Midnight (Fri/Sat)"
-    unique_id: auto_ddfbdc016a5e4b13
     trigger:
       - platform: time
         at: "00:00:00"

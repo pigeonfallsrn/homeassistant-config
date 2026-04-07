@@ -10,7 +10,6 @@ automation:
   # ===========================================================================
   - id: garage_auto_close_departure
     alias: "Garage - Auto Close North on Departure"
-    unique_id: auto_49de33af96ac43b6
     trigger:
       - platform: state
         entity_id: person.john_spencer

@@ -62,7 +62,6 @@ automation:
   # ===========================================================================
   - id: humidity_smart_shower_alert
     alias: "Humidity - Smart Shower Alert (Low House Humidity)"
-    unique_id: auto_b77a291537244bd7
     trigger:
       - platform: state
         entity_id: binary_sensor.shower_detected
@@ -108,7 +107,6 @@ automation:
   # ===========================================================================
   - id: humidity_smart_actions
     alias: "Humidity - Smart Alert Actions"
-    unique_id: auto_f8f345a1d7bb4e1b
     trigger:
       - platform: event
         event_type: mobile_app_notification_action
@@ -225,7 +223,6 @@ automation:
   # ===========================================================================
   - id: humidity_fan_unpause
     alias: "Humidity - Unpause Fan When Time Expires"
-    unique_id: auto_5f16fc28c9b24214
     trigger:
       - platform: time_pattern
         minutes: "/1"
@@ -247,7 +244,6 @@ automation:
   # ===========================================================================
   - id: humidity_fan_block_when_paused
     alias: "Humidity - Block Fan Auto-On When Paused"
-    unique_id: auto_494249c0a92d4886
     trigger:
       - platform: state
         entity_id: fan.inovelli_vzm35_sn_fan

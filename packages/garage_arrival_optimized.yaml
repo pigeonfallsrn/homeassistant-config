@@ -10,7 +10,6 @@
 automation:
   - id: garage_arrival_autoclear
     alias: "Garage - Clear Arrival Dashboard on Arrival"
-    unique_id: auto_51187ef5ebaa46dd
     description: "Automatically dismisses garage dashboard when you arrive home"
     trigger:
       - platform: state

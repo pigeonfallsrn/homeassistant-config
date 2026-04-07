@@ -7,7 +7,6 @@ automation:
 
   - id: garage_door_notifications_autoclear
     alias: "Garage - Auto-Clear Notifications on Close"
-    unique_id: auto_82a07bca007047d9
     description: "Clear all garage notifications when doors close"
     trigger:
       - platform: state

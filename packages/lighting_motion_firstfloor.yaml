@@ -25,7 +25,6 @@ template:
 automation:
   - id: kitchen_manual_override_auto_clear
     alias: "Kitchen Manual Override — Auto-Clear on No Motion"
-    unique_id: auto_e344fe2832614779
     description: >
       Clears kitchen_manual_override after 12min of no motion.
       Ensures kitchen resets to motion-control after person leaves.
@@ -57,7 +56,6 @@ automation:
   # ─────────────────────────────────────────────────────────
   - id: kitchen_lounge_motion_on
     alias: "Kitchen Lounge — On with Motion"
-    unique_id: auto_kitchen_lounge_motion_on
     description: >
       Turns on kitchen lounge Hue lights when first_floor_main_motion
       detects activity and lux is below 200. No color/brightness params
@@ -84,7 +82,6 @@ automation:
 
   - id: kitchen_lounge_motion_off
     alias: "Kitchen Lounge — Off No Motion"
-    unique_id: auto_kitchen_lounge_motion_off
     description: >
       Turns off kitchen lounge Hue lights after 12min of no motion.
       mode: restart resets the clock on any motion re-entry.
