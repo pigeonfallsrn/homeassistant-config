@@ -710,3 +710,13 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
 - Entry room stays independent — its own system (adaptive_lighting_entry_lamp.yaml)
 - Entry P1 is IN first_floor_main_motion — walking entry→kitchen keeps kitchen zone alive
 - Hallways stay isolated — first_floor_hallway_motion is a separate zone
+
+## MCP ha_config_set_automation — INJECTS unique_id INTO PACKAGE YAML (HA 2026.4.x BREAKING)
+- Every call to ha_config_set_automation embeds `unique_id: auto_*` into the target YAML block
+- HA 2026.4.1 schema validation REJECTS `unique_id:` as a top-level automation key — causes "failed to set up" Repairs for every affected automation
+- SYMPTOM: Repairs list floods with "X failed to set up" errors after any MCP automation edit session
+- DETECTION: grep -rEl 'unique_id: auto_' /homeassistant/packages/
+- FIX: python3 /homeassistant/hac/fix_pkg_unique_id.py (strips all unique_id: auto_ lines from packages/)
+  Fix script lives at /homeassistant/hac/fix_pkg_unique_id.py — permanent, reusable
+- After fix: git add packages/ && git commit && git push via MCP → restart → verify Repairs = 0
+- RULE: After ANY session using ha_config_set_automation on package files, run the detection grep before wrap
