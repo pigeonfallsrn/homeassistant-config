@@ -1,65 +1,92 @@
-# HAC Handoff — 2026-04-06 Triage S2 Close
+# HAC Handoff — 2026-04-06 Triage S3 Close
 
-## Last 3 commits
-  f15bb36 fix: strip input_boolean sub-fields (entry_lamp), remove empty humidity stub
-  00c8354 triage: lighting first floor — 2 MCP deleted, 2 lamp chain files deleted (686 lines)
-  56f872f triage: garage — 6 deleted (MCP), 6 blocks removed (YAML), 7 kept
+## Last 4 commits
+  a0b34bb triage: occupancy bathroom stub deleted, hac_session_log.yaml deleted
+  feat    kitchen lounge motion lighting — lux-gated <200, Tier 1 Hue, 12min
+  e8cd754 triage: google_sheets_sync — 3 deleted (shell_command missing, silent-fail stubs)
+  7eec96e docs: hac wrap triage S2 2026-04-06
 
 ## System state RIGHT NOW
   HA 2026.4.1 / HAOS 17.1 — current
-  29 packages / ~140 automations / git clean / pushed
-  Repairs: ~0 expected (all fixes applied, restart completed)
-  Backup: 852dc561 (Pre_Triage_Session_2026-04-06)
+  27 packages (hac_session_log + google_sheets_sync deleted)
+  ~130 automations / git clean / pushed
+  Backup: 1bc61219 (Pre_Triage_S3_2026-04-06)
+  Repairs: small number expected from deletions — clear on next restart
 
-## Triage status
-  [✅] 1. Garage: 24 → 7 automations (71% reduction)
-  [✅] 2. Presence/Arrival: working — arrival_john, arrival_ella, arrival_notification_actions all confirmed YAML-loaded
-  [✅] 3. Notifications: working — battery digest, bedtime prompt, humidity all confirmed
-  [✅] 4. Lighting 1st floor: adaptive_lighting_entry_lamp.yaml fixed (input_boolean sub-fields stripped)
-             All 14 automations restored. Lamp chain + hot tub + extended evening + arrival AL all live.
-  [ ]  5. Lighting upstairs + kids rooms (upstairs_hallway v2 confirmed working, bathroom night disabled)
-  [ ]  6. Occupancy/context system (update_mode, apply_context_* confirmed working — deep audit remaining)
-  [ ]  7. Safety/lights-off (3 safety automations confirmed working from config dump — verify + keep)
-  [ ]  8. Bedtime/scheduling (ella/alaina school night confirmed in YAML + working gentle_wake + hard_off)
-  [ ]  9. Google Sheets sync (3 automations confirmed working from config dump — verify shell_command exists)
-  [ ]  10. HAC/utility (HAC export auto at 3am confirmed in config dump)
+## Triage status — ALL 10 CATEGORIES COMPLETE
+  [✅] 1. Garage: 24 → 7 automations (S1)
+  [✅] 2. Presence/Arrival: confirmed working (S1/S2)
+  [✅] 3. Notifications: confirmed working (S1/S2)
+  [✅] 4. Lighting 1st floor: entry_lamp fixed, all 14 working (S2)
+  [✅] 5. Lighting upstairs + kids: 13 kept, bathroom stub deleted
+  [✅] 6. Occupancy/context: 6 kept, disabled bathroom stub removed
+  [✅] 7. Safety/lights-off: 3 kept, all confirmed working
+  [✅] 8. Bedtime/scheduling: lives in kids_bedroom_automation.yaml, done
+  [✅] 9. Google Sheets: 3 deleted (shell_command never existed)
+  [✅] 10. HAC/utility: hac.sh healthy, session log deleted (comments only)
 
-## Key insight from S2 config dump
-  The system is MUCH more functional than MCP "unavailable" count suggested.
-  Most unavailables were ghost registry entries, not broken automations.
-  Remaining triage categories are mostly VERIFY+KEEP, not DELETE sessions.
-  Estimate: 20-30 more deletions max across remaining 6 categories.
+## Bonus work completed S3
+  - kitchen_lounge_motion_on/off added to lighting_motion_firstfloor.yaml
+    Trigger: binary_sensor.first_floor_main_motion
+    Condition: sensor.kitchen_counter_night_light_illuminance < 200 lux
+    Targets: light.kitchen_lounge_ceiling_1of2, 2of2, kitchen_lounge_lamp
+    Gate: input_boolean.kitchen_lounge_manual_override
+    Timeout: 12min (matches kitchen_manual_override_auto_clear)
+    AL manages color/temp — no params set on turn_on
 
-## S3 first tasks (in order)
-  1. ha_backup_create("Pre_Triage_S3_YYYY-MM-DD")
-  2. Verify Repairs = 0 in HA UI
-  3. Safety category — confirm 3 automations, likely all KEEP:
-       grep -n '^\s*- id:' /homeassistant/packages/lights_auto_off_safety.yaml
-  4. Google Sheets — verify shell_command.export_to_google_sheets exists:
-       grep -n 'export_to_google_sheets' /homeassistant/configuration.yaml
-  5. HAC/utility — check hac_export shell command, session_log automation
-  6. Occupancy deep-dive — family_activities.yaml has complex system (calendar refresh,
-     school_tomorrow, school_in_session_now, family context tracking). Likely all KEEP.
-  7. Kids bedroom — ella/alaina automations confirmed working. Audit kids_bedroom_automation.yaml
-     for any remaining dead blocks.
+## Package inventory (27 files, confirmed clean)
+  adaptive_lighting_entry_lamp.yaml — 14 automations, KEEP
+  ap_presence_hybrid.yaml
+  aqara_sensor_names.yaml
+  climate_analytics.yaml — template sensors + history_stats, KEEP
+  ella_bedroom.yaml — scenes only (6 scenes), KEEP
+  ella_living_room.yaml — 4 automations (sleep timer, night path), KEEP
+  entry_room_ceiling_motion.yaml
+  family_activities.yaml — 6 automations, KEEP
+  garage_arrival_optimized.yaml
+  garage_door_alerts.yaml
+  garage_lighting_automation_fixed.yaml — 2 automations + input_number helper, KEEP
+  garage_motion_combined.yaml
+  garage_notifications_consolidated.yaml
+  garage_quick_open.yaml
+  humidity_smart_alerts.yaml
+  john_proximity.yaml
+  kids_bedroom_automation.yaml — 12 automations, KEEP
+  kitchen_tablet_dashboard.yaml
+  lighting_motion_firstfloor.yaml — 3 automations + 2 template sensors, KEEP
+  lights_auto_off_safety.yaml — 3 automations, KEEP
+  motion_aggregation.yaml
+  notifications_system.yaml
+  occupancy_system.yaml — 6 automations, KEEP (bathroom stub removed)
+  presence_display.yaml
+  presence_system.yaml
+  upstairs_lighting.yaml — 1 automation, KEEP
+  wifi_floor_presence.yaml
 
-## Backlog (carry forward)
-  - Hot tub mode entity ID mismatch: turn_off/turn_on refs `entry_room_lamp_dim_after_15min_no_motion`
-    but entity alias says "5min" → `automation.entry_room_lamp_dim_after_5min_no_motion`
-    Silent fail when hot tub mode activates. Fix: update entity_id refs in entry_lamp YAML.
-  - Driveway approach lights: dead, rebuild with Inovelli local override consideration
-  - Ella/Alaina arrival notifications to John's phone: working (arrival_ella confirmed)
-    Alaina arrival: check if arrival_notification_alaina exists (not seen in dump)
-  - Living room motion: DELETED — rebuild with Apollo R-PRO mmWave sensor
-  - kids_rooms + upstairs_hallway AL instances: missing from 16-switch count (only 4 showing)
-    Investigate: were these AL instances deleted? Should be 5 per CRITICAL_RULES.
-  - 2nd_floor_bathroom_night_lighting: DISABLED_20260126 — confirm intentional, candidate for deletion
-  - Security: SSH password auth still enabled, Cloudflare Zero Trust not configured (from S1 audit)
+## Known backlog items (carry forward)
+  - Kitchen lounge motion: test live — lights should come on when lux <200
+    If AL doesn't adapt: check take_over_control on living_spaces AL instance
+    If lux threshold wrong: adjust sensor.kitchen_counter_night_light_illuminance below: value
+  - TR nightlight entity_id/friendly_name mismatches throughout (audit 2026-03-22)
+    entity_ids are trustworthy, friendly names show wrong rooms — cleanup session needed
+  - Alaina arrival notification: exists at notifications_system.yaml:55 but # DISABLED
+    Decide if/when to re-enable
+  - Hot tub mode entity IDs: already confirmed NOT a bug — entity_ids are correct,
+    friendly names differ from entity_ids (alias changed, entity_id didn't). Remove from backlog.
+  - kids_rooms + upstairs_hallway AL instances: CRITICAL_RULES says 5 instances,
+    only 4 confirmed (living_spaces, entry_room_ceiling, entry_room_lamp_adaptive, kitchen_table)
+    kids_rooms + upstairs_hallway may need UI recreation
+  - Driveway approach lights: dead, rebuild with Inovelli local override
+  - Living room motion: deleted, rebuild with Apollo R-PRO mmWave
+  - Security: SSH password auth still enabled, Cloudflare Zero Trust not configured
+  - Mini PC migration runbook: dedicated session after triage complete ✅ (ready now)
+  - Lux sensor naming cleanup: TR nightlights have illuminance in HA but wrong friendly names
+  - Kitchen Tier 2 lighting: can lights + bar pendants — add to motion zone after testing Tier 1
 
-## Start S3
+## Start next session
   1. ha_call_service(shell_command, mcp_session_init, return_response=True)
   2. ha_call_service(shell_command, read_critical_rules, return_response=True)
   3. ha_call_service(shell_command, read_handoff, return_response=True)
-  4. Verify Repairs count (should be 0)
-  5. ha_backup_create("Pre_Triage_S3_YYYY-MM-DD")
-  6. grep -n '^\s*- id:' /homeassistant/packages/lights_auto_off_safety.yaml
+  4. Verify Repairs = 0
+  5. Test kitchen lounge lights (walk through, lux check)
+  6. Choose next focus: Mini PC migration runbook OR kitchen Tier 2 lighting OR AL instance audit

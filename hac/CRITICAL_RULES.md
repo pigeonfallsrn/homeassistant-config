@@ -685,3 +685,28 @@ All callable via ha_call_service(shell_command, <name>, return_response=True, wa
   entry_room_average_lux — all required by lamp chain automations
 - Hot tub mode turn_off/turn_on refs stale entity IDs (15min vs 5min in alias) — cosmetic bug
 - DO NOT delete this file — all 14 automations are functional and desired
+
+## LUX SENSORS — THIRD REALITY NIGHTLIGHTS (2026-04-06)
+- Every Third Reality nightlight exposes illuminance to HA via Zigbee
+- Entity pattern: sensor.*_nightlight_illuminance or sensor.*_night_light_illuminance
+- 12 lux sensors confirmed live across the house — kitchen, entry, living room, upstairs, garage
+- Use these for motion automation lux gating — no additional hardware needed
+- Key kitchen sensor: sensor.kitchen_counter_night_light_illuminance (reads ~53 lux at dusk)
+- Recommended threshold for lights-on: below 200 lux
+- Aqara P1 lux: exists in Aqara app but NOT exposed to HA via HomeKit/Matter bridge
+  Fix: re-pair P1s directly to Sonoff ZBT-1 Zigbee to get illuminance in HA (loses Aqara app)
+
+## MOTION LIGHTING — TIER ARCHITECTURE (2026-04-06)
+- Tier 1 (Adaptive): Hue color bulbs — turn_on with NO brightness/color params, AL takes over
+- Tier 2 (Fixed): Inovelli dimmers, LED cans, pendants — turn_on with explicit brightness_pct
+- Never mix tiers in same light.turn_on call — AL fights explicit params
+- Build Tier 1 first, validate feel, add Tier 2 in second pass
+- Lux gate preferred over sunset condition — use local TR nightlight sensor
+
+## OPEN CONCEPT MOTION ZONES — SHARED FATE PATTERN (2026-04-06)
+- Connected rooms with no door between them = single combined motion sensor + single automation pair
+- Off timer resets on any motion anywhere in zone — no half-dark open concept
+- Kitchen + kitchen lounge = one zone, one fate (first_floor_main_motion)
+- Entry room stays independent — its own system (adaptive_lighting_entry_lamp.yaml)
+- Entry P1 is IN first_floor_main_motion — walking entry→kitchen keeps kitchen zone alive
+- Hallways stay isolated — first_floor_hallway_motion is a separate zone
