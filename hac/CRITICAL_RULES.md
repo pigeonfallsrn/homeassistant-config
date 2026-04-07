@@ -783,3 +783,22 @@ EP3 = config button (fw 2.17+, bind to fan/second device)
 Latest stable: v3.04 (Dec 2025)
 Check: https://community.inovelli.com/t/blue-series-2-1-firmware-changelog-vzm31-sn/12326
 After any firmware update: re-verify param 52 Smart Bulb Mode setting
+
+## PRE-BUILD AUTOMATION AUDIT — MANDATORY (2026-04-07)
+Before building ANY new automation for a zone/area/entity:
+1. grep packages for existing automations touching same entities:
+   grep -rn 'entity_id' /homeassistant/packages/ | grep 'light.ENTITYNAME'
+2. ha_deep_search for UI automations: ha_deep_search("ENTITY_OR_ZONE", exact_match=False)
+3. Check HA UI automation list filtered by area/name keyword
+4. Confirm no conflicts before writing YAML
+
+WHY: 138 automations exist. MCP only sees UI-registered ones.
+Package YAML automations are invisible to MCP without cat/grep.
+Building without auditing = silent conflicts, double-fires, fighting automations.
+
+WRAP RITUAL ADDITION — always at session close:
+- Summarize what was built/changed this session
+- Note any discovered conflicts or hidden automations
+- Promote learnings to CRITICAL_RULES before commit
+- Run: grep -rEl 'unique_id: auto_' /homeassistant/packages/
+- Update HANDOFF with what's live, what's pending, what was learned
