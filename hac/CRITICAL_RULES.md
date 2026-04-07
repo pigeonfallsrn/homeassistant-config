@@ -37,7 +37,7 @@ hac backup <filename>   # NON-NEGOTIABLE
   - `detect_non_ha_changes: false`
 - **Same make/model bulbs** per AL instance
 - **Sleep mode**: 1-5%, 2200K, 10pm-6am for bedrooms
-- **Current instances**: living_spaces, entry_room_ceiling, kitchen_table, kids_rooms, upstairs_hallway
+- **Current instances**: living_spaces, entry_room_ceiling, entry_room_lamp_adaptive, kitchen_table, master_bedroom_wall_lamp, upstairs_hallway
 
 ## ENTITY NAMING
 - **ZHA gives generic entity_ids** (e.g., `inovelli_vzm35_sn_fan`)
@@ -734,7 +734,7 @@ VZM31-SN Smart Bulb Mode (Tier 1 — controls Hue bulbs, load always-on):
 VZM31-SN Dumb Load (Tier 2 — direct dimmer control, cuts power to load):
 - light.kitchen_ceiling_inovelli_vzm31_sn      kitchen ceiling can LEDs
 - light.kitchen_bar_pendant_lights             kitchen bar pendants (device_id: da86388f)
-- light.inovelli_vzm31_sn_4                   NEEDS RENAME -> kitchen_under_cabinet_lights_inovelli
+- light.kitchen_under_cabinet_lights_inovelli      kitchen under cabinet LEDs (renamed S5 2026-04-07)
 - light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn
 - light.back_door_patio_light_inovelli_switch
 - light.front_driveway_inovelli
