@@ -104,3 +104,67 @@ automation:
             - light.kitchen_lounge_ceiling_1of2
             - light.kitchen_lounge_ceiling_2of2
             - light.kitchen_lounge_lamp
+
+  # ─────────────────────────────────────────────────────────
+  # KITCHEN TIER 2 — Inovelli Dimmers (ceiling cans + bar pendants)
+  # Explicit brightness_pct ONLY — AL not involved (dumb loads)
+  # Day (lux 50-200): 80% | Night (lux ≤50): 40%
+  # Same trigger/zone as Tier 1 — shared fate, open concept
+  # Added: 2026-04-07
+  # ─────────────────────────────────────────────────────────
+  - id: kitchen_tier2_motion_on
+    alias: "Kitchen Tier 2 — Dimmers On with Motion"
+    description: >
+      Turns on kitchen Inovelli ceiling cans and bar pendants on motion.
+      Explicit brightness_pct only — Tier 2, no AL involvement.
+      Day (lux 50-200): 80%. Night (lux ≤50): 40%. Gate: lux < 200.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "on"
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.kitchen_counter_night_light_illuminance
+        below: 200
+    action:
+      - choose:
+          - conditions:
+              - condition: numeric_state
+                entity_id: sensor.kitchen_counter_night_light_illuminance
+                above: 50
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.kitchen_ceiling_inovelli_vzm31_sn
+                    - light.kitchen_bar_pendant_lights
+                data:
+                  brightness_pct: 80
+        default:
+          - action: light.turn_on
+            target:
+              entity_id:
+                - light.kitchen_ceiling_inovelli_vzm31_sn
+                - light.kitchen_bar_pendant_lights
+            data:
+              brightness_pct: 40
+
+  - id: kitchen_tier2_motion_off
+    alias: "Kitchen Tier 2 — Dimmers Off No Motion"
+    description: >
+      Turns off kitchen Inovelli ceiling cans and bar pendants after
+      12min no motion. Matches Tier 1 timeout for shared fate zone.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.first_floor_main_motion
+        to: "off"
+        for:
+          minutes: 12
+    action:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_inovelli_vzm31_sn
+            - light.kitchen_bar_pendant_lights
