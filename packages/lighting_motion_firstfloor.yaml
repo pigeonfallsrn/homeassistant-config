@@ -146,6 +146,7 @@ automation:
                     - light.kitchen_bar_pendant_lights
                 data:
                   brightness_pct: 80
+                  transition: 0
           - conditions:
               - condition: time
                 after: "19:00:00"
@@ -158,6 +159,7 @@ automation:
                     - light.kitchen_bar_pendant_lights
                 data:
                   brightness_pct: 30
+                  transition: 0
         default:
           - action: light.turn_on
             target:
@@ -166,6 +168,7 @@ automation:
                 - light.kitchen_bar_pendant_lights
             data:
               brightness_pct: 15
+              transition: 0
 
   - id: kitchen_tier2_motion_off
     alias: "Kitchen Tier 2 — Dimmers Off No Motion"
