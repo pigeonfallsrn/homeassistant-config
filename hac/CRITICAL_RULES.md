@@ -802,3 +802,77 @@ WRAP RITUAL ADDITION — always at session close:
 - Promote learnings to CRITICAL_RULES before commit
 - Run: grep -rEl 'unique_id: auto_' /homeassistant/packages/
 - Update HANDOFF with what's live, what's pending, what was learned
+
+## GREP PATTERNS — automations.yaml vs packages/ (S6 confirmed)
+- automations.yaml: `^- id:` (column 0, no indent)
+- packages/*.yaml: `^  - id:` (2-space indent)
+- ALWAYS search BOTH when hunting for automation source:
+  grep -rn 'PATTERN' /homeassistant/packages/ /homeassistant/automations.yaml
+- BusyBox grep: scope to specific files/dirs, never recurse from / or /homeassistant/
+
+## GHOST AUTOMATION STATES — TWO KINDS (S6 confirmed)
+- `unavailable` = automation in registry but not loaded (package YAML renamed/moved/deleted)
+  → RESOURCE_NOT_FOUND from config store, Repairs=0 = harmless, clears on restart
+- `off` = automation was intentionally disabled, then source-deleted
+  → registry preserves last known state; also RESOURCE_NOT_FOUND, also harmless
+- RULE: never attempt MCP deletes on unavailable/off ghosts without grep confirming
+  the automation still exists in source. If grep returns nothing = already gone.
+- DETECTION COMMAND: grep -rn 'automation_id' /homeassistant/packages/ /homeassistant/automations.yaml
+
+## HAOS AUTO-UPDATE — MCP DROPS ON OS UPGRADE (S6 observed)
+- HAOS updated 17.1→17.2 silently mid-session; HA MCP connection dropped
+- Symptom: tool_search returns only Gmail/Calendar, no HA tools
+- Fix: HA MCP reconnects automatically after HAOS reboot completes (~2-3 min)
+- After HAOS update: verify Repairs=0 and run ha_get_overview before proceeding
+- S7 note: HAOS 17.2 is the current version — confirm at session start
+
+## BACKUP MANAGER BUSY — PATTERN (S6 observed)
+- ha_backup_create fails with "Backup manager busy: create_backup" if
+  auto-backup is already running (common at session start if HA just restarted)
+- Wait 60-90s and retry — do NOT skip backup entirely
+- S5 backup (0a4a97ce) was same-day safety net when S6 backup failed
+- Add retry logic mentally: if busy → wait → retry once before proceeding
+
+## SESSION EFFICIENCY — TOKEN IMPROVEMENTS (S6 lessons)
+- read_critical_rules is 250KB+ and burns large context on every session open
+  FUTURE: split CRITICAL_RULES into CRITICAL_RULES_CORE.md (rules only, ~50KB)
+  and CRITICAL_RULES_HISTORY.md (session promotions/history). Load core only at start.
+- ha_get_overview with max_entities_per_domain=1 is sufficient for health checks
+  (state summary gives counts; only load full domain when working in that area)
+- hac backup failure should NOT block all work — S5 backup same-day is valid safety net
+- MCP tool_search wastes tokens when HA tools drop; add note to session prompt:
+  if tool_search returns only Gmail/Calendar = HA MCP offline, wait for reconnect
+
+## SESSION NAMING CONVENTION — HARDWIRED
+- Backups: Pre_S{N}_{YYYY-MM-DD}  (e.g., Pre_S7_2026-04-07)
+- Commits: "feat:", "chore:", "fix:", "docs:" prefix — always include session tag
+- HANDOFF: always "HAC Handoff — {date} S{N} Close"
+- Session IDs: S1, S2... are per-day sessions (S6 = 6th session on 2026-04-07)
+
+## HACS AUTO-UPDATES — COMMIT PATTERN (S6 observed)
+- HACS updates custom_components/ silently while HA runs
+- Modified files appear in `git status` unstaged — NOT a dirty config
+- Pattern: yamaha_ynca updated during S6 (24 files, 174 ins / 38 del + __pycache__ deletes)
+- __pycache__ .pyc files: always deleted by HACS updates — normal, not an error
+- Commit immediately when seen: git add custom_components/COMPONENT/ && git commit -m "chore: COMPONENT auto-update via HACS"
+- NEVER leave HACS updates uncommitted — they clutter git status and obscure real changes
+
+## PRIVACY / SECURITY BACKLOG — UNCHANGED (carry forward every session)
+- SSH password auth: STILL ENABLED — set password: "" in SSH add-on config
+  Add authorized_keys with ed25519 public key. Test before disabling password.
+- Cloudflare Zero Trust: NOT configured — HA login page exposed to internet
+  Fix: CF dashboard > Zero Trust > Access > ha.myhomehub13.xyz
+  Bypass: path=/api/* for mobile app webhooks
+- Git PAT in plaintext at /config/.git/config
+  Fix: replace with fine-grained PAT (pigeonfallsrn/homeassistant-config only)
+- 92 device_tracker entities logging GPS/MAC/IP — high PII in DB
+  Fix: recorder exclude glob device_tracker.* (already in configuration.yaml)
+
+## WRAP RITUAL — MANDATORY CHECKLIST (every session close)
+1. grep -rEl 'unique_id: auto_' /homeassistant/packages/   ← injection check
+2. grep -rn 'PATTERN' both packages/ AND automations.yaml  ← use both paths
+3. Promote any new learnings to CRITICAL_RULES
+4. Update HANDOFF.md with: state, completed, new learnings, backlog
+5. git add + commit with session tag
+6. git push via MCP shell_command.git_push (NEVER terminal)
+7. Verify push: git log --oneline -3 shows origin/main at HEAD
