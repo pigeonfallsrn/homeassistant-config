@@ -1,183 +1,116 @@
-# HAC Handoff — 2026-04-08 S4 Close
+# HAC Handoff — 2026-04-08 S5 Close
 
 ## Last commits
-  ee4473a fix: Tier 2 ceiling cans transition:0 — prevent flicker on motion restart
-  9239f87 hac wrap: S3 complete + hac.sh restored (previous session)
+  9d4b64e feat: hue_switches.yaml — 5 switch automations (S5 2026-04-08)
+  bdabf65 docs: S4 wrap — AL/Tier2 fix, transition:0 learning, Hue standardization project spec
 
 ## System state RIGHT NOW
   HA 2026.4.1 / HAOS 17.2 — current
-  27 packages / ~132 active automations / git clean / pushed
+  28 packages / 137 active automations (+5 new) / git clean / pushed to origin
   Repairs: 0 ✅
-  Backup: Pre_S4_2026-04-08 (ade0a9db)
+  Notifications: 0 ✅
+  Backup: Pre_S5_2026-04-08 (03d69881)
 
-## S4 completed work
-  [✅] Kitchen Table AL violation fixed — ceiling cans + bar pendants removed from AL
-       (UI pencil edit — now contains only Tier 1 Hue lights)
-  [✅] Tier 2 ceiling can flicker fixed — transition:0 on all 3 brightness levels
-       File: lighting_motion_firstfloor.yaml | Commit: ee4473a
-  [✅] Inovelli upstairs hallway diagnosed — switch NOT in ZHA (not paired/not installed)
-       Hue EP2 binding architecture limitation documented in CRITICAL_RULES
-  [✅] Upstairs hallway AL fight identified — motion automation sends explicit
-       brightness_pct+color_temp to Hue group, fights AL (deferred fix)
-  [✅] Scene inventory pulled — 124+ scenes, gaps and naming inconsistency mapped
+## S5 completed work
+  [✅] Phase 1 — Full Hue V2 API audit: 17 rooms mapped, all light RIDs, all zones confirmed
+       Key finding: hue_dimmer_switch_4 = Garage (not "spare") — HANDOFF numbering was wrong
+       Key finding: Hue switches on bridge, NOT ZHA — Rohan blueprint does NOT apply
+  [✅] Phase 2 — 24 scenes created via Hue V2 API (0 failures)
+       Kitchen: E/R/D/N | Kitchen Lounge: E/R/D/N | Entry Room: R/D/N
+       Ella's Bedroom: R/D | Alaina's Bedroom: D | 2nd Floor Bathroom: R/D/N
+       Basement: R/D/N | Back Patio: D | Garage: D | Upstairs Hallway: D | Living Room Lounge: D
+  [✅] Phase 3 — HA scene entity naming audit: all 24 new scenes have clean entity_ids
+       Pre-existing zone-level scenes (kitchen_chandelier_*, etc.) = cosmetic backlog only
+  [✅] Phase 4 — hue_switches.yaml created (336 lines, 5 automations, all on)
+       Uses native HA event entities (event.hue_*), NOT ZHA/blueprint
+       event_type: short_release for buttons, clock_wise/counter_clock_wise for rotary
+       Entry Room Tap Dial (hue_tap_dial_switch_1): E/R/D/Off + rotary brightness
+       Master Bedroom Tap Dial (hue_tap_dial_switch_3): E/R/D/Off + rotary brightness
+       Alaina's Bedroom Dimmer (hue_dimmer_switch_3): E/R/D/Off
+       Ella's Bedroom Dimmer (hue_dimmer_switch_2): E/R/D/Off (standard; customize with her customs)
+       Garage Dimmer (hue_dimmer_switch_4): E/R/D/Off ⚠️ battery swap still needed
 
-## S4 new learnings → CRITICAL_RULES
-  - AL vs Tier 2 live detection via parent_id clustering in ha_get_states
-  - transition:0 mandatory on all Inovelli dumb-load motion automations
-  - Hue bridge bulbs ≠ ZHA — EP2 binding impossible, HA automation path only
-  - Upstairs hallway explicit params fight AL (same pattern as kitchen Tier 2)
+## S5 new learnings → CRITICAL_RULES
+  - Hue bridge switches use native event entities (event.hue_*), NOT ZHA/Rohan blueprint
+  - Rotary: event_type=clock_wise/counter_clock_wise, action=repeat, steps=cumulative
+  - Button press: event_type=short_release (most reliable for single-fire)
+  - hue_dimmer_switch_4 = Garage (numbering ≠ HANDOFF assumed order — always verify via friendly name)
+  - Phase 3 scene sync: HA picks up new Hue bridge scenes automatically on next Hue poll (no restart needed)
+  - Hue V2 API scene create: POST to /clip/v2/resource/scene, group rtype must be "room" not "zone"
+
+## FOH SWITCHES — POST-IT (build next dedicated session)
+  Living Room Hue Switch (device:09c74744, FOHSWITCH)
+    → Target: Living Room
+    → Design question: AL living_spaces is running there. Should FOH override AL or work with it?
+    → Suggested: B1=Energize, B2=Relax, B3=Dimmed, B4=Off (AL will reclaim on next motion)
+  Living Room Lounge Click FoH (device:bee97efe, FOHSWITCH)
+    → Target: Living Room Lounge (light.living_room_lounge)
+    → Suggested: B1=Energize, B2=Relax, B3=Dimmed, B4=Off
+  Ella's Bedroom Hue Light Switch (device:859416eb, FOHSWITCH)
+    → Target: Ella's Bedroom
+    → Suggested: B1=Volleyball Hype, B2=Chill Purple, B3=Nightlight, B4=Off
+  NOTE: FOH event entities are already in HA (event domain). Same trigger pattern as dimmers.
+  Check event_type values before building — may differ from RWL022.
+
+## Ella's Bedroom dimmer — CUSTOMIZE WHEN READY
+  Current mapping: B1=Energize, B2=Relax, B3=Dimmed, B4=Off
+  To swap custom scenes: edit /homeassistant/packages/hue_switches.yaml
+    B1 → scene.ella_s_bedroom_volleyball_hype  (or keep Energize)
+    B2 → scene.ella_chill_purple               (her chill scene — verify entity_id)
+    Restart not needed: hue_switches.yaml changes load on ha core restart only
+
+## ⚠️ ACTION ITEMS (do before testing)
+  - Garage dimmer: swap battery in hue_dimmer_switch_4 before testing
+  - Hue API key: ROTATE before next session using bridge V2 API
+    POST https://192.168.1.68/api (button press required) → update core.config_entries api_key field
+  - Ella's custom scene entity_ids: verify scene.ella_chill_purple, scene.ella_volleyball_hype
+    (seen in S5 entity list as scene.ella_chill_purple, scene.ella_volleyball_hype — confirm)
+
+## ═══════════════════════════════════════════════════════════
+## THURSDAY SESSION (2026-04-10): MINI PC MIGRATION RUNBOOK
+## ═══════════════════════════════════════════════════════════
+Mini PC arrives Friday 2026-04-11. Thursday session = migration prep only.
+
+### MIGRATION CHECKLIST (generate full runbook Thursday)
+  Pre-migration:
+    - New backup day-of (Pre_MiniPC_Migration_2026-04-10 or similar)
+    - Export ZHA: Settings > Devices & Services > ZHA > ⋮ > Download backup
+    - Note current HA IP: 192.168.1.3 (HA Green)
+    - Document all integrations requiring re-auth post-migration
+    - Verify github is fully pushed (git log --oneline -3)
+    - Screenshot all custom UI dashboards (kitchen-wall-v2 especially)
+  Migration day:
+    - Install HAOS on Mini PC (x86-64 image)
+    - Restore from Pre_MiniPC_Migration backup
+    - Assign new Mini PC same IP (192.168.1.3) in UniFi DHCP reservations
+    - Re-import ZHA backup on new coordinator
+    - Re-auth: Hue, Spotify, Google, any OAuth integrations
+    - Verify MCP tunnel: ha.myhomehub13.xyz still resolves
+    - Verify /api/mcp bypass policy still active in Cloudflare
+    - Test all 5 Hue switch automations
+  Post-migration (2 weeks):
+    - Keep HA Green powered on as cold standby
+    - Verify DB is building normally on new hardware
+    - Confirm all automations firing
 
 ## KNOWN OPEN ITEMS (carry forward)
   - Alaina arrival notification: notifications_system.yaml:55 # DISABLED
   - Upstairs hallway motion automation: remove explicit brightness/color_temp, use scenes
-  - Upstairs hallway Inovelli: pair to ZHA if switch is on wall, then build automation
+  - Upstairs hallway Inovelli: pair to ZHA if switch installed, build automation
   - Driveway approach lights: rebuild with Inovelli local override
-  - Living room motion: rebuild with Apollo R-PRO mmWave (LD2450 Zone-1 coords in CRITICAL_RULES)
+  - Living room motion: rebuild with Apollo R-PRO mmWave
   - Security backlog: SSH password auth, Cloudflare Zero Trust, Git PAT rotation
-  - Mini PC migration runbook: Friday 2026-04-11 (3 days away — HIGH PRIORITY)
   - TR nightlight naming: 12 sensors affected
   - VZM36 living room: 2 instances (_3 + _4) — investigate duplicates
-  - Room blink audit rooms 7-16: not completed this session
-  - hue_dimmer_switch_4: room unidentified (needs Hue V2 API query)
-  - Hue API key rotation: still pending (appeared in S3 transcript)
+  - FOH switch automations: 3 switches (see above)
+  - Zone-level scene cleanup (cosmetic): kitchen_chandelier_*, living_room_lounge_ceiling_*
+  - Ella's dimmer custom scene mapping (when she asks for it)
 
-## ═══════════════════════════════════════════════════════════
-## NEXT BIG PROJECT: HUE STANDARDIZATION (NEW SESSION)
-## ═══════════════════════════════════════════════════════════
-
-### GOAL
-Complete Hue ecosystem audit + standardization across all rooms:
-- Every room: confirmed entity_ids, Hue group/room/zone structure, bulb count
-- Standard 4-scene set per room (created via Hue V2 API where missing)
-- Consistent naming optimized for MCP + voice control
-- Inovelli switch automations for all rooms with Hue bulbs
-- AL instances verified/corrected for all Tier 1 rooms
-
-### STANDARD SCENE SET (best practice, 4 per room)
-Hue V2 API scene names and values — create these in every applicable room:
-
-  Energize   → 6500K, 100%  — morning, cooking, active tasks
-  Relax      → 2237K,  56%  — evening wind-down, TV
-  Dimmed     → 2700K,  25%  — late evening, casual, pre-sleep transition
-  Nightlight → 2000K,   1%  — sleeping hours, wayfinding only
-
-Scene entity_id pattern: scene.[area_snake_case]_[scene_type]
-  e.g. scene.kitchen_energize, scene.master_bedroom_relax
-
-### ROOM-BY-ROOM SCENE SPEC (what to create/verify)
-
-  Kitchen (group: light.kitchen_chandelier + light.kitchen_above_sink_light):
-    Need: Energize ✅exists, Relax ✅exists, Dimmed → CREATE, Nightlight → CREATE
-
-  Kitchen Lounge (group: light.kitchen_lounge):
-    Need: Energize → CREATE, Relax → CREATE, Dimmed → CREATE, Nightlight → CREATE
-
-  Entry Room (group via light.entry_room_ceiling_light... Hue group):
-    Need: Energize ✅exists (scene.entry_room_energize), Relax → CREATE,
-          Dimmed → CREATE, Nightlight → CREATE
-
-  Living Room (groups: lounge ceiling + table lamps + floor lamps):
-    Has: per-group scenes (Relax, Energize, etc.) — consolidate to room-level
-    Need: unified room scenes OR use light.living_room_lounge as primary group
-    Standard: Concentrate (better than Energize for living room), Relax, Dimmed, Nightlight
-
-  Master Bedroom:
-    Has: Energize, Concentrate, Read, Relax, Rest, Dimmed ✅ mostly complete
-    Need: Nightlight → verify/create | Standardize to: Read, Relax, Dimmed, Nightlight
-
-  Upstairs Hallway:
-    Has: Relax, Rest, Nightlight — scene.upstairs_hallway_*
-    Need: Energize ✅exists (scene.upstairs_hallway_energize), verify Dimmed
-
-  2nd Floor Bathroom:
-    Has: Energize, Vanity Energize/Relax/Read/Nightlight (separate group)
-    Need: full room set + verify Dimmed/Nightlight for main group
-
-  Alaina's Bedroom:
-    Has: Energize, Concentrate, Read, Bright, Bedside Lamp Nightlight/Read, Ceiling Energize
-    Need: Relax → CREATE, Dimmed → CREATE, Nightlight (room-level) → CREATE
-    Keep: custom Bright scene
-
-  Ella's Bedroom:
-    Has: Energize, Concentrate, Nightlight, custom (Volleyball Hype, Chill Purple,
-         Reading, Bedtime Glow) — ceiling + wall/bedside separate groups
-    Need: Relax → CREATE, Dimmed → CREATE
-    Keep: ALL custom scenes — Ella's customs are intentional
-
-  Garage:
-    Has: Energize, Concentrate, Relax, Nightlight ✅ complete
-    Need: Dimmed → CREATE
-
-  Back Patio:
-    Has: Energize, Relax, Concentrate, Read
-    Need: Dimmed → CREATE, Nightlight → CREATE
-
-  Front Driveway / Very Front Door:
-    Has: many outdoor-specific scenes (Golden Hours, Arise, Shine, Sleepy, Nighttime, etc.)
-    These are outdoor accent lights — keep outdoor-specific scenes, add Nightlight if missing
-
-  Basement:
-    Has: Energize only
-    Need: Relax → CREATE, Dimmed → CREATE, Nightlight → CREATE
-
-### NAMING CONVENTION — ENFORCED STANDARD
-  Hue room name   → matches HA area name exactly (already mostly true)
-  Scene entity_id → scene.[area_snake_case]_[energize|relax|dimmed|nightlight]
-  Group entity_id → light.[area_snake_case] (room-level group, not sub-group)
-  Switch alias    → "[Area] — [Switch Type]" e.g. "Master Bedroom — Tap Dial"
-
-  AVOID: per-group scenes like scene.kitchen_chandelier_relax (confusing, not addressable by voice)
-  PREFER: room-level scenes like scene.kitchen_relax (addressable: "turn on kitchen relax")
-
-### VOICE CONTROL PREP (future — tablet/Assist)
-  HA Assist voice commands work best when:
-  - Scene names are natural language: "kitchen relax" not "kitchen chandelier relax"
-  - Area names match colloquial usage: "bedroom" vs "master bedroom"
-  - Scene names are consistent across rooms (same 4 words used everywhere)
-  - Entity aliases set in HA for alternate phrasings (UI: entity → aliases field)
-  Aliases to add: "kitchen lights" → light.kitchen_chandelier group alias
-                  "bedroom lights" → light.master_bedroom alias
-
-### HUE V2 API — SCENE CREATION (no key rotation done yet)
-  Bridge: 192.168.1.68
-  ⚠️ ROTATE KEY BEFORE USE (appeared in S3 transcript)
-  Endpoint: PUT https://192.168.1.68/clip/v2/resource/scene
-  Scene create body:
-    { "actions": [{"target": {"rid": "<light_rid>","rtype":"light"},
-                   "action": {"color_temperature": {"mirek": 153},
-                              "dimming": {"brightness": 100.0}}}],
-      "metadata": {"name": "Energize"},
-      "group": {"rid": "<room_rid>", "rtype": "room"} }
-  Mirek values: 6500K=153, 4000K=250, 2700K=370, 2237K=447, 2000K=500
-  Brightness: 100.0, 56.0, 25.0, 1.0
-
-### INOVELLI SWITCH AUTOMATION TEMPLATE (one per switch, all rooms)
-  Trigger: zha_event, device_id: [switch_device_id], command: toggle / step / etc.
-  Use Rohan unified blueprint (supports VZM31-SN + VZM35-SN + VZM30-SN)
-  URL: https://community.home-assistant.io/t/627953
-  File: /homeassistant/packages/hue_switches.yaml (create new)
-  Button design (Option A — S4 decision):
-    Button 1: scene.[room]_energize
-    Button 2: scene.[room]_relax
-    Button 3: scene.[room]_nightlight
-    Button 4: light.turn_off
-    Rotate:   brightness up/down (Tap Dial only)
-
-### SWITCHES NEEDING AUTOMATIONS (0 exist for any of these)
-  hue_tap_dial_switch_1  → Entry Room (device_id: find via ZHA)
-  hue_tap_dial_switch_3  → Master Bedroom (device_id: find via ZHA)
-  hue_dimmer_switch_1    → Alaina's Bedroom
-  hue_dimmer_switch_2    → Ella's Bedroom
-  hue_dimmer_switch_3    → Garage ⚠️ swap battery first
-  hue_dimmer_switch_4    → UNKNOWN room (identify via Hue V2 API)
-  Ella's Hue Light Switch → needs HA automation
-  Upstairs Hallway Inovelli → needs ZHA pairing first
-
-## Start next session
+## Start next session (Thursday — Migration Runbook)
   1. ha_call_service(shell_command, mcp_session_init)
   2. ha_call_service(shell_command, read_critical_rules)
   3. ha_call_service(shell_command, read_handoff)
-  4. ha_backup_create("Pre_S5_2026-04-08") or Pre_S1_2026-04-09
+  4. ha_backup_create("Pre_S1_2026-04-10")
   5. Verify Repairs = 0
-  6. DECISION: Mini PC migration (Friday!) vs Hue standardization project
-     Mini PC = Friday deadline, should be session priority by Thursday at latest
+  6. Generate full Mini PC migration runbook
+  7. If time: test Hue switch automations (tap Alaina dimmer, verify scene fires)
