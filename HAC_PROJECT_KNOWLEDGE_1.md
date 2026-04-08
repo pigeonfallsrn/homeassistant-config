@@ -89,3 +89,27 @@ MOTION, INOVELLI, AL, YAML, ZHA, HAC, MATTER, ENTITY, DASHBOARD, HACS, PRESENCE,
 ### S3 COMMIT
 - 1d75d20 pushed to main. 10 files changed, 311 insertions, 567 deletions.
 - Remaining: 11 rooms in blink audit, Hue switch automations (0 exist), missing scenes, ella_bedroom stale ref (light.ella_s_ceiling_light_1_of_3 in ella_school_night_bedtime condition — harmless but stale).
+
+### [2026-04-08 00:02] HUE
+- Individual Hue bulb entities disabled (31). Always target zone/room group entities: light.kitchen_lounge, light.ella_s_ceiling_lights, light.kitchen_chandelier, etc.
+
+### [2026-04-08 00:02] HUE
+- Hue V2 API HTTPS only. Entity disable: MCP ha_set_entity(enabled=false). Supervisor PATCH returns 405. Slugs use 1of3 not 1_of_3. Bridge API key appeared in session — ROTATE IT.
+
+### [2026-04-08 00:02] KITCHEN
+- Tier 2 dimmers time-aware: 06-19=80%, 19-22=30%, 22-06=15%. Respects input_boolean.kitchen_manual_override. Double-tap UP = override, auto-clears 12min no motion.
+
+### [2026-04-08 00:02] HOT_TUB
+- Hot tub mode pauses ALL 3 kitchen motion automations via automation.hot_tub_mode_pause_resume_kitchen_motion_automations. Re-enables on hot_tub_mode OFF.
+
+### [2026-04-08 00:02] YAML
+- Multi-target sed replace → duplicate YAML keys. Fix with Python dedup pass. Always grep -c duplicates after multi-target replace.
+
+### [2026-04-08 00:02] HA_CHECK
+- KeyError triggers in ha core check = 2026.4 false positive. Real signal = Successful config partial. map/packages warnings cosmetic.
+
+### [2026-04-08 00:02] ROOM_AUDIT
+- Blink audit: turn_off light.whole first, turn_on at 60% NO color_temp (Hue groups 400). Confirmed: Entry, Kitchen, Kitchen Lounge, Living Room, Living Room Lounge, 1st Floor Bathroom.
+
+### [2026-04-08 00:02] HAC_SYSTEM
+- hac.sh NOT committed to git — wiped on HAOS updates. Rebuild with: cat > /config/hac.sh (recreate script), chmod +x, ln -sf to /usr/local/bin/hac. Always commit hac.sh after rebuild.
