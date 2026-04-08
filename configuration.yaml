@@ -171,7 +171,7 @@ packages: !include_dir_named packages
 
 # Recorder - optimized retention and exclusions
 recorder:
-  purge_keep_days: 7
+  purge_keep_days: 3
   commit_interval: 30
   exclude:
     domains:
