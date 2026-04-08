@@ -66,3 +66,26 @@ Hue bulbs require: separate_turn_on_commands:true, take_over_control:true, detec
 
 ## Learning Categories
 MOTION, INOVELLI, AL, YAML, ZHA, HAC, MATTER, ENTITY, DASHBOARD, HACS, PRESENCE, NETWORK
+
+## S3 SESSION LEARNINGS — 2026-04-08
+
+### HUE ENTITIES
+- 31 individual Hue bulb entities disabled. ALWAYS target zone/room group entities in automations: light.kitchen_lounge, light.ella_s_ceiling_lights, light.kitchen_chandelier, etc. Re-enable individually if needed.
+- Hue V2 API: HTTPS only (HTTP → 301). Entity disable: MCP ha_set_entity(enabled=false) works. Supervisor PATCH /api/config/entity_registry returns 405. Vanity slugs use 1of3 not 1_of_3. Bridge API key appeared in session — ROTATE IT.
+- Blink audit protocol: turn_off light.whole first, then turn_on each room at 60% — NO color_temp param (Hue groups reject it → 400 Bad Request). Confirmed rooms: Entry, Kitchen, Kitchen Lounge, Living Room, Living Room Lounge, 1st Floor Bathroom.
+
+### KITCHEN LIGHTING
+- Tier 2 dimmers (ceiling cans + bar pendants): time-aware 06-19=80%, 19-22=30%, 22-06=15%. Respects input_boolean.kitchen_manual_override. Double-tap UP on any kitchen Inovelli = override, auto-clears 12min no motion.
+- Hot tub mode now pauses ALL 3 kitchen motion automations via automation.hot_tub_mode_pause_resume_kitchen_motion_automations. Re-enables on hot_tub_mode OFF (manual, 3am reset, or back-inside trigger).
+
+### YAML EDITING
+- Multi-target sed replace (3 entity IDs → same target) creates duplicate YAML mapping keys in scene dicts. Fix with Python dedup pass — not sed. Always grep -c for remaining duplicates after any multi-target replace.
+- ha core check: KeyError triggers = known 2026.4 startup-timing false positive. Real signal = "Successful config (partial) → automation:". map/packages General Warnings are cosmetic.
+
+### HAC SYSTEM
+- hac.sh is NOT committed to git — lives only in container, wiped on HAOS updates. Needs rebuild after each HAOS reinstall. Learnings can be written directly to HAC_PROJECT_KNOWLEDGE_1.md as fallback.
+- hac symlink: ln -sf /config/hac.sh /usr/local/bin/hac (only works if hac.sh exists first)
+
+### S3 COMMIT
+- 1d75d20 pushed to main. 10 files changed, 311 insertions, 567 deletions.
+- Remaining: 11 rooms in blink audit, Hue switch automations (0 exist), missing scenes, ella_bedroom stale ref (light.ella_s_ceiling_light_1_of_3 in ella_school_night_bedtime condition — harmless but stale).
