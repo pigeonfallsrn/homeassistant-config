@@ -245,46 +245,6 @@
     id: aux_config_hold
     platform: event
 - actions:
-  - action: fan.turn_on
-    target:
-      entity_id: fan.inovelli_vzm35_sn_fan
-  - delay:
-      minutes: 15
-  - else:
-    - delay:
-        minutes: 15
-    - action: fan.turn_off
-      target:
-        entity_id: fan.inovelli_vzm35_sn_fan
-    if:
-    - below: 60
-      condition: numeric_state
-      entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
-    then:
-    - action: fan.turn_off
-      target:
-        entity_id: fan.inovelli_vzm35_sn_fan
-  alias: 2nd Floor Bathroom - Humidity Fan Control v2
-  conditions:
-  - condition: state
-    entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-    state: 'off'
-  description: Timer-based fan control. Turns on with hot water or high humidity.
-    Auto-off after 15min if humidity normalized, 30min max.
-  id: '1771854304476'
-  mode: restart
-  triggers:
-  - above: 0.5
-    entity_id: sensor.navien_water_flow
-    for:
-      minutes: 2
-    id: hot_water
-    platform: numeric_state
-  - above: 65
-    entity_id: sensor.2nd_floor_bathroom_ceiling_humidity
-    id: high_humidity
-    platform: numeric_state
-- actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1326,103 +1286,6 @@
   triggers:
   - at: '21:00:00'
     platform: time
-- action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: motion_on
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_pct: 80
-          transition: 1
-        target:
-          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
-      - action: switch.turn_on
-        target:
-          entity_id: switch.basement_hallway_smart_switch
-    - conditions:
-      - condition: trigger
-        id: motion_off
-      sequence:
-      - action: light.turn_off
-        data:
-          transition: 3
-        target:
-          entity_id: light.1st_floor_bathroom_vanity_lights_tp_link_smart_dimmer_switch
-      - action: switch.turn_off
-        target:
-          entity_id: switch.basement_hallway_smart_switch
-  alias: 1st Floor Hallway → Hallway + Vanity Motion
-  description: 'P1 (basement_hallway = 1st floor bathroom hallway): Hallway ceiling
-    (TP-Link HS200 switch) + vanity dimmer both on with motion, off when clear. No
-    lux/time gate - hallway light always useful. mode:restart fine, no shower concern.'
-  id: 1st_floor_hallway_vanity_motion
-  mode: restart
-  trigger:
-  - entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
-    id: motion_on
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
-    id: motion_off
-    platform: state
-    to: 'off'
-- action:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: motion_on
-      sequence:
-      - if:
-        - after: sunset
-          after_offset: 0:30:00
-          condition: sun
-        - condition: state
-          entity_id: input_boolean.bathroom_1st_floor_manual_override
-          state: 'off'
-        - condition: state
-          entity_id: light.1st_floor_bathroom
-          state: 'off'
-        then:
-        - action: light.turn_on
-          data:
-            brightness_pct: 60
-            transition: 2
-          target:
-            entity_id: light.1st_floor_bathroom
-    - conditions:
-      - condition: trigger
-        id: motion_off
-      sequence:
-      - condition: state
-        entity_id: input_boolean.bathroom_1st_floor_manual_override
-        state: 'off'
-      - delay:
-          minutes: 8
-      - action: light.turn_off
-        data:
-          transition: 3
-        target:
-          entity_id: light.1st_floor_bathroom
-  alias: 1st Floor Hallway → Bathroom Ceiling Motion
-  description: 'P1 outside bathroom: Hue ceiling on after sunset+30min when override
-    off and light off. motion_on turns on. motion_off starts 8min delay then turns
-    off. mode: single prevents restart race - if delay is running, re-triggers are
-    ignored, so light stays on through shower entry sensor clear. Set input_boolean.bathroom_1st_floor_manual_override
-    for long stays.'
-  id: 1st_floor_hallway_bathroom_ceiling_motion
-  max_exceeded: silent
-  mode: single
-  trigger:
-  - entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
-    id: motion_on
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.1st_floor_bathroom_hallway_motion
-    id: motion_off
-    platform: state
-    to: 'off'
 - actions:
   - action: light.turn_on
     target:
@@ -2127,192 +1990,6 @@
   actions:
   - action: shell_command.git_push_to_github
   mode: single
-- id: kitchen_lounge_lamp_adaptive_control
-  alias: Kitchen Lounge Lamp - Adaptive Control
-  description: 'Manages lamp based on motion, lux, presence, time, and modes. Updated
-    2026-04-05: now uses first_floor_main_motion (combined P1+TR) instead of kitchen_lounge_motion
-    (TR only) — fixes slow response when motion detected by kitchen P1 but not west
-    TR sensor.'
-  triggers:
-  - platform: state
-    entity_id: binary_sensor.first_floor_main_motion
-    to: 'on'
-    id: motion
-  - platform: state
-    entity_id: input_boolean.hot_tub_mode
-    id: hot_tub_toggle
-  - platform: state
-    entity_id: input_boolean.dad_bedtime_mode
-    to: 'on'
-    id: bedtime_on
-  conditions:
-  - condition: state
-    entity_id: input_boolean.kitchen_lounge_manual_override
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'on'
-      sequence:
-      - target:
-          entity_id: light.kitchen_lounge_lamp
-        data:
-          rgb_color:
-          - 255
-          - 30
-          - 0
-          brightness_pct: 5
-          transition: 2
-        action: light.turn_on
-      - target:
-          entity_id: switch.adaptive_lighting_living_spaces
-        action: switch.turn_off
-    - conditions:
-      - condition: trigger
-        id: bedtime_on
-      sequence:
-      - target:
-          entity_id: light.kitchen_lounge_lamp
-        data:
-          brightness_pct: 10
-          color_temp_kelvin: 2200
-          transition: 60
-        action: light.turn_on
-      - delay:
-          minutes: 15
-      - target:
-          entity_id: light.kitchen_lounge_lamp
-        data:
-          transition: 60
-        action: light.turn_off
-    - conditions:
-      - condition: trigger
-        id: motion
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.dad_bedtime_mode
-        state: 'off'
-      - condition: numeric_state
-        entity_id: sensor.kitchen_lounge_average_lux
-        below: input_number.kitchen_lounge_lux_threshold
-      sequence:
-      - target:
-          entity_id: switch.adaptive_lighting_living_spaces
-        action: switch.turn_on
-      - target:
-          entity_id: light.kitchen_lounge_lamp
-        data:
-          brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int
-            }}'
-        action: light.turn_on
-    - conditions:
-      - condition: trigger
-        id: hot_tub_toggle
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'off'
-      sequence:
-      - target:
-          entity_id: switch.adaptive_lighting_living_spaces
-        action: switch.turn_on
-      - data:
-          entity_id: switch.adaptive_lighting_living_spaces
-          lights:
-          - light.kitchen_lounge_lamp
-          transition: 5
-        action: adaptive_lighting.apply
-  mode: restart
-- id: kitchen_lounge_lamp_activity_boost
-  alias: Kitchen Lounge Lamp - Activity Boost
-  description: 'Restore full brightness when motion detected while dimmed. Updated
-    2026-04-05: uses first_floor_main_motion.'
-  triggers:
-  - entity_id: binary_sensor.first_floor_main_motion
-    platform: state
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.kitchen_lounge_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.dad_bedtime_mode
-    state: 'off'
-  - condition: state
-    entity_id: light.kitchen_lounge_lamp
-    state: 'on'
-  - attribute: brightness
-    below: 100
-    condition: numeric_state
-    entity_id: light.kitchen_lounge_lamp
-  actions:
-  - data:
-      entity_id: switch.adaptive_lighting_living_spaces
-      lights:
-      - light.kitchen_lounge_lamp
-      transition: 2
-    action: adaptive_lighting.apply
-  mode: single
-- id: kitchen_lounge_lamp_no_motion_dim
-  alias: Kitchen Lounge Lamp - Dim After 8min No Motion
-  description: 'Dim lamp after 8min no motion. Updated 2026-04-05: uses first_floor_main_motion.'
-  triggers:
-  - entity_id: binary_sensor.first_floor_main_motion
-    for:
-      minutes: 8
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.kitchen_lounge_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  - condition: state
-    entity_id: light.kitchen_lounge_lamp
-    state: 'on'
-  - above: 50
-    attribute: brightness
-    condition: numeric_state
-    entity_id: light.kitchen_lounge_lamp
-  actions:
-  - data:
-      brightness_pct: 20
-      transition: 60
-    target:
-      entity_id: light.kitchen_lounge_lamp
-    action: light.turn_on
-  mode: single
-- id: kitchen_lounge_lamp_no_motion_off
-  alias: Kitchen Lounge Lamp - Off After 20min No Motion
-  description: 'Turn off lamp after 20min no motion. Updated 2026-04-05: uses first_floor_main_motion.'
-  triggers:
-  - entity_id: binary_sensor.first_floor_main_motion
-    for:
-      minutes: 20
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.kitchen_lounge_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: light.kitchen_lounge_lamp
-    state: 'on'
-  actions:
-  - data:
-      transition: 60
-    target:
-      entity_id: light.kitchen_lounge_lamp
-    action: light.turn_off
-  mode: single
 - id: kitchen_manual_override_inovelli_trigger
   alias: Kitchen Manual Override — Inovelli 2x Tap Set
   description: Double-tap UP on kitchen chandelier or above-sink Inovelli switch sets
@@ -2347,4 +2024,40 @@
       message: Motion auto-off suppressed for all kitchen lights. Clears after 12min
         no motion.
       title: Kitchen Override ON
+  mode: single
+- id: '1775623389364'
+  alias: Hot Tub Mode — Pause/Resume Kitchen Motion Automations
+  description: When hot tub mode activates, disable all kitchen motion automations.
+    Re-enable when hot tub mode turns off.
+  triggers:
+  - platform: state
+    entity_id: input_boolean.hot_tub_mode
+    to: 'on'
+    id: hot_tub_on
+  - platform: state
+    entity_id: input_boolean.hot_tub_mode
+    to: 'off'
+    id: hot_tub_off
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: hot_tub_on
+      sequence:
+      - action: automation.turn_off
+        target:
+          entity_id:
+          - automation.kitchen_lounge_motion_lighting
+          - automation.kitchen_tier_2_dimmers_on_with_motion
+          - automation.kitchen_tier_2_dimmers_off_no_motion
+    - conditions:
+      - condition: trigger
+        id: hot_tub_off
+      sequence:
+      - action: automation.turn_on
+        target:
+          entity_id:
+          - automation.kitchen_lounge_motion_lighting
+          - automation.kitchen_tier_2_dimmers_on_with_motion
+          - automation.kitchen_tier_2_dimmers_off_no_motion
   mode: single

@@ -183,7 +183,7 @@ script:
             target:
               entity_id:
                 - light.living_room_tv_smart_light_strip
-                - light.kitchen_lounge_ceiling_1of2
+                - light.kitchen_lounge
                 - light.kitchen_lounge_ceiling_2of2
       
       # ── JOHN ONLY ──

@@ -11,9 +11,9 @@ script:
       - action: light.turn_off
         target:
           entity_id:
-            - light.ella_s_ceiling_light_1_of_3
-            - light.ella_s_ceiling_light_2_of_3
-            - light.ella_s_ceiling_light_3_of_3
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
             - light.ella_s_wall_light
             - light.ella_s_bedside_lamp
             - light.ella_s_led_lights
@@ -26,9 +26,9 @@ script:
       - action: light.turn_off
         target:
           entity_id:
-            - light.ella_s_ceiling_light_1_of_3
-            - light.ella_s_ceiling_light_2_of_3
-            - light.ella_s_ceiling_light_3_of_3
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
             - light.ella_s_led_lights
       - action: light.turn_on
         target:
@@ -58,9 +58,9 @@ script:
       - action: light.turn_on
         target:
           entity_id:
-            - light.ella_s_ceiling_light_1_of_3
-            - light.ella_s_ceiling_light_2_of_3
-            - light.ella_s_ceiling_light_3_of_3
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
         data:
           brightness_pct: 5
           color_temp_kelvin: 2200
@@ -69,9 +69,9 @@ script:
       - action: light.turn_on
         target:
           entity_id:
-            - light.ella_s_ceiling_light_1_of_3
-            - light.ella_s_ceiling_light_2_of_3
-            - light.ella_s_ceiling_light_3_of_3
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
         data:
           brightness_pct: 30
           color_temp_kelvin: 3500
@@ -81,9 +81,9 @@ script:
       - action: light.turn_on
         target:
           entity_id:
-            - light.ella_s_ceiling_light_1_of_3
-            - light.ella_s_ceiling_light_2_of_3
-            - light.ella_s_ceiling_light_3_of_3
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
+            - light.ella_s_ceiling_lights
         data:
           brightness_pct: 80
           color_temp_kelvin: 5000
@@ -94,11 +94,7 @@ scene:
   - name: "Ella Dim Red"
     icon: mdi:moon-waning-crescent
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_2_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "off"
       light.ella_s_wall_light:
         state: "on"
@@ -115,11 +111,7 @@ scene:
   - name: "Ella Reading"
     icon: mdi:book-open-page-variant
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_2_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "off"
       light.ella_s_wall_light:
         state: "on"
@@ -136,11 +128,7 @@ scene:
   - name: "Ella Bedtime Glow"
     icon: mdi:star-four-points
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_2_of_3:
-        state: "off"
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "off"
       light.ella_s_wall_light:
         state: "on"
@@ -157,15 +145,7 @@ scene:
   - name: "Ella Chill Purple"
     icon: mdi:lightbulb
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "on"
-        brightness: 80
-        hs_color: [270, 80]
-      light.ella_s_ceiling_light_2_of_3:
-        state: "on"
-        brightness: 80
-        hs_color: [270, 80]
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "on"
         brightness: 80
         hs_color: [270, 80]
@@ -185,15 +165,7 @@ scene:
   - name: "Ella Volleyball Hype"
     icon: mdi:volleyball
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "on"
-        brightness: 255
-        hs_color: [30, 100]
-      light.ella_s_ceiling_light_2_of_3:
-        state: "on"
-        brightness: 255
-        hs_color: [30, 100]
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "on"
         brightness: 255
         hs_color: [30, 100]
@@ -213,15 +185,7 @@ scene:
   - name: "Ella Bright"
     icon: mdi:lightbulb-on
     entities:
-      light.ella_s_ceiling_light_1_of_3:
-        state: "on"
-        brightness: 255
-        color_temp_kelvin: 5000
-      light.ella_s_ceiling_light_2_of_3:
-        state: "on"
-        brightness: 255
-        color_temp_kelvin: 5000
-      light.ella_s_ceiling_light_3_of_3:
+      light.ella_s_ceiling_lights:
         state: "on"
         brightness: 255
         color_temp_kelvin: 5000
