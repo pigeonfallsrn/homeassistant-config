@@ -876,3 +876,38 @@ WRAP RITUAL ADDITION — always at session close:
 5. git add + commit with session tag
 6. git push via MCP shell_command.git_push (NEVER terminal)
 7. Verify push: git log --oneline -3 shows origin/main at HEAD
+
+## AL vs TIER 2 — LIVE DETECTION METHOD (S4 2026-04-08)
+- If Tier 2 lights are wrongly in an AL instance, ha_get_states will show identical
+  parent_id context on multiple rapid updates to that entity = AL fighting the automation
+- Detection: ha_get_states on suspect light → check last_updated timestamps clustering
+  within seconds + same parent_id = AL ownership conflict
+- Fix: AL pencil edit UI only — remove Tier 2 entities from AL instance
+- Kitchen Table AL correct lights: chandelier, above-sink, lounge, lounge-lamp, under-cabinet
+  NEVER: kitchen_ceiling_inovelli_vzm31_sn, kitchen_bar_pendant_lights
+
+## INOVELLI DIMMERS — TRANSITION:0 REQUIRED ON MOTION AUTOMATIONS (S4 2026-04-08)
+- All motion automations sending brightness_pct to Inovelli VZM31-SN dumb-load switches
+  MUST include transition: 0 in the light.turn_on data block
+- Without it: mode:restart re-fires the brightness command and LOCAL_RAMP_RATE causes
+  a visible lamp ramp/flicker even when lights are already on at target brightness
+- Applies to: lighting_motion_firstfloor.yaml Tier 2 section (fixed ee4473a)
+- Pattern: EVERY explicit brightness_pct sent to a VZM31-SN dumb load = add transition: 0
+
+## HUE BRIDGE BULBS ≠ ZHA — INOVELLI EP2 BINDING IMPOSSIBLE (S4 confirmed)
+- Hue bulbs live on Hue bridge's own Zigbee network, NOT the Sonoff ZBT-1 coordinator
+- Inovelli EP2 ZHA group binding only works for devices on the SAME ZHA coordinator
+- You CANNOT directly bind an Inovelli switch to Hue bridge bulbs via ZHA group
+- ONLY working architecture for Hue + Inovelli:
+  1. Param 52 = 1 (Smart Bulb Mode — load always-on, paddle sends ZHA events)
+  2. HA automation listens for ZHA device_id events from that specific switch
+  3. Automation calls light.turn_on/off or scene.turn_on on the Hue group entity
+- Do NOT attempt EP2 binding for any Hue-bridge room switch
+
+## UPSTAIRS HALLWAY MOTION AUTOMATION — AL FIGHT (S4 identified, not yet fixed)
+- upstairs_lighting.yaml sends explicit brightness_pct + color_temp_kelvin to
+  light.upstairs_hallway (Hue group = Tier 1)
+- This fights the Upstairs Hallway AL instance which also controls those bulbs
+- Fix: replace explicit params with scene.turn_on (scene.upstairs_hallway_energize etc)
+  OR remove brightness/color params and let AL handle it
+- File: /homeassistant/packages/upstairs_lighting.yaml lines 45-80
