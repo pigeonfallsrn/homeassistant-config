@@ -1,0 +1,336 @@
+# hue_switches.yaml — Hue switch automations
+# Generated S5 2026-04-08
+# Rohan blueprint NOT used — these switches are on Hue bridge, not ZHA.
+# Triggers use native HA event entities (event.hue_*).
+# event_type short_release = button press; clock_wise/counter_clock_wise = rotary direction.
+#
+# FOH switches (FOHSWITCH model) deliberately excluded — different event schema, design TBD:
+#   Living Room Hue Switch        → Living Room (AL running there, scene design TBD)
+#   Living Room Lounge Click FoH  → Living Room Lounge
+#   Ella's Bedroom Hue Light Switch → Ella's Bedroom (add next session)
+
+automation:
+
+  # ─── Entry Room — Tap Dial Switch (RDM002) ─────────────────────────────────
+  - id: hue_tap_dial_entry_room
+    alias: "Entry Room — Tap Dial Switch"
+    description: "B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_1_button_1
+        id: b1
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_1_button_2
+        id: b2
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_1_button_3
+        id: b3
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_1_button_4
+        id: b4
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_1_rotary
+        id: rotary
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: b1
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.entry_room_energize
+          - conditions:
+              - condition: trigger
+                id: b2
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.entry_room_relax
+          - conditions:
+              - condition: trigger
+                id: b3
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.entry_room_dimmed
+          - conditions:
+              - condition: trigger
+                id: b4
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.entry_room
+          - conditions:
+              - condition: trigger
+                id: rotary
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'clock_wise' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.entry_room
+                data:
+                  brightness_step_pct: 10
+          - conditions:
+              - condition: trigger
+                id: rotary
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'counter_clock_wise' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.entry_room
+                data:
+                  brightness_step_pct: -10
+
+  # ─── Master Bedroom — Tap Dial Switch (RDM002) ─────────────────────────────
+  - id: hue_tap_dial_master_bedroom
+    alias: "Master Bedroom — Tap Dial Switch"
+    description: "B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_3_button_1
+        id: b1
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_3_button_2
+        id: b2
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_3_button_3
+        id: b3
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_3_button_4
+        id: b4
+      - platform: state
+        entity_id: event.hue_tap_dial_switch_3_rotary
+        id: rotary
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: b1
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.master_bedroom_energize
+          - conditions:
+              - condition: trigger
+                id: b2
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.master_bedroom_relax
+          - conditions:
+              - condition: trigger
+                id: b3
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.master_bedroom_dimmed
+          - conditions:
+              - condition: trigger
+                id: b4
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.master_bedroom
+          - conditions:
+              - condition: trigger
+                id: rotary
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'clock_wise' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.master_bedroom
+                data:
+                  brightness_step_pct: 10
+          - conditions:
+              - condition: trigger
+                id: rotary
+              - condition: template
+                value_template: "{{ trigger.to_state.attributes.event_type == 'counter_clock_wise' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.master_bedroom
+                data:
+                  brightness_step_pct: -10
+
+  # ─── Alaina's Bedroom — Dimmer Switch (RWL022) ─────────────────────────────
+  - id: hue_dimmer_alaina_bedroom
+    alias: "Alaina's Bedroom — Dimmer Switch"
+    description: "B1=Energize B2=Relax B3=Dimmed B4=Off"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: event.hue_dimmer_switch_3_button_1
+        id: b1
+      - platform: state
+        entity_id: event.hue_dimmer_switch_3_button_2
+        id: b2
+      - platform: state
+        entity_id: event.hue_dimmer_switch_3_button_3
+        id: b3
+      - platform: state
+        entity_id: event.hue_dimmer_switch_3_button_4
+        id: b4
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: b1
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.alaina_s_bedroom_energize
+          - conditions:
+              - condition: trigger
+                id: b2
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.alaina_s_bedroom_relax
+          - conditions:
+              - condition: trigger
+                id: b3
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.alaina_s_bedroom_dimmed
+          - conditions:
+              - condition: trigger
+                id: b4
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.alaina_s_bedroom
+
+  # ─── Ella's Bedroom — Dimmer Switch (RWL022) ───────────────────────────────
+  # Standard scenes used as default. To customize:
+  #   B1 → scene.ella_s_bedroom_volleyball_hype (Volleyball Hype)
+  #   B2 → scene.ella_s_bedroom_chill_purple    (Chill Purple)
+  - id: hue_dimmer_ella_bedroom
+    alias: "Ella's Bedroom — Dimmer Switch"
+    description: "B1=Energize B2=Relax B3=Dimmed B4=Off. Customize with her custom scenes."
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: event.hue_dimmer_switch_2_button_1
+        id: b1
+      - platform: state
+        entity_id: event.hue_dimmer_switch_2_button_2
+        id: b2
+      - platform: state
+        entity_id: event.hue_dimmer_switch_2_button_3
+        id: b3
+      - platform: state
+        entity_id: event.hue_dimmer_switch_2_button_4
+        id: b4
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: b1
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.ella_s_bedroom_energize
+          - conditions:
+              - condition: trigger
+                id: b2
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.ella_s_bedroom_relax
+          - conditions:
+              - condition: trigger
+                id: b3
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.ella_s_bedroom_dimmed
+          - conditions:
+              - condition: trigger
+                id: b4
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.ella_s_bedroom
+
+  # ─── Garage — Dimmer Switch (RWL022) ───────────────────────────────────────
+  # ⚠️  Battery swap required before testing
+  - id: hue_dimmer_garage
+    alias: "Garage — Dimmer Switch"
+    description: "B1=Energize B2=Relax B3=Dimmed B4=Off. Battery swap needed."
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: event.hue_dimmer_switch_4_button_1
+        id: b1
+      - platform: state
+        entity_id: event.hue_dimmer_switch_4_button_2
+        id: b2
+      - platform: state
+        entity_id: event.hue_dimmer_switch_4_button_3
+        id: b3
+      - platform: state
+        entity_id: event.hue_dimmer_switch_4_button_4
+        id: b4
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.event_type == 'short_release' }}"
+    action:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: b1
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.garage_energize
+          - conditions:
+              - condition: trigger
+                id: b2
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.garage_relax
+          - conditions:
+              - condition: trigger
+                id: b3
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.garage_dimmed
+          - conditions:
+              - condition: trigger
+                id: b4
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.garage
