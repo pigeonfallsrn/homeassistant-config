@@ -208,3 +208,4 @@ Times Hit: 10+
 See CRITICAL_RULES_HISTORY.md for dated session entries,
 garage/ratgdo history, and archived audit notes.
 Load with: shell_command.read_critical_rules_full
+- **Disk monitoring**: HA Green has 28GB. ESPHome first build downloads ~500MB toolchain — check disk before compiling new devices. DB purge needs free space to repack.
