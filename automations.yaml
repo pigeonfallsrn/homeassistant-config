@@ -2270,3 +2270,13 @@
       message: Motion auto-off restored.
       title: Kitchen Override OFF
   mode: single
+- id: hac_daily_master_context_export
+  alias: 'HAC: Daily Master Context Export'
+  description: 'Auto-generate Master Context Excel at 3 AM. Fixed S10: added unique_id,
+    updated service: to action:'
+  triggers:
+  - at: 03:00:00
+    platform: time
+  actions:
+  - action: shell_command.hac_export
+  mode: single

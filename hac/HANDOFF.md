@@ -1,49 +1,50 @@
-# HAC Handoff — 2026-04-09 S9
+# HAC Handoff — 2026-04-09 S10 (Pre-Migration Final)
 
 ## Last commit
-  008ca78 docs: S9 handoff + learnings — bathroom switches fixed, VZM36 cleaned, pre-migration backup 7042a0e9
+  d4989be fix: S10 pre-migration — Apollo Entry wired, timer.cancel, kitchen_lounge dedup, hallway delay_off
 
-## S9 Completed
-  - VZM36 living room _3/_4 orphan entities: hidden + labelled (not referenced anywhere, Hue group is active path)
-  - #3 kitchen override timer.cancel: already existed in clear automation — queue entry was stale
-  - 2nd floor bathroom switches: rebuilt combined automation (both vanity + ceiling switch → both Hue light groups, scene cycling via input_number.bathroom_scene_index, 0=Energize/1=Relax/2=Dimmed/3=Nightlight)
-  - Old fxlt ceiling blueprint automation: disabled (double-fire prevention)
-  - Fan humidity v3: unstuck via restart — state: on, all triggers active
-  - ghost automation.2nd_floor_bathroom_ceiling_lights_inovelli_control: confirmed ghost (not in storage, not in packages) — no action needed
-  - Disk cleared: 89% → 79% (5.6 GB free) by deleting 7 auto + 26 manual backups
-  - Final pre-migration backup: 7042a0e9 Pre_Migration_Final_S9_2026-04-09 (160 MB)
-  - Backup IDs on disk: b29e3f3b (pre-S9), 7042a0e9 (post-S9 = USE THIS for Mini PC migration)
+## S10 Completed
+  - Apollo Entry Room LD2450 presence → wired into first_floor_main_motion template
+  - timer.cancel added to kitchen_manual_override_auto_clear (ghost-timer bug fixed)
+  - light.kitchen_lounge duplicate removed from Tier 1 turn_on + turn_off
+  - first_floor_hallway_motion: delay_off 5min added (was missing despite comment)
+  - HANDOFF commit line: fixed to be dynamic (no longer stale)
+  - HAC Daily Master Context Export: fixed deprecated service: → action:, added unique_id
+  - ha core check: CLEAN (triggers KeyError is known HA 2026.4 validator bug, not real)
+  - Zero deprecated service: syntax remaining in packages
+  - Config confirmed clean post-restart
 
-## MINI PC MIGRATION — FRIDAY 2026-04-11
-  Hardware: HA Green (aarch64, 192.168.1.3) → Mini PC (x86-64)
-  USE BACKUP: 7042a0e9 Pre_Migration_Final_S9_2026-04-09
-  ZHA: Sonoff USB dongle will need reassignment post-migration
-  ESPHome: both Apollo R-PRO-1 units need re-adopt after migration
+## MINI PC MIGRATION — TOMORROW 2026-04-11
+  Restore backup: 7042a0e9  (Pre_Migration_Final_S9_2026-04-09, 160MB)
+  Hardware: HA Green aarch64 192.168.1.3 → Mini PC x86-64
 
-## S10 Priority Queue
-  1. APOLLO KITCHEN FLASH — ESPHome Device Builder → Kitchen Area R-PRO-1 → Install Wirelessly → 192.168.21.233
-     Key: HBDFcZsyn0zMmOlfkEic/kG8EJDq2dykr7oclXUw7UU=
-     After online: LD2450 zones X1=-4000,X2=4000,Y1=500,Y2=6000
-     Wire binary_sensor.kitchen_area_r_pro_1_occupancy into first_floor_main_motion template
-  2. APOLLO ENTRY ROOM — wire occupancy into first_floor_main_motion (already online, just needs template edit)
-  3. PACKAGE YAML FIXES (terminal + ha core restart):
-     a. lighting_motion_firstfloor.yaml line 44: add timer.cancel before input_boolean.turn_off in kitchen_manual_override_auto_clear
-     b. lighting_motion_firstfloor.yaml lines 81-82: remove duplicate light.kitchen_lounge entry in Tier 1 turn_on
-     c. lighting_motion_firstfloor.yaml lines 106-107: remove duplicate light.kitchen_lounge entry in Tier 1 turn_off
-     d. lighting_motion_firstfloor.yaml line 26: confirm if delay_off: {minutes: 5} needed on first_floor_hallway_motion
-  4. UPSTAIRS HALLWAY SCENES — replace brightness/color_temp with scenes in upstairs_lighting.yaml lines 45-80
-     (need: cat -n /homeassistant/packages/upstairs_lighting.yaml)
-  5. FOH SWITCH AUTOMATIONS — Friends of Hue switch, Living Room Lounge
-     Entities: event.works_with_hue_switch_1_button_1 through _4
-     Currently: zero HA automations (Hue-native only)
-     Need: button spec from John before building
-  6. POST-MIGRATION: person.john_spencer → swap source to device_tracker.galaxy_s26_ultra in UI
+## POST-MIGRATION VERIFICATION CHECKLIST (S11 — do in order)
+  1. ZHA: confirm Sonoff dongle assigned, all 49 Zigbee devices online
+     grep -r "zha" /homeassistant/.storage/core.config_entries | head -5
+  2. ESPHome: both Apollo R-PRO-1 need re-adopt (new arch = new binary)
+     - Entry Room (apollo-r-pro-1-w-748020): re-adopt only, config is preserved
+     - Kitchen Area (192.168.21.233): flash → adopt → zone config → wire occupancy
+  3. Adaptive Lighting: verify all 6 instances enabled
+     living_spaces, entry_room_ceiling, entry_room_lamp_adaptive,
+     kitchen_table, master_bedroom_wall_lamp, upstairs_hallway
+  4. person.john_spencer: swap source to device_tracker.galaxy_s26_ultra in UI
+  5. hac symlink: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac
+  6. git push test: shell_command.git_push → confirm new machine pushes OK
+  7. Disk: x86-64 should have more headroom — confirm df -h
+  8. Backup automatic schedule: reset to daily/keep 3 (not 5 — fills too fast)
+
+## S11 BACKLOG (after migration verified stable)
+  - FoH switch automations: need button 1-4 spec from John
+  - Upstairs hallway scenes: cat -n /homeassistant/packages/upstairs_lighting.yaml
+  - Dashboard cleanup: delete kitchen-tablet-wall, ella-dashboard, dashboard-6767, john-lights
+  - Gemini bulk audit: run audit prompt against full automation dump
+  - living_room_lamps_activity_boost DUPLICATE: _2 exists, both unavailable — investigate
 
 ## Known issues / watch list
-  - sensor.navien_water_flow: unavailable — Navien integration offline, hot water flow trigger in fan automation dead until fixed
-  - first_floor_hallway_motion: missing delay_off (comment says 5min but not in YAML)
-  - Disk: 79% post-cleanup. Automatic backup schedule still set to "keep 5" — will fill back up. Consider reducing retention or offloading to NAS.
+  - sensor.navien_water_flow: unavailable — Navien integration offline
+  - ha core check triggers KeyError: known HA 2026.4 validator bug, ignore
+  - Automatic backup schedule: still "keep 5" — will fill disk again post-migration
 
 ## Start next session
   hac mcp   ← paste session prompt as usual
-  ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac   ← after any power cycle
+  ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac
