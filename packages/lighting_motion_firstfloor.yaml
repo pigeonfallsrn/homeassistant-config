@@ -119,7 +119,7 @@ automation:
     description: >
       Turns on kitchen Inovelli ceiling cans and bar pendants on motion.
       Explicit brightness_pct only — Tier 2, no AL involvement.
-      Time-aware: Day 06-19=80%, Evening 19-22=30%, Late 22-06=15%.
+        Time-aware: Day 06-19=80%, Evening 19-22=30%, Late 22-06=OFF (nightlight scene).
       Gate: lux < 200. Respects kitchen_manual_override.
       Updated: 2026-04-08
     mode: restart
@@ -163,14 +163,14 @@ automation:
                   brightness_pct: 30
                   transition: 0
         default:
-          - action: light.turn_on
-            target:
-              entity_id:
-                - light.kitchen_ceiling_inovelli_vzm31_sn
-                - light.kitchen_bar_pendant_lights
-            data:
-              brightness_pct: 15
-              transition: 0
+            - action: light.turn_off
+              target:
+                entity_id:
+                  - light.kitchen_ceiling_inovelli_vzm31_sn
+                  - light.kitchen_bar_pendant_lights
+            - action: scene.turn_on
+              target:
+                entity_id: scene.kitchen_nightlight
 
   - id: kitchen_tier2_motion_off
     alias: "Kitchen Tier 2 — Dimmers Off No Motion"
