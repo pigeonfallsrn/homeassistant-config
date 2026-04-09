@@ -21,6 +21,7 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **Dual trigger pattern**: motion ON starts, motion OFF with wait turns off
 - **Timeout by room type**: transition 5-10min, active 8-20min, relaxation 15-45min
 - **Double-fire fix**: Check for orphan automation entities with same unique_id
+- **Apollo LD2450 zone collapse**: Detection mode collapses coords to 0,0 — fix: Zone-1 X1=-4000,X2=4000,Y1=500,Y2=6000,timeout=60s
 
 ## INOVELLI SWITCHES (Times Hit: 15+)
 - **Smart Bulb Mode**: Param 52=1 + LED bar params 95-98 for Hue bulbs
@@ -28,6 +29,7 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **Parameters require toggle OFF→ON** in ZHA UI then air gap to write
 - **fxlt blueprint fires ALL zha_events** - filter by device_id or use unified blueprint
 - **VZM35-SN fans**: Param 12 (auto-off) = 2700s for hardware safety backup
+- **VZM31-SN v3.06 firmware**: Param 27 (P27) added in this fw — verify full param list before bulk-writing switch config
 
 ## ADAPTIVE LIGHTING (Times Hit: 10+)
 - **Create/delete via UI ONLY** - no API exists
