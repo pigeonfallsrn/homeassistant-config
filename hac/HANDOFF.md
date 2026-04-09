@@ -1,134 +1,97 @@
-# HAC Handoff — 2026-04-08 S6 Close
+# HAC Handoff — 2026-04-08 S7 Close
 
 ## Last commits
-  0d78086 fix: S6 entity renames — fan entity, vzm31_sn_4 → under_cabinet
-  2b4cee2 docs: S5 wrap — Hue audit, 24 scenes, 5 switch automations, migration runbook prep
+  f62ba8d fix: kitchen zone — revert to 3 P1s only, keep delay_off 10min
+  ad4f619 fix: kitchen zone — add Apollo R-PRO-1 mmWave + delay_off 10min (then reverted)
+  f6aef08 docs: S6 wrap — Inovelli audit, 8 automations upgraded, entity fixes
 
 ## System state RIGHT NOW
   HA 2026.4.1 / HAOS 17.2 — current
-  28 packages / ~145 active automations / git clean / pushed
-  Repairs: 0 ✅ (run verification if uncertain)
-  Backup: Pre_S6_2026-04-08 (4aea8bfa)
+  28 packages / ~145 automations / git clean / pushed
+  Repairs: 0 ✅
+  Backup: Pre_S6_2026-04-08 (4aea8bfa) — still valid same-day
 
-## S6 completed work — Inovelli ZHA Audit + Local Override Standardization
+## S7 completed work
+  [✅] Kitchen zone root cause identified: P1 = PIR only, cannot detect Ella sitting still
+  [✅] first_floor_main_motion: added delay_off 10min (was 0, relying only on 30s+60s stack)
+       Zone now holds for 10min after last micro-movement — puzzle sessions survive
+  [✅] Apollo R-PRO-1 LD2450 zones configured: X1=-4000, X2=4000, Y1=500, Y2=6000, timeout=60s
+       Ready for future use (entry room — NOT in kitchen zone per John's direction)
+  [✅] Confirmed: first_floor_main_motion = 3 P1s (kitchen + west kitchen/lounge + entry)
+       Entry P1 catches walking kitchen↔living room, resets zone timer
 
-  [✅] Inovelli full audit: 13 ZHA switch devices confirmed, all healthy
-  [✅] fxlt blueprint confirmed at correct path, queued variant in place
-  [✅] 2nd Floor Bathroom VZM30-SN — root cause identified: stale entity IDs
-       ceiling_1of2 / ceiling_2of2 → light.2nd_floor_bathroom (Hue room group)
-       Fixed + upgraded to scene-based: E/R/D/N + brightness hold + queued
-  [✅] 1st Floor Bathroom — 4 missing Hue scenes created (E/R/D/N)
-       Note: curl ran twice → _2 duplicate scenes in Hue (harmless)
-       Automation upgraded to scene-based + queued
-  [✅] Kitchen Chandelier — upgraded: scenes + queued (was raw brightness + single)
-  [✅] Kitchen Above Sink — upgraded: kitchen scenes + queued
-  [✅] Kitchen Lounge — upgraded: kitchen_lounge scenes + queued
-  [✅] Entry Room — upgraded: entry_room scenes + queued
-  [✅] Back Patio — scene cycle expanded: 4 scenes (added Dimmed), queued
-       input_number.back_patio_scene_index max updated: 2→3
-  [✅] Front Driveway — upgraded: old "on"/"off" command format → scene cycling + queued
-       input_number.front_driveway_scene_index created (0–2)
-  [✅] humidity_smart_alerts.yaml — fan.inovelli_vzm35_sn_fan → fan.2nd_floor_bathroom_exhaust_fan (6 refs)
-  [✅] kitchen_tablet_dashboard.yaml — light.inovelli_vzm31_sn_4 → light.kitchen_under_cabinet_lights_inovelli (2 refs)
-  [✅] Injection check: CLEAN
+## S7 key learnings
+  - P1 is PIR-only: stationary occupancy REQUIRES mmWave OR long delay_off
+  - delay_off on the TEMPLATE SENSOR is separate from the automation timeout
+    Template: 0s before (cleared instantly when all PIRs cleared) → now 10min
+    Automation: still waits 12min after zone clears before lights off
+    Total hold: last movement + 10min (zone) + 12min (auto) = 22min max
+  - Apollo LD2450 zone collapse: confirmed 0,0,0,0 = Detection mode sees nothing
+    Fix: X1=-4000, X2=4000, Y1=500, Y2=6000 (CRITICAL_RULES confirmed)
+    This is now permanently resolved for entry room
+  - For kitchen table occupancy long-term: add dedicated mmWave (Apollo or LD2412 wall mount)
 
-## CRITICAL RULES CORRECTIONS (update CRITICAL_RULES next session)
-  OLD: "Use Rohan unified blueprint for ZHA Inovelli switches"
-  NEW: "Use fxlt blueprint (HA community t/479148) for ZHA Inovelli switches"
-       Rohan confirmed Sept 2025 he no longer uses ZHA; t/627953 ZHA is community-maintained
-       fxlt at blueprints/automation/fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-  
-  PATTERN: fxlt mode:queued, filters device_id, all multi-tap/hold/release events
-  AUX switch presses = same zha_event as main paddle — no distinction, no special handling needed
-  
-  NEW FIRMWARE: VZM31-SN v3.06 available (2026-03-09), adds P27 Dimming Algorithm param
-  Current CRITICAL_RULES documents v3.04 as latest — update this
+## ⚠️ KITCHEN MOTION GAP STILL EXISTS (next priority)
+  The Tier 1 Hue lights (kitchen chandelier + above-sink) have switch automations (S6)
+  BUT does motion turn them ON? Check:
+    grep -n 'chandelier\|above.sink\|kitchen.*hue.*motion\|kitchen.*hue.*on' \
+      /homeassistant/packages/lighting_motion_firstfloor.yaml
+  Likely gap: kitchen_lounge_motion_on covers lounge only
+  kitchen chandelier + above-sink may have NO motion-on automation → only switch control
+  Fix next session: add kitchen_hue_motion_on/off to lighting_motion_firstfloor.yaml
 
-## S6 new learnings for CRITICAL_RULES
-  - fxlt blueprint is correct for ZHA (not Rohan, who uses Z2M)
-  - Always check device_id in existing fxlt automations — stale device_ids cause silent failures
-  - When upgrading to scene-based: target the HUE ROOM GROUP entity (light.ROOM),
-    not individual bulb entities or the ZHA switch entity itself
-  - VZM30-SN (on/off) fires same zha_event commands as VZM31-SN (dimmer) — fxlt works for both
-  - front_driveway automation used OLD zha_event command format ("on"/"off") — updated to button_N_press
-  - input_number scene index max must match modulo value (4 scenes = max 3, modulo 4)
+## NEXT SESSION PRIORITY QUEUE (in order)
 
-## DEVICE INVENTORY (complete, confirmed S6)
-  Smart Bulb Mode (Hue via HA automation, fxlt blueprint):
-    Entry Room VZM31-SN         device_id: d80c7fa6  → light.entry_room_ceiling_light
-    Kitchen Lounge VZM31-SN     device_id: 5e2d477e  → light.kitchen_lounge
-    Kitchen Chandelier VZM31-SN device_id: 17a59d3c  → light.kitchen_chandelier (3-way AUX)
-    Kitchen Above Sink VZM31-SN device_id: 89ca030d  → light.kitchen_above_sink_light (3-way AUX)
-    1st Floor Bathroom VZM31-SN device_id: 0600639e  → light.1st_floor_bathroom
-    2nd Floor Bathroom VZM30-SN device_id: 0489781e  → light.2nd_floor_bathroom (OnOff, Smart Bulb)
+  1. KITCHEN HUE MOTION GAP (Phase 1 — audit + fix)
+     Verify Tier 1 kitchen lights turn on with motion
+     Add motion-on for chandelier + above-sink if missing
 
-  Dumb Load (direct dimmer control, no smart bulbs):
-    Kitchen Ceiling Cans  VZM31-SN device_id: a3047d38  → light.kitchen_ceiling_inovelli_vzm31_sn
-    Kitchen Bar Pendants  VZM31-SN device_id: da86388f  → light.kitchen_bar_pendant_lights
-    Kitchen Under Cabinet VZM31-SN device_id: f671e66f  → light.kitchen_under_cabinet_lights_inovelli (3-way AUX confirmed)
-    Back Patio VZM31-SN   device_id: 70c1c990  → light.back_patio (scene cycling)
-    Front Driveway VZM31-SN device_id: 16a22c25  → light.front_driveway (scene cycling)
+  2. KITCHEN LATE NIGHT MODE (Phase 2)
+     After 22:00: Tier 2 should be OFF (not 15%), Tier 1 = scene.kitchen_nightlight
+     Modify kitchen_tier2_motion_on default branch
+     Add kitchen_hue_nightlight_motion_on automation (22:00-06:00 → nightlight scene)
 
-  Fan/Special:
-    2nd Floor Bathroom Fan VZM35-SN  device_id: 3eed85f7
-      → light.inovelli_vzm35_sn_light (ceiling light side, misnamed "2nd Floor Bathroom Fan")
-      → fan.2nd_floor_bathroom_exhaust_fan (fan side)
-    Kitchen Lounge VZM36 Canopy     → light.kitchen_lounge_light_fan_inovelli_vzm36_light + _2
-                                       fan.kitchen_lounge_light_fan_inovelli_vzm36_fan
-    Living Room VZM36 (x2)          → light.inovelli_vzm36_light_3 + _4 (investigate duplicates — deferred)
+  3. KITCHEN OVERRIDE TIMER UPGRADE (Phase 3)
+     Create: timer.kitchen_override_timer, duration 30min
+     Double-tap UP → starts timer + sets booleans
+     Timer finish OR double-tap DOWN → clears booleans
+     Override suppresses Tier 2 shutoff at night
 
-## STANDARD INOVELLI BUTTON MAPPING (now applied everywhere)
-  UP press:        scene.[room]_energize
-  UP double:       scene.[room]_relax
-  DOWN press:      light.turn_off [room group]
-  DOWN double:     scene.[room]_nightlight
-  Config press:    scene.[room]_dimmed  OR  scene cycle (back patio, front driveway)
-  Hold UP:         brightness_step_pct +10
-  Hold DOWN:       brightness_step_pct -10
-  mode: queued (all switches)
+  4. CRITICAL_RULES SPLIT — token efficiency
+     Split into CORE (~50KB, rules only) + HISTORY (~200KB, dated entries)
+     Update shell_command.read_critical_rules → CORE only
+     Add shell_command.read_critical_rules_full → full file
+     Saves ~80% context at every session start
 
-## KNOWN OPEN ITEMS (carry forward)
-  - CRITICAL_RULES update: fxlt vs Rohan, v3.06 firmware
-  - VZM36 living room _3 + _4 duplicates: investigate if 1 or 2 modules
-  - light.inovelli_vzm35_sn_light: misnamed "2nd Floor Bathroom Fan" — rename to clearer name
-  - 1st floor bathroom _2 duplicate scenes: harmless but cluttered in Hue app
-  - Alaina arrival notification: notifications_system.yaml:55 # DISABLED
-  - Upstairs hallway motion automation: use scenes instead of explicit brightness/color_temp
-  - Security backlog: SSH password auth, Cloudflare Zero Trust, Git PAT rotation
-  - FOH switch automations: 3 switches (see S5 HANDOFF)
-  - Mini PC migration runbook: THURSDAY is prep day, FRIDAY is migration day
+  5. UPSTAIRS HALLWAY motion automation: replace explicit brightness/color_temp with scenes
+     File: /homeassistant/packages/upstairs_lighting.yaml lines 45-80
+     Fix: scene.upstairs_hallway_energize / relax / nightlight
 
-## ⚠️ THURSDAY SESSION (2026-04-10) — MIGRATION RUNBOOK PREP (PRIORITY)
-  Mini PC arrives Friday 2026-04-11. Thursday = build full runbook before arrival.
+  6. CRITICAL_RULES corrections
+     OLD: "Use Rohan unified blueprint for ZHA Inovelli"
+     NEW: "Use fxlt blueprint (HA community t/479148) for ZHA"
+     ADD: VZM31-SN firmware v3.06 available (adds P27 Dimming Algorithm)
+     ADD: Apollo LD2450 zone collapse = all zeros in Detection mode, fix = X1:-4000..Y2:6000
 
-  PRE-MIGRATION CHECKLIST TO BUILD:
-    □ New backup day-of: Pre_MiniPC_Migration_2026-04-10
-    □ ZHA export: Settings > Devices & Services > ZHA > ⋮ > Download backup
-    □ Note current HA IP: 192.168.1.3
-    □ List integrations needing re-auth post-migration:
-        Hue (API key in .storage), Spotify, Google Calendar, Gmail, any OAuth flows
-    □ Verify git fully pushed: git log --oneline -3 (confirm origin/main at HEAD)
-    □ Screenshot kitchen-wall-v2 dashboard (storage-mode, not in git)
-    □ Cloudflare tunnel: ha.myhomehub13.xyz — verify tunnel config before migration
-    □ /api/mcp bypass policy — must stay active on new IP
-  MIGRATION DAY STEPS:
-    □ Install HAOS x86-64 on Mini PC
-    □ Restore from backup (config-only, not DB)
-    □ Assign 192.168.1.3 to Mini PC in UniFi DHCP reservations (swap MAC)
-    □ Re-import ZHA backup on new hardware
-    □ Re-auth: Hue, Spotify, Google integrations
-    □ Test MCP tunnel: ha.myhomehub13.xyz resolves, /api/mcp works
-    □ Test 2 Hue switch automations physically
-    □ Test 1 motion automation
-  POST-MIGRATION (2 weeks):
-    □ Keep HA Green powered on cold standby
-    □ Monitor DB growth, automations, presence
+  7. FOH switch automations (3 switches, see S5 HANDOFF)
 
-## Start next session (THURSDAY)
+  8. VZM36 living room _3 + _4 duplicates: investigate
+
+  9. Mini PC migration — deferred indefinitely per John
+
+## Apollo R-PRO-1 STATE (confirmed S7)
+  Zone-1: X1=-4000, X2=4000, Y1=500, Y2=6000 ✅
+  Timeout: 60s ✅
+  Zone Type: Detection ✅
+  Location: Entry room wall, above Aqara P1
+  NOT in kitchen zone — entry room only (correct per John)
+  For kitchen table occupancy: future mmWave sensor in kitchen proper
+
+## Start next session
   1. ha_call_service(shell_command, mcp_session_init)
-  2. ha_call_service(shell_command, read_critical_rules)
+  2. ha_call_service(shell_command, read_critical_rules)  ← after split, reads CORE only
   3. ha_call_service(shell_command, read_handoff)
-  4. ha_backup_create("Pre_MiniPC_Runbook_2026-04-10")
+  4. ha_backup_create("Pre_S8_YYYY-MM-DD")
   5. Verify Repairs = 0
-  6. BUILD MIGRATION RUNBOOK — full step-by-step with commands
-  7. If time: CRITICAL_RULES corrections (fxlt, v3.06 firmware)
+  6. FIRST: grep check for kitchen Tier 1 motion gap
+     grep -n "chandelier\|above.sink\|Tier 1" /homeassistant/packages/lighting_motion_firstfloor.yaml
