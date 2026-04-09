@@ -13,8 +13,7 @@ template:
         state: >
           {{ is_state('binary_sensor.kitchen_aqara_motion_sensor_p1_occupancy', 'on')
              or is_state('binary_sensor.west_kitchen_sensor_motion_sensor_occupancy', 'on')
-             or is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on')
-             or is_state('binary_sensor.apollo_r_pro_1_748020_ld2450_presence', 'on') }}
+             or is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on') }}
         delay_off:
           minutes: 10
 
