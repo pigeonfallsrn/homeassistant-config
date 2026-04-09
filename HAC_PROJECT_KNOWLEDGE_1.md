@@ -113,3 +113,12 @@ MOTION, INOVELLI, AL, YAML, ZHA, HAC, MATTER, ENTITY, DASHBOARD, HACS, PRESENCE,
 
 ### [2026-04-08 00:02] HAC_SYSTEM
 - hac.sh NOT committed to git — wiped on HAOS updates. Rebuild with: cat > /config/hac.sh (recreate script), chmod +x, ln -sf to /usr/local/bin/hac. Always commit hac.sh after rebuild.
+
+### [2026-04-08 21:36] ESPHOME
+- ESPHome Device Builder add-on NOT installed by default — it was absent, existing devices ran via ESPHome integration only. Install add-on when you need to adopt/edit device YAML.
+
+### [2026-04-08 21:36] ESPHOME
+- New Apollo R-PRO-1 adoption flow: install Device Builder add-on → New Device → ESP32-S3 → generates base YAML with api: section → flash wirelessly. First build downloads ~500MB toolchain (one-time).
+
+### [2026-04-08 21:36] APOLLO
+- Kitchen Area R-PRO-1 adopted S8 (192.168.21.233, Garage AP -84dBm). Encryption key: HBDFcZsyn0zMmOlfkEic/kG8EJDq2dykr7oclXUw7UU= — stored in ESPHome device menu. WiFi marginal — consider moving closer to 1st Floor AP.
