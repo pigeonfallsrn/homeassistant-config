@@ -209,3 +209,33 @@ See CRITICAL_RULES_HISTORY.md for dated session entries,
 garage/ratgdo history, and archived audit notes.
 Load with: shell_command.read_critical_rules_full
 - **Disk monitoring**: HA Green has 28GB. ESPHome first build downloads ~500MB toolchain — check disk before compiling new devices. DB purge needs free space to repack.
+
+## 2ND FLOOR BATHROOM AUTOMATION — PATTERN (S9 2026-04-09)
+- Both Inovelli switches (vanity VZM30 device_id=602bdb2b, ceiling VZM30 device_id=0489781e) handled in ONE combined automation
+- Automation id: 2nd_floor_bathroom_vanity_inovelli — lives in UI storage, NOT packages
+- Controls: light.2nd_floor_bathroom (Hue ceiling group) + light.2nd_floor_bathroom_vanity_lights
+- Scene cycling via input_number.bathroom_scene_index (0=Energize, 1=Relax, 2=Dimmed, 3=Nightlight)
+- fxlt blueprint automation (automation.2nd_floor_bathroom_ceiling_inovelli_controls_hue_lights) DISABLED — was double-firing
+- automation.2nd_floor_bathroom_ceiling_lights_inovelli_control is a ghost entity — not in storage, not in packages, ignore it
+
+## ALL BATHROOM AUTOMATIONS UNAVAILABLE AFTER RESTART — ROOT CAUSE (S9)
+- After restart, bathroom automations showed state: unavailable transiently
+- NOT package YAML corruption — confirmed by grep returning nothing
+- Cause: HA restart cycle + stale running automation with 8 branches referencing missing entities
+- Fix: re-save automation via MCP ha_config_set_automation (overwrites stale in-memory state)
+- ha core restart then resolves remaining unavailable states on storage automations
+
+## VZM36 DUAL ENDPOINTS — LIVING ROOM (S9)
+- light.inovelli_vzm36_light_3 (EP1) and light.inovelli_vzm36_light_4 (EP2) are raw ZHA endpoints on device 0c:2a:6f:ff:fe:f2:87:02
+- Both are orphans — not referenced in any automation, script, or dashboard
+- Active control path is light.living_room_lounge_ceiling_light (Hue group)
+- Both hidden in entity registry with context labels — do NOT unhide without checking Hue group still works
+- Kitchen VZM36 pattern: light.kitchen_lounge_light_fan_inovelli_vzm36_light (EP1) and _light_2 (EP2) — same pattern, separate device
+
+## BACKUP DISK MANAGEMENT (S9 hard lesson)
+- HA supervisor requires >2GB free for backup — system health showing 3.1GB free ≠ supervisor's view
+- Supervisor is more conservative — if backup fails with "not enough free space", you likely have <2GB from supervisor's perspective
+- Automatic backups (daily, keep 5) accumulate fast — 7 auto backups = 2.74 GB
+- Manual backups from MCP sessions accumulate fast — 27 manual = 5.74 GB
+- Pre-migration cleanup: delete all auto + all manual except the tagged pre-migration backup ID
+- After cleanup: disk went from 89% (1.9GB free per supervisor) to 79% (5.6GB free)

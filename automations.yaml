@@ -528,82 +528,197 @@
     event_type: zha_event
     id: aux_down
     platform: event
-- actions:
+- id: 2nd_floor_bathroom_vanity_inovelli
+  alias: 2nd Floor Bathroom — Inovelli Switch Control (Both Lights)
+  description: 'Both bathroom Inovelli switches (vanity + ceiling) jointly control
+    both Hue light groups with scene cycling. UP=apply current scene, DOWN=off, Config=cycle
+    scene, Hold=brightness step, 2xUP=Energize (index 0), 2xDOWN=Nightlight (index
+    3). Scene index: 0=Energize 1=Relax 2=Dimmed 3=Nightlight.'
+  triggers:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 602bdb2b4675a5e364853ac1e53ed689
+    id: vanity_switch
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: 0489781ef8d00419ecf1929bd865b2de
+    id: ceiling_switch
+  actions:
   - choose:
     - conditions:
-      - condition: trigger
-        id: up_press
+      - condition: template
+        value_template: '{{ command == ''button_2_press'' }}'
       sequence:
-      - action: light.turn_on
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_vanity_1of3
-          - light.2nd_floor_bathroom_vanity_2of3
-          - light.2nd_floor_bathroom_vanity_3of3
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            below: 0.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_energize
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_energize
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 0.5
+            below: 1.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_relax
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_relax
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 1.5
+            below: 2.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_dimmed
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_read
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 2.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_nightlight
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_nightlight
     - conditions:
-      - condition: trigger
-        id: down_press
+      - condition: template
+        value_template: '{{ command == ''button_1_press'' }}'
       sequence:
       - action: light.turn_off
         target:
           entity_id:
-          - light.2nd_floor_bathroom_vanity_1of3
-          - light.2nd_floor_bathroom_vanity_2of3
-          - light.2nd_floor_bathroom_vanity_3of3
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
     - conditions:
-      - condition: trigger
-        id: up_hold
+      - condition: template
+        value_template: '{{ command == ''button_3_press'' }}'
+      sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.bathroom_scene_index
+        data:
+          value: '{{ ((states(''input_number.bathroom_scene_index'') | int + 1) %
+            4) }}'
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            below: 0.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_energize
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_energize
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 0.5
+            below: 1.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_relax
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_relax
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 1.5
+            below: 2.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_dimmed
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_read
+        - conditions:
+          - condition: numeric_state
+            entity_id: input_number.bathroom_scene_index
+            above: 2.5
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_bathroom_nightlight
+          - action: scene.turn_on
+            target:
+              entity_id: scene.2nd_floor_vanity_lights_nightlight
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_hold'' }}'
       sequence:
       - action: light.turn_on
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
         data:
           brightness_step_pct: 10
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_vanity_1of3
-          - light.2nd_floor_bathroom_vanity_2of3
-          - light.2nd_floor_bathroom_vanity_3of3
     - conditions:
-      - condition: trigger
-        id: down_hold
+      - condition: template
+        value_template: '{{ command == ''button_1_hold'' }}'
       sequence:
       - action: light.turn_on
-        data:
-          brightness_step_pct: -10
         target:
           entity_id:
-          - light.2nd_floor_bathroom_vanity_1of3
-          - light.2nd_floor_bathroom_vanity_2of3
-          - light.2nd_floor_bathroom_vanity_3of3
-  alias: 2nd Floor Bathroom - Vanity Lights Inovelli Control
-  description: VZM30-SN paddle controls Hue vanity lights (3 bulbs). Up=On, Down=Off,
-    Hold=Dim.
-  id: 2nd_floor_bathroom_vanity_inovelli
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
+        data:
+          brightness_step_pct: -10
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_2_double'' }}'
+      sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.bathroom_scene_index
+        data:
+          value: 0
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_energize
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_vanity_lights_energize
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_1_double'' }}'
+      sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.bathroom_scene_index
+        data:
+          value: 3
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_nightlight
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_vanity_lights_nightlight
   mode: restart
-  triggers:
-  - event_data:
-      command: 'on'
-      device_ieee: 18:0d:f9:ff:fe:34:58:66
-    event_type: zha_event
-    id: up_press
-    platform: event
-  - event_data:
-      command: 'off'
-      device_ieee: 18:0d:f9:ff:fe:34:58:66
-    event_type: zha_event
-    id: down_press
-    platform: event
-  - event_data:
-      command: move_with_on_off
-      device_ieee: 18:0d:f9:ff:fe:34:58:66
-    event_type: zha_event
-    id: up_hold
-    platform: event
-  - event_data:
-      command: move
-      device_ieee: 18:0d:f9:ff:fe:34:58:66
-    event_type: zha_event
-    id: down_hold
-    platform: event
+  variables:
+    command: '{{ trigger.event.data.command }}'
 - id: '1772045640891'
   alias: Back Patio — Inovelli Controls Hue Lights
   description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Dimmed→Nightlight),
