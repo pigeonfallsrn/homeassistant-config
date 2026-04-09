@@ -20,54 +20,93 @@
   trigger:
   - at: 00:00:00
     platform: time
-- actions:
+- id: '1771364980856'
+  alias: Front Driveway — Inovelli Controls Hue Lights
+  description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Nightlight),
+    Config hold=Sleepy scene.
+  triggers:
+  - event_data:
+      device_id: 16a22c25ead6b47a6b9666c539ff2509
+    event_type: zha_event
+    platform: event
+  actions:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{ trigger.event.data.command == "on" or (trigger.event.data.params.button
-          == "button_2" and trigger.event.data.params.press_type == "press") }}'
+        value_template: '{{ trigger.event.data.command in [''button_2_press'',''on'']
+          }}'
       sequence:
-      - action: light.turn_on
+      - action: scene.turn_on
         target:
-          entity_id: light.front_driveway
+          entity_id: scene.front_driveway_energize
     - conditions:
       - condition: template
-        value_template: '{{ trigger.event.data.command == "off" or (trigger.event.data.params.button
-          == "button_1" and trigger.event.data.params.press_type == "press") }}'
+        value_template: '{{ trigger.event.data.command in [''button_1_press'',''off'']
+          }}'
       sequence:
       - action: light.turn_off
         target:
           entity_id: light.front_driveway
     - conditions:
       - condition: template
-        value_template: '{{ trigger.event.data.params.button == "button_3" and trigger.event.data.params.press_type
-          == "press" }}'
+        value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
       sequence:
-      - action: light.toggle
+      - action: input_number.set_value
+        data:
+          value: '{{ ((states(''input_number.front_driveway_scene_index'') | int +
+            1) % 3) }}'
         target:
-          entity_id: light.front_driveway
-  alias: Front Driveway Inovelli - Hue Lights Control
-  description: Front Driveway Inovelli VZM30-SN controls Front Driveway Hue lights
-    via ZHA events
-  id: '1771364980856'
-  mode: single
-  triggers:
-  - event_data:
-      device_ieee: c0:9b:9e:ff:fe:d1:2d:4e
-    event_type: zha_event
-    platform: event
-- alias: Entry Room Ceiling - Inovelli Controls Hue Lights
-  description: Entry Room Ceiling Inovelli VZM31-SN controls Entry Room Ceiling Hue
-    zone
-  id: '1771532178019'
+          entity_id: input_number.front_driveway_scene_index
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_number.front_driveway_scene_index
+            state: '0.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.front_driveway_energize
+        - conditions:
+          - condition: state
+            entity_id: input_number.front_driveway_scene_index
+            state: '1.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.front_driveway_relax
+        - conditions:
+          - condition: state
+            entity_id: input_number.front_driveway_scene_index
+            state: '2.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.front_driveway_nightlight
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_3_hold'' }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.front_driveway_sleepy
+  mode: queued
   max_exceeded: silent
-  mode: single
+- id: '1771532178019'
+  alias: Entry Room Ceiling — Inovelli Controls Hue Lights
+  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
+    Hold=brightness step.
+  max_exceeded: silent
+  mode: queued
   use_blueprint:
     input:
       button_1:
       - action: light.turn_off
         target:
           entity_id: light.entry_room_ceiling_light
+      button_1_double:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_nightlight
       button_1_hold:
       - action: light.turn_on
         data:
@@ -75,23 +114,31 @@
         target:
           entity_id: light.entry_room_ceiling_light
       button_2:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.entry_room_ceiling_light
+          entity_id: scene.entry_room_energize
+      button_2_double:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
           entity_id: light.entry_room_ceiling_light
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_dimmed
       inovelli_switch: d80c7fa6d013f0fd1cbdd6f67c6a1cac
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- alias: Kitchen Lounge - Inovelli Controls Hue Ceiling
-  description: 'fxlt blueprint: Kitchen Lounge Inovelli VZM31-SN controls Hue ceiling
-    lights'
-  id: '1771556632224'
+- id: '1771556632224'
+  alias: Kitchen Lounge — Inovelli Controls Hue Ceiling
+  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
+    Hold=brightness step.
+  max_exceeded: silent
+  mode: queued
   use_blueprint:
     input:
       button_1:
@@ -99,11 +146,9 @@
         target:
           entity_id: light.kitchen_lounge
       button_1_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 10
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_lounge
+          entity_id: scene.kitchen_lounge_nightlight
       button_1_hold:
       - action: light.turn_on
         data:
@@ -111,21 +156,23 @@
         target:
           entity_id: light.kitchen_lounge
       button_2:
-      - action: light.turn_on
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_lounge
+          entity_id: scene.kitchen_lounge_energize
       button_2_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_lounge
+          entity_id: scene.kitchen_lounge_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
           entity_id: light.kitchen_lounge
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.kitchen_lounge_dimmed
       inovelli_switch: 5e2d477e04d216ab91a0c2f1364ab118
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
 - actions:
@@ -557,7 +604,16 @@
     event_type: zha_event
     id: down_hold
     platform: event
-- actions:
+- id: '1772045640891'
+  alias: Back Patio — Inovelli Controls Hue Lights
+  description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Dimmed→Nightlight),
+    Config hold=Hot Tub Mode toggle.
+  triggers:
+  - event_data:
+      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
+    event_type: zha_event
+    platform: event
+  actions:
   - choose:
     - conditions:
       - condition: template
@@ -580,7 +636,7 @@
       - action: input_number.set_value
         data:
           value: '{{ ((states(''input_number.back_patio_scene_index'') | int + 1)
-            % 3) }}'
+            % 4) }}'
         target:
           entity_id: input_number.back_patio_scene_index
       - choose:
@@ -607,6 +663,14 @@
           sequence:
           - action: scene.turn_on
             target:
+              entity_id: scene.back_patio_dimmed
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '3.0'
+          sequence:
+          - action: scene.turn_on
+            target:
               entity_id: scene.back_patio_nightlight
     - conditions:
       - condition: template
@@ -615,29 +679,24 @@
       - action: input_boolean.toggle
         target:
           entity_id: input_boolean.hot_tub_mode
-  alias: Back Patio - Inovelli Controls Hue Lights
-  description: Back Patio Inovelli VZM30-SN controls Hue lights. Config press cycles
-    scenes (Energize→Relax→Nightlight), Config hold toggles Hot Tub Mode.
-  id: '1772045640891'
   max_exceeded: silent
-  mode: single
-  triggers:
-  - event_data:
-      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
-    event_type: zha_event
-    platform: event
-- alias: 1st Floor Bathroom - Inovelli Controls Hue Ceiling
-  description: 1st Floor Bathroom Inovelli VZM31-SN controls Hue ceiling lights via
-    blueprint
-  id: '1772057917525'
+  mode: queued
+- id: '1772057917525'
+  alias: 1st Floor Bathroom — Inovelli Controls Hue Ceiling
+  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
+    Hold=brightness step.
   max_exceeded: silent
-  mode: single
+  mode: queued
   use_blueprint:
     input:
       button_1:
       - action: light.turn_off
         target:
           entity_id: light.1st_floor_bathroom
+      button_1_double:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.1st_floor_bathroom_nightlight
       button_1_hold:
       - action: light.turn_on
         data:
@@ -645,25 +704,31 @@
         target:
           entity_id: light.1st_floor_bathroom
       button_2:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.1st_floor_bathroom
+          entity_id: scene.1st_floor_bathroom_energize
+      button_2_double:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.1st_floor_bathroom_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
           entity_id: light.1st_floor_bathroom
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.1st_floor_bathroom_dimmed
       inovelli_switch: 0600639e50d4e1ed71fdaa1ef789e678
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- alias: Kitchen Above Sink - Inovelli Controls Hue Light
-  description: Kitchen Above Sink Inovelli VZM30-SN controls Hue BR bulb via fxlt
-    blueprint
-  id: '1772070592354'
+- id: '1772070592354'
+  alias: Kitchen Above Sink — Inovelli Controls Hue Light
+  description: UP=kitchen Energize, 2xUP=kitchen Relax, DOWN=Off, 2xDOWN=kitchen Nightlight,
+    Config=kitchen Dimmed, Hold=brightness step on sink light.
   max_exceeded: silent
-  mode: single
+  mode: queued
   use_blueprint:
     input:
       button_1:
@@ -671,11 +736,9 @@
         target:
           entity_id: light.kitchen_above_sink_light
       button_1_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 10
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_above_sink_light
+          entity_id: scene.kitchen_nightlight
       button_1_hold:
       - action: light.turn_on
         data:
@@ -683,31 +746,32 @@
         target:
           entity_id: light.kitchen_above_sink_light
       button_2:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_above_sink_light
+          entity_id: scene.kitchen_energize
       button_2_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_above_sink_light
+          entity_id: scene.kitchen_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
           entity_id: light.kitchen_above_sink_light
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.kitchen_dimmed
       inovelli_switch: 89ca030d64760ad87512e97d13a2737d
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- alias: Kitchen Chandelier - Inovelli Controls Hue Lights
-  description: Kitchen Above Table Chandelier Inovelli VZM30-SN controls 5-bulb Hue
-    chandelier group via fxlt blueprint
-  id: '1772070611621'
+- id: '1772070611621'
+  alias: Kitchen Chandelier — Inovelli Controls Hue Lights
+  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
+    Hold=brightness step. Kitchen-wide scenes. Manual override via separate automation
+    (2x tap).
   max_exceeded: silent
-  mode: single
+  mode: queued
   use_blueprint:
     input:
       button_1:
@@ -715,11 +779,9 @@
         target:
           entity_id: light.kitchen_chandelier
       button_1_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 10
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_chandelier
+          entity_id: scene.kitchen_nightlight
       button_1_hold:
       - action: light.turn_on
         data:
@@ -727,81 +789,67 @@
         target:
           entity_id: light.kitchen_chandelier
       button_2:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_chandelier
+          entity_id: scene.kitchen_energize
       button_2_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id: light.kitchen_chandelier
+          entity_id: scene.kitchen_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
           entity_id: light.kitchen_chandelier
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.kitchen_dimmed
       inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- alias: 2nd Floor Bathroom Ceiling - Inovelli Controls Hue Lights
-  description: 2nd Floor Bathroom Ceiling Inovelli VZM30-SN controls 2 Hue ceiling
-    bulbs via fxlt blueprint
-  id: '1772074192238'
+- id: '1772074192238'
+  alias: 2nd Floor Bathroom — Inovelli VZM30-SN Controls Hue Lights
+  description: 'VZM30-SN Smart Bulb Mode: UP=Energize, DOWN=Off, 2xUP=Relax, 2xDOWN=Nightlight,
+    Config=Dimmed, Hold UP/DOWN=Brightness step'
+  mode: queued
   max_exceeded: silent
-  mode: single
   use_blueprint:
+    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
     input:
-      button_1:
-      - action: light.turn_off
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-      button_1_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 10
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-      button_1_hold:
-      - action: light.turn_on
-        data:
-          brightness_step_pct: -10
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
+      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
       button_2:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
+          entity_id: scene.2nd_floor_bathroom_energize
       button_2_double:
-      - action: light.turn_on
-        data:
-          brightness_pct: 100
+      - action: scene.turn_on
         target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
+          entity_id: scene.2nd_floor_bathroom_relax
       button_2_hold:
       - action: light.turn_on
         data:
           brightness_step_pct: 10
         target:
-          entity_id:
-          - light.2nd_floor_bathroom_ceiling_1of2
-          - light.2nd_floor_bathroom_ceiling_2of2
-      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
-    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
+          entity_id: light.2nd_floor_bathroom
+      button_1:
+      - action: light.turn_off
+        target:
+          entity_id: light.2nd_floor_bathroom
+      button_1_double:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_nightlight
+      button_1_hold:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.2nd_floor_bathroom
+      button_3:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_dimmed
 - id: 2nd_floor_bathroom_humidity_fan_v3
   alias: 2nd Floor Bathroom — Humidity Fan Control v3
   description: Shower detection with safe runtime cap. Humidity triggers (derivative
@@ -1993,9 +2041,9 @@
 - id: kitchen_manual_override_inovelli_trigger
   alias: Kitchen Manual Override — Inovelli 2x Tap Set
   description: Double-tap UP on kitchen chandelier or above-sink Inovelli switch sets
-    BOTH kitchen_manual_override and kitchen_lounge_manual_override ON. Prevents motion
-    automation from turning any kitchen light off mid-task. Both override booleans
-    clear automatically after 12min of no motion.
+    BOTH kitchen_manual_override and kitchen_lounge_manual_override ON and starts
+    the 30-min override timer. Motion automation is suppressed until timer expires
+    or 2x-tap DOWN clears it.
   triggers:
   - event_data:
       command: button_2_double
@@ -2015,15 +2063,19 @@
       entity_id:
       - input_boolean.kitchen_manual_override
       - input_boolean.kitchen_lounge_manual_override
+  - action: timer.start
+    target:
+      entity_id: timer.kitchen_override_timer
+    data:
+      duration: 0:30:00
   - action: notify.mobile_app_john_s_s26_ultra
     data:
+      title: Kitchen Override ON
+      message: Motion auto-off suppressed for 30 min. 2x-tap DOWN to cancel early.
       data:
         priority: high
         tag: kitchen_override
         ttl: 0
-      message: Motion auto-off suppressed for all kitchen lights. Clears after 12min
-        no motion.
-      title: Kitchen Override ON
   mode: single
 - id: '1775623389364'
   alias: Hot Tub Mode — Pause/Resume Kitchen Motion Automations
@@ -2060,4 +2112,46 @@
           - automation.kitchen_lounge_motion_lighting
           - automation.kitchen_tier_2_dimmers_on_with_motion
           - automation.kitchen_tier_2_dimmers_off_no_motion
+  mode: single
+- id: '1775698609244'
+  alias: Kitchen Manual Override — Clear (Timer or 2x Tap DOWN)
+  description: Clears kitchen_manual_override and kitchen_lounge_manual_override when
+    the 30-min override timer expires OR the user double-taps DOWN on the chandelier
+    or above-sink switch. Also cancels the timer if still running (so 2x DOWN cleans
+    up immediately).
+  triggers:
+  - event_data:
+      entity_id: timer.kitchen_override_timer
+    event_type: timer.finished
+    id: timer_done
+    platform: event
+  - event_data:
+      command: button_1_double
+      device_id: 17a59d3c437c3475f22c29dd2b76777a
+    event_type: zha_event
+    id: chandelier_2x_down
+    platform: event
+  - event_data:
+      command: button_1_double
+      device_id: 89ca030d64760ad87512e97d13a2737d
+    event_type: zha_event
+    id: sink_2x_down
+    platform: event
+  actions:
+  - action: timer.cancel
+    target:
+      entity_id: timer.kitchen_override_timer
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.kitchen_manual_override
+      - input_boolean.kitchen_lounge_manual_override
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      data:
+        priority: high
+        tag: kitchen_override
+        ttl: 0
+      message: Motion auto-off restored.
+      title: Kitchen Override OFF
   mode: single

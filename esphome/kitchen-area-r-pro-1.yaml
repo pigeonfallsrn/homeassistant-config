@@ -1,0 +1,32 @@
+esphome:
+  name: kitchen-area-r-pro-1
+  friendly_name: Kitchen Area R-PRO-1
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "HBDFcZsyn0zMmOlfkEic/kG8EJDq2dykr7ocIXUw7UU="
+
+ota:
+  - platform: esphome
+    password: "2d731168255a44b0cc980a2c36099269"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Kitchen-Area-R-Pro-1"
+    password: "jm6gFuVdMGWS"
+
+captive_portal:
+    
