@@ -155,7 +155,7 @@ automation:
                   datetime: "{{ now() + timedelta(minutes=10) }}"
               - action: fan.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
           - conditions:
               - condition: trigger
                 id: skip_30
@@ -170,7 +170,7 @@ automation:
                   datetime: "{{ now() + timedelta(minutes=30) }}"
               - action: fan.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
           - conditions:
               - condition: or
                 conditions:
@@ -189,7 +189,7 @@ automation:
                   datetime: "{{ now() + timedelta(hours=12) }}"
               - action: fan.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
           - conditions:
               - condition: trigger
                 id: pause_15
@@ -204,7 +204,7 @@ automation:
                   datetime: "{{ now() + timedelta(minutes=15) }}"
               - action: fan.turn_off
                 target:
-                  entity_id: fan.inovelli_vzm35_sn_fan
+                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
       # Clear notification
       - action: notify.mobile_app_john_s_s26_ultra
         data:
@@ -246,7 +246,7 @@ automation:
     alias: "Humidity - Block Fan Auto-On When Paused"
     trigger:
       - platform: state
-        entity_id: fan.inovelli_vzm35_sn_fan
+        entity_id: fan.2nd_floor_bathroom_exhaust_fan
         to: "on"
     condition:
       - condition: state
@@ -255,5 +255,5 @@ automation:
     action:
       - action: fan.turn_off
         target:
-          entity_id: fan.inovelli_vzm35_sn_fan
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
     mode: single
