@@ -195,13 +195,13 @@ Times Hit: 10+
 ## HAC CLI — PATH FIX (confirmed 2026-04-05)
 - Script lives at: /homeassistant/hac/hac.sh
 - Fix: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac && chmod +x /homeassistant/hac/hac.sh
-- Permanent — survives reboots. Run once after any HAOS reinstall.
+- Survives HA restarts but NOT power cycles — re-run symlink after any power cycle or HAOS reinstall.
 - Duplicate at /homeassistant/scripts/hac.sh — canonical is /homeassistant/hac/hac.sh
 
 ## HAC CLI — PATH FIX (confirmed 2026-04-05)
 - Script lives at: /homeassistant/hac/hac.sh
 - Fix: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac && chmod +x /homeassistant/hac/hac.sh
-- Permanent — survives reboots. Run once after any HAOS reinstall.
+- Survives HA restarts but NOT power cycles — re-run symlink after any power cycle or HAOS reinstall.
 - Duplicate at /homeassistant/scripts/hac.sh — canonical is /homeassistant/hac/hac.sh
 
 ## SESSION HISTORY
