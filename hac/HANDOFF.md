@@ -1,7 +1,7 @@
 # HAC Handoff — 2026-04-09 S9
 
 ## Last commit
-  85af2a8 fix: hac symlink survives restarts NOT power cycles (S8 post-mortem)
+  008ca78 docs: S9 handoff + learnings — bathroom switches fixed, VZM36 cleaned, pre-migration backup 7042a0e9
 
 ## S9 Completed
   - VZM36 living room _3/_4 orphan entities: hidden + labelled (not referenced anywhere, Hue group is active path)
