@@ -13,7 +13,8 @@ template:
         state: >
           {{ is_state('binary_sensor.kitchen_aqara_motion_sensor_p1_occupancy', 'on')
              or is_state('binary_sensor.west_kitchen_sensor_motion_sensor_occupancy', 'on')
-             or is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on') }}
+             or is_state('binary_sensor.entry_room_aqara_motion_sensor_occupancy', 'on')
+             or is_state('binary_sensor.apollo_r_pro_1_748020_ld2450_presence', 'on') }}
         delay_off:
           minutes: 10
 
@@ -23,6 +24,8 @@ template:
         state: >
           {{ is_state('binary_sensor.basement_hallway_motion_sensor_occupancy', 'on')
              or is_state('binary_sensor.very_front_door_motion_sensor_occupancy', 'on') }}
+          delay_off:
+            minutes: 5
 
 automation:
   - id: kitchen_manual_override_auto_clear
@@ -42,6 +45,9 @@ automation:
         entity_id: input_boolean.kitchen_manual_override
         state: "on"
     action:
+      - action: timer.cancel
+        target:
+          entity_id: timer.kitchen_override_timer
       - action: input_boolean.turn_off
         target:
           entity_id:
@@ -79,7 +85,6 @@ automation:
         target:
           entity_id:
             - light.kitchen_lounge
-            - light.kitchen_lounge
             - light.kitchen_lounge_lamp
 
   - id: kitchen_lounge_motion_off
@@ -103,7 +108,6 @@ automation:
       - action: light.turn_off
         target:
           entity_id:
-            - light.kitchen_lounge
             - light.kitchen_lounge
             - light.kitchen_lounge_lamp
 
