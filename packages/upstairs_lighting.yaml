@@ -77,3 +77,48 @@ automation:
                   entity_id: light.upstairs_hallway
                 data:
                   transition: 5
+
+  # ─── 2nd Floor Bathroom — Ceiling Switch (VZM30-SN SBM) ──────────────────
+  - id: inovelli_2nd_floor_bathroom_ceiling
+    alias: "2nd Floor Bathroom — Ceiling Switch (VZM30-SN SBM)"
+    description: "Up=On Down=Off UpHold=Dim+ DownHold=Dim-. IEEE 20:a7:16:ff:fe:01:8c:b8"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: zha_event
+        event_data:
+          device_ieee: "20:a7:16:ff:fe:01:8c:b8"
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == 'up_single' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.2nd_floor_bathroom
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == 'down_single' }}"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id: light.2nd_floor_bathroom
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == 'up_hold' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.2nd_floor_bathroom
+                data:
+                  brightness_step_pct: 10
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.command == 'down_hold' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id: light.2nd_floor_bathroom
+                data:
+                  brightness_step_pct: -10

@@ -257,9 +257,18 @@ automation:
               - condition: trigger
                 id: b1
             sequence:
-              - action: scene.turn_on
-                target:
-                  entity_id: scene.ella_s_bedroom_energize
+              - if:
+                  - condition: state
+                    entity_id: light.ella_s_bedroom
+                    state: "on"
+                then:
+                  - action: light.turn_off
+                    target:
+                      entity_id: light.ella_s_bedroom
+                else:
+                  - action: scene.turn_on
+                    target:
+                      entity_id: scene.ella_s_bedroom_energize
           - conditions:
               - condition: trigger
                 id: b2
