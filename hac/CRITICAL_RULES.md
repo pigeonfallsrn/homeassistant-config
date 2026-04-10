@@ -10,6 +10,8 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **Git errors** (`confused by unstable object`): Run `git gc --prune=now` twice (HA Green/SD card limitation)
 - **Escape `!`** or use single quotes: `echo 'Hello!'` not `echo "Hello!"`
 - **Never chain after `python3 -c`** on same line
+- **Chain safe commands with `&&`** for token efficiency — user pastes one result at a time
+- **Never chain after `python3 << HEREDOC`** — heredoc must be its own paste
 - **BusyBox grep** (HA Green): NO `--include`, NO long options. Use `-rEl` for recursive+extended+filenames. Never `--include=*.yaml` — use `grep -rEl 'pattern' /path/` instead
 - **BusyBox sed** (HA Green): NO multi-line, NO complex scripts. Use `python3` heredoc for non-trivial file edits
 - **Paths**: `/homeassistant/` (not `/config/`)
