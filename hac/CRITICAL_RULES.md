@@ -911,3 +911,18 @@ WRAP RITUAL ADDITION — always at session close:
 - Fix: replace explicit params with scene.turn_on (scene.upstairs_hallway_energize etc)
   OR remove brightness/color params and let AL handle it
 - File: /homeassistant/packages/upstairs_lighting.yaml lines 45-80
+
+## REGISTRY EDITS (Times Hit: 3+)
+- **Never edit .storage files while HA is running** — HA writes its in-memory registry to disk on clean shutdown, overwriting changes
+- **Correct procedure**: stop HA → edit → start HA. On Mini PC: run cleanup script BEFORE `ha core start`
+- **Race condition symptom**: python3 script reports "Removed N entries" but entities reappear after restart
+
+## GREP ON HA GREEN (Times Hit: 2+)
+- **BusyBox grep ignores `--include`** silently — never use `--include=*.yaml`
+- **Correct pattern**: `grep -rEl 'pattern' /homeassistant/ 2>/dev/null | grep -v '.git'`
+- **For yaml-only searches**: pipe through `grep '\.yaml'` on the filenames or search all and filter
+
+## CONFIGURATION.YAML INLINE AUTOMATIONS
+- **Never define automation: blocks inline in configuration.yaml** — they load before automations.yaml and steal entity_ids, causing _2 suffix on the real automation
+- **All automations belong in**: packages/*.yaml or automations.yaml with an `id:` field
+- **Symptom**: automation shows as entity_id_2, never-triggered, original still running with old service: syntax
