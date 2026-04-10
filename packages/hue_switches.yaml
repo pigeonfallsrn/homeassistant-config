@@ -343,3 +343,57 @@ automation:
               - action: light.turn_off
                 target:
                   entity_id: light.garage
+
+  # ─── 2nd Floor Bathroom — Ceiling Switch (VZM30-SN SBM) ──────────────────
+  - id: inovelli_2nd_floor_bathroom_ceiling_v2
+    alias: "2nd Floor Bathroom — Ceiling Switch (VZM30-SN)"
+    description: "Up=scene on, Down=both lights off, Hold=dim. IEEE 20:a7:16:ff:fe:01:8c:b8"
+    mode: restart
+    trigger:
+      - platform: event
+        event_type: zha_event
+        event_data:
+          device_ieee: "20:a7:16:ff:fe:01:8c:b8"
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.button == 'button_2' and trigger.event.data.press_type == 'press' }}"
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.2nd_floor_bathroom_energize
+              - action: scene.turn_on
+                target:
+                  entity_id: scene.2nd_floor_vanity_lights_energize
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.button == 'button_1' and trigger.event.data.press_type == 'press' }}"
+            sequence:
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.2nd_floor_bathroom
+                    - light.2nd_floor_bathroom_vanity_lights
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.button == 'button_2' and trigger.event.data.press_type == 'held_down' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.2nd_floor_bathroom
+                    - light.2nd_floor_bathroom_vanity_lights
+                data:
+                  brightness_step_pct: 10
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.button == 'button_1' and trigger.event.data.press_type == 'held_down' }}"
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.2nd_floor_bathroom
+                    - light.2nd_floor_bathroom_vanity_lights
+                data:
+                  brightness_step_pct: -10
