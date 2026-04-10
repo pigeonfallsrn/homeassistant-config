@@ -23,6 +23,10 @@ GHOST_ENTITY_IDS = {
     'automation.google_sheets_manual_export',
     'automation.departure_clear_alert_on_return',
     'automation.upstairs_bathroom_night_lighting',
+    # Script ghosts — kitchen_tablet_dashboard.yaml package was removed; scripts orphaned
+    # NOTE: lovelace-kitchen-tablet.yaml lines 237+259 still reference these — fix dashboard after cleanup
+    'script.kitchen_scene_all_on',       # registry id: 4334405d8585c8b187d563ffa3d0ed4b
+    'script.kitchen_scene_movie_night',  # registry id: 726a3a8aab12a8a2dafd6978e16f1e94
     # hac_daily_master_context_export: NOT a ghost — was config.yaml inline block (deleted S10-C)
     # _2 registry entry deleted below by registry id so automation re-registers clean
 }
