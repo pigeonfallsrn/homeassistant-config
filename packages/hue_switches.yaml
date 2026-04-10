@@ -356,7 +356,7 @@ automation:
           device_ieee: "20:a7:16:ff:fe:01:8c:b8"
     condition:
       - condition: template
-        value_template: "{{ trigger.event.data.get('button') is not none }}"
+        value_template: "{{ trigger.event.data.button | default('') != '' }}"
     action:
       - choose:
           - conditions:
