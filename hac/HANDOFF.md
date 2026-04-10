@@ -1,20 +1,21 @@
-# HAC Handoff — 2026-04-09 S10-C (Pre-Migration Deep Cleanup)
+# HAC Handoff — 2026-04-09 S10-C (Pre-Migration Deep Cleanup — FINAL)
 
 ## Last commit
-  ba7c40b chore: S10-B — s11 ghost cleanup script (13 ghosts), remove stale dashboard bak
+  c1ae816 fix: S10-C — remove duplicate HAC export from config.yaml, update s11 cleanup script
 
 ## S10-C Completed
   - Ghost registry cleanup script: hac/s11_ghost_registry_cleanup.py (committed)
-    Run BEFORE first ha core start on Mini PC — removes 12 registry ghosts permanently
+    Run BEFORE first ha core start on Mini PC — removes 11 registry ghosts + HAC _2 entry
   - lovelace-kitchen-tablet.yaml.bak deleted
   - Recorder confirmed purge_keep_days: 3 — S4 backlog item CLOSED
+  - HAC Daily Export duplicate FIXED:
+    Root cause: inline automation block in configuration.yaml (lines 162-170, no id, old service:)
+    was stealing entity_id from automations.yaml version → caused _2 suffix
+    Fix: deleted config.yaml block; automations.yaml version now sole definition
+    On Green: still shows _2 (registry race condition, harmless)
+    On Mini PC: s11 script deletes _2 registry entry → registers clean as hac_daily_master_context_export
   - All 10 unavailable automations: zero YAML backing, pure registry orphans
-    Root cause: registry edits while HA live get overwritten on clean shutdown
-    Fix: s11_ghost_registry_cleanup.py pre-start on Mini PC
-  - HAC export duplicate status:
-    OLD hac_daily_master_context_export — no unique_id, last ran 2026-04-08 08:00, still active
-    NEW hac_daily_master_context_export_2 — has unique_id, NEVER triggered (S10 fix broken)
-    Needs: find old YAML, delete it, verify _2 fires correctly
+    s11_ghost_registry_cleanup.py handles all of them on Mini PC pre-start
 
 ## MINI PC MIGRATION — TOMORROW 2026-04-11
   Restore backup: 7042a0e9  (Pre_Migration_Final_S9_2026-04-09, 160MB)
@@ -35,9 +36,9 @@
   6. git push test: shell_command.git_push → confirm new machine pushes OK
   7. Disk: confirm df -h headroom on x86-64
   8. Backup schedule: set to daily/keep 3 in UI (currently keep 5)
+  9. Verify hac_daily_master_context_export fires at 03:00 and shows no _2 suffix
 
 ## S11 BACKLOG (after migration verified stable)
-  - HAC export duplicate: find old YAML, remove it, verify _2 fires at 08:00
   - FoH switch automations: need button 1-4 spec from John
   - Gemini bulk audit: run audit prompt against full automation dump
   - Kitchen Apollo R-PRO-1: zone config + occupancy wiring (S8 deferred)
@@ -47,13 +48,14 @@
   - ha core check triggers KeyError: known HA 2026.4 validator bug, ignore
   - Backup schedule: still keep 5 — fix post-migration in UI
   - hac symlink: lost after power cycle — step 5 of S11 checklist
-  - Ghost automations (12): live registry still has them; s11 script clears on Mini PC
+  - Ghost automations (11 + HAC _2): s11 script clears all on Mini PC pre-start
 
 ## Start next session
   hac mcp   ← paste session prompt as usual
   ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac
 
 ## RECENT COMMITS
+c1ae816 fix: S10-C — remove duplicate HAC export from config.yaml, update s11 cleanup script
 ba7c40b chore: S10-B — s11 ghost cleanup script (13 ghosts), remove stale dashboard bak
 5e2ac59 docs: S10-B pre-migration cleanup — ghost autos removed, 4 dashboards deleted
 e80d237 docs: S10 pre-migration final — all fixes complete, migration checklist ready
