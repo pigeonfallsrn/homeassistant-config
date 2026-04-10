@@ -1,18 +1,15 @@
-# HAC Handoff — 2026-04-09 S10 (Pre-Migration Final)
+# HAC Handoff — 2026-04-09 S10-B (Pre-Migration Final + Cleanup)
 
 ## Last commit
-  d4989be fix: S10 pre-migration — Apollo Entry wired, timer.cancel, kitchen_lounge dedup, hallway delay_off
+  e80d237 docs: S10 pre-migration final — all fixes complete, migration checklist ready
 
-## S10 Completed
-  - Apollo Entry Room LD2450 presence → wired into first_floor_main_motion template
-  - timer.cancel added to kitchen_manual_override_auto_clear (ghost-timer bug fixed)
-  - light.kitchen_lounge duplicate removed from Tier 1 turn_on + turn_off
-  - first_floor_hallway_motion: delay_off 5min added (was missing despite comment)
-  - HANDOFF commit line: fixed to be dynamic (no longer stale)
-  - HAC Daily Master Context Export: fixed deprecated service: → action:, added unique_id
-  - ha core check: CLEAN (triggers KeyError is known HA 2026.4 validator bug, not real)
-  - Zero deprecated service: syntax remaining in packages
-  - Config confirmed clean post-restart
+## S10-B Completed (this session — storage changes only, no YAML commits)
+  - living_room_lamps_activity_boost ghost × 2: removed from core.entity_registry
+    (IDs: 36fe353d, 3858d1d7 — no backing YAML, pure orphans since Jan/Mar 2026)
+  - Dashboards deleted (4): kitchen-tablet-wall, ella-dashboard, dashboard-6767, john-lights
+    Dashboard count: 13 → 9
+  - upstairs_lighting.yaml: reviewed — CLEAN, no action needed
+    scene.upstairs_hallway_energize confirmed present and active
 
 ## MINI PC MIGRATION — TOMORROW 2026-04-11
   Restore backup: 7042a0e9  (Pre_Migration_Final_S9_2026-04-09, 160MB)
@@ -35,16 +32,20 @@
 
 ## S11 BACKLOG (after migration verified stable)
   - FoH switch automations: need button 1-4 spec from John
-  - Upstairs hallway scenes: cat -n /homeassistant/packages/upstairs_lighting.yaml
-  - Dashboard cleanup: delete kitchen-tablet-wall, ella-dashboard, dashboard-6767, john-lights
+  - Upstairs hallway scenes: reviewed clean — no action needed
   - Gemini bulk audit: run audit prompt against full automation dump
-  - living_room_lamps_activity_boost DUPLICATE: _2 exists, both unavailable — investigate
+  - Kitchen Apollo R-PRO-1: zone config + occupancy wiring (S8 deferred)
 
 ## Known issues / watch list
   - sensor.navien_water_flow: unavailable — Navien integration offline
   - ha core check triggers KeyError: known HA 2026.4 validator bug, ignore
   - Automatic backup schedule: still "keep 5" — will fill disk again post-migration
+  - hac symlink: lost after power cycle (symlink task is step 5 of S11 checklist)
 
 ## Start next session
   hac mcp   ← paste session prompt as usual
   ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac
+
+## RECENT COMMITS
+e80d237 (HEAD) docs: S10 pre-migration final — all fixes complete, migration checklist ready
+d4989be fix: S10 pre-migration — Apollo Entry wired, timer.cancel, kitchen_lounge dedup, hallway delay_off
