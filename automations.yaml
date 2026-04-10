@@ -2280,3 +2280,268 @@
   actions:
   - action: shell_command.hac_export
   mode: single
+- id: '1775774068635'
+  alias: Living Room Hue Switch - Lamp Scene Cycling
+  description: B1=all 4 lamps cycle (Relax/Dimmed/Read/Nightlight/off), B2=table lamps
+    cycle (Relax/Dimmed/Read/Nightlight/Bright/off), B3=floor lamps cycle (Rest/Read/Nightlight/Concentrate/off),
+    B4=all off. Long press = off + reset index.
+  triggers:
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_1_2
+    attribute: event_type
+    to: short_release
+    id: b1_short
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_1_2
+    attribute: event_type
+    to: long_release
+    id: b1_long
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_2_2
+    attribute: event_type
+    to: short_release
+    id: b2_short
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_2_2
+    attribute: event_type
+    to: long_release
+    id: b2_long
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_3_2
+    attribute: event_type
+    to: short_release
+    id: b3_short
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_3_2
+    attribute: event_type
+    to: long_release
+    id: b3_long
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_4_2
+    attribute: event_type
+    to: short_release
+    id: b4_any
+  - platform: state
+    entity_id: event.works_with_hue_switch_1_button_4_2
+    attribute: event_type
+    to: long_release
+    id: b4_any
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1_short
+      sequence:
+      - variables:
+          nxt: '{{ ((states(''input_number.lr_hue_all_lamps_scene_index'') | int)
+            + 1) % 5 }}'
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_all_lamps_scene_index
+        data:
+          value: '{{ nxt }}'
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 0 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_relax
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 1 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_dimmed
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 2 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_read
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 3 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_nightlight
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 4 }}'
+          sequence:
+          - action: light.turn_off
+            target:
+              entity_id:
+              - light.living_room_floor_lamps
+              - light.living_room_table_lamps
+    - conditions:
+      - condition: trigger
+        id: b1_long
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.living_room_floor_lamps
+          - light.living_room_table_lamps
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_all_lamps_scene_index
+        data:
+          value: 4
+    - conditions:
+      - condition: trigger
+        id: b2_short
+      sequence:
+      - variables:
+          nxt: '{{ ((states(''input_number.lr_hue_table_lamps_scene_index'') | int)
+            + 1) % 6 }}'
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_table_lamps_scene_index
+        data:
+          value: '{{ nxt }}'
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 0 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_table_lamps_relax
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 1 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_table_lamps_dimmed
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 2 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_table_lamps_read
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 3 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_table_lamps_nightlight
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 4 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_table_lamps_bright
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 5 }}'
+          sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.living_room_table_lamps
+    - conditions:
+      - condition: trigger
+        id: b2_long
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.living_room_table_lamps
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_table_lamps_scene_index
+        data:
+          value: 5
+    - conditions:
+      - condition: trigger
+        id: b3_short
+      sequence:
+      - variables:
+          nxt: '{{ ((states(''input_number.lr_hue_floor_lamps_scene_index'') | int)
+            + 1) % 5 }}'
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_floor_lamps_scene_index
+        data:
+          value: '{{ nxt }}'
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 0 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_floor_lamps_rest
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 1 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_floor_lamps_read
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 2 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_floor_lamps_nightlight
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 3 }}'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.living_room_floor_lamps_concentrate
+        - conditions:
+          - condition: template
+            value_template: '{{ nxt == 4 }}'
+          sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.living_room_floor_lamps
+    - conditions:
+      - condition: trigger
+        id: b3_long
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.living_room_floor_lamps
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_floor_lamps_scene_index
+        data:
+          value: 4
+    - conditions:
+      - condition: trigger
+        id: b4_any
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.living_room_floor_lamps
+          - light.living_room_table_lamps
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_all_lamps_scene_index
+        data:
+          value: 4
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_table_lamps_scene_index
+        data:
+          value: 5
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.lr_hue_floor_lamps_scene_index
+        data:
+          value: 4
+  mode: queued
+  max: 5
