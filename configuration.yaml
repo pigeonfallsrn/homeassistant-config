@@ -159,15 +159,6 @@ shell_command:
   mcp_session_init: 'bash -c "echo === GIT PENDING === && cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -10 && echo === LAST COMMIT === && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === DISK === && df -h / | tail -1"'
   git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
 
-automation:
-  - alias: "HAC: Daily Master Context Export"
-    description: "Auto-generate Master Context Excel at 3 AM"
-    trigger:
-      - platform: time
-        at: "03:00:00"
-    action:
-      - service: shell_command.hac_export
-
 packages: !include_dir_named packages
 
 # Recorder - optimized retention and exclusions

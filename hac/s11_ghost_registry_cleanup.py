@@ -23,7 +23,8 @@ GHOST_ENTITY_IDS = {
     'automation.google_sheets_manual_export',
     'automation.departure_clear_alert_on_return',
     'automation.upstairs_bathroom_night_lighting',
-    'automation.hac_daily_master_context_export',  # old no-unique_id version; _2 is the real one
+    # hac_daily_master_context_export: NOT a ghost — was config.yaml inline block (deleted S10-C)
+    # _2 registry entry deleted below by registry id so automation re-registers clean
 }
 
 # entity_registry
@@ -34,8 +35,14 @@ data['data']['entities'] = [
     if e.get('entity_id') not in GHOST_ENTITY_IDS
 ]
 after = len(data['data']['entities'])
+# Also delete _2 registry entry for hac_daily_master_context_export
+# so it re-registers as automation.hac_daily_master_context_export after config.yaml fix
+hac_dup_id = 'f76b7bce645f0dd3bcc5f9ccff6a5410'
+before2 = len(data['data']['entities'])
+data['data']['entities'] = [e for e in data['data']['entities'] if e.get('id') != hac_dup_id]
+after2 = len(data['data']['entities'])
 reg.write_text(json.dumps(data, indent=2))
-print(f"entity_registry: removed {before - after} ghosts ({after} remain)")
+print(f"entity_registry: removed {before - after2} ghosts ({after2} remain)")
 
 # restore_state
 if rs.exists():
