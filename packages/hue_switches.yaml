@@ -363,9 +363,6 @@ automation:
               - action: scene.turn_on
                 target:
                   entity_id: scene.2nd_floor_bathroom_energize
-              - action: scene.turn_on
-                target:
-                  entity_id: scene.2nd_floor_vanity_lights_energize
           - conditions:
               - condition: template
                 value_template: "{{ trigger.event.data.command == 'button_1_press' }}"
