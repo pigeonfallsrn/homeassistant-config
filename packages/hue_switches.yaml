@@ -355,7 +355,7 @@ automation:
         event_data:
           device_ieee: "20:a7:16:ff:fe:01:8c:b8"
     action:
-- choose:
+      - choose:
           - conditions:
               - condition: template
                 value_template: "{{ trigger.event.data.command == 'button_2_press' }}"
