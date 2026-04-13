@@ -238,3 +238,52 @@ kitchen_scene_lounge:
       entity_id: light.kitchen_govee_floor_lamp
     data:
       brightness_pct: 60
+kitchen_scene_movie_night:
+  alias: Kitchen Scene - Movie Night
+  icon: mdi:movie-open
+  description: Recreated S10-C from kitchen_tablet_dashboard.yaml backup. Overheads
+    off, chandelier + above-sink dim warm.
+  sequence:
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.above_kitchen_sink_inovelli_switch
+      - light.kitchen_bar_pendant_lights
+      - light.kitchen_under_cabinet_aqara_t1_led_strip
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_chandelier
+    data:
+      brightness_pct: 12
+      color_temp_kelvin: 2200
+      transition: 2
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_above_sink_light
+    data:
+      brightness_pct: 12
+      color_temp_kelvin: 2200
+      transition: 2
+kitchen_scene_all_on:
+  alias: Kitchen Scene - All On
+  description: Recreated S10-C from kitchen_tablet_dashboard.yaml backup. All kitchen
+    lights 100%. SBM chandelier Inovelli excluded (Smart Bulb Mode).
+  icon: mdi:lightbulb-on
+  sequence:
+  - action: light.turn_on
+    data:
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.above_kitchen_sink_inovelli_switch
+      - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+      - light.kitchen_lounge_inovelli_smart_dimmer
+  - action: light.turn_on
+    data:
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.kitchen_chandelier
+      - light.kitchen_above_sink_light
