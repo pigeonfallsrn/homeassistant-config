@@ -16,6 +16,18 @@ hac backup <filename>   # NON-NEGOTIABLE
 - **BusyBox sed** (HA Green): NO multi-line, NO complex scripts. Use `python3` heredoc for non-trivial file edits
 - **Paths**: `/homeassistant/` (not `/config/`)
 
+## ZHA EVENT TRIGGERS (Times Hit: 8+)
+- **Use `device_ieee` NOT `device_id`** in event_data — ZHA events carry IEEE, not HA internal UUID
+- **VZM30-SN command field**: `trigger.event.data.command` = `'button_2_press'` (single string — NOT separate button+press_type)
+- **VZM31-SN** uses same `command` field pattern
+- **Multiple ZHA events per press**: VZM30-SN fires Press + On/Off + Attribute Updated — use `mode: single` not `restart`
+- **NEVER use `.get()` on trigger.event.data** in Jinja2 — use `| default('')` filter instead
+- **Debug method**: First action = notify with message containing trigger.event.data — fastest raw payload view
+- **Python replace strips indentation silently**: After any block removal, verify YAML with sed before restart
+- **MCP ha_config_set_automation returns `entity_id: null`** for package YAML — normal; prefer terminal Python for package automations
+- **VZM30-SN button commands**: `button_1_press`, `button_2_press`, `button_1_held_down`, `button_2_held_down`, `button_3_press`
+
+
 ## MOTION AUTOMATIONS (Times Hit: 15+)
 - **Always `mode: restart`** for motion-triggered lights
 - **Combined sensors need `delay_off`**: 60s minimum to prevent double-fires
