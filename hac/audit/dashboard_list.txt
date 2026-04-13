@@ -1,0 +1,14 @@
+/homeassistant/.storage/lovelace.arriving_home
+/homeassistant/.storage/lovelace.ella_living_room
+/homeassistant/.storage/lovelace.energy_costs
+/homeassistant/.storage/lovelace.garage
+/homeassistant/.storage/lovelace.garage_control
+/homeassistant/.storage/lovelace.kitchen_wall_v2
+/homeassistant/.storage/lovelace.living_room
+/homeassistant/.storage/lovelace.lovelace
+/homeassistant/.storage/lovelace.samsung_ha_dashboard.backup_20251113_204301
+/homeassistant/.storage/lovelace_dashboards
+/homeassistant/.storage/lovelace_dashboards.backup_20260120_165646
+/homeassistant/.storage/lovelace_dashboards.backup_20260120_193929
+/homeassistant/.storage/lovelace_resources
+/homeassistant/.storage/lovelace_resources.backup

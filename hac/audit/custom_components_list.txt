@@ -1,0 +1,12 @@
+adaptive_lighting
+alexa_media
+battery_notes
+hacs
+kumo_cloud
+localtuya
+mass_queue
+navien_water_heater
+nodered
+tuya_local
+ui_lovelace_minimalist
+yamaha_ynca

@@ -1,0 +1,203 @@
+# Standard Configuration
+default_config:
+homeassistant:
+  external_url: "https://homeassistant.myhomehub13.xyz"
+  internal_url: "http://homeassistant.local:8123"
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+frontend:
+  extra_module_url:
+    - /hacsfiles/Bubble-Card/bubble-pop-up-fix.js
+history:
+logbook:
+map:
+sun:
+
+# CONSOLIDATED TEMPLATES
+template:
+  - binary_sensor:
+      - name: "Family Home WiFi"
+        unique_id: family_home_wifi_presence
+        device_class: presence
+        state: >
+          {{ is_state('sensor.alainas_iphone_ssid_2', 'Spencer') or 
+             is_state('binary_sensor.johns_phone_static', 'on') or
+             is_state('binary_sensor.ellas_phone_static', 'on') }}
+      
+      - name: "Michelle Present"
+        unique_id: michelle_present_presence
+        device_class: presence
+        state: "{{ is_state('binary_sensor.michelle_phone_presence', 'on') }}"
+      
+      - name: "Anyone Home"
+        unique_id: anyone_home_presence
+        device_class: presence
+        state: >
+          {{ is_state('person.john_spencer', 'home') or 
+             is_state('person.michelle', 'home') or 
+             is_state('person.alaina_spencer', 'home') or 
+             is_state('person.ella_spencer', 'home') }}
+  
+  - sensor:
+      - name: "2nd Floor AP Clients"
+        unique_id: 2nd_floor_ap_clients
+        state: >
+          {% set devices = ['device_tracker.alaina_s_iphone','device_tracker.ellas_iphone','device_tracker.galaxy_s26_ultra'] %}
+          {{ devices | select('is_state', 'home') | list | count }}
+        unit_of_measurement: "devices"
+
+# Includes
+# Handmade YAML automations
+automation manual: !include_dir_merge_list automations/
+
+# UI-created automations (blueprints work here)
+automation ui: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# HTTP Configuration
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+    - 172.0.0.0/8
+    - 127.0.0.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 3
+
+# Homeassistant Configuration
+# Adaptive Lighting
+adaptive_lighting: !include adaptive_lighting.yaml
+
+# Scene Index Helpers (CONSOLIDATED - NO DUPLICATES)
+input_number:
+  entry_room_scene_index:
+    name: Entry Room Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  bathroom_scene_index:
+    name: Bathroom Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  kitchen_lounge_scene_index:
+    name: Kitchen Lounge Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+  kitchen_table_scene_index:
+    name: Kitchen Table Scene Index
+    min: 0
+    max: 9
+    step: 1
+    initial: 0
+    mode: box
+
+# Input booleans - all defined in separate file
+input_boolean: !include input_boolean.yaml
+
+# Mobile Dashboard
+lovelace:
+  mode: storage
+  dashboards:
+    lovelace-kitchen-tablet:
+      mode: yaml
+      title: Kitchen Tablet
+      filename: dashboards/lovelace-kitchen-tablet.yaml
+      show_in_sidebar: true
+      icon: mdi:tablet
+    lovelace-mobile:
+      mode: yaml
+      title: Mobile
+      icon: mdi:cellphone
+      show_in_sidebar: true
+      filename: dashboards/lovelace-mobile.yaml
+    lovelace-climate:
+      mode: yaml
+      title: Climate Command
+      icon: mdi:thermostat
+      show_in_sidebar: true
+      filename: dashboards/lovelace-climate.yaml
+
+group: !include groups.yaml
+
+
+# Ella's Ceiling Lights Group
+light:
+  - platform: group
+    name: "Ella's Ceiling Lights"
+    unique_id: ella_ceiling_lights_group
+    entities:
+      - light.ella_s_ceiling_light_1_of_3
+      - light.ella_s_ceiling_light_2_of_3
+      - light.ella_s_ceiling_light_3_of_3
+
+# Trusted networks for tablet auto-login
+auth:
+  auth_providers:
+    - type: homeassistant
+input_select: !include input_select.yaml
+input_datetime: !include input_datetime.yaml
+counter: !include counter.yaml
+timer: !include timer.yaml
+
+# HAC Master Context Excel Auto-Export
+shell_command:
+  hac_export: 'bash -c "cd /config/hac && ./hac.sh export"'
+  git_status: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -20"'
+  git_last_commit: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1"'
+  read_critical_rules: 'bash -c "timeout 15 cat /config/hac/CRITICAL_RULES_CORE.md"'
+  read_critical_rules_full: 'cat /config/hac/CRITICAL_RULES.md'
+  read_handoff: 'cat /config/hac/HANDOFF.md'
+  mcp_session_init: 'bash -c "echo === GIT PENDING === && cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -10 && echo === LAST COMMIT === && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === DISK === && df -h / | tail -1"'
+  git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
+
+packages: !include_dir_named packages
+
+# Recorder - optimized retention and exclusions
+recorder:
+  purge_keep_days: 3
+  commit_interval: 30
+  exclude:
+    domains:
+      - update
+    entity_globs:
+      - sensor.*_battery_level
+      - sensor.*_battery
+      - sensor.*_linkquality
+      - sensor.*_lqi
+      - sensor.*_rssi
+      - sensor.*_signal_strength
+      - number.*_level
+      - number.*_timer
+      - number.*_delay
+      - number.*_timeout
+      - number.*_temperature_offset
+      - number.*_local_protection
+      - number.*_remote_protection
+      - sensor.*_voltage
+      - sensor.*_power_factor
+      - sensor.*_device_temperature
+      - button.*_identify
+      - button.*_ping
+      - cover.ratgdo*
+      - sensor.ratgdo*
+      - device_tracker.*
+      - weather.*
+    entities:
+      - sun.sun
+      - sensor.sun_next_dawn
+      - sensor.sun_next_dusk
+      - sensor.sun_next_midnight
+      - sensor.sun_next_noon
+      - sensor.sun_next_rising
+      - sensor.sun_next_setting
+      - sensor.sun_solar_elevation
+      - sensor.sun_solar_azimuth
