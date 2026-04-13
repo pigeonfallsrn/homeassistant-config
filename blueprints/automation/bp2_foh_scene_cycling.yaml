@@ -1,0 +1,132 @@
+blueprint:
+  name: FOH Scene Cycling (Hue Events)
+  description: >
+    Cycles through Hue scenes on button press from FOH click switches or
+    Hue dimmer remotes. Uses hue_event triggers from the Hue Bridge.
+    Tracks position with an input_number helper. Resets Adaptive Lighting
+    manual control when returning to the adaptive scene (index 0).
+  domain: automation
+  author: S13B Migration
+  input:
+    foh_device_id:
+      name: FOH Switch / Hue Dimmer Device
+      description: The device_id of the FOH switch or Hue dimmer
+      selector:
+        device:
+          integration: hue
+    scene_list:
+      name: Scene List (ordered)
+      description: >
+        Ordered list of scene names. Index 0 = Adaptive (resets AL).
+        Example: [Adaptive, Bright, Relax, Nightlight, Off]
+      selector:
+        object:
+    scene_index_helper:
+      name: Scene Index Helper
+      description: input_number that tracks current scene position
+      selector:
+        entity:
+          domain: input_number
+    hue_group:
+      name: Hue Light Group
+      description: The Hue room/zone group entity
+      selector:
+        entity:
+          domain: light
+    al_switch:
+      name: Adaptive Lighting Switch (optional)
+      description: switch.adaptive_lighting_xxx for this room
+      default: ""
+      selector:
+        entity:
+          domain: switch
+    cycle_button:
+      name: Cycle Forward Button subtype
+      default: button_1
+      selector:
+        text:
+    off_button:
+      name: Off Button subtype (optional)
+      default: button_4
+      selector:
+        text:
+    reverse_button:
+      name: Cycle Backward Button subtype (optional)
+      default: ""
+      selector:
+        text:
+mode: restart
+trigger:
+  - platform: event
+    event_type: hue_event
+    event_data:
+      device_id: !input foh_device_id
+variables:
+  scene_list: !input scene_list
+  scene_count: "{{ scene_list | length }}"
+  current_index: "{{ states(input_scene_index) | int(0) }}"
+  input_scene_index: !input scene_index_helper
+  al_switch_id: !input al_switch
+  cycle_btn: !input cycle_button
+  off_btn: !input off_button
+  reverse_btn: !input reverse_button
+  button_pressed: "{{ trigger.event.data.subtype }}"
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ button_pressed == cycle_btn }}"
+        sequence:
+          - variables:
+              new_index: "{{ ((current_index | int) + 1) % (scene_count | int) }}"
+              target_scene: "{{ scene_list[new_index | int] }}"
+          - service: input_number.set_value
+            target:
+              entity_id: !input scene_index_helper
+            data:
+              value: "{{ new_index }}"
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ new_index | int == 0 and al_switch_id != '' }}"
+                sequence:
+                  - service: adaptive_lighting.set_manual_control
+                    data:
+                      entity_id: "{{ al_switch_id }}"
+                      manual_control: false
+              - conditions:
+                  - condition: template
+                    value_template: "{{ target_scene == 'Off' }}"
+                sequence:
+                  - service: light.turn_off
+                    target:
+                      entity_id: !input hue_group
+      - conditions:
+          - condition: template
+            value_template: "{{ off_btn != '' and button_pressed == off_btn }}"
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: !input hue_group
+          - service: input_number.set_value
+            target:
+              entity_id: !input scene_index_helper
+            data:
+              value: 0
+          - condition: template
+            value_template: "{{ al_switch_id != '' }}"
+          - service: adaptive_lighting.set_manual_control
+            data:
+              entity_id: "{{ al_switch_id }}"
+              manual_control: false
+      - conditions:
+          - condition: template
+            value_template: "{{ reverse_btn != '' and button_pressed == reverse_btn }}"
+        sequence:
+          - variables:
+              new_index: "{{ ((current_index | int) - 1) % (scene_count | int) }}"
+          - service: input_number.set_value
+            target:
+              entity_id: !input scene_index_helper
+            data:
+              value: "{{ new_index }}"
