@@ -354,14 +354,11 @@ automation:
         event_type: zha_event
         event_data:
           device_ieee: "20:a7:16:ff:fe:01:8c:b8"
-    condition:
-      - condition: template
-        value_template: "{{ trigger.event.data.button | default('') != '' }}"
     action:
-      - choose:
+- choose:
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.button == 'button_2' and trigger.event.data.press_type == 'press' }}"
+                value_template: "{{ trigger.event.data.command == 'button_2_press' }}"
             sequence:
               - action: scene.turn_on
                 target:
@@ -371,7 +368,7 @@ automation:
                   entity_id: scene.2nd_floor_vanity_lights_energize
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.button == 'button_1' and trigger.event.data.press_type == 'press' }}"
+                value_template: "{{ trigger.event.data.command == 'button_1_press' }}"
             sequence:
               - action: light.turn_off
                 target:
@@ -380,7 +377,7 @@ automation:
                     - light.2nd_floor_bathroom_vanity_lights
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.button == 'button_2' and trigger.event.data.press_type == 'held_down' }}"
+                value_template: "{{ trigger.event.data.command == 'button_2_held_down' }}"
             sequence:
               - action: light.turn_on
                 target:
@@ -391,7 +388,7 @@ automation:
                   brightness_step_pct: 10
           - conditions:
               - condition: template
-                value_template: "{{ trigger.event.data.button == 'button_1' and trigger.event.data.press_type == 'held_down' }}"
+                value_template: "{{ trigger.event.data.command == 'button_1_held_down' }}"
             sequence:
               - action: light.turn_on
                 target:
