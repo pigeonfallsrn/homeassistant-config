@@ -1,0 +1,289 @@
+kitchen_play_chill:
+  alias: Kitchen - Play Chill Music
+  icon: mdi:music
+  sequence:
+  - action: music_assistant.play_media
+    target:
+      entity_id: media_player.kitchen_2
+    data:
+      media_id: 37i9dQZF1DWZd79rJ6a7lp
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
+kitchen_play_dinner:
+  alias: Kitchen - Play Dinner Music
+  icon: mdi:silverware-fork-knife
+  sequence:
+  - action: music_assistant.play_media
+    target:
+      entity_id: media_player.kitchen_2
+    data:
+      media_id: 37i9dQZF1DX4wta20PHgwo
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
+kitchen_play_kids:
+  alias: Kitchen - Play Kids Music
+  icon: mdi:balloon
+  sequence:
+  - action: music_assistant.play_media
+    target:
+      entity_id: media_player.kitchen_2
+    data:
+      media_id: 37i9dQZF1DX6RQTY0gGbeh
+      media_type: playlist
+      enqueue: replace
+      radio_mode: true
+kitchen_sonos_stop:
+  alias: Kitchen - Stop Music
+  icon: mdi:stop
+  sequence:
+  - service: media_player.media_stop
+    target:
+      entity_id:
+      - media_player.kitchen_sonos_beam
+      - media_player.kitchen_echo_show
+living_room_movie_mode:
+  alias: Living Room Movie Mode
+  description: Set up living room for movie watching - AVR on, dim lights, TV backlight
+  icon: mdi:movie-open
+  mode: single
+  sequence:
+  - parallel:
+    - sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+      - delay:
+          seconds: 2
+      - action: media_player.select_source
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          source: AV1
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          volume_level: 0.4
+      - action: media_player.select_sound_mode
+        target:
+          entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+        data:
+          sound_mode: Surround Decoder
+    - action: switch.turn_on
+      target:
+        entity_id: switch.living_room_subwoofer_plug
+    - action: scene.turn_on
+      target:
+        entity_id: scene.living_room_floor_lamps_rest
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room_table_lamps
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_tv_led_strip
+      data:
+        brightness_pct: 30
+fire_tv_youtube:
+  alias: Fire TV - Open YouTube
+  icon: mdi:youtube
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: YouTube (FireTV)
+fire_tv_netflix:
+  alias: Fire TV - Open Netflix
+  icon: mdi:netflix
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: am start -n com.netflix.ninja/.MainActivity
+fire_tv_hulu:
+  alias: Fire TV - Open Hulu
+  icon: mdi:hulu
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.hulu.plus 1
+fire_tv_spotify:
+  alias: Fire TV - Open Spotify
+  icon: mdi:spotify
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: Spotify
+fire_tv_prime:
+  alias: Fire TV - Open Prime Video
+  icon: mdi:amazon
+  sequence:
+  - action: media_player.select_source
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      source: Prime Video (FireTV)
+fire_tv_peace_lutheran:
+  alias: Fire TV - Peace Lutheran Livestream
+  icon: mdi:church
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: am start -a android.intent.action.VIEW -d 'https://peacelutheranofpigeonfalls.org/LiveStream'
+fire_tv_hudl:
+  alias: Fire TV - Whitehall Norse Hudl
+  icon: mdi:basketball
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.hudl.fanexperience 1
+fire_tv_plex:
+  alias: Fire TV - Open Plex
+  icon: mdi:plex
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.plexapp.android 1
+fire_tv_hdhomerun:
+  alias: Fire TV - Open HD HomeRun
+  icon: mdi:television-classic
+  sequence:
+  - action: androidtv.adb_command
+    target:
+      entity_id: media_player.living_room_fire_tv_192_168_1_17
+    data:
+      command: monkey -p com.silicondust.view 1
+kitchen_scene_energize:
+  alias: Kitchen - Energize
+  icon: mdi:lightning-bolt
+  description: Maximum task light — full brightness cool white for prep, cooking,
+    cleanup
+  sequence:
+  - target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.kitchen_bar_pendant_lights
+    data:
+      brightness_pct: 100
+    action: light.turn_on
+  - target:
+      entity_id:
+      - light.kitchen_chandelier
+      - light.kitchen_above_sink_light
+    data:
+      brightness_pct: 100
+      kelvin: 5000
+    action: light.turn_on
+  - target:
+      entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+    data:
+      brightness_pct: 100
+      kelvin: 5000
+    action: light.turn_on
+  - target:
+      entity_id:
+      - light.kitchen_lounge
+      - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+    action: light.turn_off
+kitchen_scene_lounge:
+  alias: Kitchen Scene - Lounge
+  icon: mdi:sofa
+  sequence:
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.kitchen_bar_pendant_lights
+      - light.kitchen_chandelier
+      - light.kitchen_above_sink_light
+      - light.kitchen_under_cabinet_aqara_t1_led_strip
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_lounge_ceiling_1of2
+    data:
+      brightness_pct: 50
+      color_temp_kelvin: 2700
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_lounge_ceiling_2of2
+    data:
+      brightness_pct: 50
+      color_temp_kelvin: 2700
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_lounge_lamp
+    data:
+      brightness_pct: 60
+      color_temp_kelvin: 2500
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_lounge_light_fan_inovelli_vzm36_light
+    data:
+      brightness_pct: 40
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_govee_floor_lamp
+    data:
+      brightness_pct: 60
+kitchen_scene_movie_night:
+  alias: Kitchen Scene - Movie Night
+  icon: mdi:movie-open
+  description: Recreated S10-C from kitchen_tablet_dashboard.yaml backup. Overheads
+    off, chandelier + above-sink dim warm.
+  sequence:
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.above_kitchen_sink_inovelli_switch
+      - light.kitchen_bar_pendant_lights
+      - light.kitchen_under_cabinet_aqara_t1_led_strip
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_chandelier
+    data:
+      brightness_pct: 12
+      color_temp_kelvin: 2200
+      transition: 2
+  - action: light.turn_on
+    target:
+      entity_id: light.kitchen_above_sink_light
+    data:
+      brightness_pct: 12
+      color_temp_kelvin: 2200
+      transition: 2
+kitchen_scene_all_on:
+  alias: Kitchen Scene - All On
+  description: Recreated S10-C from kitchen_tablet_dashboard.yaml backup. All kitchen
+    lights 100%. SBM chandelier Inovelli excluded (Smart Bulb Mode).
+  icon: mdi:lightbulb-on
+  sequence:
+  - action: light.turn_on
+    data:
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.kitchen_ceiling_inovelli_vzm31_sn
+      - light.above_kitchen_sink_inovelli_switch
+      - light.kitchen_lounge_light_fan_inovelli_vzm36_light
+      - light.kitchen_lounge_inovelli_smart_dimmer
+  - action: light.turn_on
+    data:
+      brightness_pct: 100
+    target:
+      entity_id:
+      - light.kitchen_chandelier
+      - light.kitchen_above_sink_light

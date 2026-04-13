@@ -1,0 +1,358 @@
+# ============================================================================
+# INPUT BOOLEAN HELPERS - GOLD STANDARD CONFIGURATION
+# ============================================================================
+house_sleep_mode:
+  name: Sleep Mode
+  icon: mdi:sleep
+  initial: false
+
+house_guest_mode:
+  name: Guest Mode
+  icon: mdi:account-multiple
+  initial: false
+
+house_vacation_mode:
+  name: Vacation Mode
+  icon: mdi:airplane
+  initial: false
+
+house_cleaning_mode:
+  name: Cleaning Mode
+  icon: mdi:broom
+  initial: false
+
+party_mode:
+  name: Party Mode
+  icon: mdi:party-popper
+  initial: false
+
+dad_awake:
+  name: Dad Awake
+  icon: mdi:account-check
+  initial: false
+
+dad_bedtime_mode:
+  name: Dad Bedtime Mode
+  icon: mdi:sleep
+  initial: false
+
+notification_quiet_hours:
+  name: Quiet Hours Active
+  icon: mdi:volume-off
+  initial: false
+
+notification_critical_only:
+  name: Critical Alerts Only
+  icon: mdi:alert-octagon
+  initial: false
+
+routine_good_morning_active:
+  name: Good Morning Routine Active
+  icon: mdi:weather-sunset-up
+  initial: false
+
+routine_good_night_active:
+  name: Good Night Routine Active
+  icon: mdi:weather-sunset-down
+  initial: false
+
+routine_leaving_home_active:
+  name: Leaving Home Routine Active
+  icon: mdi:exit-run
+  initial: false
+
+routine_arriving_home_active:
+  name: Arriving Home Routine Active
+  icon: mdi:home-import-outline
+  initial: false
+
+garage_auto_close_enabled:
+  name: Garage Auto-Close Enabled
+  icon: mdi:garage
+  initial: true
+
+garage_auto_open_enabled:
+  name: Garage Auto-Open Enabled
+  icon: mdi:garage-open
+  initial: true
+
+garage_alert_acknowledged:
+  name: Garage Alert Acknowledged
+  icon: mdi:bell-off
+  initial: false
+
+entry_room_manual_override:
+  name: Entry Room Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+bathroom_1st_floor_manual_override:
+  name: 1st Floor Bathroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+bathroom_2nd_floor_manual_override:
+  name: 2nd Floor Bathroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+kitchen_manual_override:
+  name: Kitchen Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+kitchen_lounge_manual_override:
+  name: Kitchen Lounge Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+living_room_manual_override:
+  name: Living Room Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+master_bedroom_manual_override:
+  name: Master Bedroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+kids_bedroom_manual_override:
+  name: Kids Bedroom Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+garage_manual_override:
+  name: Garage Manual Override
+  icon: mdi:hand-back-right
+  initial: false
+
+bathroom_fan_pause_low_humidity:
+  name: Pause Bathroom Fan (Low Humidity)
+  icon: mdi:fan-off
+  initial: false
+
+
+bathroom_2nd_floor_fan_manual_override:
+  name: 2nd Floor Bathroom Fan Manual Override
+  icon: mdi:fan-alert
+  initial: false
+
+water_valve_auto_shutoff:
+  name: Auto Shutoff Water Valve on Leak
+  icon: mdi:water-off
+  initial: true
+
+security_alerts_enabled:
+  name: Security Alerts Enabled
+  icon: mdi:shield-home
+  initial: true
+
+door_open_alerts_enabled:
+  name: Door Open Alerts Enabled
+  icon: mdi:door-open
+  initial: true
+
+ai_context_pending:
+  name: AI Context Update Pending
+  icon: mdi:brain
+  initial: false
+
+maintenance_mode:
+  name: Maintenance Mode
+  icon: mdi:tools
+  initial: false
+notification_cooldown_minutes:
+  name: Notification Cooldown
+  min: 0
+  max: 120
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:timer-sand
+  initial: 15
+
+manual_override_timeout_minutes:
+  name: Manual Override Auto-Release Timeout
+  min: 15
+  max: 480
+  step: 15
+  unit_of_measurement: "min"
+  icon: mdi:timer
+  initial: 60
+
+adaptive_lighting_transition_seconds:
+  name: Adaptive Lighting Transition Time
+  min: 0
+  max: 60
+  step: 1
+  unit_of_measurement: "s"
+  icon: mdi:transition
+  initial: 1
+
+bathroom_fan_pause_hours:
+  name: Bathroom Fan Pause Duration
+  min: 1
+  max: 12
+  step: 1
+  unit_of_measurement: "hours"
+  icon: mdi:fan-clock
+  initial: 4
+
+bathroom_fan_runtime_minutes:
+  name: Bathroom Fan Auto-Off Timer
+  min: 5
+  max: 60
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:fan-clock
+  initial: 20
+
+garage_auto_close_delay_minutes:
+  name: Garage Auto-Close Delay
+  min: 1
+  max: 30
+  step: 1
+  unit_of_measurement: "min"
+  icon: mdi:garage-variant
+  initial: 10
+
+garage_open_alert_delay_minutes:
+  name: Garage Open Alert Delay
+  min: 5
+  max: 60
+  step: 5
+  unit_of_measurement: "min"
+  icon: mdi:garage-alert
+  initial: 15
+
+guest_mode_auto_disable_hours:
+  name: Guest Mode Auto-Disable After
+  min: 4
+  max: 72
+  step: 4
+  unit_of_measurement: "hours"
+  icon: mdi:account-clock
+  initial: 24
+house_mode:
+  name: House Mode
+  options:
+    - Normal
+    - Sleep
+    - Away
+    - Vacation
+    - Guest
+    - Party
+    - Cleaning
+    - Maintenance
+  icon: mdi:home-variant
+  initial: Normal
+
+alarm_mode:
+  name: Alarm Mode
+  options:
+    - Disarmed
+    - Armed Home
+    - Armed Away
+    - Armed Night
+  icon: mdi:shield-home
+  initial: Disarmed
+
+adaptive_lighting_mode:
+  name: Adaptive Lighting Mode
+  options:
+    - Auto
+    - Manual
+    - Sleep
+    - Bright
+    - Circadian
+  icon: mdi:lightbulb-auto
+  initial: Auto
+last_good_morning_routine:
+  name: Last Good Morning Routine
+  has_date: true
+  has_time: true
+  icon: mdi:weather-sunset-up
+
+last_good_night_routine:
+  name: Last Good Night Routine
+  has_date: true
+  has_time: true
+  icon: mdi:weather-sunset-down
+
+last_garage_open_time:
+  name: Last Garage Opened
+  has_date: true
+  has_time: true
+  icon: mdi:garage-open
+
+last_garage_close_time:
+  name: Last Garage Closed
+  has_date: true
+  has_time: true
+  icon: mdi:garage
+
+last_critical_alert_sent:
+  name: Last Critical Alert
+  has_date: true
+  has_time: true
+  icon: mdi:alert
+
+last_garage_alert_sent:
+  name: Last Garage Alert
+  has_date: true
+  has_time: true
+  icon: mdi:garage-alert
+
+last_manual_override_entry_room:
+  name: Entry Room Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit
+
+last_manual_override_kitchen:
+  name: Kitchen Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit
+
+last_manual_override_living_room:
+  name: Living Room Last Manual Change
+  has_date: true
+  has_time: true
+  icon: mdi:clock-edit
+garage_light:
+  name: Garage Light Timer
+  duration: "00:15:00"
+  icon: mdi:lightbulb-outline
+  
+guest_mode_auto_disable:
+  name: Guest Mode Auto-Disable Timer
+  duration: "24:00:00"
+  icon: mdi:account-clock
+  
+manual_override_timeout:
+  name: Manual Override Timeout
+  duration: "01:00:00"
+  icon: mdi:timer-off
+garage_opens_today:
+  name: Garage Opens Today
+  icon: mdi:garage-variant
+  initial: 0
+  step: 1
+  
+doorbell_rings_today:
+  name: Doorbell Rings Today
+  icon: mdi:doorbell
+  initial: 0
+  step: 1
+  
+motion_events_today:
+  name: Motion Events Today
+  icon: mdi:motion-sensor
+  initial: 0
+  step: 1
+  
+critical_alerts_today:
+  name: Critical Alerts Today
+  icon: mdi:alert
+  initial: 0
+  step: 1
