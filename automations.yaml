@@ -2146,15 +2146,6 @@
     action: notify.mobile_app_john_s_s26_ultra
   max_exceeded: silent
   mode: restart
-- id: '1775269879608'
-  alias: TEMP - Git Push to GitHub
-  description: One-time automation to push git commits. Delete after use.
-  triggers:
-  - platform: event
-    event_type: TRIGGER_GIT_PUSH
-  actions:
-  - action: shell_command.git_push_to_github
-  mode: single
 - id: kitchen_manual_override_inovelli_trigger
   alias: Kitchen Manual Override — Inovelli 2x Tap Set
   description: Double-tap UP on kitchen chandelier or above-sink Inovelli switch sets

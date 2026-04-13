@@ -1,0 +1,80 @@
+# EQ14 Beelink — Minimal Configuration (UI-First)
+# Only YAML-required sections remain. Everything else is UI-managed.
+# Created: S13 | Last updated: 2026-04-13
+
+default_config:
+
+homeassistant:
+  external_url: "https://ha.myhomehub13.xyz"
+  internal_url: "http://homeassistant.local:8123"
+
+frontend:
+  extra_module_url:
+    - /hacsfiles/Bubble-Card/bubble-pop-up-fix.js
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+    - 172.0.0.0/8
+    - 127.0.0.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 3
+
+auth:
+  auth_providers:
+    - type: homeassistant
+
+shell_command:
+  hac_export: 'bash -c "cd /homeassistant/hac && ./hac.sh export"'
+  git_status: 'bash -c "cd /homeassistant && GIT_TERMINAL_PROMPT=0 git log --oneline -2 2>&1"'
+  git_last_commit: 'bash -c "cd /homeassistant && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1"'
+  read_critical_rules: 'bash -c "timeout 15 cat /homeassistant/hac/CRITICAL_RULES_CORE.md"'
+  read_critical_rules_full: 'cat /homeassistant/hac/CRITICAL_RULES.md'
+  read_handoff: 'cat /homeassistant/hac/HANDOFF.md'
+  mcp_session_init: 'bash -c "echo === GIT STATUS === && cd /homeassistant && GIT_TERMINAL_PROMPT=0 git log --oneline -2 2>&1 && echo === DISK === && df -h / | tail -1"'
+  git_push: 'bash -c "cd /homeassistant && GIT_TERMINAL_PROMPT=0 git push origin main 2>&1"'
+
+recorder:
+  purge_keep_days: 3
+  commit_interval: 30
+  exclude:
+    domains:
+      - update
+    entity_globs:
+      - sensor.*_battery_level
+      - sensor.*_battery
+      - sensor.*_linkquality
+      - sensor.*_lqi
+      - sensor.*_rssi
+      - sensor.*_signal_strength
+      - number.*_level
+      - number.*_timer
+      - number.*_delay
+      - number.*_timeout
+      - number.*_temperature_offset
+      - number.*_local_protection
+      - number.*_remote_protection
+      - sensor.*_voltage
+      - sensor.*_power_factor
+      - sensor.*_device_temperature
+      - button.*_identify
+      - button.*_ping
+      - cover.ratgdo*
+      - sensor.ratgdo*
+      - device_tracker.*
+      - weather.*
+    entities:
+      - sun.sun
+      - sensor.sun_next_dawn
+      - sensor.sun_next_dusk
+      - sensor.sun_next_midnight
+      - sensor.sun_next_noon
+      - sensor.sun_next_rising
+      - sensor.sun_next_setting
+      - sensor.sun_solar_elevation
+      - sensor.sun_solar_azimuth
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
