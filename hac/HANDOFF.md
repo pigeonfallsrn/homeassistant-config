@@ -1,32 +1,35 @@
-# HANDOFF — Session S16A
-Date: 2026-04-13
-Status: IN PROGRESS — S16B continues next session
+# HANDOFF — Session S16B
+Date: 2026-04-14
 
 ## Completed This Session
-- hac symlink recreated on EQ14
-- Cloudflared 7.0.5 installed on EQ14 via custom repo (brenner-tobias/ha-addons)
-- cert.pem obtained via Cloudflare browser auth (Authorize Tunnel flow)
-- New tunnel: 61f4b989-377f-4966-8111-c077d33f6248 (4 connections, ord06/11/12/16)
-- ha.myhomehub13.xyz CNAME updated → EQ14 tunnel — CONFIRMED WORKING
-- Cloudflared stopped on Green (was slug 9074a9fa_cloudflared)
+- Confirmed EQ14 amd64 at 192.168.1.10, HAOS 17.2, git on main
+- NAS_Backups CIFS mount connected (192.168.1.52:Backups)
+- Daily backup configured: keep 7, NAS_Backups + local
+- Backup encryption key saved to NordPass + GoogleDrive/Home Assistant/Backups/
+- application_credentials restored (Google, Nest, Spotify OAuth)
+- Google Calendar re-authenticated
+- Google Nest working (6 devices)
+- Spotify working
+- Alexa Media Player working (23 devices)
+- Piper + Whisper + Music Assistant add-ons installed and running
+- Wyoming Protocol now connected (2 entries)
+- John mobile app logged in (Galaxy S26 Ultra, ha.myhomehub13.xyz)
+- HA password reset (username: John), saved in NordPass
+- People created: Alaina Spencer, Ella Spencer, Michelle, Jarrett, Owen, Jean, Traci
+- Alaina + Ella login accounts created (usernames: alaina, ella)
 
-## S16B — Start Here Next Session
-VERIFY FIRST: System health shows amd64 + 192.168.1.10 (not aarch64/Green)
+## Still Failing / Deferred
+- Roku: Kitchen Lounge TV offline (wrong IP or powered off)
+- TP-Link: garage receiver HS100 at stale IP 192.168.1.89
+- Yamaha: stuck Initializing (AVR powered off, smart plug offline)
+- Music Assistant: needs setup at http://192.168.1.10:8095/setup (defer Group 9)
+- Android Debug Bridge: Living Room Fire TV (defer Group 9)
+- Voice pipeline config: Piper/Whisper installed, routing to speakers deferred
 
-1. Fix NAS_Backups CIFS mount on EQ14
-   Settings → System → Storage → NAS_Backups → reconfigure
-   Host: 192.168.1.52 | Share: Backups | User: HA_Synology | Pass: NordPass
-
-2. Configure daily backup: keep 7, destination NAS_Backups
-
-3. Phase 6 Integrations (priority order):
-   - Hue Bridge (3-sec button press)
-   - ESPHome: ratgdo North (fd8d8c), ratgdo South (5735e8), Apollo Entry (748020)
-   - Google Calendar + Nest (pigeonfallsrn@gmail.com)
-   - UniFi + UniFi Protect
-   - Spotify, Plex, Roku x2, Yamaha, TP-Link Kasa, Sonos, Alexa
-
-## Hardware State
-- EQ14 (192.168.1.10): PRIMARY — Cloudflared running, tunnel active
-- Green (192.168.1.3): COLD SPARE — Cloudflared stopped, ZHA offline
-- NAS (192.168.1.52): NAS_Backups mount still failing on EQ14 (fix in S16B)
+## Next Session (S17)
+- Fix Roku Kitchen Lounge TV IP
+- Fix TP-Link HS100 stale IP
+- Fix Yamaha (power on AVR via plug)
+- Alaina + Ella iPhones: install HA app, log in
+- Phase 8: Blueprint library (Rohan, FOH, Motion Lighting)
+- Begin Group 0: Areas, floors, labels, presence setup
