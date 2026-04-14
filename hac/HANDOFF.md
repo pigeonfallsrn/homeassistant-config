@@ -1,30 +1,32 @@
-# HANDOFF — Session S15
-## ZHA Migration — Green → EQ14
+# HANDOFF — Session S16A
 Date: 2026-04-13
+Status: IN PROGRESS — S16B continues next session
 
-## STATUS: COMPLETE ✅
+## Completed This Session
+- hac symlink recreated on EQ14
+- Cloudflared 7.0.5 installed on EQ14 via custom repo (brenner-tobias/ha-addons)
+- cert.pem obtained via Cloudflare browser auth (Authorize Tunnel flow)
+- New tunnel: 61f4b989-377f-4966-8111-c077d33f6248 (4 connections, ord06/11/12/16)
+- ha.myhomehub13.xyz CNAME updated → EQ14 tunnel — CONFIRMED WORKING
+- Cloudflared stopped on Green (was slug 9074a9fa_cloudflared)
 
-## What was accomplished
-- Git repo cloned to EQ14 /homeassistant, main branch, push confirmed working
-- zigbee.db + zigbee.db-shm + zigbee.db-wal copied from Green via Python HTTP server
-- core.config_entries, core.device_registry, core.entity_registry copied from Green
-- Sonoff Zigbee USB dongle physically moved Green → EQ14
-- ZHA loaded on EQ14: 52 devices, 1193 entities — all devices present, no re-pairing needed
-- HA Core 2026.4.2 running on HAOS 17.2
+## S16B — Start Here Next Session
+VERIFY FIRST: System health shows amd64 + 192.168.1.10 (not aarch64/Green)
 
-## Known issues (do not fix now)
-- NAS_Backups not mounted on EQ14 (CIFS auth not configured) — fix in next session
-- Alexa Media Player needs reauth — Phase 6
-- Google Calendar, Nest, Spotify, Roku, TP-Link, Wyoming — all need reauth — Phase 6
-- MCP still pointing to Green (ha.myhomehub13.xyz) — update Cloudflare tunnel next session
+1. Fix NAS_Backups CIFS mount on EQ14
+   Settings → System → Storage → NAS_Backups → reconfigure
+   Host: 192.168.1.52 | Share: Backups | User: HA_Synology | Pass: NordPass
 
-## Next session: S16
-1. Fix NAS_Backups CIFS mount on EQ14 (get correct password from NordPass)
-2. Update Cloudflare tunnel to point to EQ14 (192.168.1.10)
-3. Verify MCP connects to EQ14
-4. Configure daily backup to NAS
-5. Begin Phase 6 — integrations reauth (Hue Bridge first)
+2. Configure daily backup: keep 7, destination NAS_Backups
 
-## Green status
-- ZHA offline (dongle removed) — Green is now cold spare only
-- Keep Green powered but do NOT re-enable ZHA on Green
+3. Phase 6 Integrations (priority order):
+   - Hue Bridge (3-sec button press)
+   - ESPHome: ratgdo North (fd8d8c), ratgdo South (5735e8), Apollo Entry (748020)
+   - Google Calendar + Nest (pigeonfallsrn@gmail.com)
+   - UniFi + UniFi Protect
+   - Spotify, Plex, Roku x2, Yamaha, TP-Link Kasa, Sonos, Alexa
+
+## Hardware State
+- EQ14 (192.168.1.10): PRIMARY — Cloudflared running, tunnel active
+- Green (192.168.1.3): COLD SPARE — Cloudflared stopped, ZHA offline
+- NAS (192.168.1.52): NAS_Backups mount still failing on EQ14 (fix in S16B)
