@@ -101,7 +101,7 @@ input_number:
     mode: box
 
 # Input booleans - all defined in separate file
-input_boolean: !include input_boolean.yaml
+# input_boolean: !include input_boolean.yaml
 
 # Mobile Dashboard
 lovelace:

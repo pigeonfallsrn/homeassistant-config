@@ -1,259 +1,222 @@
-# ============================================================================
-# Smart Humidity Alerts
-# Created: 2026-01-25
-# 
-# NEW LOGIC: Only notify when shower is detected (humidity rising) AND
-# house humidity is low. Offers skip fan options.
-# Replaces hourly low humidity spam with actionable shower-time alerts.
-# ============================================================================
-
-input_boolean:
-  bathroom_fan_paused:
-    name: "Bathroom Fan Paused"
-    icon: mdi:fan-off
-
-input_datetime:
-  bathroom_fan_pause_until:
-    name: "Bathroom Fan Pause Until"
-    has_date: true
-    has_time: true
-
-template:
-  - sensor:
-      - name: "Upstairs Bathroom Humidity Trend"
-        unique_id: upstairs_bathroom_humidity_trend
-        unit_of_measurement: "%/5min"
-        state: >
-          {% set current = states('sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity') | float(0) %}
-          {% set previous = state_attr('sensor.upstairs_bathroom_humidity_trend', 'previous') | float(current) %}
-          {{ (current - previous) | round(1) }}
-        attributes:
-          previous: "{{ states('sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity') | float(0) }}"
-        icon: mdi:trending-up
-
-      - name: "Upstairs Average Humidity"
-        unique_id: upstairs_avg_humidity
-        unit_of_measurement: "%"
-        state: >
-          {% set sensors = [
-            states('sensor.2nd_floor_nest_thermostat_humidity') | float(0),
-            states('sensor.alaina_s_bedroom_aqara_temp_humidity_sensor_humidity') | float(0),
-            states('sensor.ella_s_bedroom_aqara_temp_humidity_sensor_humidity') | float(0)
-          ] | select('gt', 0) | list %}
-          {% if sensors | length > 0 %}
-            {{ (sensors | sum / sensors | length) | round(1) }}
-          {% else %}
-            0
-          {% endif %}
-        icon: mdi:water-percent
-
-  - binary_sensor:
-      - name: "Shower Detected"
-        unique_id: shower_detected
-        state: >
-          {% set bathroom_humidity = states('sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity') | float(0) %}
-          {% set trend = states('sensor.upstairs_bathroom_humidity_trend') | float(0) %}
-          {{ bathroom_humidity > 40 and trend > 3 }}
-        icon: mdi:shower
-
 automation:
-  # ===========================================================================
-  # SMART HUMIDITY ALERT - Only when shower starts AND house is dry
-  # ===========================================================================
-  - id: humidity_smart_shower_alert
-    alias: "Humidity - Smart Shower Alert (Low House Humidity)"
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.shower_detected
-        to: "on"
-    condition:
-      # House humidity is low (under 30%)
-      - condition: numeric_state
-        entity_id: sensor.upstairs_average_humidity
-        below: 30
-      # John is home
-      - condition: state
-        entity_id: person.john_spencer
-        state: "home"
-      # Fan isn't already paused
-      - condition: state
-        entity_id: input_boolean.bathroom_fan_paused
-        state: "off"
-    action:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          title: "🚿 Shower + Low Humidity"
-          message: >
-            House: {{ states('sensor.upstairs_average_humidity') }}% | 
-            Bathroom fan will dry it more. Skip fan?
-          data:
-            tag: "humidity_shower_alert"
-            ttl: 0
-            priority: high
-            timeout: 300
-            actions:
-              - action: "HUMIDITY_SKIP_10M"
-                title: "Skip 10m"
-              - action: "HUMIDITY_SKIP_30M"
-                title: "Skip 30m"
-              - action: "HUMIDITY_SKIP_12H"
-                title: "Skip 12hr"
-              - action: "HUMIDITY_DISMISS"
-                title: "Let Run"
-    mode: single
+- action:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      data:
+        actions:
+        - action: HUMIDITY_SKIP_10M
+          title: Skip 10m
+        - action: HUMIDITY_SKIP_30M
+          title: Skip 30m
+        - action: HUMIDITY_SKIP_12H
+          title: Skip 12hr
+        - action: HUMIDITY_DISMISS
+          title: Let Run
+        priority: high
+        tag: humidity_shower_alert
+        timeout: 300
+        ttl: 0
+      message: 'House: {{ states(''sensor.upstairs_average_humidity'') }}% |  Bathroom
+        fan will dry it more. Skip fan?
 
-  # ===========================================================================
-  # ACTION HANDLERS
-  # ===========================================================================
-  - id: humidity_smart_actions
-    alias: "Humidity - Smart Alert Actions"
-    trigger:
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_SKIP_10M"
+        '
+      title: 🚿 Shower + Low Humidity
+  alias: Humidity - Smart Shower Alert (Low House Humidity)
+  condition:
+  - below: 30
+    condition: numeric_state
+    entity_id: sensor.upstairs_average_humidity
+  - condition: state
+    entity_id: person.john_spencer
+    state: home
+  - condition: state
+    entity_id: input_boolean.bathroom_fan_paused
+    state: 'off'
+  id: humidity_smart_shower_alert
+  mode: single
+  trigger:
+  - entity_id: binary_sensor.shower_detected
+    platform: state
+    to: 'on'
+- action:
+  - choose:
+    - conditions:
+      - condition: trigger
         id: skip_10
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_SKIP_30M"
-        id: skip_30
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_SKIP_12H"
-        id: skip_12h
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_DISMISS"
-        id: dismiss
-      # Legacy actions from old automation
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_PAUSE_15M"
-        id: pause_15
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: "HUMIDITY_PAUSE_12H"
-        id: pause_12h_old
-    action:
-      - choose:
-          - conditions:
-              - condition: trigger
-                id: skip_10
-            sequence:
-              - action: input_boolean.turn_on
-                target:
-                  entity_id: input_boolean.bathroom_fan_paused
-              - action: input_datetime.set_datetime
-                target:
-                  entity_id: input_datetime.bathroom_fan_pause_until
-                data:
-                  datetime: "{{ now() + timedelta(minutes=10) }}"
-              - action: fan.turn_off
-                target:
-                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
-          - conditions:
-              - condition: trigger
-                id: skip_30
-            sequence:
-              - action: input_boolean.turn_on
-                target:
-                  entity_id: input_boolean.bathroom_fan_paused
-              - action: input_datetime.set_datetime
-                target:
-                  entity_id: input_datetime.bathroom_fan_pause_until
-                data:
-                  datetime: "{{ now() + timedelta(minutes=30) }}"
-              - action: fan.turn_off
-                target:
-                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
-          - conditions:
-              - condition: or
-                conditions:
-                  - condition: trigger
-                    id: skip_12h
-                  - condition: trigger
-                    id: pause_12h_old
-            sequence:
-              - action: input_boolean.turn_on
-                target:
-                  entity_id: input_boolean.bathroom_fan_paused
-              - action: input_datetime.set_datetime
-                target:
-                  entity_id: input_datetime.bathroom_fan_pause_until
-                data:
-                  datetime: "{{ now() + timedelta(hours=12) }}"
-              - action: fan.turn_off
-                target:
-                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
-          - conditions:
-              - condition: trigger
-                id: pause_15
-            sequence:
-              - action: input_boolean.turn_on
-                target:
-                  entity_id: input_boolean.bathroom_fan_paused
-              - action: input_datetime.set_datetime
-                target:
-                  entity_id: input_datetime.bathroom_fan_pause_until
-                data:
-                  datetime: "{{ now() + timedelta(minutes=15) }}"
-              - action: fan.turn_off
-                target:
-                  entity_id: fan.2nd_floor_bathroom_exhaust_fan
-      # Clear notification
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: "clear_notification"
-          data:
-            tag: "humidity_shower_alert"
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: "clear_notification"
-          data:
-            tag: "humidity_alert"
-    mode: single
-
-  # ===========================================================================
-  # UNPAUSE FAN WHEN TIME EXPIRES
-  # ===========================================================================
-  - id: humidity_fan_unpause
-    alias: "Humidity - Unpause Fan When Time Expires"
-    trigger:
-      - platform: time_pattern
-        minutes: "/1"
-    condition:
-      - condition: state
-        entity_id: input_boolean.bathroom_fan_paused
-        state: "on"
-      - condition: template
-        value_template: >
-          {{ now() > states('input_datetime.bathroom_fan_pause_until') | as_datetime }}
-    action:
-      - action: input_boolean.turn_off
+      sequence:
+      - action: input_boolean.turn_on
         target:
           entity_id: input_boolean.bathroom_fan_paused
-    mode: single
-
-  # ===========================================================================
-  # OVERRIDE FAN AUTO-ON WHEN PAUSED
-  # ===========================================================================
-  - id: humidity_fan_block_when_paused
-    alias: "Humidity - Block Fan Auto-On When Paused"
-    trigger:
-      - platform: state
-        entity_id: fan.2nd_floor_bathroom_exhaust_fan
-        to: "on"
-    condition:
-      - condition: state
-        entity_id: input_boolean.bathroom_fan_paused
-        state: "on"
-    action:
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() + timedelta(minutes=10) }}'
+        target:
+          entity_id: input_datetime.bathroom_fan_pause_until
       - action: fan.turn_off
         target:
           entity_id: fan.2nd_floor_bathroom_exhaust_fan
-    mode: single
+    - conditions:
+      - condition: trigger
+        id: skip_30
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_fan_paused
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() + timedelta(minutes=30) }}'
+        target:
+          entity_id: input_datetime.bathroom_fan_pause_until
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: skip_12h
+        - condition: trigger
+          id: pause_12h_old
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_fan_paused
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() + timedelta(hours=12) }}'
+        target:
+          entity_id: input_datetime.bathroom_fan_pause_until
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    - conditions:
+      - condition: trigger
+        id: pause_15
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_fan_paused
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() + timedelta(minutes=15) }}'
+        target:
+          entity_id: input_datetime.bathroom_fan_pause_until
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      data:
+        tag: humidity_shower_alert
+      message: clear_notification
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      data:
+        tag: humidity_alert
+      message: clear_notification
+  alias: Humidity - Smart Alert Actions
+  id: humidity_smart_actions
+  mode: single
+  trigger:
+  - event_data:
+      action: HUMIDITY_SKIP_10M
+    event_type: mobile_app_notification_action
+    id: skip_10
+    platform: event
+  - event_data:
+      action: HUMIDITY_SKIP_30M
+    event_type: mobile_app_notification_action
+    id: skip_30
+    platform: event
+  - event_data:
+      action: HUMIDITY_SKIP_12H
+    event_type: mobile_app_notification_action
+    id: skip_12h
+    platform: event
+  - event_data:
+      action: HUMIDITY_DISMISS
+    event_type: mobile_app_notification_action
+    id: dismiss
+    platform: event
+  - event_data:
+      action: HUMIDITY_PAUSE_15M
+    event_type: mobile_app_notification_action
+    id: pause_15
+    platform: event
+  - event_data:
+      action: HUMIDITY_PAUSE_12H
+    event_type: mobile_app_notification_action
+    id: pause_12h_old
+    platform: event
+- action:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.bathroom_fan_paused
+  alias: Humidity - Unpause Fan When Time Expires
+  condition:
+  - condition: state
+    entity_id: input_boolean.bathroom_fan_paused
+    state: 'on'
+  - condition: template
+    value_template: '{{ now() > states(''input_datetime.bathroom_fan_pause_until'')
+      | as_datetime }}
+
+      '
+  id: humidity_fan_unpause
+  mode: single
+  trigger:
+  - minutes: /1
+    platform: time_pattern
+- action:
+  - action: fan.turn_off
+    target:
+      entity_id: fan.2nd_floor_bathroom_exhaust_fan
+  alias: Humidity - Block Fan Auto-On When Paused
+  condition:
+  - condition: state
+    entity_id: input_boolean.bathroom_fan_paused
+    state: 'on'
+  id: humidity_fan_block_when_paused
+  mode: single
+  trigger:
+  - entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    platform: state
+    to: 'on'
+input_datetime:
+  bathroom_fan_pause_until:
+    has_date: true
+    has_time: true
+    name: Bathroom Fan Pause Until
+template:
+- sensor:
+  - attributes:
+      previous: '{{ states(''sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity'')
+        | float(0) }}'
+    icon: mdi:trending-up
+    name: Upstairs Bathroom Humidity Trend
+    state: '{% set current = states(''sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity'')
+      | float(0) %} {% set previous = state_attr(''sensor.upstairs_bathroom_humidity_trend'',
+      ''previous'') | float(current) %} {{ (current - previous) | round(1) }}
+
+      '
+    unique_id: upstairs_bathroom_humidity_trend
+    unit_of_measurement: '%/5min'
+  - icon: mdi:water-percent
+    name: Upstairs Average Humidity
+    state: "{% set sensors = [\n  states('sensor.2nd_floor_nest_thermostat_humidity')\
+      \ | float(0),\n  states('sensor.alaina_s_bedroom_aqara_temp_humidity_sensor_humidity')\
+      \ | float(0),\n  states('sensor.ella_s_bedroom_aqara_temp_humidity_sensor_humidity')\
+      \ | float(0)\n] | select('gt', 0) | list %} {% if sensors | length > 0 %}\n\
+      \  {{ (sensors | sum / sensors | length) | round(1) }}\n{% else %}\n  0\n{%\
+      \ endif %}\n"
+    unique_id: upstairs_avg_humidity
+    unit_of_measurement: '%'
+- binary_sensor:
+  - icon: mdi:shower
+    name: Shower Detected
+    state: '{% set bathroom_humidity = states(''sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity'')
+      | float(0) %} {% set trend = states(''sensor.upstairs_bathroom_humidity_trend'')
+      | float(0) %} {{ bathroom_humidity > 40 and trend > 3 }}
+
+      '
+    unique_id: shower_detected
