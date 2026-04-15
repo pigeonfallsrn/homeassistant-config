@@ -150,13 +150,13 @@ timer: !include timer.yaml
 
 # HAC Master Context Excel Auto-Export
 shell_command:
-  hac_export: 'bash -c "cd /homeassistant/hac && ./hac.sh export"'
+  hac_export: 'bash -c "cd /config/hac && ./hac.sh export"'
   git_status: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -20"'
   git_last_commit: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1"'
-  read_critical_rules: 'bash -c "timeout 15 cat /homeassistant/hac/CRITICAL_RULES_CORE.md"'
-  read_critical_rules_full: 'cat /homeassistant/hac/CRITICAL_RULES.md'
-  read_handoff: 'cat /homeassistant/hac/HANDOFF.md'
-  mcp_session_init: 'bash -c "echo === LAST COMMIT === && cd /homeassistant && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === GIT PENDING === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -5 && echo === DISK === && df -h / | tail -1 && echo === HANDOFF === && cat /homeassistant/hac/HANDOFF.md"'
+  read_critical_rules: 'bash -c "timeout 15 cat /config/hac/CRITICAL_RULES_CORE.md"'
+  read_critical_rules_full: 'cat /config/hac/CRITICAL_RULES.md'
+  read_handoff: 'cat /config/hac/HANDOFF.md'
+  mcp_session_init: 'bash -c "echo === LAST COMMIT === && cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === GIT PENDING === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -5 && echo === DISK === && df -h / | tail -1 && echo === HANDOFF === && cat /config/hac/HANDOFF.md"'
   git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
 
 packages: !include_dir_named packages
