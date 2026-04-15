@@ -239,3 +239,10 @@ Load with: shell_command.read_critical_rules_full
 - Manual backups from MCP sessions accumulate fast — 27 manual = 5.74 GB
 - Pre-migration cleanup: delete all auto + all manual except the tagged pre-migration backup ID
 - After cleanup: disk went from 89% (1.9GB free per supervisor) to 79% (5.6GB free)
+
+## PATH RULE — CRITICAL (learned S17/S18)
+Two different path contexts exist on HAOS bare metal:
+- Terminal / SSH (HAOS host): /homeassistant/hac/
+- shell_commands / HA container: /config/hac/
+Same directory, two views. NEVER use /homeassistant/ in shell_commands.
+NEVER use /config/ in terminal bash commands.
