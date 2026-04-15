@@ -2538,3 +2538,238 @@
           value: 4
   mode: queued
   max: 5
+- id: '1776295699407'
+  alias: Occupancy → Update Mode
+  description: Syncs input_select.occupancy_mode to sensor.occupancy_mode_auto when
+    any presence binary sensor changes. 30s debounce prevents flapping.
+  triggers:
+  - platform: state
+    entity_id:
+    - binary_sensor.john_home
+    - binary_sensor.alaina_home
+    - binary_sensor.ella_home
+    - binary_sensor.michelle_home
+    for:
+      seconds: 30
+  actions:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.occupancy_mode
+    data:
+      option: '{{ states(''sensor.occupancy_mode_auto'') }}'
+  mode: single
+  max_exceeded: silent
+- id: '1776295708486'
+  alias: Context → Apply on Occupancy Change
+  description: Fires both apply_lighting_context and apply_tablet_context scripts
+    whenever occupancy mode changes.
+  triggers:
+  - entity_id: input_select.occupancy_mode
+    platform: state
+  actions:
+  - action: script.apply_lighting_context
+  - action: script.apply_tablet_context
+  max_exceeded: silent
+  mode: single
+- id: '1776295713450'
+  alias: Context → Apply on Time Change
+  description: Re-runs lighting context script when time context shifts between morning/afternoon/evening/night.
+    5s debounce.
+  triggers:
+  - entity_id: sensor.time_context
+    for:
+      seconds: 5
+    platform: state
+  actions:
+  - action: script.apply_lighting_context
+  max_exceeded: silent
+  mode: single
+- id: '1776295726066'
+  alias: Context → Apply on Overlay Change
+  description: Re-runs lighting context when night vision, guest present, or kids
+    bedtime override booleans change.
+  triggers:
+  - entity_id:
+    - input_boolean.preserve_night_vision
+    - input_boolean.guest_present
+    - input_boolean.kids_bedtime_override
+    platform: state
+  actions:
+  - action: script.apply_lighting_context
+  max_exceeded: silent
+  mode: single
+- id: '1776295734409'
+  alias: Calendar → Refresh School Tomorrow
+  description: Checks master calendar for no-school events tomorrow, sets school_tomorrow
+    boolean. Runs at 17:00 daily and on HA start.
+  triggers:
+  - at: '17:00:00'
+    platform: time
+  - event: start
+    platform: homeassistant
+  actions:
+  - action: calendar.get_events
+    data:
+      start_date_time: '{{ (now() + timedelta(days=1)).strftime(''%Y-%m-%d 00:00:00'')
+        }}'
+      end_date_time: '{{ (now() + timedelta(days=1)).strftime(''%Y-%m-%d 23:59:59'')
+        }}'
+    response_variable: tomorrow_events
+    target:
+      entity_id: calendar.master_calendar
+  - variables:
+      has_no_school: '{{ tomorrow_events[''calendar.master_calendar''].events | selectattr(''summary'',
+        ''search'', ''(?i)(no school|school closed|holiday|inservice|break)'') | list
+        | length > 0 }}'
+      is_weekend: '{{ (now() + timedelta(days=1)).weekday() >= 5 }}'
+  - if:
+    - condition: template
+      value_template: '{{ has_no_school or is_weekend }}'
+    then:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.school_tomorrow
+    else:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.school_tomorrow
+  max_exceeded: silent
+  mode: single
+- id: '1776295744179'
+  alias: Calendar → Refresh School In Session Now
+  description: Checks master calendar for no-school events today, sets school_in_session_now
+    boolean. Runs hourly.
+  triggers:
+  - hours: /1
+    platform: time_pattern
+  actions:
+  - action: calendar.get_events
+    data:
+      end_date_time: '{{ now().strftime(''%Y-%m-%d 23:59:59'') }}'
+      start_date_time: '{{ now().strftime(''%Y-%m-%d 00:00:00'') }}'
+    response_variable: today_events
+    target:
+      entity_id: calendar.master_calendar
+  - variables:
+      has_no_school: '{{ today_events[''calendar.master_calendar''].events | selectattr(''summary'',
+        ''search'', ''(?i)(no school|school closed|holiday|inservice|break)'') | list
+        | length > 0 }}'
+      is_weekend: '{{ now().weekday() >= 5 }}'
+  - else:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.school_in_session_now
+    if:
+    - condition: template
+      value_template: '{{ has_no_school or is_weekend }}'
+    then:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.school_in_session_now
+  max_exceeded: silent
+  mode: single
+- id: '1776295758797'
+  alias: Family → Ella Arrived Home
+  description: Records timestamp when Ella arrives home to input_datetime.ella_last_arrived_home.
+  triggers:
+  - entity_id: binary_sensor.ella_home
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_datetime.set_datetime
+    data:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
+    target:
+      entity_id: input_datetime.ella_last_arrived_home
+  mode: single
+- id: '1776295770715'
+  alias: Family → Alaina Arrived Home
+  description: Records timestamp when Alaina arrives home to input_datetime.alaina_last_arrived_home.
+  triggers:
+  - entity_id: binary_sensor.alaina_home
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_datetime.set_datetime
+    data:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
+    target:
+      entity_id: input_datetime.alaina_last_arrived_home
+  mode: single
+- id: '1776295782994'
+  alias: Family → Ella Left for Activity
+  description: Sets ella_had_activity_today when binary_sensor.ella_at_activity becomes
+    true.
+  triggers:
+  - entity_id: binary_sensor.ella_at_activity
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.ella_had_activity_today
+  mode: single
+- id: '1776295799593'
+  alias: Family → Alaina Left for Activity
+  description: Sets alaina_had_activity_today when binary_sensor.alaina_at_activity
+    becomes true.
+  triggers:
+  - entity_id: binary_sensor.alaina_at_activity
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.alaina_had_activity_today
+  mode: single
+- id: '1776295808668'
+  alias: Family → Daily Reset
+  description: Resets 4 daily-state booleans at 4am each morning.
+  triggers:
+  - at: 04:00:00
+    platform: time
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.ella_had_activity_today
+      - input_boolean.alaina_had_activity_today
+      - input_boolean.ella_winddown_override
+      - input_boolean.alaina_winddown_override
+  mode: single
+- id: '1776295815892'
+  alias: Family → Increment Grades (New School Year)
+  description: Auto-increments grade levels for all kids on August 15 and sends a
+    notification to verify sport calendars.
+  triggers:
+  - at: 08:00:00
+    platform: time
+  conditions:
+  - condition: template
+    value_template: '{{ now().month == 8 and now().day == 15 }}'
+  actions:
+  - action: input_number.set_value
+    data:
+      value: '{{ states(''input_number.ella_grade'') | int + 1 }}'
+    target:
+      entity_id: input_number.ella_grade
+  - action: input_number.set_value
+    data:
+      value: '{{ states(''input_number.alaina_grade'') | int + 1 }}'
+    target:
+      entity_id: input_number.alaina_grade
+  - action: input_number.set_value
+    data:
+      value: '{{ states(''input_number.jarrett_grade'') | int + 1 }}'
+    target:
+      entity_id: input_number.jarrett_grade
+  - action: input_number.set_value
+    data:
+      value: '{{ states(''input_number.owen_grade'') | int + 1 }}'
+    target:
+      entity_id: input_number.owen_grade
+  - action: persistent_notification.create
+    data:
+      message: Grades auto-incremented. Verify and update sport calendars if needed.
+      title: "\U0001F392 New School Year"
+  mode: single
