@@ -159,16 +159,6 @@ automation:
       minutes: 10
     platform: state
     to: not_home
-input_select:
-  kitchen_lighting_scene:
-    icon: mdi:lightbulb-group
-    initial: 'Off'
-    name: Kitchen Lighting Scene
-    options:
-    - 'Off'
-    - Bright
-    - Dim
-    - Nightlight
 script:
   kitchen_scene_all_off:
     alias: Kitchen Scene - All Off

@@ -3,16 +3,6 @@
 # Uses ALL 5 motion sensors + adjustable timeout + time-based brightness
 # ============================================================================
 
-input_number:
-  garage_light_timeout:
-    name: Garage Light Auto-Off Timer
-    min: 3
-    max: 30
-    step: 1
-    unit_of_measurement: minutes
-    initial: 10
-    icon: mdi:timer
-
 automation:
   # === LIGHTS ON - Uses ALL motion sensors ===
   - id: garage_master_lights_on_fixed

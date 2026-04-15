@@ -144,9 +144,9 @@ auth:
   auth_providers:
     - type: homeassistant
 input_select: !include input_select.yaml
-input_datetime: !include input_datetime.yaml
-counter: !include counter.yaml
-timer: !include timer.yaml
+# input_datetime: !include input_datetime.yaml
+# counter: !include counter.yaml
+# timer: !include timer.yaml
 
 # HAC Master Context Excel Auto-Export
 shell_command:

@@ -243,15 +243,6 @@ automation:
   trigger:
   - at: 00:00:00
     platform: time
-input_datetime:
-  alaina_wake_time_override:
-    has_date: false
-    has_time: true
-    name: Alaina Wake Override
-  ella_wake_time_override:
-    has_date: false
-    has_time: true
-    name: Ella Wake Override
 script:
   alaina_gentle_wake:
     alias: Alaina Gentle Wake

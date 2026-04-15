@@ -493,15 +493,6 @@ automation:
     event_type: mobile_app_notification_action
     id: snooze_60
     platform: event
-input_number:
-  entry_room_lux_threshold:
-    icon: mdi:brightness-5
-    initial: 50
-    max: 200
-    min: 10
-    name: Entry Room Lux Threshold
-    step: 10
-    unit_of_measurement: lx
 template:
 - sensor:
   - device_class: illuminance

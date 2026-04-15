@@ -182,11 +182,6 @@ automation:
   - entity_id: fan.2nd_floor_bathroom_exhaust_fan
     platform: state
     to: 'on'
-input_datetime:
-  bathroom_fan_pause_until:
-    has_date: true
-    has_time: true
-    name: Bathroom Fan Pause Until
 template:
 - sensor:
   - attributes:

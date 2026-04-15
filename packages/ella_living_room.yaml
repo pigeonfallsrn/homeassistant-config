@@ -2,18 +2,6 @@
 # Created: 2026-03-23
 # Ella is living in the living room for ~3 months
 
-input_select:
-  ella_sleep_timer:
-    name: "Ella Sleep Timer"
-    icon: mdi:sleep
-    initial: "Off"
-    options:
-      - "Off"
-      - "15 min"
-      - "30 min"
-      - "45 min"
-      - "60 min"
-
 automation:
   - id: ella_sleep_timer_set
     alias: "Ella - Sleep Timer Set"

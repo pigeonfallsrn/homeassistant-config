@@ -6,16 +6,6 @@
 # Uses input_datetime for snooze that survives restarts
 # ============================================================================
 
-input_datetime:
-  garage_north_snooze_until:
-    name: "Garage North Snooze Until"
-    has_date: true
-    has_time: true
-  garage_south_snooze_until:
-    name: "Garage South Snooze Until"
-    has_date: true
-    has_time: true
-
 template:
   - binary_sensor:
       - name: "Garage North Door Alert Active"

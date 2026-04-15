@@ -129,18 +129,6 @@ automation:
   trigger:
   - hours: /1
     platform: time_pattern
-input_select:
-  occupancy_mode:
-    icon: mdi:home-account
-    name: Occupancy Mode
-    options:
-    - Empty
-    - John Only
-    - Kids Only
-    - John + Kids
-    - John + Michelle
-    - Full House
-    - Mixed
 script:
   apply_lighting_context:
     alias: Apply Lighting Context
