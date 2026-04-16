@@ -257,3 +257,39 @@ RULE: after MCP creates UI automation, always strip from YAML before next restar
 - Use BOTH Matter + HomeKit integrations — different devices exposed
 - M3 IR blaster does NOT expose to HA
 - Locks Matter only. Some sensors HomeKit only.
+
+---
+
+## GHOST MIGRATION PATTERN — MASTERED (S23-S25, 17 automations)
+- create->remove->rename is the standard for all YAML-only autos
+- Pre-check: ha_config_get_automation RESOURCE_NOT_FOUND = needs migration
+- Pre-check: state:on + YAML id in attributes = YAML-only (not in UI store)
+- Pre-check: state:unavailable + restored:true = ghost (YAML deleted)
+- Batch all ha_remove_entity calls before all ha_set_entity renames
+
+## TOKEN EFFICIENCY (confirmed S24-S25)
+- mcp_session_init covers git state in one call — always use at session start
+- ha_get_state with list of 10 entity_ids = single batch verify call
+- ha_config_set_automation with wait:false for bulk creates
+- GIT_PAGER=cat git log avoids pager on BusyBox git
+- Never cat entire package files — grep alias: first
+
+## PACKAGE FILE TRIAGE WORKFLOW (confirmed pattern)
+For each file in order:
+  1. grep "^[a-zA-Z]" file.yaml         top-level keys
+  2. grep alias: file.yaml              automation inventory
+  3. ha_get_state [all expected IDs]    UI vs YAML vs ghost
+  4. Decide: delete file OR strip automation block only
+  5. git rm OR python3 strip -> commit -> MCP restart
+  6. create->remove->rename for YAML-only autos
+
+## PRIVACY — SECURITY BACKLOG (4 open, dedicate one session)
+  1. SSH password auth still enabled — add ed25519 key + set password:""
+  2. Cloudflare Zero Trust not configured — HA login exposed to internet
+  3. Git PAT plaintext at /config/.git/config — rotate to fine-grained PAT
+  4. Verify recorder excludes: grep -A 20 'exclude:' /homeassistant/configuration.yaml
+
+## HA GREEN DEPRECATION (pending)
+Before wipe run from PC:
+  ssh hassio@192.168.1.3 -p 2222 "ls /homeassistant/packages/ && grep -rn '^  alias:' /homeassistant/packages/"
+Goal: confirm nothing on Green not already in EQ14 git repo.
