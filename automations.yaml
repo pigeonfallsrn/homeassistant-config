@@ -4201,3 +4201,177 @@
         data:
           transition: 5
   mode: restart
+- id: '1776366035204'
+  alias: 2nd Floor Bathroom — Humidity Fan Control v4
+  description: 'Smart humidity control: Auto-on >70% or motion+60%, auto-off <55%+no
+    motion 5min. Config button pause 24hr.'
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity
+    above: 70
+    id: high_humidity
+  - platform: state
+    entity_id: binary_sensor.upstairs_bathroom_motion
+    to: 'on'
+    id: motion_detected
+  - platform: numeric_state
+    entity_id: sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity
+    below: 55
+    for:
+      minutes: 2
+    id: low_humidity
+  - platform: state
+    entity_id: binary_sensor.upstairs_bathroom_motion
+    to: 'off'
+    for:
+      minutes: 5
+    id: no_motion
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.humidity_fan_paused
+        state: 'off'
+      - condition: trigger
+        id:
+        - high_humidity
+      sequence:
+      - action: fan.turn_on
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan
+        data:
+          percentage: 100
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.humidity_fan_paused
+        state: 'off'
+      - condition: trigger
+        id:
+        - motion_detected
+      - condition: numeric_state
+        entity_id: sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity
+        above: 60
+      sequence:
+      - action: fan.turn_on
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan
+        data:
+          percentage: 75
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.humidity_fan_paused
+        state: 'off'
+      - condition: or
+        conditions:
+        - condition: trigger
+          id:
+          - low_humidity
+        - condition: trigger
+          id:
+          - no_motion
+      - condition: numeric_state
+        entity_id: sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity
+        below: 55
+      - condition: state
+        entity_id: binary_sensor.upstairs_bathroom_motion
+        state: 'off'
+        for:
+          minutes: 5
+      sequence:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan
+  mode: restart
+- id: '1776366136920'
+  alias: 2nd Floor Bathroom — Config Button Fan Pause
+  description: Config button press → pause humidity fan 24hr + notification
+  triggers:
+  - event_data:
+      device_ieee: b0:c7:de:ff:fe:61:6c:5e
+    event_type: zha_event
+    platform: event
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''config_1x'' }}'
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.humidity_fan_paused
+      - action: notify.mobile_app_galaxy_s26_ultra
+        data:
+          data:
+            actions:
+            - action: HUMIDITY_UNPAUSE
+              title: Resume Now
+            - action: HUMIDITY_EXTEND
+              title: Extend 12hr
+            priority: high
+            tag: humidity_pause
+            timeout: 300
+          message: 'Bathroom humidity fan paused for 24 hours. Current humidity: {{
+            states(''sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity'')
+            }}%'
+          title: "\U0001F4A8 Fan Paused"
+      - action: timer.start
+        data:
+          duration: '24:00:00'
+        target:
+          entity_id: timer.humidity_fan_pause_timer
+  mode: restart
+- id: '1776366148290'
+  alias: 2nd Floor Bathroom — Humidity Notification Actions
+  description: Handle pause/resume notification button actions
+  triggers:
+  - event_type: mobile_app_notification_action
+    platform: event
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.action == ''HUMIDITY_UNPAUSE'' }}'
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.humidity_fan_paused
+      - action: timer.cancel
+        target:
+          entity_id: timer.humidity_fan_pause_timer
+      - action: notify.mobile_app_galaxy_s26_ultra
+        data:
+          data:
+            tag: humidity_pause
+          message: clear_notification
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.action == ''HUMIDITY_EXTEND'' }}'
+      sequence:
+      - action: timer.start
+        data:
+          duration: '12:00:00'
+        target:
+          entity_id: timer.humidity_fan_pause_timer
+      - action: notify.mobile_app_galaxy_s26_ultra
+        data:
+          data:
+            tag: humidity_pause
+          message: Humidity fan pause extended 12 hours
+          title: "\U0001F4A8 Extended"
+  mode: restart
+- id: '1776366154798'
+  alias: 2nd Floor Bathroom — Humidity Pause Timer Expiry
+  description: Auto-resume fan when 24hr timer expires
+  triggers:
+  - entity_id: timer.humidity_fan_pause_timer
+    platform: state
+    to: idle
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.humidity_fan_paused
+  - action: notify.mobile_app_galaxy_s26_ultra
+    data:
+      message: Humidity fan pause expired - automatic control resumed
+      title: "\U0001F4A8 Resumed"
+  mode: restart
