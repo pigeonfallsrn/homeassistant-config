@@ -4136,3 +4136,68 @@
           - light.2nd_floor_bathroom
           - light.2nd_floor_bathroom_vanity_lights
   mode: single
+- id: '1776365074522'
+  alias: Upstairs Hallway → Motion Lighting v2
+  description: 'Time-aware motion lighting. Triggers: hallway Aqara P1 + bathroom
+    motion. 06:00-21:30=Energize, 21:30-23:00=70%/3000K, 23:00-06:00=10%/2200K. 2026-03-24:
+    fixed stale P1 entity in motion_aggregation.yaml (was _2 orphan).'
+  triggers:
+  - platform: state
+    entity_id:
+    - binary_sensor.upstairs_hallway_motion
+    - binary_sensor.upstairs_bathroom_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id:
+    - binary_sensor.upstairs_hallway_motion
+    - binary_sensor.upstairs_bathroom_motion
+    to: 'off'
+    for:
+      minutes: 3
+    id: motion_off
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      sequence:
+      - choose:
+        - conditions:
+          - condition: time
+            after: '23:00:00'
+            before: 06:00:00
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.upstairs_hallway
+            data:
+              brightness_pct: 10
+              color_temp_kelvin: 2200
+              transition: 2
+        - conditions:
+          - condition: time
+            after: '21:30:00'
+            before: '23:00:00'
+          sequence:
+          - action: light.turn_on
+            target:
+              entity_id: light.upstairs_hallway
+            data:
+              brightness_pct: 70
+              color_temp_kelvin: 3000
+              transition: 2
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.upstairs_hallway_energize
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.upstairs_hallway
+        data:
+          transition: 5
+  mode: restart
