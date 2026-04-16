@@ -1032,7 +1032,7 @@ cmd_mcp() {
     echo ""
     echo "═══════════════════════════════════════════════════════════════════════════════"
     echo "CLAUDE INSTRUCTION: You are starting a Home Assistant MCP session."
-    echo "MCP server is connected at http://192.168.1.3:8123."
+    echo "MCP server is connected at http://192.168.1.10:8123."
     echo "Read the HANDOFF above, confirm the active task, check HA core status,"
     echo "then ask what we are working on today or confirm ready to proceed"
     echo "with the active task shown above. DO NOT just say good morning."
