@@ -293,3 +293,45 @@ For each file in order:
 Before wipe run from PC:
   ssh hassio@192.168.1.3 -p 2222 "ls /homeassistant/packages/ && grep -rn '^  alias:' /homeassistant/packages/"
 Goal: confirm nothing on Green not already in EQ14 git repo.
+
+---
+
+## GHOST MIGRATION PATTERN — MASTERED (S23-S25, 17 automations)
+- create->remove->rename is the standard for all YAML-only autos
+- No .storage surgery needed unless ha_remove_entity fails
+- Pre-check: ha_config_get_automation RESOURCE_NOT_FOUND = needs migration
+- Pre-check: state:on + YAML id in attributes = YAML-only (not in UI store)
+- Pre-check: state:unavailable + restored:true = ghost (YAML deleted)
+- Batch: do all ha_remove_entity calls before all ha_set_entity renames
+
+## TOKEN EFFICIENCY (confirmed S24-S25)
+- mcp_session_init covers git state in one call — always use at session start
+- read_critical_rules is 301 lines — safe to load every session
+- ha_get_state with list of 10 entity_ids = single batch verify call
+- ha_config_set_automation with wait:false for bulk creates
+- git -C /homeassistant flag works from any directory
+- Never cat entire package files — grep alias: first to get inventory
+- GIT_PAGER=cat git log avoids pager on BusyBox git
+
+## PACKAGE FILE TRIAGE WORKFLOW (confirmed pattern)
+For each file in order:
+  1. grep "^[a-zA-Z]" file.yaml         top-level keys
+  2. grep alias: file.yaml              automation inventory
+  3. ha_get_state [all expected IDs]    UI vs YAML vs ghost status
+  4. Decide: delete file OR strip automation block only
+  5. git rm OR python3 strip -> commit -> MCP restart
+  6. create->remove->rename for YAML-only autos
+
+## PRIVACY — SECURITY BACKLOG (4 open items, no progress S24-S25)
+Recommend one dedicated session for items 1+2+3 together (~30 min):
+  1. SSH password auth still enabled — add ed25519 key + set password:""
+  2. Cloudflare Zero Trust not configured — HA login page exposed to internet
+  3. Git PAT plaintext at /config/.git/config — rotate to fine-grained PAT
+  4. device_tracker PII in DB — verify recorder excludes active:
+     grep -A 20 'exclude:' /homeassistant/configuration.yaml
+
+## HA GREEN DEPRECATION (pending audit)
+Green terminal still live at 192.168.1.3. Not yet audited or wiped.
+Before wipe run from PC terminal:
+  ssh hassio@192.168.1.3 -p 2222 "ls /homeassistant/packages/ && grep -rn '^  alias:' /homeassistant/packages/ && ls /homeassistant/blueprints/automation/"
+Goal: confirm nothing on Green not already in EQ14 git repo.
