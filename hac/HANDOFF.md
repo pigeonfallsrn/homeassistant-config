@@ -1,40 +1,24 @@
-# HANDOFF — S24 complete | 2026-04-16
+# HANDOFF — S25 complete | 2026-04-16
 
-## Completed this session (S24)
+## Completed this session (S25)
 
-### Group 4 — Garage COMPLETE
-5 package files resolved:
-- garage_arrival_optimized.yaml: DELETED (automation-only)
-- garage_quick_open.yaml: DELETED (automation-only)
-- garage_lighting_automation_fixed.yaml: DELETED (automation-only)
-- garage_notifications_consolidated.yaml: DELETED (automation-only)
-- garage_door_alerts.yaml: automation block stripped, template+alert kept
+### Group 3 — hue_switches.yaml COMPLETE
+hue_switches.yaml deleted (automation-only, 396 lines)
+6 automations migrated to UI storage via create->remove_ghost->rename:
+  automation.entry_room_tap_dial_switch
+  automation.master_bedroom_tap_dial_switch
+  automation.alaina_s_bedroom_dimmer_switch
+  automation.ella_s_bedroom_dimmer_switch
+  automation.garage_dimmer_switch
+  automation.2nd_floor_bathroom_ceiling_switch_vzm30_sn
+All 6 verified state:on with clean numeric UI storage IDs.
 
-5 automations migrated to UI storage via create->remove_ghost->rename pattern:
-  automation.garage_clear_arrival_dashboard_on_arrival
-  automation.garage_door_alert_action_handler
-  automation.garage_door_reset_snooze_on_close
-  automation.garage_all_lights_on_fixed
-  automation.garage_all_lights_off_fixed
-All 5 verified state:on with clean entity IDs.
+## S26 — START HERE
 
-### Infrastructure improvements
-- CRITICAL_RULES restructured: 977 lines -> 259 lines CORE + full HISTORY archive
-- SSH add-on init_commands: bash /config/hac/addon_init.sh (auto-cd + aliases, persistent)
-- addon_init.sh created at /homeassistant/hac/addon_init.sh
-- ~/.zshrc non-persistence documented in CRITICAL_RULES_CORE.md
-- obst_sleep_low: true ratgdo v2.5 workaround added to CRITICAL_RULES
+### Priority 1: Group 5 — upstairs_lighting.yaml
+grep -n "^  - id:\|^    alias:" /homeassistant/packages/upstairs_lighting.yaml
 
-## S25 — START HERE
-
-### Priority 1: Group 3 — hue_switches.yaml (1 file, quick win)
-grep -n "^  - id:\|^  alias:" /homeassistant/packages/hue_switches.yaml
-
-### Priority 2: HA Green full config audit before wipe
-ssh hassio@192.168.1.3 -p 2222 "ls /homeassistant/packages/ && grep -rn '^  alias:' /homeassistant/packages/"
-
-## Package files remaining (7)
-Group 3: hue_switches.yaml
+## Package files remaining (6)
 Group 5: upstairs_lighting.yaml
 Group 6: kids_bedroom_automation.yaml, ella_living_room.yaml
 Group 7: humidity_smart_alerts.yaml

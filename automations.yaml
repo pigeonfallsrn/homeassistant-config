@@ -3753,3 +3753,386 @@
       - light.garage_south_wall_motion_light_sensor
       - light.garage_south_of_east_wall_motion_light_sensor
   mode: restart
+- id: '1776363551038'
+  alias: Entry Room — Tap Dial Switch
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%
+  triggers:
+  - platform: state
+    entity_id: event.hue_tap_dial_switch_1_button_1
+    id: b1
+  - platform: state
+    entity_id: event.hue_tap_dial_switch_1_button_2
+    id: b2
+  - platform: state
+    entity_id: event.hue_tap_dial_switch_1_button_3
+    id: b3
+  - platform: state
+    entity_id: event.hue_tap_dial_switch_1_button_4
+    id: b4
+  - platform: state
+    entity_id: event.hue_tap_dial_switch_1_rotary
+    id: rotary
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_energize
+    - conditions:
+      - condition: trigger
+        id: b2
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_relax
+    - conditions:
+      - condition: trigger
+        id: b3
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.entry_room_dimmed
+    - conditions:
+      - condition: trigger
+        id: b4
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.entry_room
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room
+        data:
+          brightness_step_pct: 10
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''counter_clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room
+        data:
+          brightness_step_pct: -10
+  mode: single
+- id: '1776363561506'
+  alias: Master Bedroom — Tap Dial Switch
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%
+  triggers:
+  - entity_id: event.hue_tap_dial_switch_3_button_1
+    id: b1
+    platform: state
+  - entity_id: event.hue_tap_dial_switch_3_button_2
+    id: b2
+    platform: state
+  - entity_id: event.hue_tap_dial_switch_3_button_3
+    id: b3
+    platform: state
+  - entity_id: event.hue_tap_dial_switch_3_button_4
+    id: b4
+    platform: state
+  - entity_id: event.hue_tap_dial_switch_3_rotary
+    id: rotary
+    platform: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.master_bedroom_energize
+    - conditions:
+      - condition: trigger
+        id: b2
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.master_bedroom_relax
+    - conditions:
+      - condition: trigger
+        id: b3
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.master_bedroom_dimmed
+    - conditions:
+      - condition: trigger
+        id: b4
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.master_bedroom
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.master_bedroom
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''counter_clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id: light.master_bedroom
+  mode: single
+- id: '1776363569434'
+  alias: Alaina's Bedroom — Dimmer Switch
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off
+  triggers:
+  - entity_id: event.hue_dimmer_switch_3_button_1
+    id: b1
+    platform: state
+  - entity_id: event.hue_dimmer_switch_3_button_2
+    id: b2
+    platform: state
+  - entity_id: event.hue_dimmer_switch_3_button_3
+    id: b3
+    platform: state
+  - entity_id: event.hue_dimmer_switch_3_button_4
+    id: b4
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+      }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.alaina_s_bedroom_energize
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.alaina_s_bedroom_relax
+    - conditions:
+      - condition: trigger
+        id: b3
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.alaina_s_bedroom_dimmed
+    - conditions:
+      - condition: trigger
+        id: b4
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.alaina_s_bedroom
+  mode: single
+- id: '1776363581804'
+  alias: Ella's Bedroom — Dimmer Switch
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off. Customize with her custom scenes.
+  triggers:
+  - entity_id: event.hue_dimmer_switch_2_button_1
+    id: b1
+    platform: state
+  - entity_id: event.hue_dimmer_switch_2_button_2
+    id: b2
+    platform: state
+  - entity_id: event.hue_dimmer_switch_2_button_3
+    id: b3
+    platform: state
+  - entity_id: event.hue_dimmer_switch_2_button_4
+    id: b4
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+      }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      sequence:
+      - if:
+        - condition: state
+          entity_id: light.ella_s_bedroom
+          state: 'on'
+        then:
+        - action: light.turn_off
+          target:
+            entity_id: light.ella_s_bedroom
+        else:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.ella_s_bedroom_energize
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.ella_s_bedroom_relax
+    - conditions:
+      - condition: trigger
+        id: b3
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.ella_s_bedroom_dimmed
+    - conditions:
+      - condition: trigger
+        id: b4
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.ella_s_bedroom
+  mode: single
+- id: '1776363588459'
+  alias: Garage — Dimmer Switch
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off. Battery swap needed.
+  triggers:
+  - entity_id: event.hue_dimmer_switch_4_button_1
+    id: b1
+    platform: state
+  - entity_id: event.hue_dimmer_switch_4_button_2
+    id: b2
+    platform: state
+  - entity_id: event.hue_dimmer_switch_4_button_3
+    id: b3
+    platform: state
+  - entity_id: event.hue_dimmer_switch_4_button_4
+    id: b4
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+      }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.garage_energize
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.garage_relax
+    - conditions:
+      - condition: trigger
+        id: b3
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.garage_dimmed
+    - conditions:
+      - condition: trigger
+        id: b4
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.garage
+  mode: single
+- id: '1776363597961'
+  alias: 2nd Floor Bathroom — Ceiling Switch (VZM30-SN)
+  description: Up=scene on, Down=both lights off, Hold=dim. IEEE 20:a7:16:ff:fe:01:8c:b8
+  triggers:
+  - event_data:
+      device_ieee: 20:a7:16:ff:fe:01:8c:b8
+    event_type: zha_event
+    platform: event
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_energize
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_2_held_down'' }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_1_held_down'' }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: -10
+        target:
+          entity_id:
+          - light.2nd_floor_bathroom
+          - light.2nd_floor_bathroom_vanity_lights
+  mode: single
