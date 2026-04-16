@@ -3338,3 +3338,166 @@
           message: 1 hour snooze ended.
           title: Hot Tub Mode Still Active
   mode: single
+- id: '1776307092015'
+  alias: Kitchen Tablet - Brightness Schedule
+  triggers:
+  - at: 07:00:00
+    platform: time
+  - at: '20:00:00'
+    platform: time
+  - at: '22:00:00'
+    platform: time
+  - event: start
+    platform: homeassistant
+  actions:
+  - choose:
+    - conditions:
+      - after: 07:00:00
+        before: '20:00:00'
+        condition: time
+      sequence:
+      - action: number.set_value
+        data:
+          value: 80
+        target:
+          entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+    - conditions:
+      - after: '20:00:00'
+        before: '22:00:00'
+        condition: time
+      sequence:
+      - action: number.set_value
+        data:
+          value: 50
+        target:
+          entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+    default:
+    - action: number.set_value
+      data:
+        value: 20
+      target:
+        entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+  mode: single
+- id: '1776307403248'
+  alias: Kitchen Tablet - Doorbell Camera Popup
+  triggers:
+  - entity_id: binary_sensor.very_front_door_doorbell
+    id: front_door
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.front_driveway_door_doorbell
+    id: driveway
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.house_occupied
+    state: 'on'
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+  - action: number.set_value
+    data:
+      value: 100
+    target:
+      entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.kitchen_tablet_doorbell_popup
+  - delay:
+      seconds: 60
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.kitchen_tablet_doorbell_popup
+  mode: single
+- id: '1776307446022'
+  alias: Kitchen Tablet - Wake on Kitchen Motion
+  triggers:
+  - entity_id:
+    - binary_sensor.kitchen_counter_night_light_motion
+    - binary_sensor.kitchen_counter_nightlight_motion
+    - binary_sensor.kitchen_west_wall_nightlight_motion
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: switch.kitchen_wall_a9_tablet_screen
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.house_occupied
+    state: 'on'
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+  mode: single
+- id: '1776307454542'
+  alias: Kitchen Tablet - Sleep After Inactivity
+  triggers:
+  - entity_id: sensor.kitchen_wall_a9_tablet
+    for:
+      minutes: 5
+    platform: state
+    to: Idle
+  conditions:
+  - condition: state
+    entity_id: switch.kitchen_wall_a9_tablet_screen
+    state: 'on'
+  - condition: state
+    entity_id: input_boolean.kitchen_tablet_doorbell_popup
+    state: 'off'
+  actions:
+  - action: switch.turn_off
+    target:
+      entity_id: switch.kitchen_wall_a9_tablet_screen
+  mode: single
+- id: '1776307461129'
+  alias: Kitchen Tablet - Wake on Presence
+  description: Wake tablet when someone is home
+  triggers:
+  - entity_id:
+    - person.john_spencer
+    - person.alaina_spencer
+    - person.ella_spencer
+    platform: state
+    to: home
+  - entity_id: binary_sensor.kitchen_ai_theta_motion
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kitchen_tablet_screen_control
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_kitchen_samsung_tablet_wall_mount
+    data:
+      message: command_screen_on
+  mode: single
+- id: '1776307470950'
+  alias: Kitchen Tablet - Sleep When Away
+  description: Turn off tablet screen when no one home
+  triggers:
+  - entity_id:
+    - person.john_spencer
+    - person.alaina_spencer
+    - person.ella_spencer
+    for:
+      minutes: 10
+    platform: state
+    to: not_home
+  conditions:
+  - condition: state
+    entity_id: person.john_spencer
+    state: not_home
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: not_home
+  - condition: state
+    entity_id: person.ella_spencer
+    state: not_home
+  actions:
+  - action: notify.mobile_app_kitchen_samsung_tablet_wall_mount
+    data:
+      message: command_screen_off
+  mode: single
