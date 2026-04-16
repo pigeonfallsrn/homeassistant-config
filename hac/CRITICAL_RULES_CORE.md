@@ -1,248 +1,259 @@
-# CRITICAL RULES - READ FIRST
-*Hard-won lessons from 2000+ lines of learnings. Don't repeat them.*
-
-## ⚠️ BEFORE ANY EDIT
-```
-hac backup <filename>   # NON-NEGOTIABLE
-```
-
-## TERMINAL (ZSH)
-- **Git errors** (`confused by unstable object`): Run `git gc --prune=now` twice (HA Green/SD card limitation)
-- **Escape `!`** or use single quotes: `echo 'Hello!'` not `echo "Hello!"`
-- **Never chain after `python3 -c`** on same line
-- **BusyBox grep** (HA Green): NO `--include`, NO long options. Use `-rEl` for recursive+extended+filenames. Never `--include=*.yaml` — use `grep -rEl 'pattern' /path/` instead
-- **BusyBox sed** (HA Green): NO multi-line, NO complex scripts. Use `python3` heredoc for non-trivial file edits
-- **Paths**: `/homeassistant/` (not `/config/`)
-
-## MOTION AUTOMATIONS (Times Hit: 15+)
-- **Always `mode: restart`** for motion-triggered lights
-- **Combined sensors need `delay_off`**: 60s minimum to prevent double-fires
-- **Use combined binary_sensor**, not OR-ing individual sensors (race condition)
-- **Dual trigger pattern**: motion ON starts, motion OFF with wait turns off
-- **Timeout by room type**: transition 5-10min, active 8-20min, relaxation 15-45min
-- **Double-fire fix**: Check for orphan automation entities with same unique_id
-- **Apollo LD2450 zone collapse**: Detection mode collapses coords to 0,0 — fix: Zone-1 X1=-4000,X2=4000,Y1=500,Y2=6000,timeout=60s
-
-## INOVELLI SWITCHES (Times Hit: 15+)
-- **Smart Bulb Mode**: Param 52=1 + LED bar params 95-98 for Hue bulbs
-- **Config button cycling**: Use input_number + modulo, not input_select
-- **Parameters require toggle OFF→ON** in ZHA UI then air gap to write
-- **fxlt blueprint fires ALL zha_events** - filter by device_id or use unified blueprint
-- **VZM35-SN fans**: Param 12 (auto-off) = 2700s for hardware safety backup
-- **VZM31-SN v3.06 firmware**: Param 27 (P27) added in this fw — verify full param list before bulk-writing switch config
-
-## ADAPTIVE LIGHTING (Times Hit: 10+)
-- **Create/delete via UI ONLY** - no API exists
-- **Hue bulbs require ALL THREE**:
-  - `separate_turn_on_commands: true`
-  - `take_over_control: true`
-  - `detect_non_ha_changes: false`
-- **Same make/model bulbs** per AL instance
-- **Sleep mode**: 1-5%, 2200K, 10pm-6am for bedrooms
-- **Current instances**: living_spaces, entry_room_ceiling, entry_room_lamp_adaptive, kitchen_table, master_bedroom_wall_lamp, upstairs_hallway
-
-## ENTITY NAMING
-- **ZHA gives generic entity_ids** (e.g., `inovelli_vzm35_sn_fan`)
-- **Rename via `ha_rename_entity`** to location-based IDs
-- **Device names are separate** from entity IDs
-
-## MATTER/AQARA (Times Hit: 5+)
-- **Recommission fix**: Remove stale fabric from BOTH HA Matter AND Aqara app
-- **Use BOTH Matter + HomeKit** integrations (different devices exposed)
-- **M3 IR blaster**: Does NOT expose to HA
-- **Locks**: Matter only. Some sensors: HomeKit only.
-
-## DOUBLE-FIRE PREVENTION CHECKLIST
-1. Motion aggregation sensors have `delay_off`? (60s/60s/90s)
-2. Using combined sensor, not individual sensors?
-3. Check `hac health` for orphan automations with duplicate unique_ids?
-4. Check for automations disabled in UI but still registered?
-
-## NEVER EDIT DIRECTLY
-- `.storage/core.config_entries`
-- `.storage/core.entity_registry`
-- `.storage/core.device_registry`
-- Any `.storage/*.json`
-
-## UI-ONLY (No API/CLI)
-Adaptive Lighting, ZHA pairing, Hue linking, Matter commissioning
-
-## SAFE VIA API
-Automations, Scripts, Helpers, Services, Entity settings, Dashboards
-
-## Storage-Mode Dashboard Backup (NON-NEGOTIABLE)
-Before ANY kitchen-wall-v2 edit:
-  cp /homeassistant/.storage/lovelace.kitchen_wall_v2 /homeassistant/hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
-hac backup does NOT work for storage-mode dashboards. Never attempt it.
-
-## Dashboard Transform Rules (hard-won)
-- ALWAYS force_reload:True before any transform to get current hash
-- NEVER do piecemeal index-based transforms across multiple calls — indices shift silently
-- For section[0] edits: do ONE comprehensive rebuild, not multiple surgical edits
-- After ANY transform: reload tablet + verify before next edit
-- python_transform list comprehension on root cards[] can silently wipe sections — always use direct index ops
-
-## Sections View Gutter — CONFIRMED FIX (2026-03-19)
-WORKING: card-mod-view-yaml in kitchen_wall theme. Confirmed by user 2026-03-19.
-
-/homeassistant/themes/kitchen_wall.yaml MUST contain exactly:
-  ha-view-sections-column-max-width: 2000px
-  ha-view-sections-column-min-width: 300px
-  ha-view-sections-column-gap: 8px
-  card-mod-view-yaml: |
-    hui-sections-view:
-      $: |
-        :host {
-          --ha-view-sections-column-max-width: 2000px !important;
-        }
-
-WHY: card-mod-view-yaml runs AFTER component init, sets CSS var at shadow DOM
-host level before HA sections view applies its default. card-mod-root-yaml runs
-too early and loses. CSS resource files lose specificity race. FKB customCSS
-cannot pierce shadow DOM.
-
-After theme change: frontend.reload_themes + clear cache + reload tablet.
-DO NOT change this. DO NOT use any other approach.
-
-
-## Bubble Card Popup — Music Button Root Cause (FKB 1.60.1 confirmed)
-FKB 1.60.1 supports hash navigation — version is NOT the issue.
-All failed approaches: navigate tap_action, hash on section button,
-browser_mod fire-dom-event, root-level hidden trigger button + navigate.
-NEXT HYPOTHESIS TO TEST: kiosk_mode non_admin_settings:kiosk:true intercepts
-hash navigation before Bubble Card sees it.
-TEST: temporarily set kiosk_mode:{} in dashboard, reload, test popup, then restore.
-
-## atomic-calendar-revive — Confirmed Working Settings (wall tablet)
-compactMode: false  ← NEVER use true, collapses card height
-maxDaysToShow: 3-5, maxEventCount: 12-15
-dateSize: 200+, titleSize: 190+, timeSize: 160+
-column_span:1 on BOTH sections + max_columns:2 = correct 50/50 split
-dense_section_placement: false  ← true fights column_span, causes regression
-
-## Dashboard Session Start Protocol (NON-NEGOTIABLE)
-1. cp .storage/lovelace.kitchen_wall_v2 hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
-2. Read hac/BACKLOG_kitchen_dashboard.md — work from top of blocking items
-3. ha_config_get_dashboard force_reload:True — capture current hash before ANY edit
-4. Single comprehensive transform — never piecemeal
-5. Reload + verify on tablet after EVERY transform before proceeding
-6. Commit + log learnings before ending session
-
-## FKB Auto-Update — DISABLE THIS
-FKB auto-updates cause random browser restarts and dashboard stuck-on-logo issues.
-Disable: FKB Settings > General Settings > Auto-Update Fully Kiosk Browser = OFF
-Control updates manually during maintenance windows only.
-
-## FKB Configuration via HA Service (PREFERRED METHOD)
-Use fully_kiosk.set_config — works cross-VLAN, no port 2323 needed.
-device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
-
-Key config keys:
-  autoUpdateApp: false        # DISABLE — prevents random restarts
-  customCSS: "css string"     # Inject CSS directly into FKB browser
-
-FKB port 2323 blocked: tablet on IoT VLAN 192.168.21.x, PC on 192.168.1.x
-UniFi firewall blocks LAN->IoT inbound. HA has cross-VLAN access already.
+# CRITICAL RULES CORE — EQ14 HA System
+# Rules only. No history. No session notes.
+# Full history: CRITICAL_RULES_HISTORY.md
+# Last restructured: 2026-04-16 S24
 
 ---
 
-## ADAPTIVE LIGHTING — COLOR BEHAVIOR (Promoted 2026-03-22)
-Times Hit: 10+
+## SESSION RITUALS
 
-### Late-Night Red/Orange Lights
-- **Root cause**: AL `living_spaces` pushes full circadian color to Hue color bulbs. At ~22:00 CST color reaches hue 10° / rgb(255,43,0) — deep red. This is correct AL behavior, not a scene bleed.
-- **hot_tub_mode is NOT the cause** — always verify `input_boolean.hot_tub_mode` state before assuming scene bleed.
-- **Manual override**: tap Hue switch or `light.turn_on` with explicit `color_temp_kelvin`. Holds until next on/off cycle (take_over_control:true).
-- **Pending fixes**: (1) raise `min_color_temp_kelvin` floor on living_spaces AL instance; (2) disable adapt_color after time threshold via automation.
+### Start (every session)
+1. shell_command.read_handoff via MCP
+2. shell_command.mcp_session_init via MCP
+3. Confirm goal before touching anything
 
-### hot_tub_mode Color Restore Gap
-- Off automations (`auto_reset_at_3am`, `auto_off_when_back_inside`) do NOT explicitly restore light color.
-- AL only corrects on next on/off cycle — lights can stay colored until then.
-- **Fix needed**: add `adaptive_lighting.apply_to_lights` or explicit `light.turn_on color_temp_kelvin` in hot tub mode off actions.
+### End (every session — non-negotiable)
+1. grep -rEl 'unique_id: auto_' /homeassistant/packages/
+2. Update HANDOFF.md
+3. git add -A && git commit
+4. shell_command.git_push via MCP (NEVER terminal)
+5. Verify: git log --oneline -3 shows origin/main at HEAD
 
 ---
 
-## LIGHTING HYGIENE (Promoted 2026-03-22)
+## TERMINAL
 
-### Mode State Visibility Gap
-- No dashboard indicator for active AL color mode or when special modes last ran.
-- Backlog: Mushroom chips row on kitchen tablet — hot_tub_mode, sleep_mode, away state.
+- Paths: /homeassistant/ from terminal. NEVER /config/ in terminal.
+- shell_commands use /config/ internally — never mix
+- git -C /homeassistant works from any directory — use when unsure
+- Always && chain commands
+- NEVER chain after python3 -c or python3 << HEREDOC
+- Escape ! or use single quotes: echo 'Hello!' not echo "Hello!"
+- Alpine Linux BusyBox: NO --include grep, NO long sed options
+  grep: use -rEl only. sed: use python3 for multi-line edits.
+- ~/.zshrc does NOT persist across SSH add-on updates
+  Persistent init: bash /config/hac/addon_init.sh in add-on init_commands (done S24)
+- ZSH bracket paste: sometimes injects [200~ prefix — retype manually
+- git push: ALWAYS via MCP shell_command.git_push. GIT_TERMINAL_PROMPT=0 required.
+- ALWAYS use EQ14 terminal (192.168.1.10). NEVER HA Green (192.168.1.3).
 
-### Motion Lamp Automations — No Time Gate
-- `automation.living_room_lamps_adaptive_control` fires on `binary_sensor.downstairs_motion` with no time-of-night condition.
-- Color at turn-on = AL circadian value for that hour. Expected but can be surprising late at night.
+---
 
-### Unavailable Light Entities (audit 2026-03-22 — investigate)
-- `light.upstairs_hallway_ceiling_1of3`, `2of3`, `3of3`
-- `light.very_front_door_ceiling_hallway`
-- `light.garage_opener_north_east`, `garage_opener_south_east`, `garage_opener_south_west`
-- `light.upstairs_hallway_east_wall_night_light`
+## GHOST ENTITY REGISTRY
 
-### Entity Naming Mismatches (audit 2026-03-22 — cleanup needed)
-- `light.kitchen_west_wall_nightlight` friendly name → "Basement_Third Reality_Nightlight"
-- `light.kitchen_counter_night_light` friendly name → "Stairwell_Night_Light"
+### Detection
+state: unavailable + restored: true = ghost (no active source)
 
+### Cleanup — UI first (2026)
+Settings -> Devices & Services -> Entities -> filter Restored -> bulk delete
 
-## BINARY_SENSOR GROUP — delay_off NOT SUPPORTED (Times Hit: 1)
-- `platform: group` binary sensors do NOT support `delay_off` parameter
-- Adding `delay_off` to a group sensor causes the ENTIRE binary_sensor: block to fail silently
-- The input_boolean: and automation: blocks in the same package file still load fine
-- Fix: use `template:` binary_sensor instead — confirmed working in motion_aggregation.yaml
-- Pattern: template OR-logic sensors have no delay_off either; put debounce on the automation
-  (mode: restart + for: timer on the motion_off trigger is sufficient)
-- DETECTION: new binary_sensor group entity = 404 after restart → strip delay_off and restart
+### Cleanup — MCP method (confirmed S23/S24)
+create automation (gets _2) -> ha_remove_entity ghost -> ha_set_entity rename _2 to clean ID
 
-## HAC CLI — PATH FIX (confirmed 2026-04-05)
-- Script lives at: /homeassistant/hac/hac.sh
-- Fix: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac && chmod +x /homeassistant/hac/hac.sh
-- Survives HA restarts but NOT power cycles — re-run symlink after any power cycle or HAOS reinstall.
-- Duplicate at /homeassistant/scripts/hac.sh — canonical is /homeassistant/hac/hac.sh
+### Cleanup — .storage surgery (last resort only)
+STOP HA FIRST: ha core stop
+Edit BOTH in same python3 pass:
+  /homeassistant/.storage/core.entity_registry  remove from data.entities
+  /homeassistant/.storage/core.restore_state    remove from data by state.entity_id
+Filter by entity_id NOT unique_id
+Then: ha core start
+NEVER ha core restart during surgery — flushes in-memory state, overwrites edits
+NEVER edit .storage files while HA is running
 
-## HAC CLI — PATH FIX (confirmed 2026-04-05)
-- Script lives at: /homeassistant/hac/hac.sh
-- Fix: ln -sf /homeassistant/hac/hac.sh /usr/local/bin/hac && chmod +x /homeassistant/hac/hac.sh
-- Survives HA restarts but NOT power cycles — re-run symlink after any power cycle or HAOS reinstall.
-- Duplicate at /homeassistant/scripts/hac.sh — canonical is /homeassistant/hac/hac.sh
+### YAML migration order (non-negotiable)
+CORRECT: strip YAML -> restart -> create in UI -> clean IDs (no _2)
+WRONG:   create in UI -> strip YAML -> always gets _2
 
-## SESSION HISTORY
-See CRITICAL_RULES_HISTORY.md for dated session entries,
-garage/ratgdo history, and archived audit notes.
-Load with: shell_command.read_critical_rules_full
-- **Disk monitoring**: HA Green has 28GB. ESPHome first build downloads ~500MB toolchain — check disk before compiling new devices. DB purge needs free space to repack.
+### Ghost types
+- unavailable + restored:true = YAML id: entry, source gone -> ha_remove_entity
+- RESOURCE_NOT_FOUND from ha_config_get_automation = YAML-only, never in UI store
+- Duplicate alias YAML + UI = BOTH load concurrently, BOTH run — strip YAML after MCP create
 
-## 2ND FLOOR BATHROOM AUTOMATION — PATTERN (S9 2026-04-09)
-- Both Inovelli switches (vanity VZM30 device_id=602bdb2b, ceiling VZM30 device_id=0489781e) handled in ONE combined automation
-- Automation id: 2nd_floor_bathroom_vanity_inovelli — lives in UI storage, NOT packages
-- Controls: light.2nd_floor_bathroom (Hue ceiling group) + light.2nd_floor_bathroom_vanity_lights
-- Scene cycling via input_number.bathroom_scene_index (0=Energize, 1=Relax, 2=Dimmed, 3=Nightlight)
-- fxlt blueprint automation (automation.2nd_floor_bathroom_ceiling_inovelli_controls_hue_lights) DISABLED — was double-firing
-- automation.2nd_floor_bathroom_ceiling_lights_inovelli_control is a ghost entity — not in storage, not in packages, ignore it
+---
 
-## ALL BATHROOM AUTOMATIONS UNAVAILABLE AFTER RESTART — ROOT CAUSE (S9)
-- After restart, bathroom automations showed state: unavailable transiently
-- NOT package YAML corruption — confirmed by grep returning nothing
-- Cause: HA restart cycle + stale running automation with 8 branches referencing missing entities
-- Fix: re-save automation via MCP ha_config_set_automation (overwrites stale in-memory state)
-- ha core restart then resolves remaining unavailable states on storage automations
+## YAML PACKAGE RULES
 
-## VZM36 DUAL ENDPOINTS — LIVING ROOM (S9)
-- light.inovelli_vzm36_light_3 (EP1) and light.inovelli_vzm36_light_4 (EP2) are raw ZHA endpoints on device 0c:2a:6f:ff:fe:f2:87:02
-- Both are orphans — not referenced in any automation, script, or dashboard
-- Active control path is light.living_room_lounge_ceiling_light (Hue group)
-- Both hidden in entity registry with context labels — do NOT unhide without checking Hue group still works
-- Kitchen VZM36 pattern: light.kitchen_lounge_light_fan_inovelli_vzm36_light (EP1) and _light_2 (EP2) — same pattern, separate device
+- MCP ha_config_set_automation injects unique_id: auto_* into package YAML (breaking 2026.4)
+  Detection: grep -rEl 'unique_id: auto_' /homeassistant/packages/
+  Fix: python3 /homeassistant/hac/fix_pkg_unique_id.py
+- input_boolean sub-fields in YAML kills entire file if helper registered in UI store
+  Fix: strip to bare helper_id: with no children
+- Empty automation stub (- id: only, no alias/trigger/action) = config error
+- automations.yaml: id at column 0 (^- id:)
+- packages/*.yaml: id at 2-space indent (^  - id:)
+- Search BOTH paths when hunting automation source
+- ha core check returns non-zero for Successful config partial — never use as && gate
 
-## BACKUP DISK MANAGEMENT (S9 hard lesson)
-- HA supervisor requires >2GB free for backup — system health showing 3.1GB free ≠ supervisor's view
-- Supervisor is more conservative — if backup fails with "not enough free space", you likely have <2GB from supervisor's perspective
-- Automatic backups (daily, keep 5) accumulate fast — 7 auto backups = 2.74 GB
-- Manual backups from MCP sessions accumulate fast — 27 manual = 5.74 GB
-- Pre-migration cleanup: delete all auto + all manual except the tagged pre-migration backup ID
-- After cleanup: disk went from 89% (1.9GB free per supervisor) to 79% (5.6GB free)
+---
 
-## PATH RULE — CRITICAL (learned S17/S18)
-Two different path contexts exist on HAOS bare metal:
-- Terminal / SSH (HAOS host): /homeassistant/hac/
-- shell_commands / HA container: /config/hac/
-Same directory, two views. NEVER use /homeassistant/ in shell_commands.
-NEVER use /config/ in terminal bash commands.
+## ZHA EVENT TRIGGERS
+
+- Use device_ieee NOT device_id in event_data
+- VZM30-SN and VZM31-SN command field: single string e.g. button_2_press
+- Multiple ZHA events per press: use mode: single not restart
+- NEVER use .get() on trigger.event.data in Jinja2 — use | default filter
+- VZM30-SN commands: button_1_press, button_2_press, button_1_held_down,
+  button_2_held_down, button_3_press
+
+---
+
+## MOTION AUTOMATIONS
+
+- Always mode: restart for motion-triggered lights
+- Use combined binary_sensor not OR-ing individual sensors (race condition)
+- Inovelli dumb-load switches: always include transition: 0 in light.turn_on
+- BINARY_SENSOR GROUP: delay_off NOT SUPPORTED — use template: sensor instead
+- Open concept zones kitchen+lounge: single combined sensor, single automation pair
+- Timeout by room: hallways 5-10min, active 8-20min, relaxation 15-45min
+
+---
+
+## INOVELLI SWITCHES
+
+### Two architectures — NEVER mix
+Tier 1 Smart Bulb Mode (Hue bulbs):
+  Param 52=1, load always-on, paddle sends ZHA events
+  HA/AL controls HUE entity NOT switch entity — never add switch to AL
+
+Tier 2 Dumb Load (cans, pendants, under-cabinet):
+  Param 52=0, switch cuts power
+  HA sends brightness_pct + transition:0 to SWITCH entity — never add to AL
+
+### Rules
+- Config button cycling: input_number + modulo, not input_select
+- Parameters require toggle OFF->ON in ZHA UI then air gap
+- VZM35-SN fans: Param 12 auto-off = 2700s
+- Blueprint: Rohan unified (NOT fxlt — fxlt fires ALL zha_events)
+- HUE BRIDGE BULBS cannot bind to Inovelli EP2 via ZHA — different Zigbee network
+  Only working arch: Param 52=1 + HA automation on ZHA event + light.turn_on on Hue entity
+
+### Device Inventory (confirmed EQ14)
+Tier 1: light.entry_room_ceiling_light_inovelli_smart_dimmer_switch  d80c7fa6
+        light.kitchen_lounge_inovelli_smart_dimmer                   5e2d477e
+        light.kitchen_above_table_chandelier_inovelli                17a59d3c
+        light.above_kitchen_sink_inovelli_switch                     89ca030d
+Tier 2: light.kitchen_ceiling_inovelli_vzm31_sn
+        light.kitchen_bar_pendant_lights                             da86388f
+        light.kitchen_under_cabinet_lights_inovelli
+        light.1st_floor_bathroom_ceiling_lights_dimmer_switch_inovelli_vzm31_sn
+        light.back_door_patio_light_inovelli_switch
+        light.front_driveway_inovelli
+
+---
+
+## ADAPTIVE LIGHTING
+
+- Create/delete via UI ONLY — no API exists
+- Instances: living_spaces, entry_room_ceiling, entry_room_lamp_adaptive,
+  kitchen_table, master_bedroom_wall_lamp, upstairs_hallway
+
+### Hue bridge bulbs — confirmed working settings (do not change based on community docs)
+  take_over_control: true
+  detect_non_ha_changes: false    Hue bulbs give false positives if true
+  separate_turn_on_commands: true required for Hue color bulbs
+  NOTE: Community suggests opposite for Hue bridge. Our live system contradicts this.
+  Keep until explicitly tested otherwise.
+
+### autoreset_control_seconds
+  bedrooms: 0 | kitchen/living: 3600 | hallways/baths: 1800
+
+### Kitchen Table AL correct lights only
+  chandelier, above-sink, lounge, lounge-lamp, under-cabinet
+  NEVER: kitchen_ceiling_inovelli, kitchen_bar_pendant_lights (Tier 2 — AL fight)
+
+---
+
+## GARAGE / RATGDO
+
+### Diagnostic fast-path (run first in any garage session)
+  binary_sensor.ratgdo32disco_fd8d8c_obstruction  North
+  binary_sensor.ratgdo32disco_5735e8_obstruction  South
+  lock.ratgdo32disco_fd8d8c_lock_remotes
+  lock.ratgdo32disco_5735e8_lock_remotes
+  cover.ratgdo32disco_fd8d8c_door
+  cover.ratgdo32disco_5735e8_door
+
+### Hard rules
+- lock_remotes = RED HERRING. Obstruction is almost always the real cause.
+- NEVER auto-cycle door from obstruction sensor state — ever
+- Door-actuating automation MUST have ALL:
+  home condition + time 07:00-22:00 + boolean flag + mode:single + cooldown
+
+### North board fd8d8c permanent workaround
+  Toggle Status obstruction OFF at http://ratgdo32disco-fd8d8c.local
+  After ANY restart/OTA: verify Status obstruction still OFF
+  DO NOT use binary_sensor.ratgdo32disco_fd8d8c_obstruction in automations
+  For v2.5 boards: add obst_sleep_low: true to ratgdo ESPHome component config
+
+### Both boards on firmware 2026.3.1 confirmed
+
+### Notification tag ownership — never duplicate
+  arrival_john             notifications_system.yaml + arrival overwrite
+  garage_arrival_dashboard garage_smart_arrival_dashboard_popup only
+  garage_auto_close        garage_auto_close_north_on_departure only
+  garage_door_north/south  native alert system only with skip_first: true
+  garage_quick_open        garage_walk_in_door_quick_open only
+
+---
+
+## MCP BLIND SPOTS
+
+Symptom                               Why                        Fix
+template sensor unavailable           sees state not source      cat defining YAML
+ha_config_get_automation NOT_FOUND    YAML-only auto             cat packages/file.yaml
+ha_deep_search wrong IDs              stale cache                terminal grep
+notify target looks valid             dead mobile_app persists   grep mobile_app_X .storage/
+_2 suffix on new automation           ghost holds clean ID       ha_remove_entity then ha_set_entity
+
+RULE: unavailable on YAML-owned sensor = cat the file FIRST
+RULE: after MCP creates UI automation, always strip from YAML before next restart
+
+---
+
+## SHELL COMMANDS (MCP callable)
+
+  git_push            push origin main — always via MCP never terminal
+  git_status          pending vs origin/main
+  git_last_commit     HEAD hash + message
+  read_critical_rules cat CRITICAL_RULES_CORE.md
+  read_handoff        cat HANDOFF.md
+  mcp_session_init    git_status + git_last_commit combined
+
+---
+
+## DASHBOARD
+
+- Before ANY kitchen-wall-v2 edit: cp .storage/lovelace.kitchen_wall_v2 hac/backups/kitchen-wall-v2-$(date +%Y%m%d-%H%M).json
+- Always force_reload:True before transform to get current hash
+- One comprehensive transform — never piecemeal index-based edits
+- After transform: reload tablet + verify before proceeding
+- FKB auto-update DISABLE: FKB Settings > Auto-Update = OFF
+- FKB config via fully_kiosk.set_config cross-VLAN device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
+- Sections gutter fix in kitchen_wall theme card-mod-view-yaml — DO NOT CHANGE
+
+---
+
+## FAMILY CONTEXT
+
+- Traci = Alaina and Ella mother. zone.traci_s_house = at_mom_s
+- Michelle = John girlfriend. zone.michelles_house. Mother of Jarrett and Owen
+- at_mom_s MUST use zone.traci_s_house — NEVER zone.michelles_house
+- BSSID 60:22:32 and 62:22:32 = Michelle WiFi — never use for girls mom detection
+
+---
+
+## SECURITY BACKLOG
+
+- SSH password auth still enabled — set password empty string in add-on config + add ed25519 key
+- Cloudflare Zero Trust not configured — HA login exposed to internet
+- Git PAT in plaintext at /config/.git/config — rotate to fine-grained PAT
+- 92 device_tracker entities logging GPS — recorder exclude already in config
+
+---
+
+## MATTER / AQARA
+
+- Recommission: remove stale fabric from BOTH HA Matter AND Aqara app
+- Use BOTH Matter + HomeKit integrations — different devices exposed
+- M3 IR blaster does NOT expose to HA
+- Locks Matter only. Some sensors HomeKit only.

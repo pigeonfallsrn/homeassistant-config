@@ -3501,3 +3501,255 @@
     data:
       message: command_screen_off
   mode: single
+- id: '1776360791639'
+  alias: Garage - Clear Arrival Dashboard on Arrival
+  description: Automatically dismisses garage dashboard when you arrive home
+  triggers:
+  - platform: state
+    entity_id: person.john_spencer
+    to: home
+  actions:
+  - action: notify.mobile_app_john_s_s26_ultra
+    data:
+      message: clear_notification
+      data:
+        tag: garage_arrival_dashboard
+  mode: single
+- id: '1776360802500'
+  alias: Garage Door - Alert Action Handler
+  triggers:
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_CLOSE_NORTH
+    id: close_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_CLOSE_SOUTH
+    id: close_south
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_SNOOZE_15_NORTH
+    id: snooze_15_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_SNOOZE_15_SOUTH
+    id: snooze_15_south
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_SNOOZE_60_NORTH
+    id: snooze_60_north
+  - platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: GARAGE_SNOOZE_60_SOUTH
+    id: snooze_60_south
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: close_north
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.ratgdo32disco_fd8d8c_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_north
+    - conditions:
+      - condition: trigger
+        id: close_south
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.ratgdo32disco_5735e8_door
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_south
+    - conditions:
+      - condition: trigger
+        id: snooze_15_north
+      sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.garage_north_snooze_until
+        data:
+          datetime: '{{ now() + timedelta(minutes=15) }}'
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_north
+    - conditions:
+      - condition: trigger
+        id: snooze_15_south
+      sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.garage_south_snooze_until
+        data:
+          datetime: '{{ now() + timedelta(minutes=15) }}'
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_south
+    - conditions:
+      - condition: trigger
+        id: snooze_60_north
+      sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.garage_north_snooze_until
+        data:
+          datetime: '{{ now() + timedelta(minutes=60) }}'
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_north
+    - conditions:
+      - condition: trigger
+        id: snooze_60_south
+      sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.garage_south_snooze_until
+        data:
+          datetime: '{{ now() + timedelta(minutes=60) }}'
+      - action: notify.mobile_app_john_s_s26_ultra
+        data:
+          message: clear_notification
+          data:
+            tag: garage_door_south
+  mode: parallel
+  max: 6
+- id: '1776360807516'
+  alias: Garage Door - Reset Snooze on Close
+  triggers:
+  - entity_id: cover.ratgdo32disco_fd8d8c_door
+    id: north
+    platform: state
+    to: closed
+  - entity_id: cover.ratgdo32disco_5735e8_door
+    id: south
+    platform: state
+    to: closed
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: north
+      sequence:
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() - timedelta(days=1) }}'
+        target:
+          entity_id: input_datetime.garage_north_snooze_until
+    - conditions:
+      - condition: trigger
+        id: south
+      sequence:
+      - action: input_datetime.set_datetime
+        data:
+          datetime: '{{ now() - timedelta(days=1) }}'
+        target:
+          entity_id: input_datetime.garage_south_snooze_until
+  mode: parallel
+- id: '1776360815771'
+  alias: Garage All Lights ON (Fixed)
+  triggers:
+  - entity_id: binary_sensor.ratgdo32disco_fd8d8c_motor
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.ratgdo32disco_5735e8_motor
+    platform: state
+    to: 'on'
+  - entity_id: cover.ratgdo32disco_fd8d8c_door
+    platform: state
+    to: open
+  - entity_id: cover.ratgdo32disco_5735e8_door
+    platform: state
+    to: open
+  - entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.garage_south_wall_motion_light_sensor_motion
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion
+    platform: state
+    to: 'on'
+  actions:
+  - action: light.turn_on
+    data:
+      brightness_pct: "{% set hour = now().hour %}\n{% if hour >= 22 or hour < 6 %}\n
+        \ 30\n{% else %}\n  100\n{% endif %}"
+    target:
+      entity_id:
+      - light.garage
+      - light.ratgdo32disco_fd8d8c_light
+      - light.garage_north_wall_nightlight
+      - light.garage_north_of_east_wall_motion_light_sensor
+      - light.garage_south_wall_motion_light_sensor
+      - light.garage_south_of_east_wall_motion_light_sensor
+  mode: restart
+- id: '1776360824225'
+  alias: Garage All Lights OFF (Fixed)
+  triggers:
+  - entity_id:
+    - binary_sensor.ratgdo32disco_fd8d8c_motion
+    - binary_sensor.ratgdo32disco_5735e8_motion
+    - binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
+    - binary_sensor.garage_south_wall_motion_light_sensor_motion
+    - binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion
+    for:
+      seconds: 30
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: cover.ratgdo32disco_fd8d8c_door
+    state: closed
+  - condition: state
+    entity_id: cover.ratgdo32disco_5735e8_door
+    state: closed
+  - condition: template
+    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')
+      | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors
+      = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n
+      \ 'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n
+      \ 'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n] %}\n{%
+      set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors %}\n
+      \ {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n  {%
+      elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) < timeout_seconds
+      %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{% endfor %}\n{{ ns.all_clear
+      }}"
+  actions:
+  - action: light.turn_off
+    target:
+      entity_id:
+      - light.garage
+      - light.ratgdo32disco_fd8d8c_light
+      - light.garage_north_wall_nightlight
+      - light.garage_north_of_east_wall_motion_light_sensor
+      - light.garage_south_wall_motion_light_sensor
+      - light.garage_south_of_east_wall_motion_light_sensor
+  mode: restart
