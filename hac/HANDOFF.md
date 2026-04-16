@@ -1,59 +1,53 @@
-# HANDOFF — S20 complete | 2026-04-15
+# HANDOFF — S21 complete | 2026-04-15
 
-## Completed this session (S20)
+## Completed this session (S21)
 
-### Group 0 automation migration — COMPLETE ✅
-- occupancy_system.yaml: 6 automations stripped, automation block removed ✅
-- family_activities.yaml: 6 automations stripped, automation block removed ✅
-- script/template/zone blocks preserved in both files ✅
-- All 12 automations created in UI storage via MCP ✅
-- jarrett_grade + owen_grade confirmed in UI storage ✅
-- ha core check: clean ✅
-- Commit: 12fb8cf pushed ✅
+### Scripts migrated to UI storage
+- script.apply_lighting_context → UI storage ✅
+- script.apply_tablet_context → UI storage, IP fixed 192.168.1.3 → 192.168.1.10 ✅
+- occupancy_system.yaml script block stripped ✅
 
-### HANDOFF.md correction
-- S19 was completed but HANDOFF was never updated (still showed S18 state)
-- S19 confirmed complete: 82 total helpers in UI storage, zero remaining in YAML
-- helper breakdown: 50 input_boolean, 3 input_select, 6 input_number,
-  16 input_datetime, 3 timer, 4 counter
+### Automation migrations
+- family_activities.yaml: automation block stripped, 6 ghosts removed, entity IDs renamed clean ✅
+- entry_room_ceiling_motion.yaml: file deleted (automation only), 1 automation in UI storage ✅
+- adaptive_lighting_entry_lamp.yaml: 14 automations migrated, template block preserved ✅
+- All _2 ghost entities removed and renamed ✅
 
-### UI storage automation count (approximate)
-- Was ~57 before S20
-- Added 12 this session → ~69 in UI storage
-- ~72 remaining in package YAML across 17 files (down from 84 across 19)
+### Learnings promoted
+- 5 new entries added to CRITICAL_RULES.md ✅
+- Commit: 6e4f77b pushed ✅
 
-## S21 — START HERE
+## Automation package files remaining (15)
 
-### Step 1: Migrate scripts from occupancy_system.yaml to UI storage
-Two scripts still in YAML need to move to UI storage:
-- script.apply_lighting_context (complex AL sleep mode logic)
-- script.apply_tablet_context (FKB URL routing by occupancy)
-⚠️  apply_tablet_context has stale IP: base_url: http://192.168.1.3:8123
-    Must update to http://192.168.1.10:8123 when migrating
+Group 2: kitchen_tablet_dashboard.yaml, lighting_motion_firstfloor.yaml, lights_auto_off_safety.yaml
+Group 3: hue_switches.yaml
+Group 4: garage_arrival_optimized.yaml, garage_door_alerts.yaml, garage_quick_open.yaml,
+         garage_lighting_automation_fixed.yaml, garage_notifications_consolidated.yaml
+Group 5: upstairs_lighting.yaml
+Group 6: kids_bedroom_automation.yaml, ella_living_room.yaml
+Group 7: humidity_smart_alerts.yaml
+Group 10: notifications_system.yaml
 
-### Step 2: Continue Group 0 — next package files
-After scripts are migrated, proceed to remaining Group 0 files:
-- packages/presence_system.yaml (john_home, person trackers)
-- packages/house_modes.yaml (sleep mode automation if exists)
-Check with: grep -rln "^automation:" /homeassistant/packages/
+## S22 — START HERE
 
-### Step 3: Next automation groups
-After Group 0 fully complete:
-- Group 1: Entry Room (packages/entry_room.yaml or similar)
-- Group 4: Garage (arrival + auto-close — high priority, often used)
+### Step 1: Stop HA on Green (URGENT — double-firing risk)
+On Green's terminal: ha core stop
+Green is decommissioned — EQ14 is primary. Green should not be running automations.
 
-### Automation package file map (from S19 audit)
-17 files still have automation blocks. Verify current state with:
-grep -rln "^automation:" /homeassistant/packages/
+### Step 2: Continue Group 2 — Kitchen
+Start with: grep -n "alias:" /homeassistant/packages/kitchen_tablet_dashboard.yaml
+Use CORRECT migration order: strip YAML first → restart → create in UI → no _2 suffix
+
+### Step 3: Group 4 — Garage (high priority, daily use)
+5 files, complex notification architecture — review garage rules in CRITICAL_RULES first
 
 ## Tabled (do not forget)
-- Person trackers: Alaina, Ella, Michelle — none assigned (handle in Group 0 presence step)
+- Person trackers: Alaina, Ella, Michelle — none assigned
 - Michelle iPhone MAC: 6a:9a:25:dd:82:f1
-- AndroidTV 192.168.1.17 — ADB device, real, DO NOT DELETE, identity TBD
-- Music Assistant — setup_error, needs add-on restart (tabled)
-- input_text: alaina/ella WAYA softball calendar IDs — recreate in Group 6
+- AndroidTV 192.168.1.17 — real device, DO NOT DELETE
+- Music Assistant — setup_error, tabled
 - North ratgdo: toggle obstruction OFF after any OTA flash
 - Apollo Kitchen (192.168.21.233): OTA flash pending
-- Vanity slow fade: LOCAL_RAMP_RATE VZM30-SN IEEE 18:0d:f9:ff:fe:34:58:66 → Group 5
+- Vanity slow fade: VZM30-SN IEEE 18:0d:f9:ff:fe:34:58:66 → Group 5
 - humidity_smart_alerts unpause bug → Group 7
-- NordPass backlog: rename all messy entries
+- input_text: alaina/ella WAYA softball calendar IDs → Group 6
