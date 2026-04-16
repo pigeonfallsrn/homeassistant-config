@@ -940,3 +940,37 @@ WRAP RITUAL ADDITION — always at session close:
 - **Never define automation: blocks inline in configuration.yaml** — they load before automations.yaml and steal entity_ids, causing _2 suffix on the real automation
 - **All automations belong in**: packages/*.yaml or automations.yaml with an `id:` field
 - **Symptom**: automation shows as entity_id_2, never-triggered, original still running with old service: syntax
+
+## YAML MIGRATION WORKFLOW — STRIP FIRST (S21 confirmed)
+- **WRONG order**: create in UI storage → strip YAML → always gets `_2` suffix
+- **CORRECT order**: strip YAML block first → `ha core restart` → create in UI → clean entity IDs, no `_2`
+- The `_2` suffix is 100% predictable and 100% avoidable with correct order
+- Ghost cleanup sequence when `_2` already exists: `ha_remove_entity` ghost → `ha_set_entity` rename
+
+## GREEN'S GIT IS BROKEN (S21 confirmed)
+- Green's PAT is embedded in remote URL in plain text — `GIT_TERMINAL_PROMPT=0` blocks push
+- Green can commit locally but CANNOT push to GitHub
+- All commits and pushes happen on EQ14 only — Green is git read-only going forward
+- Fix for future: `git remote set-url origin https://NEW_PAT@github.com/pigeonfallsrn/homeassistant-config.git`
+
+## LINE NUMBERS DIFFER BETWEEN GREEN AND EQ14 (S21 confirmed)
+- Same repo but EQ14 files were partially stripped in earlier sessions
+- NEVER assume Green's line numbers match EQ14 — always check EQ14's file directly
+- Pattern: `grep -n "^block_name:" /homeassistant/packages/file.yaml` on EQ14 before any cut
+
+## `automation.reload` DOES NOT CLEAR REGISTRY GHOSTS (S21 confirmed)
+- `automation.reload` reloads YAML into memory but does NOT purge stale entity registry entries
+- Only `ha core restart` fully clears ghost registry entries
+- Skip the reload step — go straight to restart after stripping YAML blocks
+
+## ZSH BRACKET PASTE MODE — `[200~` INJECTION (S21 observed)
+- Terminal sometimes injects `[200~` prefix and `~` suffix on pasted commands
+- Symptom: `zsh: bad pattern: [200~grep`
+- Fix: always retype commands manually when this occurs — never re-paste the same text
+
+## HA GREEN — DECOMMISSION PLAN (S21 decided)
+- Green is git read-only, being stripped of all package automation blocks
+- Goal: blank HAOS install → future use as garage Zigbee coordinator or second location
+- Run `ha core stop` on Green to eliminate double-firing risk while migration is in progress
+- When ready for garage: reflash SD card with fresh HAOS — do not carry any config forward
+- Green's `.storage/` and packages are NOT needed — EQ14 git repo is source of truth
