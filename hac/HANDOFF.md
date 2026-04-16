@@ -1,64 +1,57 @@
-# HANDOFF — S22 complete | 2026-04-15
+# HANDOFF — S23 complete | 2026-04-15
 
-## Session Goal
-Green decommission review — systematic audit before wipe.
-Green stopped (ha core stop). EQ14 confirmed sole primary.
+## Completed this session (S23)
 
-## Completed this session (S22)
+### Group 2 — Kitchen COMPLETE
+All 3 package files resolved:
+- lights_auto_off_safety.yaml: DELETED (all 3 automations already on EQ14)
+- lighting_motion_firstfloor.yaml: automation block stripped, template-only remains
+- kitchen_tablet_dashboard.yaml: automation + script blocks stripped, template-only remains
 
-### Green decommission review — COMPLETE
-All 20 package files, automations/ folder (20 automations), customize.yaml,
-.storage, themes, blueprints, hac/ folder audited. Nothing lost.
+### Migrated to UI storage
+6 automations:
+  automation.kitchen_tablet_brightness_schedule
+  automation.kitchen_tablet_doorbell_camera_popup
+  automation.kitchen_tablet_wake_on_kitchen_motion
+  automation.kitchen_tablet_sleep_after_inactivity
+  automation.kitchen_tablet_wake_on_presence
+  automation.kitchen_tablet_sleep_when_away
 
-### Ghost entities removed from EQ14
-- binary_sensor.anyone_home_2 removed
-- light.ella_s_ceiling_lights_2 removed
+5 scripts:
+  script.kitchen_scene_all_off
+  script.kitchen_scene_bright
+  script.kitchen_scene_dim
+  script.kitchen_scene_nightlight
+  script.kitchen_scene_select
 
-### Entity names applied (from Green customize.yaml)
-- switch.kitchen_lounge_tv_dual_smart_plug_switch: "Kitchen Lounge Roku Plug"
-- switch.kitchen_lounge_tv_dual_smart_plug_switch_2: "Kitchen Lounge TV Plug"
+### CRITICAL_RULES promoted
+Ghost registry from YAML id: fields causes _2 on create.
+Pattern: ha_get_entity ALL target entity_ids BEFORE creating after YAML strip.
 
-## Key findings
+### Commits
+5cb47f6 feat: S23 — Group 2 kitchen_tablet_dashboard migrated
 
-### automations/ folder — ALL 20 on EQ14
-Green had 9 files with 20 automations loaded via automation manual:.
-All confirmed in EQ14 UI storage.
+## Known issues flagged (not fixed)
+- first_floor_hallway_motion: delay_off inside state: > block scalar (bug in lighting_motion_firstfloor.yaml)
+  The delay_off is treated as template text, not a sensor parameter. Sensor works but has no debounce.
+  Fix in future session: rewrite as proper template sensor with delay_off at correct indent level.
 
-### Package files — Green-only files resolved
-- motion_aggregation, wifi_floor_presence, john_proximity,
-  garage_motion_combined, climate_analytics: already on EQ14
-- aqara_sensor_names.yaml: SKIP (entity IDs Green-specific)
-- ella_bedroom.yaml: scripts OK, 6 scenes missing (Group 6 backlog)
+## S24 — START HERE
 
-### Aqara sensor gap
-6 door sensors + 4 P1 motion sensors from Green customize.yaml missing on EQ14.
-Green entity IDs: aqara_door_and_window_sensor_door_* (don't exist on EQ14).
-Need to find actual EQ14 entity IDs and rename in future session.
-Friendly names needed:
-  Back Patio Door, Very Front Door, Garage Walk-in Door,
-  Front Driveway Walk-in Door, Garage South Bay Door, Garage North Bay Door,
-  Kitchen Lounge P1 Motion, Upstairs Hallway P1 Motion,
-  1st Floor Bathroom Hallway P1 Motion, Front Door Hallway P1 Motion
+### Priority 1: Group 4 — Garage (5 files, high daily use)
+Read CRITICAL_RULES garage section first (shell_command.read_critical_rules_full)
+Files:
+  garage_arrival_optimized.yaml
+  garage_door_alerts.yaml
+  garage_quick_open.yaml
+  garage_lighting_automation_fixed.yaml
+  garage_notifications_consolidated.yaml
 
-## S23 — START HERE
+Start: for f in garage_arrival_optimized garage_door_alerts garage_quick_open garage_lighting_automation_fixed garage_notifications_consolidated; do echo "=== $f ===" && grep -n "alias:" /homeassistant/packages/${f}.yaml; done
 
-### Priority 1: Group 2 — Kitchen (3 files)
-grep -n "alias:" /homeassistant/packages/kitchen_tablet_dashboard.yaml
-Migration order: strip YAML first -> ha core restart -> create in UI -> no _2 suffix
+### Priority 2: Group 3 — hue_switches.yaml (1 file)
 
-### Priority 2: Group 4 — Garage (5 files, high daily use)
-Review CRITICAL_RULES garage section first.
-
-## Group 6 backlog additions
-6 Ella bedroom scenes missing from EQ14 — create during Group 6:
-  Ella Dim Red, Ella Reading, Ella Bedtime Glow,
-  Ella Chill Purple, Ella Volleyball Hype, Ella Bright
-  Entities: ella_s_ceiling_lights, ella_s_wall_light,
-            ella_s_bedside_lamp, ella_s_led_lights
-Bug: ella scripts have ella_s_ceiling_lights listed 3x in targets. Clean in Group 6.
-
-## Automation package files remaining (15)
-Group 2: kitchen_tablet_dashboard.yaml, lighting_motion_firstfloor.yaml, lights_auto_off_safety.yaml
+## Automation package files remaining (12)
 Group 3: hue_switches.yaml
 Group 4: garage_arrival_optimized.yaml, garage_door_alerts.yaml, garage_quick_open.yaml,
          garage_lighting_automation_fixed.yaml, garage_notifications_consolidated.yaml
@@ -66,6 +59,8 @@ Group 5: upstairs_lighting.yaml
 Group 6: kids_bedroom_automation.yaml, ella_living_room.yaml
 Group 7: humidity_smart_alerts.yaml
 Group 10: notifications_system.yaml
+(Note: kitchen_tablet_dashboard.yaml and lighting_motion_firstfloor.yaml
+ remain as template-only holders — not pending migration)
 
 ## Tabled (carried forward)
 - Person trackers: Alaina, Ella, Michelle — none assigned
@@ -77,3 +72,6 @@ Group 10: notifications_system.yaml
 - Vanity slow fade: VZM30-SN IEEE 18:0d:f9:ff:fe:34:58:66 -> Group 5
 - humidity_smart_alerts unpause bug -> Group 7
 - input_text: alaina/ella WAYA softball calendar IDs -> Group 6
+- Aqara sensor gap: 6 door + 4 P1 motion sensors need EQ14 entity ID hunt
+- first_floor_hallway_motion delay_off bug in lighting_motion_firstfloor.yaml
+- 6 Ella bedroom scenes missing -> Group 6

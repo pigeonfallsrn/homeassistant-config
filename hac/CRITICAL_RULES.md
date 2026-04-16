@@ -974,3 +974,4 @@ WRAP RITUAL ADDITION — always at session close:
 - Run `ha core stop` on Green to eliminate double-firing risk while migration is in progress
 - When ready for garage: reflash SD card with fresh HAOS — do not carry any config forward
 - Green's `.storage/` and packages are NOT needed — EQ14 git repo is source of truth
+- 2026-04-15: Ghost registry from YAML id: fields causes _2 on create. ALWAYS ha_get_entity check target entity_ids BEFORE creating automations after YAML strip. Ghosts show as unavailable state. Fix: ha_remove_entity(ghost) first, then create clean. Or if _2 already created: ha_set_entity(new_entity_id) to rename it. Pattern confirmed S23.
