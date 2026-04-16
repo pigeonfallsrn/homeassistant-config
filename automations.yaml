@@ -671,6 +671,7 @@
       - action: light.turn_on
         data:
           brightness_step_pct: 10
+          transition: 3
         target:
           entity_id:
           - light.2nd_floor_bathroom
@@ -682,6 +683,7 @@
       - action: light.turn_on
         data:
           brightness_step_pct: -10
+          transition: 3
         target:
           entity_id:
           - light.2nd_floor_bathroom
