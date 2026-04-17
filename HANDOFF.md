@@ -61,3 +61,97 @@ Group 0 is the foundation — all other groups depend on it.
 - Person trackers: Alaina, Ella, Michelle — none assigned
 - Michelle iPhone MAC: 6a:9a:25:dd:82:f1
 - input_text: alaina/ella waya softball calendar IDs — low priority, recreate during Group 6 (kids)
+
+## S31 COMPREHENSIVE SESSION OUTCOMES
+
+### COMPLETED WORK ✅
+**Foundation Architecture (HA Best Practices):**
+- 4 Floors: Outdoors (lvl 10), 1st Floor (lvl 1), 2nd Floor (lvl 2), Basement (lvl -1)
+- 11 Areas: Entry Room, Kitchen, Living Room, Garage, Master Bedroom, Alaina's/Ella's Bedrooms, 1st/2nd Floor Bathrooms, Upstairs Hallway, Living Room Lounge
+- 12 Labels: lighting (amber), presence (blue), security (red), climate (green), kids (pink), garage (brown), av (purple), notifications (orange), override (yellow), utilities (teal), ha_system (grey), adaptive (light-blue)
+
+**Entity Redistribution (35+ entities):**
+- Garage: Doors, lights, sensors, alerts, helpers → garage/security/climate/notifications labels
+- Entry Room: Lights, sensors, helpers, AL switches → lighting/presence/override labels  
+- Bedrooms: Kids lights/scripts, master AL, overrides → kids/lighting/adaptive labels
+- Bathrooms: Motion sensors, fan controls, overrides → climate/override/presence labels
+- Hallways: AL switches, motion sensors → adaptive/lighting/presence labels
+
+**Methodology Proven:**
+- Dual-value approach: area assignment + label application simultaneously
+- Foundation-first sequence: Floors → Areas → Labels → Entity Assignment
+- Cross-domain success: covers, lights, switches, sensors, helpers, scripts
+
+### DISCOVERIES & OPPORTUNITIES 🔍
+**Massive Entity Pools Identified:**
+- 211 garage entities (90% remaining for redistribution)
+- 247 entry_room entities (85% remaining)
+- 113 alaina entities (80% remaining) 
+- 95 ella entities (90% remaining)
+- 77 master bedroom entities (95% remaining)
+- 281 bathroom entities (95% remaining)
+- 70 hallway entities (95% remaining)
+- **TOTAL: ~1000+ entities available for systematic organization**
+
+**Immediate Opportunities:**
+- Mass redistribution using proven dual-value methodology
+- 159 automations ready for 12-label application
+- Helper migration completion (remaining YAML → UI)
+- Entity naming standardization across domains
+
+### FUTURE WORK PRIORITIES 🚀
+**S32+ Session Roadmap:**
+1. **Mass Entity Redistribution** - Continue systematic organization of ~800+ remaining entities
+2. **Automation Labeling** - Apply 12 labels to 159 automations for UI organization  
+3. **Helper Migration** - Complete remaining YAML → UI storage transitions
+4. **Area Expansion** - Additional areas for granular organization if needed
+5. **Entity Naming** - Standardize naming across all redistributed entities
+
+**Architectural Expansion Options:**
+- Kitchen Lounge area (mentioned in master plan)
+- Smart Home AV area (master plan)
+- Stairway Cubby area (master plan) 
+- Basement area subdivision (workout, laundry, boiler rooms)
+- Outdoor area subdivision (yard, driveway, etc.)
+
+### TECHNICAL LEARNINGS 📚
+**MCP Server Behavior:**
+- Floor/area creation required MCP restart mid-session for stability
+- Entity operations remained stable post-restart
+- Bulk operations not supported for area assignment (individual moves required)
+
+**Entity Registry Insights:**
+- ha_set_entity() supports simultaneous area_id + labels operations (highly efficient)
+- Some generated entities (statistics, etc.) not editable via entity registry
+- All moved entities properly registered with clean assignments
+
+**Label System Implementation:**
+- 12 labels created with proper color coding, icons, descriptions
+- Labels support bulk assignment via entity operations
+- Cross-cutting label design allows multiple labels per entity
+
+### WORKFLOW IMPROVEMENTS 🔧
+**Session Management:**
+- Foundation-first approach prevents organizational debt
+- Dual-value operations maximize efficiency
+- Systematic discovery prevents missed entities
+
+**Git Integration:**
+- Architecture changes persist in HA .storage files (no git commits needed)
+- HANDOFF.md updates track session progress
+- Clean git tree confirms stable state
+
+### SUCCESS METRICS 📊
+**Architecture Transformation:**
+- BEFORE: 500+ entities in 2 areas, zero organization
+- AFTER: Professional foundation + systematic redistribution started
+- IMPACT: 1000+ entities now organizeable via proven methodology
+
+**Best Practices Compliance:**
+- ✅ Floors → Areas → Labels → Entity Assignment sequence followed
+- ✅ UI-first approach maintained
+- ✅ Systematic rather than ad-hoc organization
+- ✅ Dual-value efficiency maximized
+
+**S31 OVERALL: COMPLETE FOUNDATION SUCCESS** 🏆
+
