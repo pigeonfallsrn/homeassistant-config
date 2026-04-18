@@ -481,53 +481,6 @@
     id: avr_off
     platform: state
     to: 'off'
-- actions:
-  - action: light.turn_off
-    target:
-      entity_id: light.entry_room_ceiling_light
-  alias: Entry Room - AUX Switch Off Command
-  description: Catches AUX DOWN 'off' command that bypasses scene events
-  id: '1771882149561'
-  mode: single
-  triggers:
-  - event_data:
-      command: 'off'
-      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
-    event_type: zha_event
-    platform: event
-- actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: aux_up
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id: light.entry_room_ceiling_light
-    - conditions:
-      - condition: trigger
-        id: aux_down
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.entry_room_ceiling_light
-  alias: Entry Room - AUX Switch Ceiling Control
-  description: AUX switch UP/DOWN controls Entry Room Ceiling Hue zone only (not lamp)
-  id: '1771901615355'
-  mode: restart
-  triggers:
-  - event_data:
-      command: button_5_press
-      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
-    event_type: zha_event
-    id: aux_up
-    platform: event
-  - event_data:
-      command: button_4_press
-      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
-    event_type: zha_event
-    id: aux_down
-    platform: event
 - id: 2nd_floor_bathroom_vanity_inovelli
   alias: 2nd Floor Bathroom — Inovelli Switch Control (Both Lights)
   description: 'Both bathroom Inovelli switches (vanity + ceiling) jointly control
@@ -1275,36 +1228,6 @@
       message: Run hac wrap in terminal, then tap to start next session.
       title: HAC — session wrap due
   mode: single
-- actions:
-  - action: light.turn_on
-    target:
-      entity_id: light.entry_room_hue_color_lamp
-  - action: adaptive_lighting.apply
-    data:
-      entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
-      lights:
-      - light.entry_room_hue_color_lamp
-      transition: 2
-  alias: Entry Room Lamp - On With Motion
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.dad_bedtime_mode
-    state: 'off'
-  description: Turns on entry room lamp when motion detected and applies AL for correct
-    color/brightness. No lux gate - hard off at 23:30 handles late night. Full bypass
-    when hot_tub_mode or manual override active.
-  id: '1774537453732'
-  mode: restart
-  triggers:
-  - entity_id: binary_sensor.entry_room_motion
-    platform: state
-    to: 'on'
 - id: '1774539842937'
   alias: Kitchen + Lounge — Motion Lighting
   description: '3-tier time-based motion lighting for open-concept kitchen/lounge.
@@ -2542,178 +2465,6 @@
     target:
       entity_id: light.entry_room_hue_color_lamp
   mode: single
-- id: '1776301737466'
-  alias: Entry Room — Lamp Adaptive Control
-  description: Manages lamp based on motion, lux, presence, time, and modes
-  triggers:
-  - entity_id: binary_sensor.entry_room_motion
-    id: motion
-    platform: state
-    to: 'on'
-  - entity_id: input_boolean.hot_tub_mode
-    id: hot_tub_toggle
-    platform: state
-  - entity_id: input_boolean.dad_bedtime_mode
-    id: bedtime_on
-    platform: state
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'on'
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_pct: 5
-          rgb_color:
-          - 255
-          - 30
-          - 0
-          transition: 2
-        target:
-          entity_id: light.entry_room_hue_color_lamp
-      - action: automation.turn_off
-        target:
-          entity_id:
-          - automation.entry_room_lamp_off_after_no_motion
-          - automation.entry_room_ceiling_motion_lighting
-          - automation.entry_room_lamp_activity_boost
-          - automation.entry_room_lamp_dim_after_15min_no_motion
-      - action: switch.turn_off
-        target:
-          entity_id:
-          - switch.adaptive_lighting_entry_room_lamp_adaptive
-          - switch.adaptive_lighting_entry_room_ceiling
-      - action: switch.turn_off
-        target:
-          entity_id: switch.adaptive_lighting_living_spaces
-    - conditions:
-      - condition: trigger
-        id: bedtime_on
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_pct: 10
-          color_temp_kelvin: 2200
-          transition: 60
-        target:
-          entity_id: light.entry_room_hue_color_lamp
-      - delay:
-          minutes: 15
-      - action: light.turn_off
-        data:
-          transition: 60
-        target:
-          entity_id: light.entry_room_hue_color_lamp
-    - conditions:
-      - condition: trigger
-        id: motion
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.dad_bedtime_mode
-        state: 'off'
-      - below: input_number.entry_room_lux_threshold
-        condition: numeric_state
-        entity_id: sensor.entry_room_average_lux
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id: switch.adaptive_lighting_living_spaces
-      - action: light.turn_on
-        data:
-          brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int
-            }}'
-        target:
-          entity_id: light.entry_room_hue_color_lamp
-    - conditions:
-      - condition: trigger
-        id: hot_tub_toggle
-      - condition: state
-        entity_id: input_boolean.hot_tub_mode
-        state: 'off'
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id: switch.adaptive_lighting_living_spaces
-      - action: adaptive_lighting.apply
-        data:
-          entity_id: switch.adaptive_lighting_living_spaces
-          lights:
-          - light.entry_room_hue_color_lamp
-          transition: 5
-      - action: automation.turn_on
-        target:
-          entity_id:
-          - automation.entry_room_lamp_off_after_no_motion
-          - automation.entry_room_ceiling_motion_lighting
-          - automation.entry_room_lamp_activity_boost
-          - automation.entry_room_lamp_dim_after_15min_no_motion
-      - action: switch.turn_on
-        target:
-          entity_id:
-          - switch.adaptive_lighting_entry_room_lamp_adaptive
-          - switch.adaptive_lighting_entry_room_ceiling
-  mode: restart
-- id: '1776301748149'
-  alias: Entry Room — Lamp Dim After 5min No Motion
-  triggers:
-  - entity_id: binary_sensor.entry_room_motion
-    for:
-      minutes: 3
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  - condition: state
-    entity_id: light.entry_room_hue_color_lamp
-    state: 'on'
-  - above: 50
-    attribute: brightness
-    condition: numeric_state
-    entity_id: light.entry_room_hue_color_lamp
-  actions:
-  - action: light.turn_on
-    data:
-      brightness_pct: 20
-      transition: 60
-    target:
-      entity_id: light.entry_room_hue_color_lamp
-  mode: single
-- id: '1776301757744'
-  alias: Entry Room — Lamp Off After 10min No Motion
-  triggers:
-  - entity_id: binary_sensor.entry_room_motion
-    for:
-      minutes: 10
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: light.entry_room_hue_color_lamp
-    state: 'on'
-  actions:
-  - action: light.turn_off
-    data:
-      transition: 60
-    target:
-      entity_id: light.entry_room_hue_color_lamp
-  mode: single
 - id: '1776301762416'
   alias: Entry Room — Lamp Hard Off at Evening End
   triggers:
@@ -3730,4 +3481,259 @@
     data:
       message: Humidity fan pause expired - automatic control resumed
       title: "\U0001F4A8 Resumed"
+  mode: restart
+- id: '1776535781702'
+  alias: Entry Room — Lamp Motion Control
+  description: 'Consolidated motion-based lamp control. Motion on: turn on lamp with
+    AL at context-aware brightness (lux gated). Motion off 3min: dim to 20%. Motion
+    off 10min: full off. Respects manual override, hot tub mode, and bedtime mode.
+    Replaces 4 separate automations per HA best practice (single automation, dual
+    triggers, choose).'
+  triggers:
+  - platform: state
+    entity_id: binary_sensor.entry_room_motion
+    to: 'on'
+    id: motion_on
+  - platform: state
+    entity_id: binary_sensor.entry_room_motion
+    to: 'off'
+    for:
+      minutes: 3
+    id: motion_dim
+  - platform: state
+    entity_id: binary_sensor.entry_room_motion
+    to: 'off'
+    for:
+      minutes: 10
+    id: motion_off
+  conditions:
+  - condition: state
+    entity_id: input_boolean.entry_room_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.hot_tub_mode
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.dad_bedtime_mode
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion_on
+      sequence:
+      - condition: numeric_state
+        entity_id: sensor.entry_room_average_lux
+        below: input_number.entry_room_lux_threshold
+      - action: switch.turn_on
+        target:
+          entity_id: switch.adaptive_lighting_living_spaces
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int
+            }}'
+      - action: adaptive_lighting.apply
+        data:
+          entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
+          lights:
+          - light.entry_room_hue_color_lamp
+          transition: 2
+    - conditions:
+      - condition: trigger
+        id: motion_dim
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: 'on'
+      - condition: numeric_state
+        entity_id: light.entry_room_hue_color_lamp
+        attribute: brightness
+        above: 50
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          brightness_pct: 20
+          transition: 60
+    - conditions:
+      - condition: trigger
+        id: motion_off
+      - condition: state
+        entity_id: light.entry_room_hue_color_lamp
+        state: 'on'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+        data:
+          transition: 60
+  mode: restart
+- id: '1776535795628'
+  alias: Entry Room — Lamp Mode Overrides
+  description: 'Handles hot tub mode and bedtime mode lamp behavior. Hot tub on: deep
+    red 5%, disable AL. Hot tub off: restore AL and normal operation. Bedtime on:
+    dim warm fade then off after 15min. Extracted from Lamp Adaptive Control per HA
+    best practice (separate concerns).'
+  triggers:
+  - entity_id: input_boolean.hot_tub_mode
+    id: hot_tub_on
+    platform: state
+    to: 'on'
+  - entity_id: input_boolean.hot_tub_mode
+    id: hot_tub_off
+    platform: state
+    to: 'off'
+  - entity_id: input_boolean.dad_bedtime_mode
+    id: bedtime_on
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.entry_room_manual_override
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: hot_tub_on
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 5
+          rgb_color:
+          - 255
+          - 30
+          - 0
+          transition: 2
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.adaptive_lighting_entry_room_lamp_adaptive
+          - switch.adaptive_lighting_entry_room_ceiling
+          - switch.adaptive_lighting_living_spaces
+    - conditions:
+      - condition: trigger
+        id: hot_tub_off
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id:
+          - switch.adaptive_lighting_living_spaces
+          - switch.adaptive_lighting_entry_room_lamp_adaptive
+          - switch.adaptive_lighting_entry_room_ceiling
+      - action: adaptive_lighting.apply
+        data:
+          entity_id: switch.adaptive_lighting_living_spaces
+          lights:
+          - light.entry_room_hue_color_lamp
+          transition: 5
+    - conditions:
+      - condition: trigger
+        id: bedtime_on
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 10
+          color_temp_kelvin: 2200
+          transition: 60
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+      - delay:
+          minutes: 15
+      - action: light.turn_off
+        data:
+          transition: 60
+        target:
+          entity_id: light.entry_room_hue_color_lamp
+  mode: restart
+- id: '1776535826103'
+  alias: Entry Room — AUX Switch Control
+  description: 'Consolidated AUX switch handler. UP: set manual override + time-based
+    scene (day=energize, evening=dim warm, night=arctic aurora). DOWN/OFF: turn off
+    ceiling + clear override. Auto-clears override after 30min. Replaces 3 separate
+    AUX automations + override reset. Fixed stale entity IDs.'
+  triggers:
+  - event_data:
+      command: button_5_press
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+    event_type: zha_event
+    id: aux_up
+    platform: event
+  - event_data:
+      command: button_4_press
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+    event_type: zha_event
+    id: aux_down
+    platform: event
+  - event_data:
+      command: 'off'
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+    event_type: zha_event
+    id: aux_off_cmd
+    platform: event
+  - entity_id: input_boolean.entry_room_manual_override
+    for:
+      minutes: 30
+    id: override_timeout
+    platform: state
+    to: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aux_up
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.entry_room_manual_override
+      - choose:
+        - conditions:
+          - condition: time
+            after: '23:00:00'
+            before: 06:00:00
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.entry_room_arctic_aurora
+        - conditions:
+          - condition: time
+            after: '20:00:00'
+            before: '23:00:00'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness_pct: 60
+              color_temp_kelvin: 2700
+              transition: 1
+            target:
+              entity_id: light.entry_room_ceiling_light
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.entry_room_energize
+    - conditions:
+      - condition: trigger
+        id:
+        - aux_down
+        - aux_off_cmd
+      sequence:
+      - action: light.turn_off
+        data:
+          transition: 2
+        target:
+          entity_id: light.entry_room_ceiling_light
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.entry_room_manual_override
+    - conditions:
+      - condition: trigger
+        id: override_timeout
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.entry_room_manual_override
   mode: restart

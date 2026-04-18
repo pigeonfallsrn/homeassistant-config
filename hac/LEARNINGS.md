@@ -29,3 +29,26 @@
 - PRIVACY.md (data flow map)
 - Pruned project instructions draft (claude_project.md, <800 tokens)
 - Git tagging for milestones
+
+## S42 — Entry Room Review (2026-04-18)
+
+### YAML automations/ directory discovery
+- `automation manual: !include_dir_merge_list automations/` on line 51 of configuration.yaml loads YAML automations from `/homeassistant/automations/` directory
+- These automations have descriptive unique_ids (not timestamp IDs) and don't appear in `automations.yaml`
+- 6 files still remain — future migration target
+- Sequence: delete YAML file → restart → remove ghost entity → verify
+
+### Automation consolidation best practice
+- HA community consensus: one automation per room per function, dual triggers (on/off with for: delay), mode: restart, choose blocks for time-based branching
+- Anti-pattern: automation A toggling automation B on/off for mode changes. Better: use conditions in automation B that check the mode state directly
+- Separate concerns: motion-triggered behavior vs mode-triggered overrides are different automations because they have fundamentally different trigger types
+
+### Entity ID staleness in YAML automations
+- YAML files from older sessions may reference entity IDs that were since renamed
+- entry_room_aux.yaml referenced `light.entry_rm_ceiling_hue_white_1_2` — stale, correct is `light.entry_room_ceiling_light`
+- Always verify entity IDs when migrating YAML to UI
+
+### Ghost cleanup after YAML removal
+- After deleting YAML automation files, entities become restored=True ghosts
+- Restart required to detect missing YAML, then ha_remove_entity cleans registry
+- Strict sequence: delete file → restart → verify ghost → remove entity

@@ -1,41 +1,45 @@
-# HANDOFF — S41 complete | 2026-04-18
+# HANDOFF — S42 complete | 2026-04-18
 
-## Completed this session (S41)
+## Completed this session (S42)
 
-### Governance synthesis from cross-model review
-- Read and synthesized research from Claude, Gemini (deep research), and ChatGPT (deep research)
-- Identified consensus: tiny instructions, two-occurrence rule, health check, privacy awareness
-- Created PRIVACY.md — data flow map (what goes where, what stays local)
-- Added two-occurrence promotion rule to REVIEW_WORKFLOW.md
-- Created health_check_full.sh — registered as shell_command.health_check
-- Drafted pruned project instructions as hac/claude_project.md (<800 tokens)
-- Git tagged good-2026-04-18 as stable milestone
+### Entry Room automation review — first area-by-area cycle
+- Audited all 14 Entry Room automations (11 UI + 3 YAML)
+- Discovered 3 YAML automations in `/homeassistant/automations/` loaded via `automation manual:` include
+- Researched HA community best practices: single automation per room with dual triggers, choose blocks, mode:restart
+- Consolidated 14 → 8 automations:
+  - NEW: Entry Room — Lamp Motion Control (merges 4: on/dim/off/adaptive-motion into one dual-trigger choose)
+  - NEW: Entry Room — Lamp Mode Overrides (hot tub + bedtime branches extracted from Lamp Adaptive Control)
+  - NEW: Entry Room — AUX Switch Control (merges 3 AUX + override reset, fixes stale entity IDs)
+  - KEPT: Arrival Welcome, Ceiling Inovelli (blueprint), Ceiling Motion (disabled), Lamp Hard Off, Tap Dial Switch
+  - DELETED: 6 old UI automations (disabled first, verified new ones live, then removed)
+  - DELETED: 2 YAML files (entry_room_aux.yaml, first_person_home.yaml) + 3 ghost entities cleaned
+- Applied "lighting" label to all 8 Entry Room automations
+- Fixed stale entity IDs: `light.entry_rm_ceiling_hue_white_1_2` → `light.entry_room_ceiling_light`
+- Eliminated automation-toggling-automation anti-pattern (old Lamp Adaptive Control toggled 4 other automations on/off for hot tub mode; new design uses conditions instead)
 
-### Key consensus findings
-- All models agree: MCP is partial visibility, never authoritative alone
-- All models agree: project instructions should be <800 tokens
-- All models agree: don't overbuild governance — boring infrastructure wins
-- Gemini's area-less entity insight: entities without areas are invisible to AI spatial reasoning
+### Key design improvements
+- Lamp motion: conditions block (override/hot_tub/bedtime) at top level, lux gate inside motion_on branch, AL apply for color temp
+- AUX switch: consolidated 3 separate event handlers + override reset timer into one automation, no more race conditions
+- Mode overrides: clean separation of concerns — hot_tub and bedtime are mode triggers, not motion triggers
 
-## Current State
+### Automation count: 93 (was 99)
+- Net -6: created 3, deleted 6 UI + 3 YAML ghosts
+- 0 ghosts confirmed post-restart
 
-### Automation count: 99
-- 52 confirmed active, 44 never triggered (flagged for review), 2 calendar disabled, 1 entry disabled
-
-### Governance files
-- HANDOFF.md — rolling session state (this file)
-- LEARNINGS.md — accumulated discoveries
-- REVIEW_WORKFLOW.md — 10-step process + two-occurrence rule
-- PRIVACY.md — data flow map
-- claude_project.md — source-controlled project instructions (<800 tokens)
-- CRITICAL_RULES_CORE.md — hard rules (prune with two-occurrence rule)
-- health_check_full.sh — registered as shell_command.health_check
+### Remaining YAML automations in automations/ directory (6 files)
+- 1st_floor_bathroom_inovelli.yaml
+- 2nd_floor_bathroom_inovelli.yaml
+- alaina_wake_echo_alarm.yaml
+- exterior_lights_auto_off.yaml
+- kitchen_inovelli.yaml
+- living_room_av.yaml
+- Still loaded via `automation manual: !include_dir_merge_list automations/` in configuration.yaml line 51
 
 ## Next Priorities
-1. Run health_check — establish new enriched baseline
-2. Prune project instructions in Claude Project (sync from claude_project.md)
-3. Entry Room — area review (first full cycle with improved workflow)
-4. 2nd Floor Bathroom — simplify 12 automations
+1. Verify Entry Room lamp behavior overnight (motion on/dim/off cycle, hot tub mode, AUX switch)
+2. Review Entry Room — Ceiling Motion Lighting (disabled, reason unknown) — re-enable or delete
+3. 2nd Floor Bathroom — simplify 12 automations (next area review)
+4. Migrate remaining 6 YAML automation files to UI + remove `automation manual:` line
 5. Kitchen tablet — 5/6 never fired
 6. Kids bedrooms — blueprint standardization
 7. Scenes/Scripts/Dashboard audit
