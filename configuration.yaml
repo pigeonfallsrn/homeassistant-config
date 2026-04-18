@@ -69,39 +69,7 @@ http:
 # Adaptive Lighting
 adaptive_lighting: !include adaptive_lighting.yaml
 
-# Scene Index Helpers (CONSOLIDATED - NO DUPLICATES)
-input_number:
-  entry_room_scene_index:
-    name: Entry Room Scene Index
-    min: 0
-    max: 9
-    step: 1
-    initial: 0
-    mode: box
-  bathroom_scene_index:
-    name: Bathroom Scene Index
-    min: 0
-    max: 9
-    step: 1
-    initial: 0
-    mode: box
-  kitchen_lounge_scene_index:
-    name: Kitchen Lounge Scene Index
-    min: 0
-    max: 9
-    step: 1
-    initial: 0
-    mode: box
-  kitchen_table_scene_index:
-    name: Kitchen Table Scene Index
-    min: 0
-    max: 9
-    step: 1
-    initial: 0
-    mode: box
 
-# Input booleans - all defined in separate file
-# input_boolean: !include input_boolean.yaml
 
 # Mobile Dashboard
 lovelace:
@@ -143,10 +111,6 @@ light:
 auth:
   auth_providers:
     - type: homeassistant
-# input_select: !include input_select.yaml  # S38: deleted — 3 unused helpers
-# input_datetime: !include input_datetime.yaml
-# counter: !include counter.yaml
-# timer: !include timer.yaml
 
 # HAC Master Context Excel Auto-Export
 shell_command:
