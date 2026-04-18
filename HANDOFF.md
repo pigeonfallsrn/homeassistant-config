@@ -11,6 +11,12 @@
   Path C (tunnel down) → Path D (full restore with .storage order) →
   ZHA-specific recovery → emergency links
 - Backup taken before edits (slug: 2457fb86)
+
+### Security hardening (3 of 4 items closed)
+- SSH: password auth disabled, ed25519 key-only (NordPass entry updated)
+- Recorder: device_tracker domain added to excludes, core restarted
+- Git PAT: already fine-grained (github_pat_*), parked as acceptable risk
+- Cloudflare Zero Trust: still open, separate session
 - Deduped CRITICAL_RULES_CORE.md: removed 45 duplicate lines (3x GHOST MIGRATION,
   2x TOKEN EFFICIENCY, 2x PACKAGE TRIAGE, 2x SECURITY BACKLOG, 2x GREEN DEPRECATION)
   File now 305 lines with no repeats.
@@ -48,4 +54,4 @@ Template-only stubs (not pending): kitchen_tablet_dashboard.yaml, lighting_motio
 - first_floor_hallway_motion delay_off bug in lighting_motion_firstfloor.yaml
 - 6 Ella bedroom scenes missing -> Group 6
 - HA Green full config audit before wipe (audit done S26, wipe pending)
-- Security session: SSH key + Cloudflare ZT + PAT rotation (~30 min dedicated)
+- Cloudflare Zero Trust: HA login page exposed to internet (only open security item)

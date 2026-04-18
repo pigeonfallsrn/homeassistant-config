@@ -278,13 +278,11 @@ For each file in order:
   5. git rm OR python3 strip -> commit -> MCP restart
   6. create->remove->rename for YAML-only autos
 
-## PRIVACY — SECURITY BACKLOG (4 open items, no progress S24-S25)
-Recommend one dedicated session for items 1+2+3 together (~30 min):
-  1. SSH password auth still enabled — add ed25519 key + set password:""
-  2. Cloudflare Zero Trust not configured — HA login page exposed to internet
-  3. Git PAT plaintext at /config/.git/config — rotate to fine-grained PAT
-  4. device_tracker PII in DB — verify recorder excludes active:
-     grep -A 20 'exclude:' /homeassistant/configuration.yaml
+## PRIVACY — SECURITY BACKLOG (2 open items, S26 progress)
+  1. DONE S26: SSH key-only auth (ed25519, password disabled)
+  2. OPEN: Cloudflare Zero Trust not configured — HA login page exposed to internet
+  3. PARKED: Git PAT already fine-grained (github_pat_*), plaintext in .git/config acceptable risk
+  4. DONE S26: device_tracker excluded from recorder
 
 ## HA GREEN DEPRECATION (pending audit)
 Green terminal still live at 192.168.1.3. Not yet audited or wiped.

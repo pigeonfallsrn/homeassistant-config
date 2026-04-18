@@ -167,6 +167,7 @@ recorder:
   commit_interval: 30
   exclude:
     domains:
+      - device_tracker
       - update
     entity_globs:
       - sensor.*_battery_level
