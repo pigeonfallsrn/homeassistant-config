@@ -1,4 +1,0 @@
-ai_context_update:
-  name: "AI Context Update Buffer"
-  max: 255
-  initial: ""
