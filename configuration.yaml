@@ -114,7 +114,7 @@ auth:
 
 # HAC Master Context Excel Auto-Export
 shell_command:
-  health_check: "bash /homeassistant/hac/scripts/health_check_full.sh"
+  health_check: "bash /config/hac/scripts/health_check_full.sh"
   hac_export: 'bash -c "cd /config/hac && ./hac.sh export"'
   git_status: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -20"'
   git_last_commit: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1"'
