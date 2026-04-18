@@ -18,6 +18,7 @@
 3. git add -A && git commit
 4. shell_command.git_push via MCP (NEVER terminal)
 5. Verify: git log --oneline -3 shows origin/main at HEAD
+6. Verify: any helpers created this session have labels + clean entity_ids
 
 ---
 

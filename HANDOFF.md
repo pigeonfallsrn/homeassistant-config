@@ -11,6 +11,11 @@
   Path C (tunnel down) → Path D (full restore with .storage order) →
   ZHA-specific recovery → emergency links
 - Backup taken before edits (slug: 2457fb86)
+- Deduped CRITICAL_RULES_CORE.md: removed 45 duplicate lines (3x GHOST MIGRATION,
+  2x TOKEN EFFICIENCY, 2x PACKAGE TRIAGE, 2x SECURITY BACKLOG, 2x GREEN DEPRECATION)
+  File now 305 lines with no repeats.
+- Fixed stray root-level CRITICAL_RULES_CORE.md (should only live in hac/)
+- Added step 6 to session close ritual: verify helper labels + clean entity_ids
 
 ### Green audit completed
 - packages/ empty, no unique content to preserve
@@ -44,5 +49,3 @@ Template-only stubs (not pending): kitchen_tablet_dashboard.yaml, lighting_motio
 - 6 Ella bedroom scenes missing -> Group 6
 - HA Green full config audit before wipe (audit done S26, wipe pending)
 - Security session: SSH key + Cloudflare ZT + PAT rotation (~30 min dedicated)
-- CRITICAL_RULES_CORE.md has duplicate sections (GHOST MIGRATION x3, TOKEN EFFICIENCY x2, etc) — dedup after migration
-- v1.1 remaining: verify helper labels before session close (add to ritual)
