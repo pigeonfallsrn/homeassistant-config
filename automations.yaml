@@ -969,103 +969,6 @@
       - action: scene.turn_on
         target:
           entity_id: scene.2nd_floor_bathroom_dimmed
-- id: 2nd_floor_bathroom_humidity_fan_v3
-  alias: 2nd Floor Bathroom — Humidity Fan Control v3
-  description: Shower detection with safe runtime cap. Humidity triggers (derivative
-    >2%/min or absolute >70%) always win over manual override — high humidity means
-    the fan is needed regardless. Hot water flow trigger respects override (non-shower
-    use case). Max 45min runtime prevents motor wear. Auto-off waits for humidity
-    to normalize then coasts 5min. HA restart cleans up stale on-state.
-  triggers:
-  - platform: numeric_state
-    entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-    above: 2
-    id: derivative_rising
-  - platform: numeric_state
-    entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-    above: 70
-    id: high_humidity
-  - platform: numeric_state
-    entity_id: sensor.navien_water_flow
-    above: 0.5
-    for:
-      minutes: 2
-    id: hot_water
-  - platform: homeassistant
-    event: start
-    id: ha_restart
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: ha_restart
-      sequence:
-      - if:
-        - condition: state
-          entity_id: fan.2nd_floor_bathroom_exhaust_fan
-          state: 'on'
-        - condition: numeric_state
-          entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-          below: 55
-        then:
-        - action: fan.turn_off
-          target:
-            entity_id: fan.2nd_floor_bathroom_exhaust_fan
-        - action: input_boolean.turn_off
-          target:
-            entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-    - conditions:
-      - condition: trigger
-        id: hot_water
-      sequence:
-      - condition: state
-        entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-        state: 'off'
-      - action: fan.turn_on
-        target:
-          entity_id: fan.2nd_floor_bathroom_exhaust_fan
-      - continue_on_timeout: true
-        timeout:
-          minutes: 45
-        wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-          below: -1
-          for:
-            minutes: 3
-        - platform: numeric_state
-          entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-          below: 55
-      - delay:
-          minutes: 5
-      - action: fan.turn_off
-        target:
-          entity_id: fan.2nd_floor_bathroom_exhaust_fan
-    default:
-    - action: input_boolean.turn_off
-      target:
-        entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-    - action: fan.turn_on
-      target:
-        entity_id: fan.2nd_floor_bathroom_exhaust_fan
-    - continue_on_timeout: true
-      timeout:
-        minutes: 45
-      wait_for_trigger:
-      - platform: numeric_state
-        entity_id: sensor.2nd_floor_bathroom_humidity_derivative
-        below: -1
-        for:
-          minutes: 3
-      - platform: numeric_state
-        entity_id: sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity
-        below: 55
-    - delay:
-        minutes: 5
-    - action: fan.turn_off
-      target:
-        entity_id: fan.2nd_floor_bathroom_exhaust_fan
-  mode: restart
 - actions:
   - action: light.turn_on
     target:
@@ -1109,7 +1012,7 @@
       filename: '{{ snapshot_path }}'
     target:
       entity_id: '{{ camera_entity }}'
-  - action: notify.mobile_app_john_s_s26_ultra
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
       data:
         channel: Doorbell
@@ -1135,34 +1038,11 @@
     click_entity: '{{ ''camera.very_front_door_high_resolution_channel'' if trigger.entity_id
       == ''event.very_front_door_doorbell'' else ''camera.front_driveway_door_high_resolution_channel''
       }}'
-- actions:
-  - delay:
-      seconds: 3
-  - action: camera.snapshot
-    data:
-      filename: '{{ snapshot_path }}'
-    target:
-      entity_id: '{{ package_camera }}'
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      data:
-        channel: Doorbell
-        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
-        importance: default
-        tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
-      message: A package was detected at the {{ doorbell_label }}
-      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
+- id: '1773153864754'
   alias: Doorbell Package Detected → Notification
-  conditions:
-  - after: 07:00:00
-    before: '22:00:00'
-    condition: time
   description: Sends a push notification with package camera snapshot to John when
     a package is detected at either doorbell. Daytime only (7am–10pm). Uses dedicated
     package camera on G4 Doorbell Pro for reliable close-up snapshot.
-  id: '1773153864754'
-  max: 2
-  mode: parallel
   triggers:
   - alias: Very Front Door package detected
     entity_id: binary_sensor.very_front_door_package_detected
@@ -1172,6 +1052,29 @@
     entity_id: binary_sensor.front_driveway_door_package_detected
     platform: state
     to: 'on'
+  conditions:
+  - after: 07:00:00
+    before: '22:00:00'
+    condition: time
+  actions:
+  - delay:
+      seconds: 3
+  - action: camera.snapshot
+    data:
+      filename: '{{ snapshot_path }}'
+    target:
+      entity_id: '{{ package_camera }}'
+  - action: notify.mobile_app_galaxy_s26_ultra
+    data:
+      data:
+        channel: Doorbell
+        image: '{{ snapshot_path | replace(''/config/www'', ''/local'') }}'
+        importance: default
+        tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
+      message: A package was detected at the {{ doorbell_label }}
+      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
+  max: 2
+  mode: parallel
   variables:
     doorbell_label: '{{ ''Front Door'' if trigger.entity_id == ''binary_sensor.very_front_door_package_detected''
       else ''Driveway Door'' }}'
@@ -1287,148 +1190,78 @@
     id: alaina_charging
     platform: state
     to: Charging
-- actions:
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      data:
-        actions:
-        - action: CANCEL_AUTO_CLOSE
-          title: KEEP OPEN
-        - action: CLOSE_NOW_DEPART
-          title: CLOSE NOW
-        priority: high
-        tag: garage_auto_close
-        ttl: 0
-      message: North door closing in 60s — tap to cancel
-      title: "\U0001F6AA Garage Still Open"
-  - continue_on_timeout: true
-    timeout:
-      seconds: 60
-    wait_for_trigger:
-    - event_data:
-        action: CANCEL_AUTO_CLOSE
-      event_type: mobile_app_notification_action
-      platform: event
-    - event_data:
-        action: CLOSE_NOW_DEPART
-      event_type: mobile_app_notification_action
-      platform: event
-  - if:
-    - condition: template
-      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
-        == ''CANCEL_AUTO_CLOSE'' }}'
-    then:
-    - action: notify.mobile_app_john_s_s26_ultra
-      data:
-        data:
-          tag: garage_auto_close
-          timeout: 30
-        message: North door left open
-        title: "\U0001F6AA Garage"
-  - if:
-    - condition: template
-      value_template: '{{ wait.trigger is not none and wait.trigger.event.data.action
-        == ''CLOSE_NOW_DEPART'' }}'
-    then:
-    - action: cover.close_cover
-      target:
-        entity_id: cover.ratgdo32disco_fd8d8c_door
-    - action: notify.mobile_app_john_s_s26_ultra
-      data:
-        data:
-          tag: garage_auto_close
-          timeout: 30
-        message: North door closed
-        title: "\U0001F512 Garage"
-  - if:
-    - condition: template
-      value_template: '{{ wait.trigger is none }}'
-    then: []
-  - condition: state
-    entity_id: cover.ratgdo32disco_fd8d8c_door
-    state: open
-  - action: cover.close_cover
-    target:
-      entity_id: cover.ratgdo32disco_fd8d8c_door
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      data:
-        tag: garage_auto_close
-        timeout: 30
-      message: North door closed
-      title: "\U0001F512 Garage"
-  alias: Garage - Auto Close North on Departure
+- id: garage_auto_close_departure
+  alias: Garage — Auto Close North on Departure
+  description: When John leaves home and North garage door is open, notify and auto-close
+    after 60s. Tap KEEP OPEN to cancel.
+  triggers:
+  - platform: state
+    entity_id: person.john_spencer
+    from: home
+    to: not_home
   conditions:
   - condition: state
     entity_id: cover.ratgdo32disco_fd8d8c_door
     state: open
-  description: When John leaves home and North garage door is open, send actionable
-    notification then auto-close after 60s unless cancelled.
-  id: garage_auto_close_departure
-  mode: single
-  triggers:
-  - entity_id: person.john_spencer
-    from: home
-    platform: state
-    to: not_home
-- id: garage_door_notifications_autoclear
-  alias: Garage - Auto-Clear Notifications on Close
-  description: 'When either garage door closes, clear all associated notification
-    tags from John''s phone. Prevents stale sticky notifications accumulating in the
-    notification shade.
-
-
-    2026-03-31: expanded from North-only/auto-close-only to both doors + all garage
-    tags (arrival, auto-close, quick-open, close-confirm). Each trigger clears its
-    door-specific arrival tag plus shared tags.'
-  triggers:
-  - platform: state
-    entity_id: cover.ratgdo32disco_fd8d8c_door
-    to: closed
-    id: north
-  - platform: state
-    entity_id: cover.ratgdo32disco_5735e8_door
-    to: closed
-    id: south
   actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: north
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_north
-    - conditions:
-      - condition: trigger
-        id: south
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_south
-  - action: notify.mobile_app_john_s_s26_ultra
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
-      message: clear_notification
+      title: "\U0001F6AA Garage Still Open"
+      message: North door closing in 60s
       data:
+        actions:
+        - action: CANCEL_AUTO_CLOSE
+          title: KEEP OPEN
+        priority: high
         tag: garage_auto_close
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      message: clear_notification
+        ttl: 0
+  - wait_for_trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: CANCEL_AUTO_CLOSE
+    timeout:
+      seconds: 60
+    continue_on_timeout: true
+  - if:
+    - condition: template
+      value_template: '{{ wait.trigger is not none }}'
+    then:
+    - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        tag: garage_quick_open
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      message: clear_notification
+        title: "\U0001F6AA Garage"
+        message: Auto-close cancelled
+        data:
+          tag: garage_auto_close
+          timeout: 30
+    else:
+    - condition: state
+      entity_id: cover.ratgdo32disco_fd8d8c_door
+      state: open
+    - action: cover.close_cover
+      target:
+        entity_id: cover.ratgdo32disco_fd8d8c_door
+    - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        tag: garage_close_confirm
-  mode: parallel
-  max: 2
-- actions:
-  - action: notify.mobile_app_john_s_s26_ultra
+        title: "\U0001F512 Garage"
+        message: North door closed
+        data:
+          tag: garage_auto_close
+          timeout: 30
+  mode: single
+- id: '1774392438248'
+  alias: HAC Session Wrap Reminder
+  description: Reminds John to run hac wrap and start a new HAC session. Fires at
+    9pm if home. Tap notification opens Claude Project.
+  triggers:
+  - at: '21:00:00'
+    platform: time
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.john_home
+    state: 'on'
+  actions:
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
       data:
         actions:
@@ -1441,18 +1274,7 @@
         url: https://claude.ai/project/019c58d3-c0da-71fc-bb21-6b1f4d7a3a12
       message: Run hac wrap in terminal, then tap to start next session.
       title: HAC — session wrap due
-  alias: HAC Session Wrap Reminder
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.john_home
-    state: 'on'
-  description: Reminds John to run hac wrap and start a new HAC session. Fires at
-    9pm if home. Tap notification opens Claude Project.
-  id: '1774392438248'
   mode: single
-  triggers:
-  - at: '21:00:00'
-    platform: time
 - actions:
   - action: light.turn_on
     target:
@@ -1875,279 +1697,6 @@
     target:
       entity_id: switch.basement_hallway_smart_switch
   mode: single
-- id: '1774662096455'
-  alias: Garage — Door Opened Arrival Notification
-  description: 'When North or South garage door opens during arrival window, overwrite
-    arrival_john tag instead of stacking a 3rd notification. 2026-04-04: tag changed
-    from garage_door_open_north/south to arrival_john.'
-  triggers:
-  - entity_id: cover.ratgdo32disco_fd8d8c_door
-    id: north_opened
-    platform: state
-    to: open
-  - entity_id: cover.ratgdo32disco_5735e8_door
-    id: south_opened
-    platform: state
-    to: open
-  conditions:
-  - condition: template
-    value_template: '{{ (as_timestamp(now()) - as_timestamp(states.person.john_spencer.last_changed))
-      < 180 }}'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: north_opened
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          title: "\U0001F513 North Garage Open"
-          message: Arrived home — North door is open
-          data:
-            tag: arrival_john
-            group: garage
-            channel: Garage
-            importance: high
-            ttl: 0
-            priority: high
-            sticky: true
-            timeout: 300
-            notification_icon: mdi:garage-open-variant
-            clickAction: /lovelace/garage
-            actions:
-            - action: CLOSE_NORTH
-              title: "\U0001F512 Close North"
-            - action: OPEN_SOUTH
-              title: "\U0001F6AA Open South"
-            - action: DISMISS_NORTH
-              title: ✔️ All Good
-    - conditions:
-      - condition: trigger
-        id: south_opened
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          title: "\U0001F513 South Garage Open"
-          message: Arrived home — South door is open
-          data:
-            tag: arrival_john
-            group: garage
-            channel: Garage
-            importance: high
-            ttl: 0
-            priority: high
-            sticky: true
-            timeout: 300
-            notification_icon: mdi:garage-open-variant
-            clickAction: /lovelace/garage
-            actions:
-            - action: CLOSE_SOUTH
-              title: "\U0001F512 Close South"
-            - action: OPEN_NORTH
-              title: "\U0001F6AA Open North"
-            - action: DISMISS_SOUTH
-              title: ✔️ All Good
-  mode: single
-- id: '1774662111280'
-  alias: Garage — Door Opened Notification Actions
-  description: Handles action button taps from the door-opened arrival notification.
-    Close/open individual doors or both.
-  triggers:
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: CLOSE_NORTH
-    id: close_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: OPEN_SOUTH
-    id: open_south
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: OPEN_BOTH
-    id: open_both
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: CLOSE_SOUTH
-    id: close_south
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: OPEN_NORTH
-    id: open_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: OPEN_BOTH_FROM_SOUTH
-    id: open_both_from_south
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: DISMISS_NORTH
-    id: dismiss_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: DISMISS_SOUTH
-    id: dismiss_south
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: close_north
-      sequence:
-      - action: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_north
-    - conditions:
-      - condition: trigger
-        id: open_south
-      sequence:
-      - action: cover.open_cover
-        target:
-          entity_id: cover.ratgdo32disco_5735e8_door
-    - conditions:
-      - condition: trigger
-        id: open_both
-      sequence:
-      - action: cover.open_cover
-        target:
-          entity_id: cover.ratgdo32disco_5735e8_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_north
-    - conditions:
-      - condition: trigger
-        id: close_south
-      sequence:
-      - action: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_5735e8_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_south
-    - conditions:
-      - condition: trigger
-        id: open_north
-      sequence:
-      - action: cover.open_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
-    - conditions:
-      - condition: trigger
-        id: open_both_from_south
-      sequence:
-      - action: cover.open_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_south
-    - conditions:
-      - condition: trigger
-        id: dismiss_north
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_north
-    - conditions:
-      - condition: trigger
-        id: dismiss_south
-      sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_open_south
-  mode: parallel
-  max: 5
-- id: garage_arrival_smart_popup
-  alias: Garage - Smart Arrival Dashboard Popup
-  description: 'Shows garage control notification when approaching home in the van.
-    clickAction fixed to /lovelace/garage (was /arriving-home). 2026-04-04: fixed
-    clickAction regression.'
-  triggers:
-  - entity_id: sensor.john_s_s26_ultra_bluetooth_connection
-    id: hfl_connected
-    platform: state
-  - below: 1500
-    entity_id: sensor.john_distance_to_home
-    id: approaching
-    platform: numeric_state
-  - below: 800
-    entity_id: sensor.john_distance_to_home
-    id: proximity
-    platform: numeric_state
-  conditions:
-  - condition: time
-    after: 08:00:00
-    before: '23:00:00'
-  - condition: template
-    value_template: '{{ states(''person.john_spencer'') != ''home'' }}'
-  - condition: template
-    value_template: '{{ state_attr(''sensor.john_s_s26_ultra_bluetooth_connection'',
-      ''connected_paired_devices'') | select(''search'', ''00:0A:30:9A:20:F5'') |
-      list | count > 0 }}'
-  - condition: template
-    value_template: "{% if trigger.id == 'hfl_connected' %}\n  {{ states('sensor.john_distance_to_home')
-      | float(99999) < 8000 }}\n{% else %}\n  {{ states('sensor.john_distance_to_home')
-      | float(99999) < 1600 and states('sensor.john_distance_to_home') | float(99999)
-      > 100 }}\n{% endif %}"
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: cover.ratgdo32disco_fd8d8c_door
-      state: closed
-    - condition: state
-      entity_id: cover.ratgdo32disco_5735e8_door
-      state: closed
-  actions:
-  - data:
-      data:
-        actions:
-        - action: GARAGE_OPEN_NORTH
-          title: "\U0001F511 North"
-        - action: GARAGE_OPEN_SOUTH
-          title: "\U0001F511 South"
-        - action: GARAGE_OPEN_BOTH
-          title: "\U0001F511 Both"
-        - action: GARAGE_DISMISS
-          title: ❌ Dismiss
-        channel: Garage Arrival
-        clickAction: /lovelace/garage
-        color: '#03A9F4'
-        group: garage
-        importance: high
-        notification_icon: mdi:garage-variant
-        persistent: true
-        priority: high
-        sticky: true
-        tag: garage_arrival_dashboard
-        timeout: 300
-        ttl: 0
-        visibility: public
-      message: '{{ (states(''sensor.john_distance_to_home'') | float(0) / 1000) |
-        round(1) }}km away — Open garage door?'
-      title: "\U0001F697 Arriving Home"
-    action: notify.mobile_app_john_s_s26_ultra
-  max_exceeded: silent
-  mode: restart
 - id: kitchen_manual_override_inovelli_trigger
   alias: Kitchen Manual Override — Inovelli 2x Tap Set
   description: Double-tap UP on kitchen chandelier or above-sink Inovelli switch sets
@@ -2178,7 +1727,7 @@
       entity_id: timer.kitchen_override_timer
     data:
       duration: 0:30:00
-  - action: notify.mobile_app_john_s_s26_ultra
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
       title: Kitchen Override ON
       message: Motion auto-off suppressed for 30 min. 2x-tap DOWN to cancel early.
@@ -2256,7 +1805,7 @@
       entity_id:
       - input_boolean.kitchen_manual_override
       - input_boolean.kitchen_lounge_manual_override
-  - action: notify.mobile_app_john_s_s26_ultra
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
       data:
         priority: high
@@ -3113,38 +2662,6 @@
           - switch.adaptive_lighting_entry_room_lamp_adaptive
           - switch.adaptive_lighting_entry_room_ceiling
   mode: restart
-- id: '1776301743080'
-  alias: Entry Room — Lamp Activity Boost
-  description: Restore full brightness when motion detected while dimmed
-  triggers:
-  - entity_id: binary_sensor.entry_room_motion
-    platform: state
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.dad_bedtime_mode
-    state: 'off'
-  - condition: state
-    entity_id: light.entry_room_hue_color_lamp
-    state: 'on'
-  - attribute: brightness
-    below: 100
-    condition: numeric_state
-    entity_id: light.entry_room_hue_color_lamp
-  actions:
-  - action: adaptive_lighting.apply
-    data:
-      entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
-      lights:
-      - light.entry_room_hue_color_lamp
-      transition: 2
-  mode: single
 - id: '1776301748149'
   alias: Entry Room — Lamp Dim After 5min No Motion
   triggers:
@@ -3242,7 +2759,7 @@
     platform: state
     to: 'on'
   actions:
-  - action: notify.mobile_app_john_s_s26_ultra
+  - action: notify.mobile_app_galaxy_s26_ultra
     data:
       data:
         actions:
@@ -3284,7 +2801,7 @@
       - action: input_boolean.turn_off
         target:
           entity_id: input_boolean.hot_tub_mode
-      - action: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_galaxy_s26_ultra
         data:
           data:
             tag: hot_tub_mode
@@ -3293,14 +2810,14 @@
       - condition: trigger
         id: snooze_30
       sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_galaxy_s26_ultra
         data:
           data:
             tag: hot_tub_mode
           message: clear_notification
       - delay:
           minutes: 30
-      - action: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_galaxy_s26_ultra
         data:
           data:
             actions:
@@ -3318,14 +2835,14 @@
       - condition: trigger
         id: snooze_60
       sequence:
-      - action: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_galaxy_s26_ultra
         data:
           data:
             tag: hot_tub_mode
           message: clear_notification
       - delay:
           minutes: 60
-      - action: notify.mobile_app_john_s_s26_ultra
+      - action: notify.mobile_app_galaxy_s26_ultra
         data:
           data:
             actions:
@@ -3503,169 +3020,6 @@
     data:
       message: command_screen_off
   mode: single
-- id: '1776360791639'
-  alias: Garage - Clear Arrival Dashboard on Arrival
-  description: Automatically dismisses garage dashboard when you arrive home
-  triggers:
-  - platform: state
-    entity_id: person.john_spencer
-    to: home
-  actions:
-  - action: notify.mobile_app_john_s_s26_ultra
-    data:
-      message: clear_notification
-      data:
-        tag: garage_arrival_dashboard
-  mode: single
-- id: '1776360802500'
-  alias: Garage Door - Alert Action Handler
-  triggers:
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_CLOSE_NORTH
-    id: close_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_CLOSE_SOUTH
-    id: close_south
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_SNOOZE_15_NORTH
-    id: snooze_15_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_SNOOZE_15_SOUTH
-    id: snooze_15_south
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_SNOOZE_60_NORTH
-    id: snooze_60_north
-  - platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: GARAGE_SNOOZE_60_SOUTH
-    id: snooze_60_south
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: close_north
-      sequence:
-      - action: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_fd8d8c_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_north
-    - conditions:
-      - condition: trigger
-        id: close_south
-      sequence:
-      - action: cover.close_cover
-        target:
-          entity_id: cover.ratgdo32disco_5735e8_door
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_south
-    - conditions:
-      - condition: trigger
-        id: snooze_15_north
-      sequence:
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.garage_north_snooze_until
-        data:
-          datetime: '{{ now() + timedelta(minutes=15) }}'
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_north
-    - conditions:
-      - condition: trigger
-        id: snooze_15_south
-      sequence:
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.garage_south_snooze_until
-        data:
-          datetime: '{{ now() + timedelta(minutes=15) }}'
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_south
-    - conditions:
-      - condition: trigger
-        id: snooze_60_north
-      sequence:
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.garage_north_snooze_until
-        data:
-          datetime: '{{ now() + timedelta(minutes=60) }}'
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_north
-    - conditions:
-      - condition: trigger
-        id: snooze_60_south
-      sequence:
-      - action: input_datetime.set_datetime
-        target:
-          entity_id: input_datetime.garage_south_snooze_until
-        data:
-          datetime: '{{ now() + timedelta(minutes=60) }}'
-      - action: notify.mobile_app_john_s_s26_ultra
-        data:
-          message: clear_notification
-          data:
-            tag: garage_door_south
-  mode: parallel
-  max: 6
-- id: '1776360807516'
-  alias: Garage Door - Reset Snooze on Close
-  triggers:
-  - entity_id: cover.ratgdo32disco_fd8d8c_door
-    id: north
-    platform: state
-    to: closed
-  - entity_id: cover.ratgdo32disco_5735e8_door
-    id: south
-    platform: state
-    to: closed
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: north
-      sequence:
-      - action: input_datetime.set_datetime
-        data:
-          datetime: '{{ now() - timedelta(days=1) }}'
-        target:
-          entity_id: input_datetime.garage_north_snooze_until
-    - conditions:
-      - condition: trigger
-        id: south
-      sequence:
-      - action: input_datetime.set_datetime
-        data:
-          datetime: '{{ now() - timedelta(days=1) }}'
-        target:
-          entity_id: input_datetime.garage_south_snooze_until
-  mode: parallel
 - id: '1776360815771'
   alias: Garage All Lights ON (Fixed)
   triggers:
