@@ -21,3 +21,14 @@
 # - Every session: BASELINE at start, BENCHMARK at end.
 # - Learnings go in LEARNINGS.md every session.
 # - Git commit via terminal, push via MCP shell_command.git_push.
+
+## Learning Promotion Rule (added S41)
+
+**Two-occurrence rule:** A lesson becomes a permanent rule (in CRITICAL_RULES or project instructions) ONLY after the second independent occurrence. First occurrence stays in LEARNINGS.md as reference. If it bites you twice, it earns a line in the rules.
+
+This prevents instruction bloat — the #1 risk flagged by all three AI models (Claude, Gemini, ChatGPT) in the S41 governance review.
+
+Promotion pathway:
+- Session discovery → LEARNINGS.md (always)
+- Second occurrence → CRITICAL_RULES_CORE.md or REVIEW_WORKFLOW.md
+- Truly universal rule → Project instructions (expect ~2x/year)

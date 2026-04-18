@@ -1,63 +1,58 @@
-# HANDOFF — S40 complete | 2026-04-18
+# HANDOFF — S41 complete | 2026-04-18
 
-## Completed this session (S40)
+## Completed this session (S41)
 
-### Full system audit + mass cleanup
-- Removed 51 ghost automation entities (42 bulk + 9 individual)
-- Deleted 7 garage notification chain automations (over-engineered, never worked)
-- Simplified garage auto-close to: notify → 60s wait → close (1 cancel button)
-- Deleted 2 dead automations: Humidity Fan Control v3 (superseded), Entry Room Lamp Activity Boost (disabled+never fired)
-- Fixed `notify.mobile_app_john_s_s26_ultra` → `notify.mobile_app_galaxy_s26_ultra` across 9 automations
-- Renamed calendar automations from `_2` suffix to clean entity IDs
-- Disabled 2 calendar automations (no Google Calendar integration configured)
-- **Automation count: 143 → 99**
+### Governance synthesis from cross-model review
+- Read and synthesized research from Claude, Gemini (deep research), and ChatGPT (deep research)
+- Identified consensus: tiny instructions, two-occurrence rule, health check, privacy awareness
+- Created PRIVACY.md — data flow map (what goes where, what stays local)
+- Added two-occurrence promotion rule to REVIEW_WORKFLOW.md
+- Created health_check_full.sh — registered as shell_command.health_check
+- Drafted pruned project instructions as hac/claude_project.md (<800 tokens)
+- Git tagged good-2026-04-18 as stable milestone
 
-### Terminal workflow established
-- `${SUPERVISOR_TOKEN}` + REST API for bulk state dumps
-- Websocket API (via `websockets` pip package) for bulk entity registry operations
-- Hybrid REST+websocket pattern for large datasets (REST for reads, WS for writes)
-
-### Audit document created
-- `AUTOMATION_AUDIT.md` with area-by-area triage of all 99 surviving automations
-- 52 confirmed working, 44 never-triggered flagged for review, 2 need fixes, 1 disabled
+### Key consensus findings
+- All models agree: MCP is partial visibility, never authoritative alone
+- All models agree: project instructions should be <800 tokens
+- All models agree: don't overbuild governance — boring infrastructure wins
+- Gemini's area-less entity insight: entities without areas are invisible to AI spatial reasoning
 
 ## Current State
 
-### Automation count: 99 (was 143)
-- 52 confirmed active (triggered in last 3 days)
-- 44 never triggered — flagged for area-by-area review
-- 2 calendar automations disabled (missing integration)
-- 1 entry room ceiling motion disabled (intentional?)
+### Automation count: 99
+- 52 confirmed active, 44 never triggered (flagged for review), 2 calendar disabled, 1 entry disabled
 
-### Remaining YAML (legitimate spine)
-- configuration.yaml (168 lines)
-- 14 template/infrastructure packages (no automations)
+### Governance files
+- HANDOFF.md — rolling session state (this file)
+- LEARNINGS.md — accumulated discoveries
+- REVIEW_WORKFLOW.md — 10-step process + two-occurrence rule
+- PRIVACY.md — data flow map
+- claude_project.md — source-controlled project instructions (<800 tokens)
+- CRITICAL_RULES_CORE.md — hard rules (prune with two-occurrence rule)
+- health_check_full.sh — registered as shell_command.health_check
 
-### Repairs
-- 6 repair issues should be resolved — need manual Submit in UI
-
-## Next Priorities (area-by-area review workflow)
-1. Entry Room — consolidate 6 overlapping lamp automations
-2. 2nd Floor Bathroom — simplify 12 automations (most complex room)
-3. Kitchen tablet — 5/6 never fired, check Fully Kiosk
-4. Kids bedrooms — standardize Alaina/Ella with blueprint
-5. Garage — review remaining 4 never-triggered
-6. Scenes/Scripts/Dashboard/Blueprint audit (same methodology)
-7. Google Calendar integration setup
-8. Person tracker audit (Ella, Michelle)
+## Next Priorities
+1. Run health_check — establish new enriched baseline
+2. Prune project instructions in Claude Project (sync from claude_project.md)
+3. Entry Room — area review (first full cycle with improved workflow)
+4. 2nd Floor Bathroom — simplify 12 automations
+5. Kitchen tablet — 5/6 never fired
+6. Kids bedrooms — blueprint standardization
+7. Scenes/Scripts/Dashboard audit
 
 ## Tabled (carried forward)
-- Person trackers: Ella (unknown), Michelle (unknown). Michelle MAC: 6a:9a:25:dd:82:f1
+- Person trackers: Ella (unknown), Michelle (MAC: 6a:9a:25:dd:82:f1)
 - Jarrett & Owen: grades tracked, person entities not configured
 - AndroidTV 192.168.1.17 — real device, DO NOT DELETE
-- Music Assistant — setup_error, tabled
-- North ratgdo: toggle obstruction OFF after any OTA flash
-- Apollo Kitchen 192.168.21.233: OTA flash pending
+- Music Assistant — setup_error
+- North ratgdo: toggle obstruction OFF after OTA
+- Apollo Kitchen 192.168.21.233: OTA pending
 - Vanity slow fade: VZM30-SN IEEE 18:0d:f9:ff:fe:34:58:66
-- humidity_smart_alerts: YAML deleted, UI rebuild pending
-- Aqara sensor gap: 6 door + 4 P1 motion sensors
+- humidity_smart_alerts: UI rebuild pending
+- Aqara sensor gap: 6 door + 4 P1 motion
 - 2 unnamed Aqara Temp/Humidity sensors
 - first_floor_hallway_motion delay_off bug
 - 6 Ella bedroom scenes missing
 - HA Green full config audit before wipe
 - Security session: Cloudflare ZT + PAT rotation
+- 6 repair issues: http://192.168.1.10:8123/config/repairs
