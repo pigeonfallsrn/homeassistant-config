@@ -291,38 +291,11 @@
     event_type: zha_event
     id: aux_config_hold
     platform: event
-- actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id:
-        - up_press
-        - up_hold
-      sequence:
-      - action: fan.turn_on
-        target:
-          entity_id: fan.2nd_floor_bathroom_exhaust_fan
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-    - conditions:
-      - condition: trigger
-        id:
-        - down_press
-        - down_hold
-      sequence:
-      - action: fan.turn_off
-        target:
-          entity_id: fan.2nd_floor_bathroom_exhaust_fan
-      - action: input_boolean.turn_on
-        target:
-          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+- id: '1771854392376'
   alias: 2nd Floor Bathroom - Fan Inovelli Paddle Control v2
   description: Inovelli VZM35-SN paddle controls fan directly. Up=On, Down=Off. Sets
     manual override to prevent humidity auto from interfering (resets after 30 min
-    via YAML automation).
-  id: '1771854392376'
-  mode: single
+    via override reset automation).
   triggers:
   - event_data:
       command: button_2_press
@@ -348,6 +321,33 @@
     event_type: zha_event
     id: down_hold
     platform: event
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - up_press
+        - up_hold
+      sequence:
+      - action: fan.turn_on
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    - conditions:
+      - condition: trigger
+        id:
+        - down_press
+        - down_hold
+      sequence:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+  mode: single
 - actions:
   - parallel:
     - sequence:
@@ -559,7 +559,7 @@
         target:
           entity_id:
           - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
+          - light.2nd_floor_vanity_lights
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_3_press'' }}'
@@ -628,7 +628,7 @@
         target:
           entity_id:
           - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
+          - light.2nd_floor_vanity_lights
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_1_hold'' }}'
@@ -640,7 +640,7 @@
         target:
           entity_id:
           - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
+          - light.2nd_floor_vanity_lights
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_2_double'' }}'
@@ -880,48 +880,6 @@
           entity_id: scene.kitchen_dimmed
       inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- id: '1772074192238'
-  alias: 2nd Floor Bathroom — Inovelli VZM30-SN Controls Hue Lights
-  description: 'VZM30-SN Smart Bulb Mode: UP=Energize, DOWN=Off, 2xUP=Relax, 2xDOWN=Nightlight,
-    Config=Dimmed, Hold UP/DOWN=Brightness step'
-  mode: queued
-  max_exceeded: silent
-  use_blueprint:
-    path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-    input:
-      inovelli_switch: 0489781ef8d00419ecf1929bd865b2de
-      button_2:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_bathroom_energize
-      button_2_double:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_bathroom_relax
-      button_2_hold:
-      - action: light.turn_on
-        data:
-          brightness_step_pct: 10
-        target:
-          entity_id: light.2nd_floor_bathroom
-      button_1:
-      - action: light.turn_off
-        target:
-          entity_id: light.2nd_floor_bathroom
-      button_1_double:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_bathroom_nightlight
-      button_1_hold:
-      - action: light.turn_on
-        data:
-          brightness_step_pct: -10
-        target:
-          entity_id: light.2nd_floor_bathroom
-      button_3:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_bathroom_dimmed
 - actions:
   - action: light.turn_on
     target:
@@ -976,7 +934,7 @@
         ttl: 0
         clickAction: entityId:{{ click_entity }}
       message: Someone is at the {{ doorbell_label }}
-      title: 🔔 Doorbell — {{ doorbell_label }}
+      title: "\U0001F514 Doorbell — {{ doorbell_label }}"
   max: 2
   mode: parallel
   variables:
@@ -1025,7 +983,7 @@
         importance: default
         tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
       message: A package was detected at the {{ doorbell_label }}
-      title: 📦 Package Delivered — {{ doorbell_label }}
+      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
   max: 2
   mode: parallel
   variables:
@@ -1159,7 +1117,7 @@
   actions:
   - action: notify.mobile_app_galaxy_s26_ultra
     data:
-      title: 🚪 Garage Still Open
+      title: "\U0001F6AA Garage Still Open"
       message: North door closing in 60s
       data:
         actions:
@@ -1182,7 +1140,7 @@
     then:
     - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        title: 🚪 Garage
+        title: "\U0001F6AA Garage"
         message: Auto-close cancelled
         data:
           tag: garage_auto_close
@@ -1196,7 +1154,7 @@
         entity_id: cover.ratgdo32disco_fd8d8c_door
     - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        title: 🔒 Garage
+        title: "\U0001F512 Garage"
         message: North door closed
         data:
           tag: garage_auto_close
@@ -2245,7 +2203,7 @@
   - action: persistent_notification.create
     data:
       message: Grades auto-incremented. Verify and update sport calendars if needed.
-      title: 🎒 New School Year
+      title: "\U0001F392 New School Year"
   mode: single
 - id: '1776301689474'
   alias: System — Extended Evening Auto Set
@@ -2578,7 +2536,11 @@
         entity_id: number.kitchen_wall_a9_tablet_screen_brightness
   mode: single
 - id: '1776307403248'
-  alias: Kitchen Tablet - Doorbell Camera Popup
+  alias: Kitchen Tablet — Doorbell Wake + Bright
+  description: 'Doorbell press wakes kitchen tablet screen and maxes brightness for
+    90s so whoever is in the kitchen can see the dashboard. FKB Screen Off Timer handles
+    returning to sleep. Future enhancement: add fully_kiosk.load_url to navigate to
+    a dedicated doorbell camera view.'
   triggers:
   - entity_id: binary_sensor.very_front_door_doorbell
     id: front_door
@@ -2588,118 +2550,45 @@
     id: driveway
     platform: state
     to: 'on'
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.house_occupied
-    state: 'on'
   actions:
   - action: switch.turn_on
     target:
       entity_id: switch.kitchen_wall_a9_tablet_screen
   - action: number.set_value
     data:
-      value: 100
+      value: 255
     target:
       entity_id: number.kitchen_wall_a9_tablet_screen_brightness
-  - action: input_boolean.turn_on
-    target:
-      entity_id: input_boolean.kitchen_tablet_doorbell_popup
   - delay:
-      seconds: 60
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.kitchen_tablet_doorbell_popup
-  mode: single
-- id: '1776307446022'
-  alias: Kitchen Tablet - Wake on Kitchen Motion
-  triggers:
-  - entity_id:
-    - binary_sensor.kitchen_counter_night_light_motion
-    - binary_sensor.kitchen_counter_nightlight_motion
-    - binary_sensor.kitchen_west_wall_nightlight_motion
-    platform: state
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: switch.kitchen_wall_a9_tablet_screen
-    state: 'off'
-  - condition: state
-    entity_id: binary_sensor.house_occupied
-    state: 'on'
-  actions:
-  - action: switch.turn_on
-    target:
-      entity_id: switch.kitchen_wall_a9_tablet_screen
-  mode: single
-- id: '1776307454542'
-  alias: Kitchen Tablet - Sleep After Inactivity
-  triggers:
-  - entity_id: sensor.kitchen_wall_a9_tablet
-    for:
-      minutes: 5
-    platform: state
-    to: Idle
-  conditions:
-  - condition: state
-    entity_id: switch.kitchen_wall_a9_tablet_screen
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.kitchen_tablet_doorbell_popup
-    state: 'off'
-  actions:
-  - action: switch.turn_off
-    target:
-      entity_id: switch.kitchen_wall_a9_tablet_screen
-  mode: single
-- id: '1776307461129'
-  alias: Kitchen Tablet - Wake on Presence
-  description: Wake tablet when someone is home
-  triggers:
-  - entity_id:
-    - person.john_spencer
-    - person.alaina_spencer
-    - person.ella_spencer
-    platform: state
-    to: home
-  - entity_id: binary_sensor.kitchen_ai_theta_motion
-    platform: state
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: input_boolean.kitchen_tablet_screen_control
-    state: 'on'
-  actions:
-  - action: notify.mobile_app_kitchen_samsung_tablet_wall_mount
-    data:
-      message: command_screen_on
-  mode: single
-- id: '1776307470950'
-  alias: Kitchen Tablet - Sleep When Away
-  description: Turn off tablet screen when no one home
-  triggers:
-  - entity_id:
-    - person.john_spencer
-    - person.alaina_spencer
-    - person.ella_spencer
-    for:
-      minutes: 10
-    platform: state
-    to: not_home
-  conditions:
-  - condition: state
-    entity_id: person.john_spencer
-    state: not_home
-  - condition: state
-    entity_id: person.alaina_spencer
-    state: not_home
-  - condition: state
-    entity_id: person.ella_spencer
-    state: not_home
-  actions:
-  - action: notify.mobile_app_kitchen_samsung_tablet_wall_mount
-    data:
-      message: command_screen_off
-  mode: single
+      seconds: 90
+  - choose:
+    - conditions:
+      - condition: time
+        after: 07:00:00
+        before: '20:00:00'
+      sequence:
+      - action: number.set_value
+        data:
+          value: 80
+        target:
+          entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+    - conditions:
+      - condition: time
+        after: '20:00:00'
+        before: '22:00:00'
+      sequence:
+      - action: number.set_value
+        data:
+          value: 50
+        target:
+          entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+    default:
+    - action: number.set_value
+      data:
+        value: 20
+      target:
+        entity_id: number.kitchen_wall_a9_tablet_screen_brightness
+  mode: restart
 - id: '1776360815771'
   alias: Garage All Lights ON (Fixed)
   triggers:
@@ -2736,8 +2625,8 @@
   actions:
   - action: light.turn_on
     data:
-      brightness_pct: "{% set hour = now().hour %}\n{% if hour >= 22 or hour < 6 %}\n\
-        \  30\n{% else %}\n  100\n{% endif %}"
+      brightness_pct: "{% set hour = now().hour %}\n{% if hour >= 22 or hour < 6 %}\n
+        \ 30\n{% else %}\n  100\n{% endif %}"
     target:
       entity_id:
       - light.garage
@@ -2768,16 +2657,16 @@
     entity_id: cover.ratgdo32disco_5735e8_door
     state: closed
   - condition: template
-    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')\
-      \ | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors\
-      \ = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n\
-      \  'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n \
-      \ 'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n\
-      ] %}\n{% set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors\
-      \ %}\n  {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n\
-      \  {% elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) <\
-      \ timeout_seconds %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{%\
-      \ endfor %}\n{{ ns.all_clear }}"
+    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')
+      | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors
+      = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n
+      \ 'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n
+      \ 'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n] %}\n{%
+      set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors %}\n
+      \ {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n  {%
+      elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) < timeout_seconds
+      %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{% endfor %}\n{{ ns.all_clear
+      }}"
   actions:
   - action: light.turn_off
     target:
@@ -3123,55 +3012,6 @@
         target:
           entity_id: light.garage
   mode: single
-- id: '1776363597961'
-  alias: 2nd Floor Bathroom — Ceiling Switch (VZM30-SN)
-  description: Up=scene on, Down=both lights off, Hold=dim. IEEE 20:a7:16:ff:fe:01:8c:b8
-  triggers:
-  - event_data:
-      device_ieee: 20:a7:16:ff:fe:01:8c:b8
-    event_type: zha_event
-    platform: event
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_bathroom_energize
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_2_held_down'' }}'
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_step_pct: 10
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_held_down'' }}'
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_step_pct: -10
-        target:
-          entity_id:
-          - light.2nd_floor_bathroom
-          - light.2nd_floor_bathroom_vanity_lights
-  mode: single
 - id: '1776365074522'
   alias: Upstairs Hallway → Motion Lighting v2
   description: 'Time-aware motion lighting. Triggers: hallway Aqara P1 + bathroom
@@ -3349,7 +3189,7 @@
           message: 'Bathroom humidity fan paused for 24 hours. Current humidity: {{
             states(''sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity'')
             }}%'
-          title: 💨 Fan Paused
+          title: "\U0001F4A8 Fan Paused"
       - action: timer.start
         data:
           duration: '24:00:00'
@@ -3393,7 +3233,7 @@
           data:
             tag: humidity_pause
           message: Humidity fan pause extended 12 hours
-          title: 💨 Extended
+          title: "\U0001F4A8 Extended"
   mode: restart
 - id: '1776366154798'
   alias: 2nd Floor Bathroom — Humidity Pause Timer Expiry
@@ -3409,7 +3249,7 @@
   - action: notify.mobile_app_galaxy_s26_ultra
     data:
       message: Humidity fan pause expired - automatic control resumed
-      title: 💨 Resumed
+      title: "\U0001F4A8 Resumed"
   mode: restart
 - id: '1776535781702'
   alias: Entry Room — Lamp Motion Control
@@ -3694,43 +3534,6 @@
     target:
       entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
   mode: restart
-- id: '1776568848565'
-  alias: 2nd Floor Bathroom — Reset Light Override (30 min)
-  description: Auto-clear light manual override after 30 minutes so motion automation
-    resumes
-  triggers:
-  - entity_id: input_boolean.2nd_floor_bathroom_manual_override
-    for:
-      minutes: 30
-    platform: state
-    to: 'on'
-  actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.2nd_floor_bathroom_manual_override
-  mode: restart
-- id: '1776568857673'
-  alias: 2nd Floor Bathroom — Fan Pre-trigger (Hot Water Flow)
-  description: Turn fan on proactively when sustained hot water use detected (>0.5
-    flow for 2 min)
-  triggers:
-  - above: 0.5
-    entity_id: sensor.navien_water_flow
-    for:
-      minutes: 2
-    platform: numeric_state
-  conditions:
-  - condition: state
-    entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: fan.2nd_floor_bathroom_exhaust_fan
-    state: 'off'
-  actions:
-  - action: fan.turn_on
-    target:
-      entity_id: fan.2nd_floor_bathroom_exhaust_fan
-  mode: restart
 - id: '1776568867766'
   alias: Front Driveway — Lights On When Motion (Dark)
   description: Turn on driveway light on motion at night, off after 5min no motion
@@ -3829,11 +3632,11 @@
     entity_id: person.alaina_spencer
     state: home
   - condition: template
-    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')\
-      \ %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set\
-      \ alarm_time = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff\
-      \ = (alarm_time - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n\
-      {% else %}\n  false\n{% endif %}"
+    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')
+      %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set alarm_time
+      = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff = (alarm_time
+      - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n{% else %}\n  false\n{%
+      endif %}"
   actions:
   - action: script.alaina_gentle_wake
   mode: single

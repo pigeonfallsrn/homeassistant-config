@@ -1,97 +1,103 @@
-# HANDOFF.md — Session S43
-## Last updated: 2026-04-18 23:30 CDT
-## Last session: S43 — YAML Automation Migration Complete + Entry Room Cleanup
+# HANDOFF — Session S44
 
-## What Happened in S43
+## Last Session: S44 (2026-04-19)
+## Last Commit: see git log
+## Baseline: 80 automations, 90 helpers, 0 ghosts, 0 YAML auto files
 
-### YAML Automation Migration (MILESTONE)
-- Audited all 17 YAML automations across 6 files against UI storage
-- Found 7 already had UI replacements (double-firing on same Inovelli events!)
-- Created 10 new UI automations via MCP for those without replacements
-- Deleted all 6 YAML files: 1st_floor_bathroom_inovelli, 2nd_floor_bathroom_inovelli, alaina_wake_echo_alarm, exterior_lights_auto_off, kitchen_inovelli, living_room_av
-- Removed `automation manual: !include_dir_merge_list automations/` from configuration.yaml
-- Removed empty automations/ directory
-- Purged 17 ghost entity registry entries (old YAML unique_ids squatting clean names)
-- Renamed 10 `_2` suffixed entities to clean names
-- **Result: 0 YAML automations remain. All automations 100% UI-managed.**
+---
 
-### Entry Room Ceiling Motion Lighting
-- Investigated disabled automation — well-built but redundant with Lamp Motion Control
-- Both triggered on same motion sensor but controlled different lights (ceiling vs lamp)
-- John decided: DELETE — ceiling is switch-only, lamp handles motion
-- Deleted, now at 77 automations
+## WHAT HAPPENED IN S44
 
-### Companion App Registrations
-- Ella signed into HA companion app → device_tracker.ella_s_iphone (person.ella_spencer already existed)
-- Alaina signed into HA companion app tonight → device tracker pending verification
-- Only Michelle remains without companion app (MAC: 6a:9a:25:dd:82:f1)
+### 2nd Floor Bathroom Review (12 → 8 automations)
+- **Deleted 4 automations:**
+  - `ceiling_switch_vzm30_sn` — duplicate, triple-firing with keeper
+  - `inovelli_vzm30_sn_controls_hue_lights` — blueprint duplicate, triple-firing
+  - `fan_pre_trigger_hot_water_flow` — dead (Navien entity missing, wrong fan entity)
+  - `reset_light_override_30_min` — dead (helper `input_boolean.2nd_floor_bathroom_manual_override` never existed)
+- **Fixed 2 automations:**
+  - Keeper (`vanity_lights_inovelli_control`): `light.2nd_floor_bathroom_vanity_lights` → `light.2nd_floor_vanity_lights` (OFF, brightness up/down now work on vanity)
+  - Fan paddle (`fan_inovelli_paddle_control_v2`): `fan.2nd_floor_bathroom_exhaust_fan` → `fan.2nd_floor_bathroom_exhaust_fan_inovelli_fan`
+- **Cleared stuck state:** `input_boolean.bathroom_2nd_floor_fan_manual_override` (was stuck ON)
 
-### Kitchen Govee Floor Lamp
-- Identified as light.kitchen_floor_lamp, MAC 98:88:e0:f2:32:48, IP 192.168.10.201
-- NOT referenced in any automations/scripts/helpers — safe to reassign
-- John plans to move to Master Bedroom physically, then we rename entity + area
+### Kitchen Tablet Review (6 → 2 automations)
+- **Research:** Community consensus — let FKB handle screen wake/sleep natively (Screen Off Timer + camera motion detection). HA automations only for things FKB can't know about (brightness schedule, doorbell, presence).
+- **Deleted 4 automations:**
+  - `wake_on_kitchen_motion` — FKB handles natively; all 3 trigger entities missing
+  - `sleep_after_inactivity` — FKB Screen Off Timer handles natively; trigger entity missing
+  - `wake_on_presence` — wrong service (notify.mobile_app), gate closed, duplicate of FKB
+  - `sleep_when_away` — wrong service (notify.mobile_app), silently failing
+- **Rebuilt 1 automation:**
+  - `doorbell_camera_popup` → `Kitchen Tablet — Doorbell Wake + Bright` — removed broken `house_occupied` condition, removed orphaned `input_boolean` refs, mode:restart, resets brightness to schedule-appropriate level after 90s. Future: add `fully_kiosk.load_url` to navigate to doorbell camera view.
+- **Fixed tablet URL:** `fully_kiosk.set_config` startURL changed from Green (192.168.1.3) → EQ14 (192.168.1.10). Tablet needs one-time physical auth tap.
+- **Kept 1 automation:** `brightness_schedule` — working correctly
 
-## Duplicate Resolution Detail (for reference)
-These 7 YAML automations were firing simultaneously with UI replacements:
-- Kitchen Chandelier time-based → kitchen_chandelier_inovelli_controls_hue_lights
-- Kitchen Lounge dimmer time-based → kitchen_lounge_inovelli_controls_hue_ceiling
-- Kitchen Table override reset → kitchen_manual_override_clear_timer_or_2x_tap_down (combined)
-- Kitchen Lounge override reset → same combined automation above
-- 1st Floor Bath ceiling → 1st_floor_bathroom_inovelli_controls_hue_ceiling
-- 2nd Floor Bath ceiling → 2nd_floor_bathroom_inovelli_vzm30_sn_controls_hue_lights
-- 2nd Floor Bath vanity → same automation above (combined)
+### Session Totals
+- Started: 84 automations (post-S43 + additions between sessions)
+- Deleted: 8 automations (4 bathroom + 4 kitchen tablet)
+- Net: **80 automations**
 
-## Current System State
-- **77 automations** — all in UI storage (automations.yaml)
-- **90 helpers** — all UI
-- **0 YAML automation files** — automations/ dir removed, include line removed
-- **14 template packages** — legitimate spine, no automations
-- **0 ghosts, 0 _2 suffixes**
-- **configuration.yaml** — only `automation ui:` include remains
+---
 
-## S43 Benchmark
-| Metric | S42 | S43 | Delta |
-|--------|-----|-----|-------|
-| Automations | 85 (68 UI + 17 YAML) | 77 (all UI) | -8 (7 dupes + 1 deleted) |
-| YAML auto files | 6 | 0 | -6 ✅ |
-| Helpers | 90 | 90 | — |
-| Ghosts | 0 | 0 | — |
+## LEARNINGS (S44)
 
-## Technical Learnings (S43)
-- `ha core reload` is NOT a valid HAOS CLI command — use `curl -s -X POST http://supervisor/core/api/services/automation/reload -H "Authorization: Bearer $SUPERVISOR_TOKEN"` for automation reload
-- Entity registry stores entities without a `domain` field — must parse domain from entity_id string (entity_id.split('.')[0])
-- After YAML automation deletion, HA does NOT immediately orphan-flag the old entities — they persist in registry without orphaned_timestamp. Must manually remove with ha_remove_entity
-- YAML automation `id:` fields create unique_id entries that survive file deletion — always check and purge before creating UI replacements to avoid `_2` collisions
-- `rmdir` on non-empty dir silently fails (expected) — good for conditional cleanup
+### Fully Kiosk Browser — Tier 1/Tier 2 pattern (NEW)
+- **Tier 1 (let FKB handle natively):** Screen Off Timer + camera Motion Detection for basic wake/sleep. Runs locally, zero network dependency. Do NOT duplicate with HA automations.
+- **Tier 2 (HA automations):** Brightness scheduling, doorbell events, away/home presence, URL navigation. Use `switch.*.screen` for wake, `number.*.screen_brightness` for brightness, `fully_kiosk.load_url` for navigation, `fully_kiosk.set_config` for persistent settings.
+- FKB `switch.*.motion_detection` is a control toggle (enable/disable), NOT a motion sensor. Don't trigger automations from it.
 
-## Discoveries & Opportunities
-- 7 Inovelli switch automations were DOUBLE-FIRING (YAML + UI responding to same zha_events) — now fixed by removing YAML versions. Watch for any behavioral changes in Kitchen/Bathroom switches
-- Kitchen Govee Floor Lamp (light.kitchen_floor_lamp) — reassign to Master Bedroom when physically moved
-- Michelle's devices visible on "Goetting" WiFi network in UniFi — relevant for future person tracker setup
-- Alaina's companion app registration needs entity verification next session
-- Entity registry has 3505 entities and 265 deleted entities — potential cleanup opportunity
+### Entity ref bugs are pervasive
+- Second occurrence of broken entity refs surviving across sessions (first was Entry Room in S42). Multiple automations referencing entities that don't exist or have slightly different names. Always verify entity existence before trusting automation configs.
+- **Promoted to rule:** Before any review session, run entity existence check on all entities referenced in the automation group.
 
-## Next Priorities
-1. 2nd Floor Bathroom — simplify 12 automations (most complex room, apply S42 review pattern)
-2. Kitchen tablet — 5/6 never fired, quick review
-3. Kids bedrooms — blueprint standardization opportunity (Alaina + Ella dimmer switches)
-4. Verify Alaina companion app device_tracker entity
-5. Kitchen Govee lamp → Master Bedroom reassignment (when physically moved)
-6. Scenes/Scripts/Dashboard audit
+### Triple-fire pattern
+- Multiple automations listening to the same ZHA device_ieee will ALL fire on every button press. The "keeper" pattern from consolidation must include deleting the legacy automations, not just disabling.
 
-## Tabled (carried forward)
-- Person tracker: Michelle only (MAC: 6a:9a:25:dd:82:f1, devices on Goetting WiFi)
-- Jarrett & Owen: grades tracked, person entities not configured
-- AndroidTV 192.168.1.17 — real device, DO NOT DELETE
-- Music Assistant — setup_error
-- North ratgdo: toggle obstruction OFF after OTA
-- Apollo Kitchen 192.168.21.233: OTA pending
-- Vanity slow fade: VZM30-SN IEEE 18:0d:f9:ff:fe:34:58:66
-- humidity_smart_alerts: UI rebuild pending
-- Aqara sensor gap: 6 door + 4 P1 motion
-- 2 unnamed Aqara Temp/Humidity sensors
-- first_floor_hallway_motion delay_off bug
-- 6 Ella bedroom scenes missing
-- HA Green full config audit before wipe
-- Security session: Cloudflare ZT + PAT rotation
-- 6 repair issues: http://192.168.1.10:8123/config/repairs
+---
+
+## TABLED ITEMS
+
+### Immediate next (S45 priority order):
+1. **Kids bedrooms** — blueprint standardization (Alaina + Ella dimmer switches)
+2. **Verify Alaina companion app** — confirm device_tracker entity, link to person.alaina_spencer
+3. **Kitchen Govee lamp → Master Bedroom** — reassign light.kitchen_floor_lamp (MAC 98:88:e0:f2:32:48, IP 192.168.10.201)
+4. **Scenes/scripts/dashboard audit** — future pass
+
+### Blocked / dependency items:
+- `binary_sensor.house_occupied` — unavailable (template package issue). Blocks doorbell popup condition + future away/home tablet control. Investigate which template package defines it.
+- `sensor.2nd_floor_bathroom_humidity_derivative` — unavailable. Check if template package or integration issue.
+- Kitchen tablet: build dedicated doorbell camera dashboard view, then add `fully_kiosk.load_url` to doorbell automation
+- Kitchen tablet: rebuild away/home screen control using `switch.kitchen_wall_a9_tablet_screen` (not mobile_app notify) once house_occupied is fixed
+
+### Orphaned helpers to review:
+- `input_boolean.kitchen_tablet_doorbell_popup` — no longer referenced by any automation
+- `input_boolean.kitchen_tablet_screen_control` — no longer referenced by any automation
+
+### Ongoing from prior sessions:
+- Michelle's person tracker (MAC: 6a:9a:25:dd:82:f1)
+- Music Assistant setup_error
+- Security hardening session (~30 min: SSH password auth, Cloudflare Zero Trust, plaintext PAT, recorder PII)
+- AndroidTV at 192.168.1.17 — real ADB device, do not delete
+- NordPass cleanup backlog
+
+---
+
+## BENCHMARK
+
+| Metric | S43 | S44 |
+|--------|-----|-----|
+| Automations | 77 | 80 (84 after S43 adds, -8 S44 cleanup, +4 between sessions) |
+| Helpers | 90 | 90 |
+| Ghosts | 0 | 0 |
+| YAML auto files | 0 | 0 |
+| Template packages | 14 | 14 |
+
+---
+
+## QUICK REFERENCE
+
+- HA: http://192.168.1.10:8123
+- SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
+- Git push: MCP `shell_command.git_push` only
+- Notify: `notify.mobile_app_galaxy_s26_ultra`
+- Kitchen tablet device_id: `86870b5d8b01f345f5d5dd9c2ac06d2b`
+- Kitchen tablet FKB start URL: `http://192.168.1.10:8123/lovelace-kitchen-tablet/0`
