@@ -3737,3 +3737,199 @@
         target:
           entity_id: input_boolean.entry_room_manual_override
   mode: restart
+- id: '1776568827007'
+  alias: 1st Floor Bathroom — Reset Light Override (30 min)
+  description: Auto-clear manual override after 30 minutes so motion automation resumes
+  triggers:
+  - platform: state
+    entity_id: input_boolean.bathroom_manual_override
+    to: 'on'
+    for:
+      minutes: 30
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.bathroom_manual_override
+  mode: restart
+- id: '1776568837462'
+  alias: 2nd Floor Bathroom — Reset Fan Override (30 min)
+  description: Auto-clear fan manual override after 30 minutes
+  triggers:
+  - entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    for:
+      minutes: 30
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+  mode: restart
+- id: '1776568848565'
+  alias: 2nd Floor Bathroom — Reset Light Override (30 min)
+  description: Auto-clear light manual override after 30 minutes so motion automation
+    resumes
+  triggers:
+  - entity_id: input_boolean.2nd_floor_bathroom_manual_override
+    for:
+      minutes: 30
+    platform: state
+    to: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.2nd_floor_bathroom_manual_override
+  mode: restart
+- id: '1776568857673'
+  alias: 2nd Floor Bathroom — Fan Pre-trigger (Hot Water Flow)
+  description: Turn fan on proactively when sustained hot water use detected (>0.5
+    flow for 2 min)
+  triggers:
+  - above: 0.5
+    entity_id: sensor.navien_water_flow
+    for:
+      minutes: 2
+    platform: numeric_state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: fan.2nd_floor_bathroom_exhaust_fan
+    state: 'off'
+  actions:
+  - action: fan.turn_on
+    target:
+      entity_id: fan.2nd_floor_bathroom_exhaust_fan
+  mode: restart
+- id: '1776568867766'
+  alias: Front Driveway — Lights On When Motion (Dark)
+  description: Turn on driveway light on motion at night, off after 5min no motion
+    or 10min hard cap
+  triggers:
+  - entity_id: binary_sensor.front_driveway_door_person_detected
+    platform: state
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.front_driveway_door_is_dark
+    state: 'on'
+  actions:
+  - data:
+      brightness_pct: 100
+    target:
+      entity_id: light.front_driveway
+    action: light.turn_on
+  - continue_on_timeout: true
+    timeout:
+      minutes: 10
+    wait_for_trigger:
+    - entity_id: binary_sensor.front_driveway_door_person_detected
+      for:
+        minutes: 5
+      platform: state
+      to: 'off'
+  - data:
+      transition: 5
+    target:
+      entity_id: light.front_driveway
+    action: light.turn_off
+  mode: restart
+- id: '1776568880618'
+  alias: Front Driveway — Auto Off After No Motion
+  description: 'Safety net: turn off driveway lights 5 minutes after no motion'
+  triggers:
+  - entity_id: binary_sensor.front_driveway_door_person_detected
+    for:
+      minutes: 5
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: light.front_driveway
+    state: 'on'
+  actions:
+  - data:
+      transition: 5
+    target:
+      entity_id: light.front_driveway
+    action: light.turn_off
+  mode: restart
+- id: '1776568893015'
+  alias: Garage — Auto Off After No Motion
+  description: Turn off garage lights 5 minutes after no motion
+  triggers:
+  - entity_id: binary_sensor.garage_motion_combined
+    for:
+      minutes: 5
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: light.garage
+    state: 'on'
+  actions:
+  - data:
+      transition: 5
+    target:
+      entity_id: light.garage
+    action: light.turn_off
+  mode: restart
+- id: '1776568906607'
+  alias: Garage — Lights On When Walk-in Door Opens
+  description: Turn on garage lights when walk-in door opens
+  triggers:
+  - entity_id: binary_sensor.garage_walk_in_door
+    platform: state
+    to: 'on'
+  actions:
+  - data:
+      brightness_pct: 100
+    target:
+      entity_id: light.garage
+    action: light.turn_on
+  mode: restart
+- id: '1776568923211'
+  alias: Alaina — Wake With Echo Alarm
+  description: Gradual sunrise fade starting 10 min before Echo alarm
+  triggers:
+  - minutes: /1
+    platform: time_pattern
+  conditions:
+  - condition: state
+    entity_id: person.alaina_spencer
+    state: home
+  - condition: template
+    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')
+      %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set alarm_time
+      = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff = (alarm_time
+      - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n{% else %}\n  false\n{%
+      endif %}"
+  actions:
+  - action: script.alaina_gentle_wake
+  mode: single
+- id: '1776568947349'
+  alias: Living Room TV OFF → Full AV System OFF
+  description: When living room TV turns off, shut down Yamaha AVR, its plug, Echo
+    Show plug, and TV backlight strip
+  triggers:
+  - entity_id: media_player.living_room_tv
+    platform: state
+    to: 'off'
+  actions:
+  - target:
+      entity_id: media_player.basement_yamaha_av_receiver_rx_v671_main
+    action: media_player.turn_off
+  - delay: 00:00:05
+  - target:
+      entity_id: switch.basement_yamaha_av_receiver_plug
+    action: switch.turn_off
+  - target:
+      entity_id: switch.kitchen_echo_show_plug
+    action: switch.turn_off
+  - data:
+      transition: 3
+    target:
+      entity_id: light.living_room_tv_smart_light_strip
+    action: light.turn_off
+  mode: restart
