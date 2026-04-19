@@ -976,7 +976,7 @@
         ttl: 0
         clickAction: entityId:{{ click_entity }}
       message: Someone is at the {{ doorbell_label }}
-      title: "\U0001F514 Doorbell — {{ doorbell_label }}"
+      title: 🔔 Doorbell — {{ doorbell_label }}
   max: 2
   mode: parallel
   variables:
@@ -1025,7 +1025,7 @@
         importance: default
         tag: package_{{ doorbell_label | lower | replace(' ', '_') }}
       message: A package was detected at the {{ doorbell_label }}
-      title: "\U0001F4E6 Package Delivered — {{ doorbell_label }}"
+      title: 📦 Package Delivered — {{ doorbell_label }}
   max: 2
   mode: parallel
   variables:
@@ -1159,7 +1159,7 @@
   actions:
   - action: notify.mobile_app_galaxy_s26_ultra
     data:
-      title: "\U0001F6AA Garage Still Open"
+      title: 🚪 Garage Still Open
       message: North door closing in 60s
       data:
         actions:
@@ -1182,7 +1182,7 @@
     then:
     - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        title: "\U0001F6AA Garage"
+        title: 🚪 Garage
         message: Auto-close cancelled
         data:
           tag: garage_auto_close
@@ -1196,7 +1196,7 @@
         entity_id: cover.ratgdo32disco_fd8d8c_door
     - action: notify.mobile_app_galaxy_s26_ultra
       data:
-        title: "\U0001F512 Garage"
+        title: 🔒 Garage
         message: North door closed
         data:
           tag: garage_auto_close
@@ -2245,79 +2245,8 @@
   - action: persistent_notification.create
     data:
       message: Grades auto-incremented. Verify and update sport calendars if needed.
-      title: "\U0001F392 New School Year"
+      title: 🎒 New School Year
   mode: single
-- id: '1776301536108'
-  alias: Entry Room — Ceiling Motion Lighting
-  description: 3-tier time-aware motion lighting for 3-door transition space. Energize
-    daytime, warm dim evening, nightlight late night. Full bypass when hot_tub_mode
-    active. Manual override respected. 3-min off timeout appropriate for pass-through
-    coat/shoe room.
-  triggers:
-  - platform: state
-    entity_id: binary_sensor.entry_room_motion
-    to: 'on'
-    id: motion_on
-  - platform: state
-    entity_id: binary_sensor.entry_room_motion
-    to: 'off'
-    for:
-      minutes: 3
-    id: motion_off
-  conditions:
-  - condition: state
-    entity_id: input_boolean.entry_room_manual_override
-    state: 'off'
-  - condition: state
-    entity_id: input_boolean.hot_tub_mode
-    state: 'off'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: motion_on
-      sequence:
-      - choose:
-        - conditions:
-          - condition: time
-            after: 06:00:00
-            before: '21:30:00'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.entry_room_energize
-            data:
-              transition: 1
-        - conditions:
-          - condition: time
-            after: '21:30:00'
-            before: '23:00:00'
-          sequence:
-          - action: light.turn_on
-            target:
-              entity_id: light.entry_room_ceiling_light
-            data:
-              brightness_pct: 70
-              color_temp_kelvin: 3000
-              transition: 2
-        default:
-        - action: light.turn_on
-          target:
-            entity_id: light.entry_room_ceiling_light
-          data:
-            brightness_pct: 15
-            color_temp_kelvin: 2200
-            transition: 2
-    - conditions:
-      - condition: trigger
-        id: motion_off
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.entry_room_ceiling_light
-        data:
-          transition: 5
-  mode: restart
 - id: '1776301689474'
   alias: System — Extended Evening Auto Set
   triggers:
@@ -2807,8 +2736,8 @@
   actions:
   - action: light.turn_on
     data:
-      brightness_pct: "{% set hour = now().hour %}\n{% if hour >= 22 or hour < 6 %}\n
-        \ 30\n{% else %}\n  100\n{% endif %}"
+      brightness_pct: "{% set hour = now().hour %}\n{% if hour >= 22 or hour < 6 %}\n\
+        \  30\n{% else %}\n  100\n{% endif %}"
     target:
       entity_id:
       - light.garage
@@ -2839,16 +2768,16 @@
     entity_id: cover.ratgdo32disco_5735e8_door
     state: closed
   - condition: template
-    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')
-      | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors
-      = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n
-      \ 'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n
-      \ 'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n] %}\n{%
-      set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors %}\n
-      \ {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n  {%
-      elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) < timeout_seconds
-      %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{% endfor %}\n{{ ns.all_clear
-      }}"
+    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')\
+      \ | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors\
+      \ = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n\
+      \  'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n \
+      \ 'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n\
+      ] %}\n{% set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors\
+      \ %}\n  {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n\
+      \  {% elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) <\
+      \ timeout_seconds %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{%\
+      \ endfor %}\n{{ ns.all_clear }}"
   actions:
   - action: light.turn_off
     target:
@@ -3420,7 +3349,7 @@
           message: 'Bathroom humidity fan paused for 24 hours. Current humidity: {{
             states(''sensor.2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode_humidity'')
             }}%'
-          title: "\U0001F4A8 Fan Paused"
+          title: 💨 Fan Paused
       - action: timer.start
         data:
           duration: '24:00:00'
@@ -3464,7 +3393,7 @@
           data:
             tag: humidity_pause
           message: Humidity fan pause extended 12 hours
-          title: "\U0001F4A8 Extended"
+          title: 💨 Extended
   mode: restart
 - id: '1776366154798'
   alias: 2nd Floor Bathroom — Humidity Pause Timer Expiry
@@ -3480,7 +3409,7 @@
   - action: notify.mobile_app_galaxy_s26_ultra
     data:
       message: Humidity fan pause expired - automatic control resumed
-      title: "\U0001F4A8 Resumed"
+      title: 💨 Resumed
   mode: restart
 - id: '1776535781702'
   alias: Entry Room — Lamp Motion Control
@@ -3900,11 +3829,11 @@
     entity_id: person.alaina_spencer
     state: home
   - condition: template
-    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')
-      %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set alarm_time
-      = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff = (alarm_time
-      - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n{% else %}\n  false\n{%
-      endif %}"
+    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')\
+      \ %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set\
+      \ alarm_time = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff\
+      \ = (alarm_time - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n\
+      {% else %}\n  false\n{% endif %}"
   actions:
   - action: script.alaina_gentle_wake
   mode: single
