@@ -101,3 +101,29 @@
 - Notify: `notify.mobile_app_galaxy_s26_ultra`
 - Kitchen tablet device_id: `86870b5d8b01f345f5d5dd9c2ac06d2b`
 - Kitchen tablet FKB start URL: `http://192.168.1.10:8123/lovelace-kitchen-tablet/0`
+
+## ADDENDUM — Kitchen Tablet Dashboard (S44 continued)
+
+### Built:
+- New storage-mode dashboard at `kitchen-tablet` (url_path)
+- Kiosk Mode v13 installed (HACS) + configured (`non_admin: true`)
+- Dedicated `tablet` user (non-admin, local-only) — NordPass: "EQ14 HA — Tablet Kiosk User (tablet)"
+- FKB startURL: `http://192.168.1.10:8123/kitchen-tablet/home`
+- FKB device_id: `86870b5d8b01f345f5d5dd9c2ac06d2b`
+- Tablet IP: `192.168.21.50` (IoT VLAN), FKB Remote Admin: `192.168.21.50:2323`
+- Dashboard sections: Weather+Clock, Calendar (placeholder), Garage, Kitchen Lights, Climate, Shopping List, Who's Home
+
+### Learnings:
+- Kiosk Mode does NOT work on strategy dashboards (default auto-generated). Must use storage-mode dashboard.
+- FKB `fully_kiosk.set_config` requires device_id target, not entity_id
+- FKB Remote Admin commands: Clear Web Cache + Load Start URL for cache refresh
+- `tablet` user shared across all future tablets; per-tablet dashboard via FKB startURL
+
+### Blocked:
+- Google Calendar integration needs re-auth (OAuth expired from Green migration)
+- Once calendar entities exist, swap markdown placeholder for native `calendar` card with `initial_view: listWeek`
+- Calendar Card Pro (HACS custom card) is the community favorite for family calendars — consider for future enhancement
+
+### Orphaned helpers to clean up:
+- `input_boolean.kitchen_tablet_doorbell_popup` — no longer referenced
+- `input_boolean.kitchen_tablet_screen_control` — no longer referenced
