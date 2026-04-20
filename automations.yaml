@@ -995,30 +995,26 @@
     snapshot_path: '{{ ''/config/www/doorbell/package_front.jpg'' if trigger.entity_id
       == ''binary_sensor.very_front_door_package_detected'' else ''/config/www/doorbell/package_driveway.jpg''
       }}'
-- actions:
-  - action: script.ella_gentle_wake
-  alias: Ella - Wake With Echo Alarm
-  conditions:
-  - condition: template
-    value_template: '{{ state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
-      ''status'') == ''ON'' or (as_timestamp(now()) - as_timestamp(state_attr(''sensor.ella_s_bedroom_echo_show_next_alarm_2'',
-      ''dismissed'') | default(''2000-01-01'', true))) | float(9999) < 120 }}'
-  - condition: state
-    entity_id: input_boolean.ella_home
-    state: 'on'
-  - condition: state
-    entity_id: input_boolean.ella_bedroom_override
-    state: 'off'
-  description: Mirrors alaina_wake_echo_alarm. Fires every minute, checks if Ella's
-    Echo alarm is in the active/ringing window (within last 2 min). Runs ella_gentle_wake
-    script to brighten lights at actual alarm time. Complements ella_gentle_wake_before_alarm
-    which fires 15 min prior.
-  id: '1773360880637'
-  mode: single
+- id: '1773361493420'
+  alias: Girls → Bedtime Winddown Lighting
+  description: When either girl's phone goes on the charger after 8:30pm while home,
+    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 45min.
+    Uses binary_sensor.ella_home / binary_sensor.alaina_home (Phase 9.1 template sensors,
+    not legacy input_booleans).
   triggers:
-  - minutes: /1
-    platform: time_pattern
-- actions:
+  - entity_id: sensor.iphone_40_battery_state
+    id: ella_charging
+    platform: state
+    to: Charging
+  - entity_id: sensor.alaina_s_iphone_17_iphone_battery_state
+    id: alaina_charging
+    platform: state
+    to: Charging
+  conditions:
+  - after: '20:30:00'
+    before: '23:59:59'
+    condition: time
+  actions:
   - choose:
     - conditions:
       - condition: trigger
@@ -1080,27 +1076,8 @@
           transition: 60
         target:
           entity_id: light.alaina_s_bedroom
-  alias: Girls → Bedtime Winddown Lighting
-  conditions:
-  - after: '20:30:00'
-    before: '23:59:59'
-    condition: time
-  description: When either girl's phone goes on the charger after 8:30pm while home,
-    dims their bedroom lights to a warm sleepy scene and schedules auto-off at 45min.
-    Uses binary_sensor.ella_home / binary_sensor.alaina_home (Phase 9.1 template sensors,
-    not legacy input_booleans).
-  id: '1773361493420'
   max: 2
   mode: parallel
-  triggers:
-  - entity_id: sensor.ellas_iphone_battery_state
-    id: ella_charging
-    platform: state
-    to: Charging
-  - entity_id: sensor.alainas_iphone_battery_state
-    id: alaina_charging
-    platform: state
-    to: Charging
 - id: garage_auto_close_departure
   alias: Garage — Auto Close North on Departure
   description: When John leaves home and North garage door is open, notify and auto-close
@@ -2854,16 +2831,16 @@
   alias: Alaina's Bedroom — Dimmer Switch
   description: B1=Energize B2=Relax B3=Dimmed B4=Off
   triggers:
-  - entity_id: event.hue_dimmer_switch_3_button_1
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_1
     id: b1
     platform: state
-  - entity_id: event.hue_dimmer_switch_3_button_2
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_2
     id: b2
     platform: state
-  - entity_id: event.hue_dimmer_switch_3_button_3
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_3
     id: b3
     platform: state
-  - entity_id: event.hue_dimmer_switch_3_button_4
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_4
     id: b4
     platform: state
   conditions:
@@ -2905,16 +2882,16 @@
   alias: Ella's Bedroom — Dimmer Switch
   description: B1=Energize B2=Relax B3=Dimmed B4=Off. Customize with her custom scenes.
   triggers:
-  - entity_id: event.hue_dimmer_switch_2_button_1
+  - entity_id: event.ella_s_bedroom_dimmer_switch_button_1
     id: b1
     platform: state
-  - entity_id: event.hue_dimmer_switch_2_button_2
+  - entity_id: event.ella_s_bedroom_dimmer_switch_button_2
     id: b2
     platform: state
-  - entity_id: event.hue_dimmer_switch_2_button_3
+  - entity_id: event.ella_s_bedroom_dimmer_switch_button_3
     id: b3
     platform: state
-  - entity_id: event.hue_dimmer_switch_2_button_4
+  - entity_id: event.ella_s_bedroom_dimmer_switch_button_4
     id: b4
     platform: state
   conditions:
@@ -3621,25 +3598,6 @@
       entity_id: light.garage
     action: light.turn_on
   mode: restart
-- id: '1776568923211'
-  alias: Alaina — Wake With Echo Alarm
-  description: Gradual sunrise fade starting 10 min before Echo alarm
-  triggers:
-  - minutes: /1
-    platform: time_pattern
-  conditions:
-  - condition: state
-    entity_id: person.alaina_spencer
-    state: home
-  - condition: template
-    value_template: "{% set alarm = states('sensor.alaina_s_bedroom_echo_show_next_alarm_2')
-      %}\n{% if alarm not in ['unknown', 'unavailable', 'None', ''] %}\n  {% set alarm_time
-      = as_datetime(alarm).astimezone(now().tzinfo) %}\n  {% set diff = (alarm_time
-      - now()).total_seconds() / 60 %}\n  {{ 9 <= diff <= 10 }}\n{% else %}\n  false\n{%
-      endif %}"
-  actions:
-  - action: script.alaina_gentle_wake
-  mode: single
 - id: '1776568947349'
   alias: Living Room TV OFF → Full AV System OFF
   description: When living room TV turns off, shut down Yamaha AVR, its plug, Echo

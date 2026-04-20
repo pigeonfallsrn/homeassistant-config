@@ -13,3 +13,4 @@ S44 | google-cal | OAuth tokens don't transfer between HA instances — need fre
 S44 | tablet-user | Non-admin + kiosk_mode + FKB kiosk lock = full lockdown stack
 S43 | yaml-migration | MCP returns 0 for YAML-defined entities — reliable signal, not error
 S42 | entity-refs | Broken entity refs survive across sessions (1st occurrence)
+# (paste LEARNINGS_S45_APPEND.md content here)  
