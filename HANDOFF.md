@@ -1,106 +1,119 @@
-# HANDOFF — Session S45
+# HANDOFF — Session S46
 
-## Last Session: S45 (2026-04-19)
-## Last Commit: c2519be
-## Baseline: 78 automations, 89 helpers, 0 ghosts, 0 YAML auto files
-
----
-
-## WHAT HAPPENED IN S45
-
-### Orphaned Helpers Cleanup (90 → 89 helpers)
-- Deleted 2: input_boolean.kitchen_tablet_doorbell_popup, input_boolean.kitchen_tablet_screen_control
-
-### Kids Bedroom Automation Review (11 → 9 automations)
-Full entity-ref verification on all 11 kids-related automations. Found 6 of 11 broken.
-
-**Fixed 3 automations (entity ref swaps):**
-- Alaina Dimmer Switch: 4 triggers event.hue_dimmer_switch_3_button_* → event.alaina_s_bedroom_dimmer_switch_button_*
-- Ella Dimmer Switch: 4 triggers event.hue_dimmer_switch_2_button_* → event.ella_s_bedroom_dimmer_switch_button_*
-- Bedtime Winddown: sensor.ellas_iphone_battery_state → sensor.iphone_40_battery_state, sensor.alainas_iphone_battery_state → sensor.alaina_s_iphone_17_iphone_battery_state
-
-**Created 1 helper:**
-- input_button.alaina_led_strip_lights (was missing, broke LED strip button automation)
-
-**Deleted 2 automations:**
-- Alaina Wake With Echo Alarm (ghost script, wrong alarm sensor _2 suffix)
-- Ella Wake With Echo Alarm (ghost script, wrong alarm sensor, wrong ella_home ref)
-
-**Removed 2 ghost scripts:**
-- script.alaina_gentle_wake (registry only, no config)
-- script.ella_gentle_wake (same)
-
-**Labeled 9 automations:** kids + lighting/presence as appropriate
-
-### Companion App Verification
-- Alaina: device_tracker.alaina_s_iphone_17_alainas_iphone → person.alaina_spencer ✅
-- Ella: device_tracker.ellas_iphone → person.ella_spencer ✅
-
-### Govee Lamp: light.kitchen_floor_lamp area_id null — awaiting physical move
+## Last Session: S46 (2026-04-20)
+## Last Commit: (see git log)
+## Baseline: 76 automations, 88 helpers, 0 ghosts, 0 YAML auto files
 
 ---
 
-## LEARNINGS (S45)
+## WHAT HAPPENED IN S46
 
-### Hue dimmer entity naming migration
-- Old Hue: event.hue_dimmer_switch_N_button_N
-- New Hue v2: event.alaina_s_bedroom_dimmer_switch_button_N
-- Always check trigger entity IDs after Hue migration
+### Quick Wins
+- Govee lamp reassigned: light.kitchen_floor_lamp → light.master_bedroom_floor_lamp (area, name, entity_id all updated, zero refs to fix)
+- Ella companion app device renamed to "Ella's iPhone" (fixes friendly names in UI; entity_ids still iphone_40_* — cosmetic backlog)
 
-### Entity ref rule — 3rd occurrence (S42, S44, S45)
-- 6 of 11 kids automations had broken entity refs
+### Garage Review (6 → 4 automations, 13 broken refs → 0)
+- Fixed: Auto Close North on Departure — 1 cover ref swapped to ratgdo new name
+- Rebuilt: "All Lights ON Fixed" → "Garage — Motion Lights ON" — 7 ratgdo refs fixed, dead aqara trigger removed, entity_id renamed to automation.garage_motion_lights_on
+- Fixed: Dimmer Switch — 4 Hue event refs swapped (hue_dimmer_switch_4 → garage_dimmer_switch)
+- Created: "Garage — Motion Lights OFF" — consolidated old All Lights OFF + Auto Off After No Motion into single automation using garage_motion_combined + input_number.garage_light_timeout + both-covers-closed condition
+- Deleted: All Lights OFF (Fixed) — replaced by consolidated OFF
+- Deleted: Auto Off After No Motion — replaced by consolidated OFF
+- Deleted: Walk-in Door Opens — dead sensor (binary_sensor.garage_walk_in_door doesn't exist)
+- Labeled all 4 surviving automations: garage + lighting (or security for auto-close)
 
-### Ghost scripts pattern
-- Scripts in registry (restored:true) with no config
-- ha_config_remove_script fails → use ha_remove_entity
+### Observations
+- North ratgdo obstruction sensor stuck ON (binary_sensor.garage_north_garage_door_ratgdo32disco_obstruction) — needs physical toggle
+- Orphaned helpers from S44 (kitchen_tablet_doorbell_popup, kitchen_tablet_screen_control) already cleaned — confirmed not in registry
 
-### Ella companion app naming
-- sensor.iphone_40_battery_state (generic) — rename device later
+---
+
+## LEARNINGS (S46)
+
+### ESPHome reflash rename pattern (NEW — 1st occurrence)
+- ESPHome devices reflashed with new device names change ALL entity IDs
+- ratgdo: ratgdo32disco_fd8d8c → garage_north_garage_door_ratgdo32disco (9 of 13 broken refs)
+- Analogous to Hue Migration Rule but for ESPHome devices
+- When reviewing any area with ESPHome devices, proactively check if entity IDs shifted after reflash
+
+### Entity Ref Rule — 4th independent occurrence
+- S42 Entry Room, S44 Bathroom+Tablet, S45 Kids (6/11), S46 Garage (13/27)
+- Nearly half of all garage entity refs were broken
+- Batch ha_get_state verification continues to be the right pattern
+
+### Hue Migration Rule — 2nd independent occurrence
+- Garage dimmer switch: hue_dimmer_switch_4_button_N → garage_dimmer_switch_button_N
+- Confirmed pattern from S45 kids dimmer switches
+
+### python_transform limitation
+- isinstance() not available in ha_config_set_automation python_transform
+- For multi-ref fixes, full config replacement is cleaner anyway — go straight to it
+
+### Consolidation pattern for motion lights
+- When an area has separate ON/OFF automations with overlapping triggers and targets, consolidate into matched ON/OFF pair
+- Use combined motion sensor + helper timeout for OFF side
+- Garage went from 3 overlapping automations → 1 clean OFF automation
 
 ---
 
 ## TABLED / REMAINING WORK
 
-### S46 Priority:
-1. Govee lamp → Master Bedroom area reassign when physically moved
-2. Ella companion app device rename
-3. Next area group automation review
+### Next Priority:
+1. North ratgdo obstruction toggle — physical task, next time in garage
+2. Living Room review — 6 automations (3 AVR, 1 scene cycling, 1 hot tub lamp, 1 TV-off)
+3. Master Bedroom review — 1 automation (tap dial) + new floor lamp
 
-### Kitchen Tablet Enhancements (future):
-- Calendar Card Pro, Master Calendar parsing, doorbell camera view
-- Away/home screen (blocked by house_occupied), FKB screensaver, battery mgmt
+### Ella Companion App (cosmetic backlog):
+- 20 entity_ids still iphone_40_* — device renamed but entity_ids unchanged
+- 1 automation ref (Girls → Bedtime Winddown Lighting)
+- Low priority unless it causes confusion
 
-### Blocked:
-- binary_sensor.house_occupied — unavailable (template package)
+### Kitchen Tablet Enhancements (tabled):
+- Calendar Card Pro (HACS) for per-calendar colors/emojis
+- Master Calendar parsing (grade-specific events)
+- Doorbell camera view + fully_kiosk.load_url
+- Away/home screen control (blocked by house_occupied)
+- FKB screensaver (family photos / ambient clock)
+- Battery management automation (20-80% charge cycle)
+
+### Blocked / Dependency Items:
+- binary_sensor.house_occupied — unavailable (template package issue)
 - sensor.2nd_floor_bathroom_humidity_derivative — unavailable
-- Music Assistant — setup_error
+- Music Assistant — setup_error state
 - Michelle person tracker (MAC: 6a:9a:25:dd:82:f1)
 
 ### Ongoing:
-- Security hardening, AndroidTV, NordPass backlog
-- Integrations to review: Roomba, DS224plus, BT hci0, Roku, Tuya, Vizio
+- Security hardening session (~30 min: SSH password auth, Cloudflare Zero Trust, plaintext PAT, recorder PII)
+- AndroidTV at 192.168.1.17 — real ADB device, do not delete
+- NordPass cleanup backlog
+- Discovered integrations: 2nd Floor Roomba, DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
+- Governance review due at S50
 
 ---
 
 ## BENCHMARK
 
-| Metric | S44 | S45 |
-|--------|-----|-----|
-| Automations | 80 | 78 |
-| Helpers | 90 | 89 |
-| Ghosts | 0 | 0 |
-| Ghost scripts removed | — | 2 |
-| Template packages | 14 | 14 |
-| HACS cards | 1 | 1 |
-| Calendars | 19 | 19 |
-| Kids automations labeled | 0 | 9 |
+| Metric | S44 | S45 | S46 |
+|--------|-----|-----|-----|
+| Automations | 80 | 78 | 76 |
+| Helpers | 90 | 88 | 88 |
+| Ghosts | 0 | 0 | 0 |
+| YAML auto files | 0 | 0 | 0 |
+| Template packages | 14 | 14 | 14 |
+| HACS cards | 1 | 1 | 1 |
+| Calendars | 19 | 19 | 19 |
+| Tablet dashboards | 1 | 1 | 1 |
 
 ---
 
 ## QUICK REFERENCE
 
 - HA: http://192.168.1.10:8123
-- SSH: ssh hassio@192.168.1.10 -p 2222 -o MACs=hmac-sha2-256-etm@openssh.com
-- Git push: MCP shell_command.git_push only
-- Notify: notify.mobile_app_galaxy_s26_ultra
-- Kitchen tablet device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
+- SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
+- Git push: MCP `shell_command.git_push` only
+- Notify: `notify.mobile_app_galaxy_s26_ultra`
+- Kitchen tablet device_id: `86870b5d8b01f345f5d5dd9c2ac06d2b`
+- Kitchen tablet FKB startURL: `http://192.168.1.10:8123/kitchen-tablet/home`
+- Kitchen tablet FKB Remote Admin: `http://192.168.21.50:2323`
+- Kitchen tablet HA user: `tablet` (non-admin, local-only)
+- Tablet dashboard url_path: `kitchen-tablet` (storage-mode, kiosk_mode enabled)

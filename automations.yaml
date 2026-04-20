@@ -1089,7 +1089,7 @@
     to: not_home
   conditions:
   - condition: state
-    entity_id: cover.ratgdo32disco_fd8d8c_door
+    entity_id: cover.garage_north_garage_door_ratgdo32disco_door
     state: open
   actions:
   - action: notify.mobile_app_galaxy_s26_ultra
@@ -1124,11 +1124,11 @@
           timeout: 30
     else:
     - condition: state
-      entity_id: cover.ratgdo32disco_fd8d8c_door
+      entity_id: cover.garage_north_garage_door_ratgdo32disco_door
       state: open
     - action: cover.close_cover
       target:
-        entity_id: cover.ratgdo32disco_fd8d8c_door
+        entity_id: cover.garage_north_garage_door_ratgdo32disco_door
     - action: notify.mobile_app_galaxy_s26_ultra
       data:
         title: "\U0001F512 Garage"
@@ -2567,27 +2567,26 @@
         entity_id: number.kitchen_wall_a9_tablet_screen_brightness
   mode: restart
 - id: '1776360815771'
-  alias: Garage All Lights ON (Fixed)
+  alias: Garage — Motion Lights ON
+  description: Turn on all garage lights on any motion, door open, or motor activity.
+    Brightness varies by time of day.
   triggers:
-  - entity_id: binary_sensor.ratgdo32disco_fd8d8c_motor
+  - entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motor
     platform: state
     to: 'on'
-  - entity_id: binary_sensor.ratgdo32disco_5735e8_motor
+  - entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motor
     platform: state
     to: 'on'
-  - entity_id: cover.ratgdo32disco_fd8d8c_door
+  - entity_id: cover.garage_north_garage_door_ratgdo32disco_door
     platform: state
     to: open
-  - entity_id: cover.ratgdo32disco_5735e8_door
+  - entity_id: cover.garage_south_garage_door_ratgdo32disco_door
     platform: state
     to: open
-  - entity_id: binary_sensor.aqara_door_and_window_sensor_door_3
+  - entity_id: binary_sensor.garage_north_garage_door_ratgdo32disco_motion
     platform: state
     to: 'on'
-  - entity_id: binary_sensor.ratgdo32disco_fd8d8c_motion
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.ratgdo32disco_5735e8_motion
+  - entity_id: binary_sensor.garage_south_garage_door_ratgdo32disco_motion
     platform: state
     to: 'on'
   - entity_id: binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
@@ -2607,49 +2606,7 @@
     target:
       entity_id:
       - light.garage
-      - light.ratgdo32disco_fd8d8c_light
-      - light.garage_north_wall_nightlight
-      - light.garage_north_of_east_wall_motion_light_sensor
-      - light.garage_south_wall_motion_light_sensor
-      - light.garage_south_of_east_wall_motion_light_sensor
-  mode: restart
-- id: '1776360824225'
-  alias: Garage All Lights OFF (Fixed)
-  triggers:
-  - entity_id:
-    - binary_sensor.ratgdo32disco_fd8d8c_motion
-    - binary_sensor.ratgdo32disco_5735e8_motion
-    - binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion
-    - binary_sensor.garage_south_wall_motion_light_sensor_motion
-    - binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion
-    for:
-      seconds: 30
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: cover.ratgdo32disco_fd8d8c_door
-    state: closed
-  - condition: state
-    entity_id: cover.ratgdo32disco_5735e8_door
-    state: closed
-  - condition: template
-    value_template: "{% set timeout_minutes = states('input_number.garage_light_timeout')
-      | int %}\n{% set timeout_seconds = timeout_minutes * 60 %}\n{% set motion_sensors
-      = [\n  'binary_sensor.ratgdo32disco_fd8d8c_motion',\n  'binary_sensor.ratgdo32disco_5735e8_motion',\n
-      \ 'binary_sensor.garage_north_of_east_wall_motion_light_sensor_motion',\n  'binary_sensor.garage_south_wall_motion_light_sensor_motion',\n
-      \ 'binary_sensor.garage_south_of_east_wall_motion_light_sensor_motion'\n] %}\n{%
-      set ns = namespace(all_clear=true) %}\n{% for sensor in motion_sensors %}\n
-      \ {% if is_state(sensor, 'on') %}\n    {% set ns.all_clear = false %}\n  {%
-      elif as_timestamp(now()) - as_timestamp(states[sensor].last_changed) < timeout_seconds
-      %}\n    {% set ns.all_clear = false %}\n  {% endif %}\n{% endfor %}\n{{ ns.all_clear
-      }}"
-  actions:
-  - action: light.turn_off
-    target:
-      entity_id:
-      - light.garage
-      - light.ratgdo32disco_fd8d8c_light
+      - light.garage_north_garage_door_ratgdo32disco_light
       - light.garage_north_wall_nightlight
       - light.garage_north_of_east_wall_motion_light_sensor
       - light.garage_south_wall_motion_light_sensor
@@ -2940,18 +2897,18 @@
   mode: single
 - id: '1776363588459'
   alias: Garage — Dimmer Switch
-  description: B1=Energize B2=Relax B3=Dimmed B4=Off. Battery swap needed.
+  description: B1=Energize B2=Relax B3=Dimmed B4=Off
   triggers:
-  - entity_id: event.hue_dimmer_switch_4_button_1
+  - entity_id: event.garage_dimmer_switch_button_1
     id: b1
     platform: state
-  - entity_id: event.hue_dimmer_switch_4_button_2
+  - entity_id: event.garage_dimmer_switch_button_2
     id: b2
     platform: state
-  - entity_id: event.hue_dimmer_switch_4_button_3
+  - entity_id: event.garage_dimmer_switch_button_3
     id: b3
     platform: state
-  - entity_id: event.hue_dimmer_switch_4_button_4
+  - entity_id: event.garage_dimmer_switch_button_4
     id: b4
     platform: state
   conditions:
@@ -3564,40 +3521,6 @@
       entity_id: light.front_driveway
     action: light.turn_off
   mode: restart
-- id: '1776568893015'
-  alias: Garage — Auto Off After No Motion
-  description: Turn off garage lights 5 minutes after no motion
-  triggers:
-  - entity_id: binary_sensor.garage_motion_combined
-    for:
-      minutes: 5
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: light.garage
-    state: 'on'
-  actions:
-  - data:
-      transition: 5
-    target:
-      entity_id: light.garage
-    action: light.turn_off
-  mode: restart
-- id: '1776568906607'
-  alias: Garage — Lights On When Walk-in Door Opens
-  description: Turn on garage lights when walk-in door opens
-  triggers:
-  - entity_id: binary_sensor.garage_walk_in_door
-    platform: state
-    to: 'on'
-  actions:
-  - data:
-      brightness_pct: 100
-    target:
-      entity_id: light.garage
-    action: light.turn_on
-  mode: restart
 - id: '1776568947349'
   alias: Living Room TV OFF → Full AV System OFF
   description: When living room TV turns off, shut down Yamaha AVR, its plug, Echo
@@ -3622,4 +3545,34 @@
     target:
       entity_id: light.living_room_tv_smart_light_strip
     action: light.turn_off
+  mode: restart
+- id: '1776687372437'
+  alias: Garage — Motion Lights OFF
+  description: Turn off all garage lights after no motion for the configured timeout
+    period, only when both doors are closed.
+  triggers:
+  - entity_id: binary_sensor.garage_motion_combined
+    for:
+      minutes: '{{ states(''input_number.garage_light_timeout'') | int(10) }}'
+    platform: state
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: cover.garage_north_garage_door_ratgdo32disco_door
+    state: closed
+  - condition: state
+    entity_id: cover.garage_south_garage_door_ratgdo32disco_door
+    state: closed
+  actions:
+  - action: light.turn_off
+    data:
+      transition: 5
+    target:
+      entity_id:
+      - light.garage
+      - light.garage_north_garage_door_ratgdo32disco_light
+      - light.garage_north_wall_nightlight
+      - light.garage_north_of_east_wall_motion_light_sensor
+      - light.garage_south_wall_motion_light_sensor
+      - light.garage_south_of_east_wall_motion_light_sensor
   mode: restart
