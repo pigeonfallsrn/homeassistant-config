@@ -165,5 +165,3 @@ recorder:
       - sensor.sun_next_setting
       - sensor.sun_solar_elevation
       - sensor.sun_solar_azimuth
-  write_handoff: 'cat > /config/HANDOFF.md'
-  append_learnings: 'cat >> /config/hac/LEARNINGS.md'
