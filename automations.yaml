@@ -3641,3 +3641,19 @@
       - light.garage_south_wall_motion_light_sensor
       - light.garage_south_of_east_wall_motion_light_sensor
   mode: restart
+- id: '1776804713901'
+  alias: 2nd Floor Bathroom — Fan Override Auto-Reset (30 min)
+  description: Resets manual override flag 30 minutes after paddle press, allowing
+    humidity auto-fan to resume. Mode:restart means repeated paddle presses reset
+    the 30-min window.
+  triggers:
+  - entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+    platform: state
+    to: 'on'
+  actions:
+  - delay:
+      minutes: 30
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
+  mode: restart

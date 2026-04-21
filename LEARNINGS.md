@@ -93,3 +93,34 @@
 - 3 scenes max for a foyer/entry: Energize (100%/6500K), Relax (56%/2200K), Nightlight (10%/2000K)
 - Config hold = instant jump to ultra-dim (5%/2000K) — skips cycling for 2AM shortcut
 - 2xUP/2xDOWN as shortcuts to commonly used scenes
+
+---
+## S49 — Inovelli Systematic Review (2026-04-21)
+
+### Derivative helper source persistence
+- Derivative integration stores source entity_id at creation time. If source entity disappears (e.g., Aqara sensor removed), derivative goes permanently unavailable
+- Options flow reconfigure for derivative returned 400 errors — had to delete and recreate
+- New entity ID auto-generated from source device name — rename immediately after creation
+
+### Inovelli SBM speed standard (confirmed across 9 switches)
+- S48 entry room pattern now validated house-wide: button_delay=0, local_ramp_rate_off_to_on=0, local_ramp_rate_on_to_off=0, on_off_transition_time=0
+- Default factory values (127 for ramps, 30 for transition) cause noticeable lag in SBM mode — user perceives delay between paddle press and Hue light response
+- This is now a 3+ occurrence pattern → promote to permanent rule
+
+### Inovelli LED standard (confirmed across 9 switches)
+- on_intensity=33, off_intensity=1, color=170 (blue) is the house standard
+- Factory defaults vary wildly (33, 49, 69, 95 found across switches) — must normalize per gang box
+- 3-gang boxes especially noticeable when LEDs don't match
+
+### VZM31-SN built-in humidity sensor
+- Inovelli docs: accuracy ±5%, intended for rate-of-change detection not absolute measurement
+- For bathroom fan auto, community consensus is derivative (rate-of-change) approach via HA derivative integration
+- The existing v4 system uses absolute thresholds (>70% ON, <55% OFF) which also works because the VZM31-SN consistently reads relative humidity even if absolute accuracy is ±5%
+
+### ha_bulk_control limitations
+- Only supports simple on/off/toggle actions — does NOT support number.set_value or other domain-specific service calls
+- For Inovelli parameter writes, must use individual ha_call_service calls with wait=false for speed
+
+### Kitchen override timer was missing
+- automation.kitchen_manual_override_inovelli_2x_tap_set referenced timer.kitchen_override_timer which didn't exist
+- Entity ref verification caught this — another validation of the S44 promoted rule
