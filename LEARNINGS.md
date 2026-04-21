@@ -51,3 +51,45 @@
 - These survive reboots but are NOT version-controlled
 - 87 entity renames this session exist only in HA's registry, not in git
 - Dashboard configs also .storage/ — same pattern
+
+## S48 — 2026-04-20
+
+### Hue migration _2 suffix pattern (3rd occurrence — PROMOTE)
+- Hue Bridge re-add to EQ14 caused _2 suffixes on entity IDs for lights, scenes, and groups
+- Previous: S46 garage dimmer, S46 ratgdo. Now: front driveway (6 broken refs across 4 automations)
+- RULE: After any Hue Bridge migration/re-add, proactively scan ALL automations for stale Hue entity refs (light.*, scene.*) without _2 suffixes
+
+### Inovelli SBM + Hue Bridge best practice (community research)
+- Two approaches: ZHA binding (direct, no scenes/AL) vs HA automation (scenes + AL, slight dimming lag)
+- With bulbs on Hue Bridge: must use HA automation approach (binding requires bulbs on same ZHA network)
+- Scene cycling: use direct light.turn_on with brightness/color_temp on Hue zone, not room-level Hue scenes (which affect all lights in room including lamp)
+- Don't mix AL with scene cycling on same lights — AL overrides scenes, creates conflicts
+- Clean separation: ceiling = manual/scene-driven, lamp = adaptive
+
+### Inovelli LED normalization for multi-gang
+- In SBM, switches mostly show their "off" LED (load entity stays off)
+- off_intensity is what you see 90% of the time — match across all switches in a gang
+- Best practice: on_intensity=33, off_intensity=1, matching color (170=blue)
+- Check ALL switches in a gang, not just the ones being worked on
+
+### Inovelli speed optimization for SBM + automation control
+- button_delay=0 for instant single-tap (multi-tap still works via ZHA event commands)
+- on_off_transition_time=0 for instant LED bar response
+- local_ramp_rate_off_to_on=0 and local_ramp_rate_on_to_off=0 for instant LED ramp
+- Remove all transition parameters from light.turn_off actions
+- In SBM, ramp rate params only affect LED animation, not actual load
+
+### AUX switch config button
+- AUX switches with config buttons generate button_6_press ZHA events when aux_switch_scenes is enabled on the main Inovelli
+- AUX up=button_5_press, down=button_4_press, config=button_6_press
+- Can share the same scene index helper with the main switch for synchronized scene position
+
+### Entry room ceiling Hue zone
+- light.entry_room_ceiling_light is a Hue ZONE (not room) containing only ceiling bulbs 1+2
+- Zone has no Hue scenes (hue_scenes: []) — must use direct light.turn_on with explicit values
+- Room-level scenes (scene.entry_room_*) affect ALL lights including lamp — avoid for ceiling-only control
+
+### Config press scene cycling best practice
+- 3 scenes max for a foyer/entry: Energize (100%/6500K), Relax (56%/2200K), Nightlight (10%/2000K)
+- Config hold = instant jump to ultra-dim (5%/2000K) — skips cycling for 2AM shortcut
+- 2xUP/2xDOWN as shortcuts to commonly used scenes

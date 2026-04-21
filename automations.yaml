@@ -22,8 +22,9 @@
     platform: time
 - id: '1771364980856'
   alias: Front Driveway — Inovelli Controls Hue Lights
-  description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Nightlight),
-    Config hold=Sleepy scene.
+  description: VZM30-SN in Smart Bulb Mode controlling Hue driveway lights. UP=Energize,
+    DOWN=Off, Config press=scene cycle (Energize→Relax→Nightlight), Config hold=Sleepy
+    scene.
   triggers:
   - event_data:
       device_id: 16a22c25ead6b47a6b9666c539ff2509
@@ -38,7 +39,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.front_driveway_energize
+          entity_id: scene.front_driveway_energize_2
     - conditions:
       - condition: template
         value_template: '{{ trigger.event.data.command in [''button_1_press'',''off'']
@@ -46,7 +47,7 @@
       sequence:
       - action: light.turn_off
         target:
-          entity_id: light.front_driveway
+          entity_id: light.front_driveway_2
     - conditions:
       - condition: template
         value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
@@ -65,7 +66,7 @@
           sequence:
           - action: scene.turn_on
             target:
-              entity_id: scene.front_driveway_energize
+              entity_id: scene.front_driveway_energize_2
         - conditions:
           - condition: state
             entity_id: input_number.front_driveway_scene_index
@@ -92,9 +93,11 @@
   mode: queued
   max_exceeded: silent
 - id: '1771532178019'
-  alias: Entry Room Ceiling — Inovelli Controls Hue Lights
-  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
-    Hold=brightness step.
+  alias: Entry Room Ceiling — Inovelli Controls Hue Ceiling
+  description: VZM31-SN in SBM controlling ceiling Hue zone only. UP=Energize (100%
+    6500K). DOWN=Off (instant). Config press=cycle 3 scenes (Energize→Relax→Nightlight).
+    Config hold=instant ultra-dim nightlight shortcut (5% 2000K). 2xUP=Relax shortcut.
+    2xDOWN=Nightlight shortcut. Hold=brightness step. Lamp separate (Tap Dial + AL).
   max_exceeded: silent
   mode: queued
   use_blueprint:
@@ -104,9 +107,12 @@
         target:
           entity_id: light.entry_room_ceiling_light
       button_1_double:
-      - action: scene.turn_on
+      - action: light.turn_on
+        data:
+          brightness: 26
+          color_temp_kelvin: 2000
         target:
-          entity_id: scene.entry_room_nightlight
+          entity_id: light.entry_room_ceiling_light
       button_1_hold:
       - action: light.turn_on
         data:
@@ -114,13 +120,19 @@
         target:
           entity_id: light.entry_room_ceiling_light
       button_2:
-      - action: scene.turn_on
+      - action: light.turn_on
+        data:
+          brightness: 255
+          color_temp_kelvin: 6500
         target:
-          entity_id: scene.entry_room_energize
+          entity_id: light.entry_room_ceiling_light
       button_2_double:
-      - action: scene.turn_on
+      - action: light.turn_on
+        data:
+          brightness: 144
+          color_temp_kelvin: 2200
         target:
-          entity_id: scene.entry_room_relax
+          entity_id: light.entry_room_ceiling_light
       button_2_hold:
       - action: light.turn_on
         data:
@@ -128,9 +140,53 @@
         target:
           entity_id: light.entry_room_ceiling_light
       button_3:
-      - action: scene.turn_on
+      - action: input_number.set_value
+        data:
+          value: '{{ ((states(''input_number.entry_room_scene_index'') | int + 1)
+            % 3) }}'
         target:
-          entity_id: scene.entry_room_dimmed
+          entity_id: input_number.entry_room_scene_index
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '0.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 255
+              color_temp_kelvin: 6500
+            target:
+              entity_id: light.entry_room_ceiling_light
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '1.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 144
+              color_temp_kelvin: 2200
+            target:
+              entity_id: light.entry_room_ceiling_light
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '2.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 26
+              color_temp_kelvin: 2000
+            target:
+              entity_id: light.entry_room_ceiling_light
+      button_3_hold:
+      - action: light.turn_on
+        data:
+          brightness: 13
+          color_temp_kelvin: 2000
+        target:
+          entity_id: light.entry_room_ceiling_light
       inovelli_switch: d80c7fa6d013f0fd1cbdd6f67c6a1cac
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
 - id: '1771556632224'
@@ -880,22 +936,11 @@
           entity_id: scene.kitchen_dimmed
       inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- actions:
-  - action: light.turn_on
-    target:
-      entity_id: light.front_driveway
+- id: front_driveway_motion_lights_on
   alias: Front Driveway - Lights On When Motion (Dark)
-  conditions:
-  - after: sunset
-    after_offset: 0:00:00
-    condition: sun
-  - before: '23:00:00'
-    condition: time
   description: 'Turn on driveway lights on vehicle or person detection after dark.
     Uses AI detection instead of raw motion to prevent false positives from wind/animals.
     Belt+suspenders: sunset-23:00 window + smart detection. Updated 2026-03-10.'
-  id: front_driveway_motion_lights_on
-  mode: single
   triggers:
   - entity_id: binary_sensor.front_driveway_door_vehicle_detected
     platform: state
@@ -903,6 +948,17 @@
   - entity_id: binary_sensor.front_driveway_door_person_detected
     platform: state
     to: 'on'
+  conditions:
+  - after: sunset
+    after_offset: 0:00:00
+    condition: sun
+  - before: '23:00:00'
+    condition: time
+  actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.front_driveway_2
+  mode: single
 - id: '1773152820854'
   alias: Doorbell Ring → Notification with Snapshot
   description: Sends a push notification with camera snapshot to John when either
@@ -3355,10 +3411,9 @@
   mode: restart
 - id: '1776535826103'
   alias: Entry Room — AUX Switch Control
-  description: 'Consolidated AUX switch handler. UP: set manual override + time-based
-    scene (day=energize, evening=dim warm, night=arctic aurora). DOWN/OFF: turn off
-    ceiling + clear override. Auto-clears override after 30min. Replaces 3 separate
-    AUX automations + override reset. Fixed stale entity IDs.'
+  description: AUX switch mirrors main Inovelli. UP=Energize ceiling, DOWN=Off ceiling
+    (instant), Config=scene cycle (Energize→Relax→Nightlight) using shared scene index
+    helper. Targets ceiling zone only.
   triggers:
   - event_data:
       command: button_5_press
@@ -3378,46 +3433,24 @@
     event_type: zha_event
     id: aux_off_cmd
     platform: event
-  - entity_id: input_boolean.entry_room_manual_override
-    for:
-      minutes: 30
-    id: override_timeout
-    platform: state
-    to: 'on'
+  - event_data:
+      command: button_6_press
+      device_ieee: 8c:8b:48:ff:fe:4d:18:9f
+    event_type: zha_event
+    id: aux_config
+    platform: event
   actions:
   - choose:
     - conditions:
       - condition: trigger
         id: aux_up
       sequence:
-      - action: input_boolean.turn_on
+      - action: light.turn_on
+        data:
+          brightness: 255
+          color_temp_kelvin: 6500
         target:
-          entity_id: input_boolean.entry_room_manual_override
-      - choose:
-        - conditions:
-          - condition: time
-            after: '23:00:00'
-            before: 06:00:00
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.entry_room_arctic_aurora
-        - conditions:
-          - condition: time
-            after: '20:00:00'
-            before: '23:00:00'
-          sequence:
-          - action: light.turn_on
-            data:
-              brightness_pct: 60
-              color_temp_kelvin: 2700
-              transition: 1
-            target:
-              entity_id: light.entry_room_ceiling_light
-        default:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.entry_room_energize
+          entity_id: light.entry_room_ceiling_light
     - conditions:
       - condition: trigger
         id:
@@ -3425,20 +3458,52 @@
         - aux_off_cmd
       sequence:
       - action: light.turn_off
-        data:
-          transition: 2
         target:
           entity_id: light.entry_room_ceiling_light
-      - action: input_boolean.turn_off
-        target:
-          entity_id: input_boolean.entry_room_manual_override
     - conditions:
       - condition: trigger
-        id: override_timeout
+        id: aux_config
       sequence:
-      - action: input_boolean.turn_off
+      - action: input_number.set_value
+        data:
+          value: '{{ ((states(''input_number.entry_room_scene_index'') | int + 1)
+            % 3) }}'
         target:
-          entity_id: input_boolean.entry_room_manual_override
+          entity_id: input_number.entry_room_scene_index
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '0.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 255
+              color_temp_kelvin: 6500
+            target:
+              entity_id: light.entry_room_ceiling_light
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '1.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 144
+              color_temp_kelvin: 2200
+            target:
+              entity_id: light.entry_room_ceiling_light
+        - conditions:
+          - condition: state
+            entity_id: input_number.entry_room_scene_index
+            state: '2.0'
+          sequence:
+          - action: light.turn_on
+            data:
+              brightness: 26
+              color_temp_kelvin: 2000
+            target:
+              entity_id: light.entry_room_ceiling_light
   mode: restart
 - id: '1776568827007'
   alias: 1st Floor Bathroom — Reset Light Override (30 min)
@@ -3484,7 +3549,7 @@
   - data:
       brightness_pct: 100
     target:
-      entity_id: light.front_driveway
+      entity_id: light.front_driveway_2
     action: light.turn_on
   - continue_on_timeout: true
     timeout:
@@ -3498,7 +3563,7 @@
   - data:
       transition: 5
     target:
-      entity_id: light.front_driveway
+      entity_id: light.front_driveway_2
     action: light.turn_off
   mode: restart
 - id: '1776568880618'
@@ -3512,13 +3577,13 @@
     to: 'off'
   conditions:
   - condition: state
-    entity_id: light.front_driveway
+    entity_id: light.front_driveway_2
     state: 'on'
   actions:
   - data:
       transition: 5
     target:
-      entity_id: light.front_driveway
+      entity_id: light.front_driveway_2
     action: light.turn_off
   mode: restart
 - id: '1776568947349'
