@@ -33,3 +33,21 @@
 ### HANDOFF.md gap
 - S45 never wrote HANDOFF.md — S46 started with S44 handoff
 - Session close discipline: always verify HANDOFF.md was written before git push
+
+### REST API vs websocket for entity registry (S47)
+- REST API POST to /api/config/entity_registry/{entity_id} returns 404 — endpoint doesn't exist
+- Entity registry renames MUST use websocket: type "config/entity_registry/update" with entity_id + new_entity_id
+- Bulk rename pattern: python3 + websockets library (pip3 install websockets --break-system-packages)
+- aiohttp is NOT available in HAOS — always use websockets module
+- curl/REST approach will silently fail (grep finds nothing, no error output)
+
+### VZM36 EP2 light entity (S47)
+- EP2 creates both a fan entity AND a light entity — they control the same endpoint
+- The light_2 entity brightness mirrors fan speed (33/66/100%)
+- Disable light_2 on all VZM36 modules — it's redundant and confusing on dashboards
+
+### Entity registry changes are not git-tracked (S47 — reinforces S44)
+- Entity renames, disables, and area assignments live in .storage/ (gitignored)
+- These survive reboots but are NOT version-controlled
+- 87 entity renames this session exist only in HA's registry, not in git
+- Dashboard configs also .storage/ — same pattern
