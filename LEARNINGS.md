@@ -29,3 +29,39 @@
 - configuration.yaml lovelace dashboards block: strip entire dashboards: section, keep lovelace: mode: storage
 - Archive files before deleting: mkdir archive dir, mv files, rmdir original
 - ha core restart required after configuration.yaml changes (not just reload)
+
+## S52 — Full System Audit (2026-04-22)
+
+### Adaptive Lighting entity naming pattern (CRITICAL)
+- AL main switch entity IDs follow: switch.{instance_name}_adaptive_lighting_{instance_name}
+- NOT switch.adaptive_lighting_{instance_name} (which is the old/intuitive format)
+- Example: switch.living_spaces_adaptive_lighting_living_spaces (NOT switch.adaptive_lighting_living_spaces)
+- adaptive_lighting.apply service requires the correct main switch entity_id or throws AssertionError
+- This affected 4 automations with 16 recurring errors
+
+### Hue migration entity renames — widened scope (3rd occurrence, PROMOTE)
+- S42: Entry Room entities. S44: Bathroom + tablet. S52: Entry room lamp + kitchen + living room + master bedroom
+- After Hue Bridge migration, entity names change unpredictably: light.entry_room_hue_color_lamp → light.entry_room_desk_lamp
+- Also Inovelli entities: light.kitchen_ceiling_inovelli_vzm31_sn → light.kitchen_ceiling_can_led_lights_inovelli
+- Midnight automation had 8 broken refs across kitchen, living room, and master bedroom lights
+- RULE REINFORCEMENT: Entity ref verification before ANY review is mandatory. This is now a 3+ occurrence pattern.
+
+### Ghost script rule confirmed (3rd occurrence)
+- S45: kids scripts. S52: same pattern — ella_lights_off, ella_school_night, alaina_lights_off, alaina_school_night
+- Scripts with restored:true and no config require ha_remove_entity, not ha_config_remove_script
+- These survived from S45 cleanup — likely re-created by registry restore or missed in that session
+
+### Template package YAML/UI collision pattern
+- sensor.people_home_count (YAML template, unavailable) vs sensor.people_home_count_2 (UI template, working)
+- YAML templates that fail to render on startup get restored:true and stay unavailable permanently
+- If a UI replacement exists with _2 suffix, the fix is: remove YAML definition, rename UI entity to drop _2
+
+### python_transform string method restrictions
+- python_transform in ha_config_set_automation does NOT allow .replace() on strings
+- For multi-entity-ref fixes, full config replacement is required (not python_transform)
+- Allowed string methods: startswith, endswith, lower, upper, split, join, strip
+
+### hac.sh not on EQ14
+- shell_command.hac_export calls hac.sh which was on Green, not ported to EQ14
+- automation.hac_daily_master_context_export runs daily and generates return code 127 errors
+- Either port hac.sh or disable the automation until ported

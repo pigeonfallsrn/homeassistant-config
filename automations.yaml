@@ -1576,27 +1576,24 @@
     (those have their own schedules). Kids bedrooms excluded — they have their own
     midnight autos.
   triggers:
-  - platform: time
-    at: 00:00:00
+  - at: 00:00:00
+    platform: time
   actions:
   - action: light.turn_off
     target:
       entity_id:
       - light.kitchen_chandelier
       - light.kitchen_above_sink_light
-      - light.kitchen_ceiling_inovelli_vzm31_sn
-      - light.kitchen_bar_pendant_lights
-      - light.inovelli_vzm31_sn_4
-      - light.kitchen_under_cabinet_aqara_t1_led_strip
-      - light.kitchen_govee_floor_lamp
+      - light.kitchen_ceiling_can_led_lights_inovelli
+      - light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
+      - light.kitchen_under_cabinet_lights_inovelli_switch
       - light.kitchen_lounge
       - light.kitchen_lounge_lamp
-      - light.living_room_east_floor_lamp
       - light.living_room_west_floor_lamp
       - light.living_room_lounge_lamp
       - light.living_room_table_lamps
-      - light.living_room_tv_led_strip
-      - light.entry_room_hue_color_lamp
+      - light.living_room_behind_tv_tp_link_smart_light_strip
+      - light.entry_room_desk_lamp
       - light.entry_room
       - light.upstairs_hallway
       - light.1st_floor_bathroom
@@ -1605,7 +1602,7 @@
       - light.master_bedroom
       - light.master_bedroom_led_light_strip
       - light.master_bedroom_wall_light
-      - light.master_bedroom_behind_tv_aqara_t1_led_strip
+      - light.master_bedroom_floor_lamp
       - light.living_room_lounge_ceiling_light
   - action: switch.turn_off
     target:
@@ -2378,12 +2375,12 @@
   actions:
   - action: switch.turn_on
     target:
-      entity_id: switch.adaptive_lighting_living_spaces
+      entity_id: switch.living_spaces_adaptive_lighting_living_spaces
   - action: light.turn_on
     data:
       brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int }}'
     target:
-      entity_id: light.entry_room_hue_color_lamp
+      entity_id: light.entry_room_desk_lamp
   mode: single
 - id: '1776301762416'
   alias: Entry Room — Lamp Hard Off at Evening End
@@ -2392,7 +2389,7 @@
     platform: time
   conditions:
   - condition: state
-    entity_id: light.entry_room_hue_color_lamp
+    entity_id: light.entry_room_desk_lamp
     state: 'on'
   - condition: state
     entity_id: input_boolean.hot_tub_mode
@@ -2402,7 +2399,7 @@
     data:
       transition: 120
     target:
-      entity_id: light.entry_room_hue_color_lamp
+      entity_id: light.entry_room_desk_lamp
   mode: single
 - id: '1776301772385'
   alias: System — Adaptive Lighting Off When Nobody Home or Late Night
@@ -2421,7 +2418,7 @@
   actions:
   - action: switch.turn_off
     target:
-      entity_id: switch.adaptive_lighting_living_spaces
+      entity_id: switch.living_spaces_adaptive_lighting_living_spaces
   mode: single
 - id: '1776301778871'
   alias: System — Hot Tub Mode Reminder Notification
@@ -3244,9 +3241,7 @@
   alias: Entry Room — Lamp Motion Control
   description: 'Consolidated motion-based lamp control. Motion on: turn on lamp with
     AL at context-aware brightness (lux gated). Motion off 3min: dim to 20%. Motion
-    off 10min: full off. Respects manual override, hot tub mode, and bedtime mode.
-    Replaces 4 separate automations per HA best practice (single automation, dual
-    triggers, choose).'
+    off 10min: full off. Respects manual override, hot tub mode, and bedtime mode.'
   triggers:
   - platform: state
     entity_id: binary_sensor.entry_room_motion
@@ -3285,33 +3280,33 @@
         below: input_number.entry_room_lux_threshold
       - action: switch.turn_on
         target:
-          entity_id: switch.adaptive_lighting_living_spaces
+          entity_id: switch.living_spaces_adaptive_lighting_living_spaces
       - action: light.turn_on
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
         data:
           brightness_pct: '{{ states(''sensor.evening_lamp_max_brightness'') | int
             }}'
       - action: adaptive_lighting.apply
         data:
-          entity_id: switch.adaptive_lighting_entry_room_lamp_adaptive
+          entity_id: switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
           lights:
-          - light.entry_room_hue_color_lamp
+          - light.entry_room_desk_lamp
           transition: 2
     - conditions:
       - condition: trigger
         id: motion_dim
       - condition: state
-        entity_id: light.entry_room_hue_color_lamp
+        entity_id: light.entry_room_desk_lamp
         state: 'on'
       - condition: numeric_state
-        entity_id: light.entry_room_hue_color_lamp
+        entity_id: light.entry_room_desk_lamp
         attribute: brightness
         above: 50
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
         data:
           brightness_pct: 20
           transition: 60
@@ -3319,12 +3314,12 @@
       - condition: trigger
         id: motion_off
       - condition: state
-        entity_id: light.entry_room_hue_color_lamp
+        entity_id: light.entry_room_desk_lamp
         state: 'on'
       sequence:
       - action: light.turn_off
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
         data:
           transition: 60
   mode: restart
@@ -3332,8 +3327,7 @@
   alias: Entry Room — Lamp Mode Overrides
   description: 'Handles hot tub mode and bedtime mode lamp behavior. Hot tub on: deep
     red 5%, disable AL. Hot tub off: restore AL and normal operation. Bedtime on:
-    dim warm fade then off after 15min. Extracted from Lamp Adaptive Control per HA
-    best practice (separate concerns).'
+    dim warm fade then off after 15min.'
   triggers:
   - entity_id: input_boolean.hot_tub_mode
     id: hot_tub_on
@@ -3366,13 +3360,13 @@
           - 0
           transition: 2
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
       - action: switch.turn_off
         target:
           entity_id:
-          - switch.adaptive_lighting_entry_room_lamp_adaptive
-          - switch.adaptive_lighting_entry_room_ceiling
-          - switch.adaptive_lighting_living_spaces
+          - switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
+          - switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
+          - switch.living_spaces_adaptive_lighting_living_spaces
     - conditions:
       - condition: trigger
         id: hot_tub_off
@@ -3380,14 +3374,14 @@
       - action: switch.turn_on
         target:
           entity_id:
-          - switch.adaptive_lighting_living_spaces
-          - switch.adaptive_lighting_entry_room_lamp_adaptive
-          - switch.adaptive_lighting_entry_room_ceiling
+          - switch.living_spaces_adaptive_lighting_living_spaces
+          - switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
+          - switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
       - action: adaptive_lighting.apply
         data:
-          entity_id: switch.adaptive_lighting_living_spaces
+          entity_id: switch.living_spaces_adaptive_lighting_living_spaces
           lights:
-          - light.entry_room_hue_color_lamp
+          - light.entry_room_desk_lamp
           transition: 5
     - conditions:
       - condition: trigger
@@ -3399,14 +3393,14 @@
           color_temp_kelvin: 2200
           transition: 60
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
       - delay:
           minutes: 15
       - action: light.turn_off
         data:
           transition: 60
         target:
-          entity_id: light.entry_room_hue_color_lamp
+          entity_id: light.entry_room_desk_lamp
   mode: restart
 - id: '1776535826103'
   alias: Entry Room — AUX Switch Control

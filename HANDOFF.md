@@ -1,90 +1,122 @@
-# HANDOFF — Session S51
+# HANDOFF — Session S52
 
-## Last Session: S51 (2026-04-21)
-## Last Commit: b69f978
-## Baseline: 77 automations, 91 helpers, 0 ghosts, 0 YAML auto files
+## Last Session: S52 (2026-04-22)
+## Last Commit: pending
+## Baseline: 76 automations, 25 scripts, 90 helpers, 0 ghosts, 0 unavailable
 
 ---
 
-## WHAT HAPPENED IN S51
+## WHAT HAPPENED IN S52
 
-### Green Deprecation (COMPLETE)
-- Audited 59 integrations on Green — all conflicting with EQ14 (AL x4, Hue, UniFi, tplink x8, Nest, Kumo, Sonos, Roku, FKB, Matter, etc)
-- Harvested: Navien water heater creds (saved to NordPass), Yamaha RX-V671 config (192.168.21.171:50000), derivative helper config, Michelle WiFi template config
-- Verified derivative + Michelle template already exist on EQ14
-- Reviewed HAC workflow system (hac.sh v9.1) — learn/promote/health/table patterns. Most superseded by Claude Project memory. Health check pattern worth building on EQ14.
-- Shut down Green via `ha host shutdown` — all 59 conflicting integrations stopped
-- Green available for future garage repurpose (fresh HAOS install)
+### Full System Audit (2785 entities, 42 domains, 25 areas)
+- Comprehensive MCP-based audit of all automations, scripts, entities, error logs, person trackers
 
-### Dashboard Cleanup
-- Removed 3 broken YAML dashboards from configuration.yaml (kitchen-tablet YAML, mobile, climate)
-- Archived all dashboard YAML files to hac/archive/dashboards_yaml_s51/
-- configuration.yaml now has clean `lovelace: mode: storage` only
+### Ghost Cleanup (5 removed)
+- 4 ghost scripts: ella_lights_off, ella_school_night, alaina_lights_off, alaina_school_night (all restored:true, no config)
+- 1 ghost automation: entry_room_ceiling_motion_lighting (registered but RESOURCE_NOT_FOUND)
 
-### HACS Cards Installed (4 new)
-- Mushroom Cards — modern card components
-- auto-entities — dynamic entity filtering for dashboards
-- card-mod — CSS styling on any card
-- mini-graph-card — sensor history sparklines
-- Total HACS: 5 (+ existing Kiosk Mode)
+### Entity Ref Fixes — 7 automations repaired
+- entry_room_lamp_motion_control: 3 broken refs fixed
+- entry_room_lamp_mode_overrides: 4 broken refs fixed
+- entry_room_lamp_hard_off_at_evening_end: 1 broken ref fixed
+- entry_room_arrival_adaptive_lighting_welcome: 2 broken refs fixed
+- system_adaptive_lighting_off_when_nobody_home_or_late_night: 1 broken ref fixed
+- midnight_all_lights_off: 8 broken refs fixed (4 renamed, 4 removed as nonexistent)
 
-### Arriving Home Dashboard Rebuilt
-- Dynamic "Lights On Now" section using auto-entities + Mushroom light cards
-- Auto-excludes: AL switches, Inovelli SBM, EP2, identify entities
-- Mushroom climate cards for 1st/2nd Floor Nest thermostats
-- Quick Toggles: garage, back patio, front driveway
-- Garage door covers with open/close controls
+### Key Entity Renames Discovered
+- light.entry_room_hue_color_lamp → light.entry_room_desk_lamp (Hue migration rename)
+- switch.adaptive_lighting_living_spaces → switch.living_spaces_adaptive_lighting_living_spaces
+- switch.adaptive_lighting_entry_room_lamp_adaptive → switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
+- switch.adaptive_lighting_entry_room_ceiling → switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
+- light.kitchen_ceiling_inovelli_vzm31_sn → light.kitchen_ceiling_can_led_lights_inovelli
+- light.kitchen_bar_pendant_lights → light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
+- light.kitchen_under_cabinet_aqara_t1_led_strip → light.kitchen_under_cabinet_lights_inovelli_switch
+- light.living_room_tv_led_strip → light.living_room_behind_tv_tp_link_smart_light_strip
 
-### Governance Review (S51)
-- Updated 3 stale Claude memory entries (state, tabled items, dashboard stack)
-- Added Green deprecation learning to memory
-- Reviewed Green HAC workflow — identified health_check as worth porting
-- HANDOFF.md brought current (was stale at S44)
+### Eliminated Errors
+- Adaptive Lighting AssertionError (16 occurrences) — caused by broken AL switch ref in entry_room_lamp_motion_control. Fixed.
+
+---
+
+## DISCOVERED — NEEDS TERMINAL WORK
+
+### Template Package Issues (browser terminal required)
+- sensor.people_home_count — unavailable (restored:true). Working UI duplicate exists: sensor.people_home_count_2
+- sensor.people_home_list — unavailable (restored:true)
+- binary_sensor.house_occupied — unavailable (restored:true). Cascading blocker.
+- sensor.house_occupancy_state icon template crashes: needs | int(0) default for people_home_count
+- sensor.house_average_temperature, sensor.house_average_humidity, sensor.john_distance_to_home — all unknown
+- Fix: find the template package YAML defining these, fix entity refs or add defaults
+
+### configuration.yaml Issues (browser terminal required)
+- auth: block with unsupported parameters generating error on every restart
+- shell_command.hac_export calls hac.sh which doesn't exist on EQ14 (return code 127)
+
+### Script Format Errors
+- script.apply_tablet_context: "extra keys not allowed @ data['entity_id']" — service call format bug
+- automation.context_apply_on_occupancy_change_2: same format error cascading from script
 
 ---
 
 ## TABLED / REMAINING WORK
 
-### Next Priority:
-1. Ella companion app — rename device (sensor.iphone_40_* → sensor.ella_s_*)
-2. Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-3. Full system audit — all automations/scenes/entities vs best practice
-4. Navien integration setup on EQ14 (creds in NordPass)
-5. Yamaha RX-V671 integration on EQ14 (192.168.21.171:50000)
+### Priority Next:
+1. Template package fixes (terminal session — fix people_home_count, house_occupied, add defaults)
+2. configuration.yaml cleanup (remove auth block, fix hac_export shell_command)
+3. apply_tablet_context script format fix
+4. Ella companion app rename (20 entities iphone_40_* → ella_s_*)
+5. Michelle person tracker (MAC 6a:9a:25:dd:82:f1 — person.michelle has no device_trackers)
 
-### Dashboard Iteration:
-- Arriving Home: names truncated in Mushroom cards — consider 2-col or name overrides
-- Kitchen tablet: Calendar Card Pro, doorbell camera view, away/home screen control
-- Future: per-room dashboards with mini-graph-card for climate/humidity
+### Duplicate Entities to Clean:
+- todo.shopping_list + todo.shopping_list_2 (two shopping_list platform entries)
+- weather.forecast_home + weather.forecast_home_2 (two Met integrations)
+- tts.google_translate_en_com + tts.google_translate_en_com_2 (two Google Translate TTS)
+- sensor.people_home_count (YAML) + sensor.people_home_count_2 (UI) — keep UI, remove YAML
+- binary_sensor.anyone_home (unique_id: anyone_home_presence) + binary_sensor.anyone_home_2 (unique_id: anyone_home_hybrid)
+
+### Person Entities Without Trackers:
+- person.michelle — no device_trackers (needs MAC-based tracker)
+- person.jarrett, person.owen, person.jean, person.traci — no trackers (are these needed?)
+
+### Disabled Automations (4):
+- upstairs_bathroom_motion_lighting (off)
+- upstairs_hallway_motion_lighting_v2 (off)
+- calendar_refresh_school_tomorrow (off)
+- calendar_refresh_school_in_session_now (off)
+
+### Kitchen Tablet Enhancements (tabled):
+- Calendar Card Pro, master calendar parsing, doorbell camera view
+- Away/home screen control (blocked by house_occupied fix)
+- FKB screensaver, battery management automation
 
 ### Blocked:
 - binary_sensor.house_occupied — unavailable (template package issue)
-- Music Assistant — setup_error state
-- Michelle person tracker
+- Music Assistant — setup_error (expired token)
+- Navien — connection error (creds harvested, not yet added to EQ14)
+- AndroidTV 192.168.1.17 — do not delete
 
 ### Ongoing:
-- Security hardening session (~30 min)
-- AndroidTV at 192.168.1.17 — real ADB device, DO NOT DELETE
+- Security hardening (SSH password auth, Cloudflare Zero Trust, plaintext PAT, recorder PII)
 - NordPass cleanup backlog
-- Ratgdo north physical IR sensor — clean lenses
-- Build shell_command.health_check (inspired by Green HAC hac.sh health pattern)
+- Discovered integrations: 2nd Floor Roomba, DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
 
 ---
 
 ## BENCHMARK
 
-| Metric | S50 | S51 |
+| Metric | S51 | S52 |
 |--------|-----|-----|
-| Automations | 77 | 77 |
-| Helpers | 90 | 91 |
+| Automations | 77 | 76 |
+| Scripts | 29 | 25 |
+| Helpers | 91 | 90 |
 | Ghosts | 0 | 0 |
-| YAML auto files | 0 | 0 |
-| Template packages | 14 | 14 |
-| HACS cards | 1 | 5 |
-| Calendars | 19 | 19 |
+| Unavailable auto/script | 5 | 0 |
+| YAML dashboards | 0 | 0 |
 | Storage dashboards | 3 | 3 |
-| YAML dashboards | 3 | 0 |
-| Green status | running | shut down |
+| HACS cards | 5 | 5 |
+| Template packages | 14 | 14 |
+| Calendars | 19 | 19 |
+| System errors (AL) | 16 | 0 |
 
 ---
 
@@ -95,5 +127,6 @@
 - Git push: MCP shell_command.git_push only
 - Notify: notify.mobile_app_galaxy_s26_ultra
 - Kitchen tablet device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
+- Kitchen tablet FKB startURL: http://192.168.1.10:8123/kitchen-tablet/home
 - Kitchen tablet FKB Remote Admin: http://192.168.21.50:2323
-- Green: SHUT DOWN (192.168.1.3) — repurpose for garage later
+- Tablet dashboard url_path: kitchen-tablet (storage-mode, kiosk_mode enabled)
