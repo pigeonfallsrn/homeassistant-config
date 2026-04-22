@@ -69,28 +69,8 @@ adaptive_lighting: !include adaptive_lighting.yaml
 
 
 
-# Mobile Dashboard
 lovelace:
   mode: storage
-  dashboards:
-    lovelace-kitchen-tablet:
-      mode: yaml
-      title: Kitchen Tablet
-      filename: dashboards/lovelace-kitchen-tablet.yaml
-      show_in_sidebar: true
-      icon: mdi:tablet
-    lovelace-mobile:
-      mode: yaml
-      title: Mobile
-      icon: mdi:cellphone
-      show_in_sidebar: true
-      filename: dashboards/lovelace-mobile.yaml
-    lovelace-climate:
-      mode: yaml
-      title: Climate Command
-      icon: mdi:thermostat
-      show_in_sidebar: true
-      filename: dashboards/lovelace-climate.yaml
 
 group: !include groups.yaml
 
