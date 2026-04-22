@@ -1,95 +1,101 @@
-# HANDOFF — Session S49
+# HANDOFF — Session S50
 
-## Last Session: S49 (2026-04-21)
+## Last Session: S50 (2026-04-21)
 ## Last Commit: (pending)
 ## Baseline: 77 automations, 90 helpers, 0 ghosts, 0 YAML auto files
 
 ---
 
-## WHAT HAPPENED IN S49
+## WHAT HAPPENED IN S50
 
-### Inovelli Blue Switch Systematic Review (3 areas, 9 switches)
+### Garage Door Obstruction Fix (ROOT CAUSE FOUND)
+- Diagnosed north ratgdo obstruction sensor stuck ON — door wouldn't close reliably
+- Found TWO stacking root causes:
+  1. EQ14 garage motion automations included `light.garage_north_garage_door_ratgdo32disco_light` — sent Security+ 2.0 light commands during door operations, confusing obstruction detection
+  2. HA Green (192.168.1.3) was still actively connected to both ratgdo ESPHome devices, causing dual-API conflicts
+- Fixed: Removed ratgdo light entity from Garage — Motion Lights ON and OFF automations
+- Fixed: Deleted ESPHome integration from Green (disconnected from ratgdo + Apollo)
+- Confirmed: Door opens and closes successfully after both fixes
+- Physical obstruction sensor still reads ON (hardware — dirty/misaligned IR beam, clean when convenient)
+- Status obstruction toggle OFF is still needed after OTA — but root cause of rapid snap-back was the automation + Green conflict
 
-Applied S48 entry room best-practice standard across 2nd Floor Bathroom, Kitchen, and Kitchen Lounge:
+### Green Discovery — NOT Fully Deprecated
+- Green (192.168.1.3) is still running HAOS 17.2, Core 2026.4.3
+- ESPHome integration was actively connecting to ratgdo north (192.168.21.111), ratgdo south (192.168.21.21), Apollo (192.168.21.234)
+- ZHA showing "Failed setup, will retry" — Zigbee dongle physically moved to EQ14
+- 52 ZHA devices, Navien, Music Assistant, Yamaha YNCA all still configured
+- LEARNINGS.md on Green is EMPTY — knowledge from early sessions only in git commit messages
+- Green has valuable reference configs but NO active automations (storage returned 0 garage automations)
+- Formal deprecation audit needed: harvest configs, remove conflicting integrations, decide cold-spare fate
 
-#### Speed Optimization (all SBM switches → instant response)
-- 2nd Floor Bathroom ceiling: local_ramp_rate_off_to_on 127→0, on_to_off 127→0
-- 2nd Floor Bathroom vanity: ramps 10→0 (both)
-- Kitchen chandelier (table): ramps 127→0 (both)
-- Kitchen above sink: ramps 127→0 (both)
-- Kitchen lounge dimmer: button_delay 1→0, ramps 127→0 (both), on_off_transition 30→0
+### Dashboard Work
+- Created "Arriving Home" dashboard (storage-mode, sections view, sidebar enabled)
+  - Garage doors with open/close controls
+  - Obstruction sensor status
+  - Area-based light tiles for all floors
+  - URL: /arriving-home/home
+- Deleted VZM36 Test dashboard (served its purpose)
+- Identified broken YAML dashboards: Climate Command, Mobile, Kitchen Tablet (YAML mode) — all stale from git, full of entity-not-found errors
+- These need removal from configuration.yaml
 
-#### LED Normalization (on=33, off=1, color=170 standard)
-- Kitchen chandelier (table): on intensity 69→33
-- Kitchen under-cabinet: on intensity 49→33
-- Kitchen lounge dimmer: on intensity 95→33
-- Bathroom 3-gang + fan already at standard (verified, no changes needed)
-
-### 2nd Floor Bathroom Humidity System Fixed
-- Derivative sensor `sensor.2nd_floor_bathroom_humidity_derivative` was unavailable — source was dead Aqara sensor
-- Root cause: sensor configured to track `sensor.upstairs_bathroom_temp_and_humidity_sensor_humidity` (Aqara removed from system)
-- Fix: deleted old derivative, recreated with VZM31-SN built-in humidity source, renamed entity, assigned to bathroom area
-- Now reading 0.00%/min correctly — available for v4 humidity fan system or future derivative-based enhancement
-- Ghost `sensor.upstairs_bathroom_humidity_trend` (restored template) — removed
-
-### Helper Fixes
-- `input_boolean.bathroom_2nd_floor_fan_manual_override` — cleared stuck ON state
-- `input_number.bathroom_scene_index` — max corrected 9→3 (matches 4-scene cycling 0-3)
-- `timer.kitchen_override_timer` — CREATED (was missing, referenced by kitchen_manual_override automation)
-
-### Automations Created (1 net new)
-- `2nd_floor_bathroom_fan_override_auto_reset_30_min` — resets manual override flag after 30 min so humidity auto-fan resumes
-- (Created then deleted derivative shower-fan automation — conflicts with existing v4 system which works fine)
-
-### Entity Ref Verification
-- All bathroom scenes verified: energize, relax, dimmed, nightlight for both room + vanity zone ✅
-- All kitchen scenes verified: energize, relax, dimmed, nightlight for kitchen + kitchen lounge ✅
-- Kitchen override timer ref fixed by creating missing timer ✅
-- Kitchen lounge VZM36 EP2 light (unknown state) — already disabled by user, correct per VZM36 convention ✅
-
-### Existing v4 Humidity Fan System Audit
-- 4-automation system already working: humidity_fan_control_v4, config_button_fan_pause, humidity_notification_actions, humidity_pause_timer_expiry
-- Uses VZM31-SN built-in humidity (correct source), absolute thresholds (>70% ON, <55% OFF), motion-boosted (60%+motion → medium speed)
-- All entity refs valid: fan entity, motion sensor, pause boolean ✅
+### Research: Community Dashboard Best Practices
+- Mushroom Cards (HACS) — community standard for modern card design
+- auto-entities (HACS) — dynamic "show only what's on" filtering, exactly what John wants
+- card-mod (HACS) — CSS styling for polish
+- Mushroom Media Card — works with Music Assistant for album art + playback controls
+- Sections view + Mushroom + auto-entities = the community-recommended stack
 
 ---
 
 ## TABLED / REMAINING WORK
 
-### Next Session Priority:
-1. GOVEE LAMP → MASTER BEDROOM — reassign light.kitchen_floor_lamp area when physically moved
-2. ELLA COMPANION APP — 20 entity_ids still iphone_40_* (cosmetic backlog)
-3. NEXT AREA GROUP REVIEW — garage, living room, or master bedroom
+### S51 Priority — Green Deprecation + Dashboard Cleanup:
+1. GREEN AUDIT: Systematic review of Green configs — harvest useful learnings from git history, integration configs (Navien, Yamaha, etc.), remove all conflicting integrations (ZHA, any remaining ESPHome), decide cold-spare vs power-off
+2. YAML DASHBOARD CLEANUP: Remove Climate Command, Mobile, Kitchen Tablet (YAML) refs from configuration.yaml — these were pulled from git and are broken
+3. DASHBOARD REBUILD: Install Mushroom Cards + auto-entities via HACS, rebuild Arriving Home dashboard with dynamic "lights on" view, Mushroom tiles, media controls
+4. GOVERNANCE REVIEW: Due since S50 (deferred) — promote mature LEARNINGS into project instructions
 
-### Kitchen Tablet Enhancements (tabled):
-- Calendar Card Pro, master calendar parsing, doorbell camera view
-- Away/home screen control (blocked by house_occupied template fix)
+### Full System Audit (multi-session):
+- Review ALL automations against HA best practice: still wanted? needed? reliable? clean entity refs?
+- Review ALL scenes: still used? current entity refs?
+- Review ALL helpers: orphaned? still referenced?
+- Review ALL entities: naming convention compliance, area assignments, labels
+- Consider Gemini bulk audit approach (paste full dumps for triage)
+
+### Blocked / Dependency Items:
+- binary_sensor.house_occupied — unavailable (template package issue)
+- Music Assistant — setup_error state
+- Michelle's person tracker (MAC: 6a:9a:25:dd:82:f1)
+- North ratgdo physical obstruction sensor — clean IR beam sensors when convenient
+
+### Kitchen Tablet Enhancements (future):
+- Calendar Card Pro (HACS)
+- Doorbell camera view + fully_kiosk.load_url
+- Away/home screen control (blocked by house_occupied)
 - FKB screensaver, battery management
 
-### Blocked:
-- binary_sensor.house_occupied — unavailable (template package issue)
-- Music Assistant — setup_error
-- Michelle person tracker (MAC: 6a:9a:25:dd:82:f1)
-
-### Discovered Integrations to Review:
-- 2nd Floor Roomba (192.168.1.48), DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
-
-### Governance review due S50
+### Ongoing:
+- Security hardening session (~30 min)
+- AndroidTV at 192.168.1.17 — real ADB device, do not delete
+- NordPass cleanup backlog
+- Ella companion app entity rename (20 entity_ids still iphone_40_*)
+- Govee lamp area reassign when physically moved
 
 ---
 
 ## BENCHMARK
 
-| Metric | S48 | S49 |
+| Metric | S49 | S50 |
 |--------|-----|-----|
-| Automations | 76 | 77 |
-| Helpers | 89 | 90 |
+| Automations | 77 | 77 |
+| Helpers | 90 | 90 |
 | Ghosts | 0 | 0 |
 | YAML auto files | 0 | 0 |
 | Template packages | 14 | 14 |
-| HACS cards | 1 | 1 |
+| HACS cards | 1 | 1 (Kiosk Mode) |
 | Calendars | 19 | 19 |
-| Tablet dashboards | 1 | 1 |
+| Storage dashboards | 3 | 3 (map, kitchen-tablet, arriving-home) |
+| YAML dashboards | 3 | 3 (climate, mobile, kitchen-tablet — all broken) |
 
 ---
 
@@ -99,4 +105,9 @@ Applied S48 entry room best-practice standard across 2nd Floor Bathroom, Kitchen
 - SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
 - Git push: MCP `shell_command.git_push` only
 - Notify: `notify.mobile_app_galaxy_s26_ultra`
-- Kitchen tablet device_id: `86870b5d8b01f345f5d5dd9c2ac06d2b`
+- North ratgdo: 192.168.21.111 (v32disco_secplus2, fd8d8c)
+- South ratgdo: 192.168.21.21 (v32board_secplus2, 5735e8)
+- Apollo: 192.168.21.234 (748020)
+- Green: 192.168.1.3 (NOT deprecated — ESPHome removed, ZHA failed, still running)
+- Arriving Home dashboard: /arriving-home/home
+- Kitchen tablet dashboard: /kitchen-tablet/home

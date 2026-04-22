@@ -2662,7 +2662,6 @@
     target:
       entity_id:
       - light.garage
-      - light.garage_north_garage_door_ratgdo32disco_light
       - light.garage_north_wall_nightlight
       - light.garage_north_of_east_wall_motion_light_sensor
       - light.garage_south_wall_motion_light_sensor
@@ -3635,7 +3634,6 @@
     target:
       entity_id:
       - light.garage
-      - light.garage_north_garage_door_ratgdo32disco_light
       - light.garage_north_wall_nightlight
       - light.garage_north_of_east_wall_motion_light_sensor
       - light.garage_south_wall_motion_light_sensor

@@ -124,3 +124,41 @@
 ### Kitchen override timer was missing
 - automation.kitchen_manual_override_inovelli_2x_tap_set referenced timer.kitchen_override_timer which didn't exist
 - Entity ref verification caught this — another validation of the S44 promoted rule
+
+## S50 LEARNINGS (2026-04-21)
+
+### RATGDO Light Command Interference (CRITICAL — PROMOTED TO RULE, 3rd occurrence)
+- Garage motion lighting automations included `light.garage_north_garage_door_ratgdo32disco_light` as a target
+- Sending `light.turn_on`/`light.turn_off` via Security+ 2.0 serial protocol during door operations causes obstruction sensor to bounce ON/OFF rapidly
+- The Chamberlain opener controls its own light automatically — HA should NEVER send light commands to ratgdo light entities
+- RULE: Never include ratgdo `light.*` entities in any automation action. The opener handles its own light. HA controlling the ratgdo light via Security+ 2.0 causes protocol conflicts with obstruction detection.
+- This is separate from the "Status obstruction toggle OFF" hardware workaround — both were contributing
+
+### Dual HA Instance ESPHome Conflict
+- Green (192.168.1.3) was still connected to ratgdo ESPHome devices via its ESPHome integration
+- Two HA instances connected to the same ESPHome device causes API session conflicts
+- Ratgdo log showed `Home Assistant 2026.4.3 (192.168.1.3): connected` alongside EQ14's session
+- When Green disconnected, obstruction stabilized
+- RULE: After migration, remove or disable ALL integrations on Green that connect to devices EQ14 now manages. Don't assume "no automations" = "no interference."
+
+### Green Is Not Deprecated
+- Green still running, still has ZHA (failed — dongle moved), Navien, Music Assistant, Yamaha YNCA, etc.
+- LEARNINGS.md on Green is empty — all early session knowledge exists only in git commit messages
+- Green config_entries has 63+ entries, many still actively trying to connect
+- Formal deprecation required: systematic integration removal, config harvesting, cold-spare decision
+
+### config_entries JSON Structure
+- `core.config_entries` nests entries under `data.entries`, not top-level `entries`
+- `d.get('data',{}).get('entries', d.get('entries',[]))` is the correct parse pattern
+- This wasted 3 rounds of debugging — add to terminal patterns
+
+### Dashboard Cleanup Needed
+- YAML-mode dashboards (Climate Command, Mobile, Kitchen Tablet YAML) pulled from git are broken — reference entities that don't exist on EQ14
+- Storage-mode dashboards are the correct approach (kitchen-tablet, arriving-home)
+- Community stack: Mushroom Cards + auto-entities + Sections view = recommended standard
+
+### Ratgdo Web UI Access
+- North ratgdo: http://192.168.21.111 (fd8d8c, v32disco_secplus2)
+- South ratgdo: http://192.168.21.21 (5735e8, v32board_secplus2)
+- "Status obstruction" toggle is the control; "Obstruction" is the sensor reading
+- OTA flashes reset Status obstruction to ON — must toggle OFF after every flash
