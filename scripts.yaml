@@ -435,28 +435,6 @@ apply_lighting_context:
         - switch.adaptive_lighting_sleep_mode_entry_room_ceiling_lights
         - switch.adaptive_lighting_sleep_mode_upstairs_hallway
         - switch.adaptive_lighting_sleep_mode_kitchen_table
-apply_tablet_context:
-  alias: Apply Tablet Context
-  icon: mdi:tablet-dashboard
-  max_exceeded: silent
-  mode: single
-  sequence:
-  - variables:
-      base_url: http://192.168.1.10:8123
-      guest: '{{ is_state(''input_boolean.guest_present'', ''on'') }}'
-      kids_away: '{{ is_state(''binary_sensor.kids_expected_away'', ''on'') }}'
-      occupancy: '{{ states(''input_select.occupancy_mode'') }}'
-  - variables:
-      dashboard_url: "{% if guest %}\n  {{ base_url }}/lovelace/kitchen-guest\n{%
-        elif occupancy == 'Empty' %}\n  {{ base_url }}/lovelace/kitchen-away\n{% elif
-        occupancy == 'John Only' %}\n  {{ base_url }}/lovelace/kitchen-john\n{% elif
-        occupancy == 'Kids Only' %}\n  {{ base_url }}/lovelace/kitchen-kids\n{% else
-        %}\n  {{ base_url }}/lovelace/kitchen-family\n{% endif %}"
-  - action: fully_kiosk.load_url
-    data:
-      url: '{{ dashboard_url }}'
-    target:
-      entity_id: media_player.kitchen_wall_a9_tablet
 kitchen_scene_all_off:
   alias: Kitchen Scene - All Off
   description: All lights off. SBM switches stay powered for Hue connectivity.

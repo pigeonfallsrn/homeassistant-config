@@ -1,132 +1,54 @@
-# HANDOFF — Session S52
+# HANDOFF.md — Session S53
+## Last updated: 2026-04-22 | Last commit: pending
 
-## Last Session: S52 (2026-04-22)
-## Last Commit: pending
-## Baseline: 76 automations, 25 scripts, 90 helpers, 0 ghosts, 0 unavailable
+## CURRENT STATE
+- 76 automations (all UI) | 24 scripts | 91 helpers | 0 ghosts
+- 14 template packages (legit spine) | 19 calendars
+- 3 storage-mode dashboards: map, kitchen-tablet, arriving-home
+- 5 HACS cards: Kiosk Mode, Mushroom, auto-entities, card-mod, mini-graph-card
 
----
+## S53 COMPLETED
+1. **Tablet context fix:** Removed `script.apply_tablet_context` from occupancy change automation and deleted the script. It referenced 5 non-existent dashboard URLs and used wrong target format (entity_id vs device_id for FKB). Error cascade on every occupancy change eliminated.
+2. **Master Bedroom entity cleanup:**
+   - Renamed `light.hue_color_candle_1` → `light.master_bedroom_ceiling_1_of_2` (area + labels)
+   - Renamed `light.hue_color_candle_2` → `light.master_bedroom_ceiling_2_of_2` (area + labels)
+   - Assigned area + labels to `light.master_bedroom_wall_light` and `light.master_bedroom` (Hue group)
+   - Hidden `light.master_bedroom_ceiling` (ZHA SBM relay entity — not useful)
+   - Assigned Tap Dial device to master_bedroom area
+3. **Tap Dial automation rebuilt:** Found 100% dead entity refs (all 5 triggers referencing `event.hue_tap_dial_switch_3_*`). Rebuilt with correct entities: B1=Relax, B2=Read, B3=Nightlight, B4=Fan Toggle, Rotary=Brightness±10%. Mode=restart.
+4. **VZM36 SBM confirmed correct:** EP1=ON (Hue ceiling bulbs), EP2=OFF (fan motor), EP2 light entity disabled.
 
-## WHAT HAPPENED IN S52
+## MANUAL ACTION NEEDED
+- **AL update (UI only):** Add `light.master_bedroom_ceiling_1_of_2` and `light.master_bedroom_ceiling_2_of_2` to existing Master Bedroom Wall Lamp AL instance via Settings → Integrations → Adaptive Lighting.
 
-### Full System Audit (2785 entities, 42 domains, 25 areas)
-- Comprehensive MCP-based audit of all automations, scripts, entities, error logs, person trackers
+## IMMEDIATE NEXT WORK (priority order)
+1. **FOH CLICK SWITCH** — Build automation when physically installed (planned: top-left=Room ON/AL, top-right=Energize, bottom-left=All OFF, bottom-right=Nightlight)
+2. **GOVEE LAMP** → Reassign `light.kitchen_floor_lamp` area when physically moved to master bedroom and plugged in
+3. **ELLA COMPANION APP** — Rename device to get descriptive sensor names (sensor.iphone_40_* → sensor.ella_s_*)
+4. **NEXT AREA GROUP REVIEW** — Garage, living room, or master bedroom full review
 
-### Ghost Cleanup (5 removed)
-- 4 ghost scripts: ella_lights_off, ella_school_night, alaina_lights_off, alaina_school_night (all restored:true, no config)
-- 1 ghost automation: entry_room_ceiling_motion_lighting (registered but RESOURCE_NOT_FOUND)
+## KITCHEN TABLET ENHANCEMENTS (tabled)
+- Calendar Card Pro (HACS) for per-calendar colors/emojis
+- Master Calendar parsing (grade-specific events only)
+- Doorbell camera view + fully_kiosk.load_url
+- Away/home screen control (blocked by house_occupied template fix)
+- FKB screensaver (family photos / ambient clock)
+- Battery management automation (20-80% charge cycle)
+- Context-specific dashboards (kitchen-guest, kitchen-away, etc.) — rebuild apply_tablet_context when dashboards exist
 
-### Entity Ref Fixes — 7 automations repaired
-- entry_room_lamp_motion_control: 3 broken refs fixed
-- entry_room_lamp_mode_overrides: 4 broken refs fixed
-- entry_room_lamp_hard_off_at_evening_end: 1 broken ref fixed
-- entry_room_arrival_adaptive_lighting_welcome: 2 broken refs fixed
-- system_adaptive_lighting_off_when_nobody_home_or_late_night: 1 broken ref fixed
-- midnight_all_lights_off: 8 broken refs fixed (4 renamed, 4 removed as nonexistent)
+## BLOCKED
+- binary_sensor.house_occupied (unavailable, template package issue)
+- sensor.2nd_floor_bathroom_humidity_derivative (unavailable)
+- Music Assistant (setup_error)
+- Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
 
-### Key Entity Renames Discovered
-- light.entry_room_hue_color_lamp → light.entry_room_desk_lamp (Hue migration rename)
-- switch.adaptive_lighting_living_spaces → switch.living_spaces_adaptive_lighting_living_spaces
-- switch.adaptive_lighting_entry_room_lamp_adaptive → switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
-- switch.adaptive_lighting_entry_room_ceiling → switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
-- light.kitchen_ceiling_inovelli_vzm31_sn → light.kitchen_ceiling_can_led_lights_inovelli
-- light.kitchen_bar_pendant_lights → light.kitchen_bar_pendant_lights_inovelli_vzm31_sn
-- light.kitchen_under_cabinet_aqara_t1_led_strip → light.kitchen_under_cabinet_lights_inovelli_switch
-- light.living_room_tv_led_strip → light.living_room_behind_tv_tp_link_smart_light_strip
+## DISCOVERED INTEGRATIONS TO REVIEW
+- 2nd Floor Roomba (192.168.1.48), DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
 
-### Eliminated Errors
-- Adaptive Lighting AssertionError (16 occurrences) — caused by broken AL switch ref in entry_room_lamp_motion_control. Fixed.
+## VZM36 COSMETIC CLEANUP (low priority)
+- 22 diagnostic entities with stale `upstairs_hallway_vzm36_*` prefix in master bedroom
+- Duplicate ghost registrations at `master_bedroom_vzm36_*` (from device rename)
+- Functional — SBM correct, fan works — just naming mess
 
----
-
-## DISCOVERED — NEEDS TERMINAL WORK
-
-### Template Package Issues (browser terminal required)
-- sensor.people_home_count — unavailable (restored:true). Working UI duplicate exists: sensor.people_home_count_2
-- sensor.people_home_list — unavailable (restored:true)
-- binary_sensor.house_occupied — unavailable (restored:true). Cascading blocker.
-- sensor.house_occupancy_state icon template crashes: needs | int(0) default for people_home_count
-- sensor.house_average_temperature, sensor.house_average_humidity, sensor.john_distance_to_home — all unknown
-- Fix: find the template package YAML defining these, fix entity refs or add defaults
-
-### configuration.yaml Issues (browser terminal required)
-- auth: block with unsupported parameters generating error on every restart
-- shell_command.hac_export calls hac.sh which doesn't exist on EQ14 (return code 127)
-
-### Script Format Errors
-- script.apply_tablet_context: "extra keys not allowed @ data['entity_id']" — service call format bug
-- automation.context_apply_on_occupancy_change_2: same format error cascading from script
-
----
-
-## TABLED / REMAINING WORK
-
-### Priority Next:
-1. Template package fixes (terminal session — fix people_home_count, house_occupied, add defaults)
-2. configuration.yaml cleanup (remove auth block, fix hac_export shell_command)
-3. apply_tablet_context script format fix
-4. Ella companion app rename (20 entities iphone_40_* → ella_s_*)
-5. Michelle person tracker (MAC 6a:9a:25:dd:82:f1 — person.michelle has no device_trackers)
-
-### Duplicate Entities to Clean:
-- todo.shopping_list + todo.shopping_list_2 (two shopping_list platform entries)
-- weather.forecast_home + weather.forecast_home_2 (two Met integrations)
-- tts.google_translate_en_com + tts.google_translate_en_com_2 (two Google Translate TTS)
-- sensor.people_home_count (YAML) + sensor.people_home_count_2 (UI) — keep UI, remove YAML
-- binary_sensor.anyone_home (unique_id: anyone_home_presence) + binary_sensor.anyone_home_2 (unique_id: anyone_home_hybrid)
-
-### Person Entities Without Trackers:
-- person.michelle — no device_trackers (needs MAC-based tracker)
-- person.jarrett, person.owen, person.jean, person.traci — no trackers (are these needed?)
-
-### Disabled Automations (4):
-- upstairs_bathroom_motion_lighting (off)
-- upstairs_hallway_motion_lighting_v2 (off)
-- calendar_refresh_school_tomorrow (off)
-- calendar_refresh_school_in_session_now (off)
-
-### Kitchen Tablet Enhancements (tabled):
-- Calendar Card Pro, master calendar parsing, doorbell camera view
-- Away/home screen control (blocked by house_occupied fix)
-- FKB screensaver, battery management automation
-
-### Blocked:
-- binary_sensor.house_occupied — unavailable (template package issue)
-- Music Assistant — setup_error (expired token)
-- Navien — connection error (creds harvested, not yet added to EQ14)
-- AndroidTV 192.168.1.17 — do not delete
-
-### Ongoing:
-- Security hardening (SSH password auth, Cloudflare Zero Trust, plaintext PAT, recorder PII)
-- NordPass cleanup backlog
-- Discovered integrations: 2nd Floor Roomba, DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
-
----
-
-## BENCHMARK
-
-| Metric | S51 | S52 |
-|--------|-----|-----|
-| Automations | 77 | 76 |
-| Scripts | 29 | 25 |
-| Helpers | 91 | 90 |
-| Ghosts | 0 | 0 |
-| Unavailable auto/script | 5 | 0 |
-| YAML dashboards | 0 | 0 |
-| Storage dashboards | 3 | 3 |
-| HACS cards | 5 | 5 |
-| Template packages | 14 | 14 |
-| Calendars | 19 | 19 |
-| System errors (AL) | 16 | 0 |
-
----
-
-## QUICK REFERENCE
-
-- HA: http://192.168.1.10:8123
-- SSH: ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"
-- Git push: MCP shell_command.git_push only
-- Notify: notify.mobile_app_galaxy_s26_ultra
-- Kitchen tablet device_id: 86870b5d8b01f345f5d5dd9c2ac06d2b
-- Kitchen tablet FKB startURL: http://192.168.1.10:8123/kitchen-tablet/home
-- Kitchen tablet FKB Remote Admin: http://192.168.21.50:2323
-- Tablet dashboard url_path: kitchen-tablet (storage-mode, kiosk_mode enabled)
+## S53 BENCHMARK
+76 automations | 24 scripts | 91 helpers | 0 ghosts | 14 template packages | 19 calendars | 5 HACS cards | 3 dashboards

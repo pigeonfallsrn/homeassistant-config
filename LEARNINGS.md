@@ -65,3 +65,17 @@
 - shell_command.hac_export calls hac.sh which was on Green, not ported to EQ14
 - automation.hac_daily_master_context_export runs daily and generates return code 127 errors
 - Either port hac.sh or disable the automation until ported
+
+## S53 — 2026-04-22
+
+### HUE MIGRATION RULE — 6th occurrence (PROMOTED)
+Master Bedroom Tap Dial Switch automation had ALL 5 triggers referencing dead `event.hue_tap_dial_switch_3_*` entity IDs. Automation was 100% non-functional. Correct entities were `event.master_bedroom_tap_dial_switch_*`. This is the 6th confirmed occurrence of stale Hue generic entity refs surviving migration. Rule: after ANY Hue device review, scan all automations for `hue_` prefixed entity refs.
+
+### Premature script anti-pattern
+`script.apply_tablet_context` was built referencing 5 dashboard URLs that didn't exist yet (kitchen-guest, kitchen-away, kitchen-john, kitchen-kids, kitchen-family). It failed on every occupancy change since creation. Also used `entity_id` targeting for `fully_kiosk.load_url` which requires `device_id`. Lesson: don't build automations/scripts referencing resources that don't exist yet. Build the infrastructure first.
+
+### VZM36 device rename creates ghost entity registrations
+Renaming a VZM36 device from "Upstairs Hallway" to "Master Bedroom" created new entity registrations at `master_bedroom_vzm36_*` without removing the old `upstairs_hallway_vzm36_*` ones. Both sets exist in registry. The old-prefix entities are the live ones (have state), the new-prefix ones are stale ghosts. Attempting `new_entity_id` rename fails with "already registered." Low priority — diagnostic entities only.
+
+### Master Bedroom Tap Dial layout pattern
+Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightlight). Tap Dial at nightstand = comfort from bed (Relax/Read/Nightlight/Fan, rotary=dim). Nightlight on both controllers because it's needed from either location. Fan on tap dial button 4 — only non-lighting need from bed.

@@ -2023,14 +2023,13 @@
   max_exceeded: silent
 - id: '1776295708486'
   alias: Context → Apply on Occupancy Change
-  description: Fires both apply_lighting_context and apply_tablet_context scripts
-    whenever occupancy mode changes.
+  description: Fires apply_lighting_context script whenever occupancy mode changes.
+    Tablet context removed S53 (dashboards not yet built).
   triggers:
   - entity_id: input_select.occupancy_mode
     platform: state
   actions:
   - action: script.apply_lighting_context
-  - action: script.apply_tablet_context
   max_exceeded: silent
   mode: single
 - id: '1776295713450'
@@ -2752,21 +2751,22 @@
   mode: single
 - id: '1776363561506'
   alias: Master Bedroom — Tap Dial Switch
-  description: B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%
+  description: B1=Relax B2=Read B3=Nightlight B4=Fan Toggle Rotary=Brightness±10%.
+    Rebuilt S53 — fixed stale hue_tap_dial_switch_3 entity refs.
   triggers:
-  - entity_id: event.hue_tap_dial_switch_3_button_1
+  - entity_id: event.master_bedroom_tap_dial_switch_button_1
     id: b1
     platform: state
-  - entity_id: event.hue_tap_dial_switch_3_button_2
+  - entity_id: event.master_bedroom_tap_dial_switch_button_2
     id: b2
     platform: state
-  - entity_id: event.hue_tap_dial_switch_3_button_3
+  - entity_id: event.master_bedroom_tap_dial_switch_button_3
     id: b3
     platform: state
-  - entity_id: event.hue_tap_dial_switch_3_button_4
+  - entity_id: event.master_bedroom_tap_dial_switch_button_4
     id: b4
     platform: state
-  - entity_id: event.hue_tap_dial_switch_3_rotary
+  - entity_id: event.master_bedroom_tap_dial_switch_rotary
     id: rotary
     platform: state
   actions:
@@ -2780,7 +2780,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.master_bedroom_energize
+          entity_id: scene.master_bedroom_relax
     - conditions:
       - condition: trigger
         id: b2
@@ -2790,7 +2790,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.master_bedroom_relax
+          entity_id: scene.master_bedroom_read
     - conditions:
       - condition: trigger
         id: b3
@@ -2800,7 +2800,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.master_bedroom_dimmed
+          entity_id: scene.master_bedroom_nightlight
     - conditions:
       - condition: trigger
         id: b4
@@ -2808,9 +2808,9 @@
         value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
           }}'
       sequence:
-      - action: light.turn_off
+      - action: fan.toggle
         target:
-          entity_id: light.master_bedroom
+          entity_id: fan.master_bedroom_fan
     - conditions:
       - condition: trigger
         id: rotary
@@ -2835,7 +2835,7 @@
           brightness_step_pct: -10
         target:
           entity_id: light.master_bedroom
-  mode: single
+  mode: restart
 - id: '1776363569434'
   alias: Alaina's Bedroom — Dimmer Switch
   description: B1=Energize B2=Relax B3=Dimmed B4=Off
