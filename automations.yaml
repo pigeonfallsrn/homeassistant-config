@@ -23,7 +23,7 @@
 - id: '1771364980856'
   alias: Front Driveway — Inovelli Controls Hue Lights
   description: VZM30-SN in Smart Bulb Mode controlling Hue driveway lights. UP=Energize,
-    DOWN=Off, Config press=scene cycle (Energize→Relax→Nightlight), Config hold=Sleepy
+    DOWN=Off, Config press=scene cycle (Energize/Relax/Nightlight), Config hold=Nighttime
     scene.
   triggers:
   - event_data:
@@ -89,7 +89,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.front_driveway_sleepy
+          entity_id: scene.front_driveway_nighttime
   mode: queued
   max_exceeded: silent
 - id: '1771532178019'
@@ -936,29 +936,6 @@
           entity_id: scene.kitchen_dimmed
       inovelli_switch: 17a59d3c437c3475f22c29dd2b76777a
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
-- id: front_driveway_motion_lights_on
-  alias: Front Driveway - Lights On When Motion (Dark)
-  description: 'Turn on driveway lights on vehicle or person detection after dark.
-    Uses AI detection instead of raw motion to prevent false positives from wind/animals.
-    Belt+suspenders: sunset-23:00 window + smart detection. Updated 2026-03-10.'
-  triggers:
-  - entity_id: binary_sensor.front_driveway_door_vehicle_detected
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.front_driveway_door_person_detected
-    platform: state
-    to: 'on'
-  conditions:
-  - after: sunset
-    after_offset: 0:00:00
-    condition: sun
-  - before: '23:00:00'
-    condition: time
-  actions:
-  - action: light.turn_on
-    target:
-      entity_id: light.front_driveway_2
-  mode: single
 - id: '1773152820854'
   alias: Doorbell Ring → Notification with Snapshot
   description: Sends a push notification with camera snapshot to John when either
@@ -2751,8 +2728,7 @@
   mode: single
 - id: '1776363561506'
   alias: Master Bedroom — Tap Dial Switch
-  description: B1=Relax B2=Read B3=Nightlight B4=Fan Toggle Rotary=Brightness±10%.
-    Rebuilt S53 — fixed stale hue_tap_dial_switch_3 entity refs.
+  description: B1=Relax B2=Energize B3=Nightlight B4=Fan Toggle B4-Hold=All Off Rotary=Brightness
   triggers:
   - entity_id: event.master_bedroom_tap_dial_switch_button_1
     id: b1
@@ -2790,7 +2766,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.master_bedroom_read
+          entity_id: scene.master_bedroom_energize
     - conditions:
       - condition: trigger
         id: b3
@@ -2835,10 +2811,23 @@
           brightness_step_pct: -10
         target:
           entity_id: light.master_bedroom
+    - conditions:
+      - condition: trigger
+        id: b4
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.master_bedroom
+      - action: fan.turn_off
+        target:
+          entity_id: fan.master_bedroom_fan
   mode: restart
 - id: '1776363569434'
   alias: Alaina's Bedroom — Dimmer Switch
-  description: B1=Energize B2=Relax B3=Dimmed B4=Off
+  description: B1=Energize B2=Relax B3=Malibu pink B4=Off
   triggers:
   - entity_id: event.alaina_s_bedroom_dimmer_switch_button_1
     id: b1
@@ -2878,7 +2867,7 @@
       sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.alaina_s_bedroom_dimmed
+          entity_id: scene.alaina_s_bedroom_malibu_pink
     - conditions:
       - condition: trigger
         id: b4
@@ -3527,57 +3516,45 @@
       entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
   mode: restart
 - id: '1776568867766'
-  alias: Front Driveway — Lights On When Motion (Dark)
-  description: Turn on driveway light on motion at night, off after 5min no motion
-    or 10min hard cap
+  alias: Front Driveway — Motion Lighting
+  description: Hue motion sensor + UniFi person/vehicle detection. Energize scene
+    on motion after dark, auto-off 5min no motion or 15min hard cap.
   triggers:
-  - entity_id: binary_sensor.front_driveway_door_person_detected
-    platform: state
+  - platform: state
+    entity_id: binary_sensor.front_driveway_hue_motion
     to: 'on'
+    id: hue_motion
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_person_detected
+    to: 'on'
+    id: unifi_person
+  - platform: state
+    entity_id: binary_sensor.front_driveway_door_vehicle_detected
+    to: 'on'
+    id: unifi_vehicle
   conditions:
-  - condition: state
-    entity_id: binary_sensor.front_driveway_door_is_dark
-    state: 'on'
+  - condition: sun
+    after: sunset
+    after_offset: -00:15:00
   actions:
-  - data:
-      brightness_pct: 100
+  - action: scene.turn_on
     target:
-      entity_id: light.front_driveway_2
-    action: light.turn_on
-  - continue_on_timeout: true
-    timeout:
-      minutes: 10
-    wait_for_trigger:
-    - entity_id: binary_sensor.front_driveway_door_person_detected
+      entity_id: scene.front_driveway_energize_2
+  - wait_for_trigger:
+    - platform: template
+      value_template: '{{ is_state(''binary_sensor.front_driveway_hue_motion'', ''off'')
+        and is_state(''binary_sensor.front_driveway_door_person_detected'', ''off'')
+        }}'
       for:
         minutes: 5
-      platform: state
-      to: 'off'
-  - data:
-      transition: 5
+    timeout:
+      minutes: 15
+    continue_on_timeout: true
+  - action: light.turn_off
     target:
       entity_id: light.front_driveway_2
-    action: light.turn_off
-  mode: restart
-- id: '1776568880618'
-  alias: Front Driveway — Auto Off After No Motion
-  description: 'Safety net: turn off driveway lights 5 minutes after no motion'
-  triggers:
-  - entity_id: binary_sensor.front_driveway_door_person_detected
-    for:
-      minutes: 5
-    platform: state
-    to: 'off'
-  conditions:
-  - condition: state
-    entity_id: light.front_driveway_2
-    state: 'on'
-  actions:
-  - data:
+    data:
       transition: 5
-    target:
-      entity_id: light.front_driveway_2
-    action: light.turn_off
   mode: restart
 - id: '1776568947349'
   alias: Living Room TV OFF → Full AV System OFF
@@ -3649,3 +3626,89 @@
     target:
       entity_id: input_boolean.bathroom_2nd_floor_fan_manual_override
   mode: restart
+- id: '1776914781061'
+  alias: Back Patio — Motion Lighting
+  description: Hue outdoor motion sensor. Energize scene on motion after dark, auto-off
+    5min no motion or 15min hard cap.
+  triggers:
+  - entity_id: binary_sensor.back_patio_hue_motion
+    platform: state
+    to: 'on'
+  conditions:
+  - after: sunset
+    after_offset: -00:15:00
+    condition: sun
+  actions:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.back_patio_energize
+  - continue_on_timeout: true
+    timeout:
+      minutes: 15
+    wait_for_trigger:
+    - entity_id: binary_sensor.back_patio_hue_motion
+      for:
+        minutes: 5
+      platform: state
+      to: 'off'
+  - action: light.turn_off
+    data:
+      transition: 5
+    target:
+      entity_id: light.back_patio
+  mode: restart
+- id: '1776914800390'
+  alias: Outdoor Lights — Sunset Schedule
+  description: 'Sunset: Relax on all outdoor areas. 11pm: switch to Nightlight. Sunrise:
+    off. Covers Front Driveway, Very Front Door, Back Patio.'
+  triggers:
+  - id: sunset
+    platform: sun
+    event: sunset
+    offset: -00:15:00
+  - id: late_night
+    platform: time
+    at: '23:00:00'
+  - id: sunrise
+    platform: sun
+    event: sunrise
+    offset: 00:15:00
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: sunset
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.front_driveway_relax
+      - action: scene.turn_on
+        target:
+          entity_id: scene.very_front_door_relax
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_relax
+    - conditions:
+      - condition: trigger
+        id: late_night
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.front_driveway_nightlight
+      - action: scene.turn_on
+        target:
+          entity_id: scene.very_front_door_nightlight
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_nightlight
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.front_driveway_2
+          - light.very_front_door
+          - light.back_patio
+  mode: single

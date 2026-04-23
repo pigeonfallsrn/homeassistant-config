@@ -130,3 +130,33 @@ Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightli
 - Three-layer backup before bulk changes: HA snapshot + Hue cloud backup (app) + local API JSON export
 - Local export includes full scene color/brightness data (can recreate any deleted scene)
 - Force-add backup files to git if backup dir is gitignored: git add -f
+
+## S55 — 2026-04-22
+
+### Hue Bridge Behaviors (behavior_instance) — Dual-Fire Resolution
+- Bridge behaviors are NOT HA automations — they live on the bridge as behavior_instance resources
+- Query: GET /clip/v2/resource/behavior_instance
+- Most dimmer/tap dial behaviors don't persist on bridge if "configure in another app" was selected
+- Only behaviors explicitly configured in Hue app appear as behavior_instances
+- S54 flagged 4 to disable but only 1 existed (LR Lounge) — the rest were never bridge behaviors
+
+### Hue Outdoor Motion Sensors — "Configure in Another App" Pattern
+- Adding sensors as "configure in another app" in Hue app means: bridge pairs them but assigns no room/behavior
+- HA discovers them via Hue integration with generic names (hue_outdoor_motion_sensor_N)
+- Must rename device in HA (ha_update_device) AND rename entity_ids (ha_set_entity with new_entity_id)
+- Each sensor creates 7 entities: motion, battery, illuminance, temperature, zigbee_connectivity, 2 enable switches
+- Illuminance sensor useful for lux-based automation conditions
+
+### Outdoor Motion Automation Pattern (recommended)
+- Mode: restart (new motion resets the off timer)
+- Trigger: Hue motion sensor + UniFi person/vehicle detection (where camera exists)
+- Condition: sun below horizon (with -15min offset for dusk)
+- Action: Energize scene → wait_for_trigger (all motion clear for 5min) with 15min hard cap → light.turn_off with transition
+- Single automation handles on+off (no separate auto-off automation needed)
+- wait_for_trigger with continue_on_timeout: true ensures lights always turn off
+
+### Outdoor Sunset Schedule Pattern
+- 3 triggers in one automation: sunset (offset -15min), time 23:00, sunrise (offset +15min)
+- Choose action branches per trigger ID
+- Covers all outdoor rooms in each branch (Front Driveway, Very Front Door, Back Patio)
+- Relax at dusk → Nightlight at late night → Off at dawn

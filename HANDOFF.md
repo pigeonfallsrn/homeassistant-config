@@ -1,82 +1,66 @@
-# HANDOFF — Session S54
+# HANDOFF — Session S55
 
-## Last Session: S54 (2026-04-22)
-## Last Commit: 006332b
-## Baseline: 76 automations, 93 helpers, 0 ghosts, 101 scenes (was 150)
-
----
-
-## WHAT HAPPENED IN S54
-
-### Hue Ecosystem Audit + Scene Cleanup (comprehensive)
-- Full bridge inventory: 95 devices (47 bulbs, 8 accessories, 17 rooms, 14 zones)
-- Scenes: 148 → 101 (47 deleted via Hue CLIP v2 API)
-- Standardized all rooms to Energize/Relax/Nightlight pattern (plus room-specific exceptions)
-- Full bridge backup exported to /homeassistant/hac/backup/hue_*_s54_backup.json (git-tracked)
-
-### Scenes Deleted (47 total, 0 failures)
-- 1st Floor Bathroom: 6 (4 duplicates + Concentrate + Dimmed)
-- 2nd Floor Bathroom: 1 (Dimmed)
-- Alaina's Bedroom: 3 (Concentrate, Dimmed, Read — kept Malibu pink + Bright)
-- Back Patio: 3 (Concentrate, Dimmed, Read)
-- Basement: 1 (Dimmed)
-- Entry Room: 1 (Dimmed)
-- Front Driveway: 7 (Arise, Concentrate, Read, Shine, Sleepy, Storybook, Unwind)
-- Garage: 3 (Concentrate, Dimmed, Read)
-- Kitchen: 2 (Concentrate, Dimmed)
-- Kitchen Lounge: 2 (Concentrate, Dimmed)
-- Living Room: 1 (Rest)
-- Living Room Lounge: 2 (Dimmed, Rest)
-- Master Bedroom: 4 (Concentrate, Dimmed, Read, Rest)
-- Upstairs Hallway: 4 (Concentrate, Dimmed, Read, Rest)
-- Very Front Door: 7 (Arise, Concentrate, Read, Shine, Sleepy, Storybook, Unwind)
-
-### Entity Fixes
-- Master Bedroom Ceiling Candle 1+2: area null → master_bedroom
-- Kitchen Floor Lamp device: renamed "Master Bedroom Floor Lamp", area → master_bedroom
-
-### Broken Automations Fixed (2 — 16 dead entity refs total)
-- Entry Room Tap Dial: 5 stale trigger refs updated (hue_tap_dial_switch_1_* → entry_room_tap_dial_switch_*)
-- Living Room FOH Scene Cycling: 8 stale trigger refs + 3 missing helpers created (lr_hue_*_scene_index)
-
-### Automations Verified Clean (4)
-- Alaina's Bedroom Dimmer, Ella's Bedroom Dimmer, Garage Dimmer, Master Bedroom Tap Dial
-
-### Bridge Automation Dual-Fire Audit
-- 4 to disable in HA UI: living_room_hue_switch, alaina_s_bedroom_dimmer_switch, garage_hue_dimmer_switch, master_bedroom_tap_dial_switch
-- 2 keep ON (bridge-only): ella_s_bedroom_hue_light_switch, living_room_lounge_hue_switch
-- MCP 500 error on toggle — manual HA UI task
+## Last Session: S55 (2026-04-22)
+## Last Commit: (pending)
+## Baseline: 76 automations, 93 helpers, 0 ghosts, 89 scenes
 
 ---
 
-## PHASE B — HUE APP WORK (John, on phone)
+## WHAT HAPPENED IN S55
 
-1. Delete Front Driveway zone (redundant with room)
-2. Create Master Bedroom Ceiling zone (2 candle bulbs) with scenes: Energize, Relax, Nightlight
-3. Add Relax + Nightlight scenes to Alaina's Ceiling Lights zone
-4. Add Relax + Nightlight scenes to Ella's Ceiling Lights zone
-5. Ask Ella to pick 1-2 fun color scenes from Hue gallery (replace Dimmed/Concentrate)
-6. Create seasonal outdoor scenes (Christmas/Halloween) at 5-20% brightness
-7. Rename in Hue app: 1st Floor Bathroom Ceiling 1of2 → 1 of 2 (and 2of2)
-8. Assign Master Bedroom Ceiling Candle 1+2 to Master Bedroom room
+### Phase B — Hue Bridge API Work (all via terminal CLIP v2)
+- Created Master Bedroom Ceiling zone (2 candle bulbs) + Energize/Relax/Nightlight scenes
+- Added Relax + Nightlight to Alaina's Ceiling Lights zone
+- Added Relax + Nightlight to Ella's Ceiling Lights zone
+- Deleted 19 stale scenes from zones/rooms missed in S54 cleanup
+- Scene count: 101 → 89 (−19 deleted, +7 created)
+- Kept Front Driveway zone + Outside 4 West Lights zone (useful for seasonal scenes)
 
-## PHASE C — HA AUTOMATION UPDATES (future session)
+### Phase C — HA Automation Updates
+- Alaina dimmer B3: dead ref (scene.alaina_s_bedroom_dimmed) → scene.alaina_s_bedroom_malibu_pink
+- MB tap dial B2: dead ref (scene.master_bedroom_read) → scene.master_bedroom_energize
+- MB tap dial B4: added long_release → All Off (lights + fan)
+- Front Driveway Inovelli: dead ref (scene.front_driveway_sleepy) → scene.front_driveway_nighttime
+- Bridge automations: only 1 behavior on bridge (LR Lounge, correct to keep) — nothing to disable
+- Deleted duplicate Front Driveway motion automation (_2 YAML remnant)
+- Deleted separate Front Driveway auto-off automation (merged into main)
+- Rebuilt Front Driveway motion: Hue sensor + UniFi person/vehicle → Energize scene, 5min/15min auto-off
+- Created Back Patio motion automation (new): Hue sensor → Energize, same auto-off pattern
+- Created Outdoor Lights Sunset Schedule (new): sunset→Relax, 11pm→Nightlight, sunrise→Off (all 3 outdoor areas)
 
-1. Alaina dimmer: B3 → Malibu pink scene
-2. Living Room FOH: redesign for VZM36 ceiling+fan (remove scene cycling)
-3. Outdoor automations: sunset→Relax, late night→Nightlight, motion→Energize
-4. Master Bedroom tap dial: B2 Read → Energize (after ceiling zone created)
-5. Master Bedroom: add "All Off" hold action (room-level including non-Hue)
-6. Disable 4 bridge automations in HA UI
+### Hue Outdoor Motion Sensors (2 new, physical install by John)
+- Device 1 → "Front Driveway Motion Sensor" (area: front_driveway, device_id: 07c1e283)
+- Device 2 → "Back Patio Motion Sensor" (area: back_patio, device_id: 6268f726)
+- Renamed key entities: binary_sensor.front_driveway_hue_motion, binary_sensor.back_patio_hue_motion
+- Renamed lux entities: sensor.front_driveway_hue_illuminance, sensor.back_patio_hue_illuminance
+- VERIFY: walk past each sensor to confirm 1=Front Driveway, 2=Back Patio (assigned by illuminance guess)
+
+### Dead Entity Refs Fixed (4 automations, 4 refs)
+- Alaina dimmer B3: dimmed → malibu_pink
+- MB tap dial B2: read → energize
+- FD Inovelli hold: sleepy → nighttime
+- FD motion duplicate: deleted (was overlapping triggers)
+
+---
+
+## NEEDS VERIFICATION
+
+1. Walk past Front Driveway sensor, check binary_sensor.front_driveway_hue_motion fires
+2. Walk past Back Patio sensor, check binary_sensor.back_patio_hue_motion fires
+3. If swapped: swap device names + entity_ids + automation entity refs
+4. Test MB tap dial B4 hold → all MB lights + fan off
+5. Sunset schedule will auto-fire at next sunset — verify Relax comes on
 
 ---
 
 ## CARRIED FORWARD
 
 - Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
-- Garage opener Hue bulbs showing unreachable (power circuit issue, not software)
-- Very Front Door Hallway: currently disconnected, will be rewired + 2 new A19s added
+- VF Door Hallway: 2nd A19 needs pairing to bridge, then room update
+- Garage opener Hue bulbs showing unreachable (power circuit issue)
 - Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, etc.)
+- Living Room FOH: redesign for VZM36 ceiling+fan (remove scene cycling)
+- Living Room Floor Lamps zone: only Nightlight scene left — add Energize/Relax
 
 ## BLOCKED
 
@@ -89,20 +73,21 @@
 
 ## BENCHMARK
 
-| Metric | S53 | S54 |
+| Metric | S54 | S55 |
 |--------|-----|-----|
-| Automations | 76 | 76 |
-| Helpers | 90 | 93 (+3 LR scene index) |
+| Automations | 76 | 76 (−2 deleted, +2 created) |
+| Helpers | 93 | 93 |
 | Ghosts | 0 | 0 |
-| Scenes | 150 | 101 (-47 deleted) |
-| Broken refs fixed | — | 16 (2 automations) |
-| Hue devices audited | — | 95 |
+| Scenes | 101 | 89 (−19 deleted, +7 created) |
+| Dead refs fixed | — | 4 (across 4 automations) |
+| Hue zones created | — | 1 (MB Ceiling) |
+| New automations | — | 2 (Back Patio motion, Sunset schedule) |
+| New sensors | — | 2 Hue outdoor motion (14 entities) |
 
 ## QUICK REFERENCE
 
 - HA: http://192.168.1.10:8123
 - Hue Bridge: 192.168.1.68 (API key in /homeassistant/hac/backup/)
-- Hue Bridge device page: http://192.168.1.10:8123/config/devices/device/3a6a3c38b469e4d72e6c36fc82151750
 - SSH: ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"
 - Git push: MCP shell_command.git_push only
 - Notify: notify.mobile_app_galaxy_s26_ultra
