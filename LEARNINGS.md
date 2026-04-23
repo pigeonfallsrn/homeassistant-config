@@ -160,3 +160,29 @@ Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightli
 - Choose action branches per trigger ID
 - Covers all outdoor rooms in each branch (Front Driveway, Very Front Door, Back Patio)
 - Relax at dusk → Nightlight at late night → Off at dawn
+
+### FOH Switch Hybrid Architecture — Bridge vs HA Decision Tree (S55)
+- If target is ONLY Hue lights + simple on/off/scene: bridge-direct (fast, reliable, HA-independent)
+- If target includes non-Hue devices (ZHA fans, Inovelli): HA automation required
+- If need cross-system actions (whole home off): HA automation for that specific button/event
+- Hybrid: bridge handles short_release for Hue targets, HA handles long_release for complex actions
+- No dual-fire: bridge only fires on_short_release, HA filters for long_release only
+- Bridge behaviors created via POST /clip/v2/resource/behavior_instance using script_id "67d9395b" (Hue Accessories)
+- behavior_instance schema: buttons keyed by button service rid, each with on_short_release + on_repeat + where (group target)
+- "configure in another app" = bridge pairs but assigns no behavior → HA gets events → automation handles
+
+### FOH Button Layout Reference
+- B1 = upper left, B2 = lower left, B3 = upper right, B4 = lower right
+- Natural mapping: left side = one function (fan), right side = another (lights)
+- Up = on/cycle, Down = off — matches physical wall switch mental model
+
+### Fan Speed Cycling Pattern (VZM36 via HA)
+- percentage_step 33.33% = 3 speeds (33=low, 66=med, 100=high)
+- Template: check current percentage, set next level, wrap at 100→33
+- Long press = jump to high (100%) — power user shortcut
+- fan.set_percentage with template value, not fan.turn_on (which uses last speed)
+
+### Hue Entity Rename After FOH Reassignment
+- Device rename via ha_update_device does NOT cascade to entities
+- Must rename each event.* entity individually via ha_set_entity(new_entity_id=...)
+- Plan entity naming before creating automations to avoid double-rename

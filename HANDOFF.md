@@ -2,7 +2,7 @@
 
 ## Last Session: S55 (2026-04-22)
 ## Last Commit: (pending)
-## Baseline: 76 automations, 93 helpers, 0 ghosts, 89 scenes
+## Baseline: 77 automations, 93 helpers, 0 ghosts, 89 scenes
 
 ---
 
@@ -10,57 +10,80 @@
 
 ### Phase B — Hue Bridge API Work (all via terminal CLIP v2)
 - Created Master Bedroom Ceiling zone (2 candle bulbs) + Energize/Relax/Nightlight scenes
-- Added Relax + Nightlight to Alaina's Ceiling Lights zone
-- Added Relax + Nightlight to Ella's Ceiling Lights zone
+- Added Relax + Nightlight to Alaina's + Ella's Ceiling Lights zones
 - Deleted 19 stale scenes from zones/rooms missed in S54 cleanup
-- Scene count: 101 → 89 (−19 deleted, +7 created)
-- Kept Front Driveway zone + Outside 4 West Lights zone (useful for seasonal scenes)
+- Scene count: 101 → 89
 
 ### Phase C — HA Automation Updates
-- Alaina dimmer B3: dead ref (scene.alaina_s_bedroom_dimmed) → scene.alaina_s_bedroom_malibu_pink
-- MB tap dial B2: dead ref (scene.master_bedroom_read) → scene.master_bedroom_energize
-- MB tap dial B4: added long_release → All Off (lights + fan)
-- Front Driveway Inovelli: dead ref (scene.front_driveway_sleepy) → scene.front_driveway_nighttime
-- Bridge automations: only 1 behavior on bridge (LR Lounge, correct to keep) — nothing to disable
-- Deleted duplicate Front Driveway motion automation (_2 YAML remnant)
-- Deleted separate Front Driveway auto-off automation (merged into main)
-- Rebuilt Front Driveway motion: Hue sensor + UniFi person/vehicle → Energize scene, 5min/15min auto-off
-- Created Back Patio motion automation (new): Hue sensor → Energize, same auto-off pattern
-- Created Outdoor Lights Sunset Schedule (new): sunset→Relax, 11pm→Nightlight, sunrise→Off (all 3 outdoor areas)
+- Alaina dimmer B3: dead ref → Malibu pink
+- MB tap dial B2: dead ref → Energize, added B4 long=All Off
+- Front Driveway Inovelli: dead ref sleepy → nighttime
+- Duplicate FD motion automation deleted + auto-off merged into main
+- Front Driveway motion rebuilt: Hue sensor + UniFi person/vehicle → Energize scene, auto-off
+- Back Patio motion created: Hue sensor → Energize, same pattern
+- Outdoor sunset schedule created: sunset→Relax, 11pm→Nightlight, sunrise→Off
 
-### Hue Outdoor Motion Sensors (2 new, physical install by John)
-- Device 1 → "Front Driveway Motion Sensor" (area: front_driveway, device_id: 07c1e283)
-- Device 2 → "Back Patio Motion Sensor" (area: back_patio, device_id: 6268f726)
-- Renamed key entities: binary_sensor.front_driveway_hue_motion, binary_sensor.back_patio_hue_motion
-- Renamed lux entities: sensor.front_driveway_hue_illuminance, sensor.back_patio_hue_illuminance
-- VERIFY: walk past each sensor to confirm 1=Front Driveway, 2=Back Patio (assigned by illuminance guess)
+### FOH Switch Infrastructure (major new capability)
+- 2 Hue outdoor motion sensors: renamed, area-assigned, key entities renamed
+- Living Room Hue Switch: repurposed from broken lamp scene cycling → VZM36 fan+light control
+- 2 new FOH click switches added, configured hybrid bridge+HA:
 
-### Dead Entity Refs Fixed (4 automations, 4 refs)
-- Alaina dimmer B3: dimmed → malibu_pink
-- MB tap dial B2: read → energize
-- FD Inovelli hold: sleepy → nighttime
-- FD motion duplicate: deleted (was overlapping triggers)
+**Master Bedroom FOH Switch (Switch 1):**
+  - B1 left up: Fan cycle low→med→high (HA) | Long: fan high
+  - B2 left down: Fan off (HA)
+  - B3 right up: MB Ceiling Energize (bridge-direct)
+  - B4 right down short: MB Ceiling off (bridge) | Long: whole home off (HA)
+
+**Very Front Door FOH Switch (Switch 2):**
+  - B3 right up: VFD Energize (bridge-direct)
+  - B4 right down: VFD off (bridge-direct)
+  - Left side: unassigned (John may use single rocker instead)
+
+**Living Room FOH (repurposed):**
+  - B1 left up: Fan cycle low→med→high (HA) | Long: fan high
+  - B2 left down: Fan off (HA)
+  - B3 right up: Ceiling light on (HA) | Long: 50% brightness
+  - B4 right down: Ceiling light off (HA)
+
+### Hybrid FOH Architecture (new pattern)
+- Bridge-direct for Hue lights (fast, works when HA down)
+- HA automation for non-Hue devices (fans, ZHA) and cross-system actions (whole home off)
+- Bridge behaviors created via CLIP v2 API POST /behavior_instance
+- No dual-fire: bridge handles short_release, HA handles long_release where needed
+
+### Bridge Behaviors Inventory (4 total)
+1. Living Room Lounge Hue Switch (existing, kept)
+2. Master Bedroom FOH Switch (new, right side only)
+3. Very Front Door FOH Switch (new, right side only)
+4. (Living Room Hue Switch — no bridge behavior, HA-only for VZM36)
+
+### Orphaned Helpers (from LR scene cycling repurpose)
+- input_number.lr_hue_all_lamps_scene_index
+- input_number.lr_hue_table_lamps_scene_index
+- input_number.lr_hue_floor_lamps_scene_index
+- Action: delete in next cleanup session
 
 ---
 
 ## NEEDS VERIFICATION
 
-1. Walk past Front Driveway sensor, check binary_sensor.front_driveway_hue_motion fires
-2. Walk past Back Patio sensor, check binary_sensor.back_patio_hue_motion fires
-3. If swapped: swap device names + entity_ids + automation entity refs
-4. Test MB tap dial B4 hold → all MB lights + fan off
-5. Sunset schedule will auto-fire at next sunset — verify Relax comes on
+1. MB FOH: press B1 to cycle fan speeds, B3 for ceiling Energize, B4 long for whole-home-off
+2. VFD FOH: press B3 for exterior Energize, B4 for off
+3. LR FOH: press B1 to cycle fan, B3 for ceiling light
+4. Walk past outdoor motion sensors to confirm FD vs BP assignment
+5. Sunset schedule fires at next sunset
 
 ---
 
 ## CARRIED FORWARD
 
 - Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
-- VF Door Hallway: 2nd A19 needs pairing to bridge, then room update
-- Garage opener Hue bulbs showing unreachable (power circuit issue)
+- VF Door Hallway: 2nd A19 needs pairing to bridge
+- Garage opener Hue bulbs showing unreachable (power circuit)
 - Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, etc.)
-- Living Room FOH: redesign for VZM36 ceiling+fan (remove scene cycling)
-- Living Room Floor Lamps zone: only Nightlight scene left — add Energize/Relax
+- LR Floor Lamps zone: only Nightlight left — add Energize/Relax
+- Orphaned LR scene index helpers: delete next session
+- VFD FOH left side: unassigned (decide rocker vs FOH)
 
 ## BLOCKED
 
@@ -75,14 +98,16 @@
 
 | Metric | S54 | S55 |
 |--------|-----|-----|
-| Automations | 76 | 76 (−2 deleted, +2 created) |
+| Automations | 76 | 77 |
 | Helpers | 93 | 93 |
 | Ghosts | 0 | 0 |
-| Scenes | 101 | 89 (−19 deleted, +7 created) |
-| Dead refs fixed | — | 4 (across 4 automations) |
+| Scenes (Hue) | 101 | 89 |
+| Dead refs fixed | — | 4 |
 | Hue zones created | — | 1 (MB Ceiling) |
-| New automations | — | 2 (Back Patio motion, Sunset schedule) |
-| New sensors | — | 2 Hue outdoor motion (14 entities) |
+| FOH switches configured | 1 | 4 (LR Lounge, LR, MB, VFD) |
+| Bridge behaviors | 1 | 4 |
+| Outdoor automations | 0 | 3 (FD motion, BP motion, sunset) |
+| Motion sensors added | 0 | 2 (FD + BP Hue outdoor) |
 
 ## QUICK REFERENCE
 

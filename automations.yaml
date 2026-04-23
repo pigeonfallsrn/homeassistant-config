@@ -1713,268 +1713,98 @@
   - action: shell_command.hac_export
   mode: single
 - id: '1775774068635'
-  alias: Living Room Hue Switch - Lamp Scene Cycling
-  description: B1=all 4 lamps cycle (Relax/Dimmed/Read/Nightlight/off), B2=table lamps
-    cycle (Relax/Dimmed/Read/Nightlight/Bright/off), B3=floor lamps cycle (Rest/Read/Nightlight/Concentrate/off),
-    B4=all off. Long press = off + reset index.
+  alias: Living Room — FOH Fan + Light Control
+  description: Living Room Hue Switch repurposed for VZM36 fan+light. Left=fan (up=cycle
+    low/med/high, down=off). Right=ceiling light (up=on, down=off). Long press left
+    up=high, long press right up=50% brightness.
   triggers:
   - platform: state
     entity_id: event.living_room_hue_switch_button_1
-    attribute: event_type
-    to: short_release
-    id: b1_short
-  - platform: state
-    entity_id: event.living_room_hue_switch_button_1
-    attribute: event_type
-    to: long_release
-    id: b1_long
+    id: b1
   - platform: state
     entity_id: event.living_room_hue_switch_button_2
-    attribute: event_type
-    to: short_release
-    id: b2_short
-  - platform: state
-    entity_id: event.living_room_hue_switch_button_2
-    attribute: event_type
-    to: long_release
-    id: b2_long
+    id: b2
   - platform: state
     entity_id: event.living_room_hue_switch_button_3
-    attribute: event_type
-    to: short_release
-    id: b3_short
-  - platform: state
-    entity_id: event.living_room_hue_switch_button_3
-    attribute: event_type
-    to: long_release
-    id: b3_long
+    id: b3
   - platform: state
     entity_id: event.living_room_hue_switch_button_4
-    attribute: event_type
-    to: short_release
-    id: b4_any
-  - platform: state
-    entity_id: event.living_room_hue_switch_button_4
-    attribute: event_type
-    to: long_release
-    id: b4_any
+    id: b4
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type in [''short_release'',
+      ''long_release''] }}'
   actions:
   - choose:
     - conditions:
       - condition: trigger
-        id: b1_short
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
       sequence:
-      - variables:
-          nxt: '{{ ((states(''input_number.lr_hue_all_lamps_scene_index'') | int)
-            + 1) % 5 }}'
-      - action: input_number.set_value
+      - action: fan.set_percentage
         target:
-          entity_id: input_number.lr_hue_all_lamps_scene_index
+          entity_id: fan.living_room_fan
         data:
-          value: '{{ nxt }}'
-      - choose:
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 0 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_relax
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 1 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_dimmed
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 2 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_read
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 3 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_nightlight
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 4 }}'
-          sequence:
-          - action: light.turn_off
-            target:
-              entity_id:
-              - light.living_room_floor_lamps
-              - light.living_room_table_lamps
+          percentage: '{% set pct = state_attr(''fan.living_room_fan'', ''percentage'')
+            | int(0) %}
+
+            {% if pct == 0 %}33
+
+            {% elif pct <= 33 %}66
+
+            {% elif pct <= 66 %}100
+
+            {% else %}33{% endif %}'
     - conditions:
       - condition: trigger
-        id: b1_long
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: fan.set_percentage
+        target:
+          entity_id: fan.living_room_fan
+        data:
+          percentage: 100
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.living_room_fan
+    - conditions:
+      - condition: trigger
+        id: b3
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.living_room_ceiling
+    - conditions:
+      - condition: trigger
+        id: b3
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.living_room_ceiling
+        data:
+          brightness_pct: 50
+    - conditions:
+      - condition: trigger
+        id: b4
       sequence:
       - action: light.turn_off
         target:
-          entity_id:
-          - light.living_room_floor_lamps
-          - light.living_room_table_lamps
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_all_lamps_scene_index
-        data:
-          value: 4
-    - conditions:
-      - condition: trigger
-        id: b2_short
-      sequence:
-      - variables:
-          nxt: '{{ ((states(''input_number.lr_hue_table_lamps_scene_index'') | int)
-            + 1) % 6 }}'
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_table_lamps_scene_index
-        data:
-          value: '{{ nxt }}'
-      - choose:
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 0 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_table_lamps_relax
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 1 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_table_lamps_dimmed
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 2 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_table_lamps_read
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 3 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_table_lamps_nightlight
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 4 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_table_lamps_bright
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 5 }}'
-          sequence:
-          - action: light.turn_off
-            target:
-              entity_id: light.living_room_table_lamps
-    - conditions:
-      - condition: trigger
-        id: b2_long
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.living_room_table_lamps
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_table_lamps_scene_index
-        data:
-          value: 5
-    - conditions:
-      - condition: trigger
-        id: b3_short
-      sequence:
-      - variables:
-          nxt: '{{ ((states(''input_number.lr_hue_floor_lamps_scene_index'') | int)
-            + 1) % 5 }}'
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_floor_lamps_scene_index
-        data:
-          value: '{{ nxt }}'
-      - choose:
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 0 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_floor_lamps_rest
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 1 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_floor_lamps_read
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 2 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_floor_lamps_nightlight
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 3 }}'
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.living_room_floor_lamps_concentrate
-        - conditions:
-          - condition: template
-            value_template: '{{ nxt == 4 }}'
-          sequence:
-          - action: light.turn_off
-            target:
-              entity_id: light.living_room_floor_lamps
-    - conditions:
-      - condition: trigger
-        id: b3_long
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.living_room_floor_lamps
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_floor_lamps_scene_index
-        data:
-          value: 4
-    - conditions:
-      - condition: trigger
-        id: b4_any
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id:
-          - light.living_room_floor_lamps
-          - light.living_room_table_lamps
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_all_lamps_scene_index
-        data:
-          value: 4
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_table_lamps_scene_index
-        data:
-          value: 5
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.lr_hue_floor_lamps_scene_index
-        data:
-          value: 4
+          entity_id: light.living_room_ceiling
   mode: queued
   max: 5
 - id: '1776295699407'
@@ -3712,3 +3542,84 @@
           - light.very_front_door
           - light.back_patio
   mode: single
+- id: '1776917609878'
+  alias: Master Bedroom — FOH Fan + Light Control
+  description: MB FOH switch. Left=fan (up=cycle low/med/high, long=high, down=off).
+    Right side=bridge-direct (Energize/off on MB Ceiling zone). B4 long press=whole
+    home off (all Hue + fans + ceiling lights).
+  triggers:
+  - entity_id: event.mb_foh_button_1
+    id: b1
+    platform: state
+  - entity_id: event.mb_foh_button_2
+    id: b2
+    platform: state
+  - entity_id: event.mb_foh_button_4
+    id: b4_long
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type in [''short_release'',
+      ''long_release''] }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
+      sequence:
+      - action: fan.set_percentage
+        data:
+          percentage: '{% set pct = state_attr(''fan.master_bedroom_fan'', ''percentage'')
+            | int(0) %}
+
+            {% if pct == 0 %}33
+
+            {% elif pct <= 33 %}66
+
+            {% elif pct <= 66 %}100
+
+            {% else %}33{% endif %}'
+        target:
+          entity_id: fan.master_bedroom_fan
+    - conditions:
+      - condition: trigger
+        id: b1
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: fan.set_percentage
+        data:
+          percentage: 100
+        target:
+          entity_id: fan.master_bedroom_fan
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.master_bedroom_fan
+    - conditions:
+      - condition: trigger
+        id: b4_long
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.whole
+      - action: light.turn_off
+        target:
+          entity_id: light.living_room_ceiling
+      - action: fan.turn_off
+        target:
+          entity_id:
+          - fan.master_bedroom_fan
+          - fan.living_room_fan
+  max: 5
+  mode: queued
