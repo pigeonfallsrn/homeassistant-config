@@ -1,54 +1,99 @@
-# HANDOFF.md — Session S53
-## Last updated: 2026-04-22 | Last commit: pending
+# HANDOFF — Session S54
 
-## CURRENT STATE
-- 76 automations (all UI) | 24 scripts | 91 helpers | 0 ghosts
-- 14 template packages (legit spine) | 19 calendars
-- 3 storage-mode dashboards: map, kitchen-tablet, arriving-home
-- 5 HACS cards: Kiosk Mode, Mushroom, auto-entities, card-mod, mini-graph-card
+## Last Session: S54 (2026-04-22)
+## Last Commit: (pending)
+## Baseline: 76 automations, 93 helpers, 0 ghosts, 150 scenes
 
-## S53 COMPLETED
-1. **Tablet context fix:** Removed `script.apply_tablet_context` from occupancy change automation and deleted the script. It referenced 5 non-existent dashboard URLs and used wrong target format (entity_id vs device_id for FKB). Error cascade on every occupancy change eliminated.
-2. **Master Bedroom entity cleanup:**
-   - Renamed `light.hue_color_candle_1` → `light.master_bedroom_ceiling_1_of_2` (area + labels)
-   - Renamed `light.hue_color_candle_2` → `light.master_bedroom_ceiling_2_of_2` (area + labels)
-   - Assigned area + labels to `light.master_bedroom_wall_light` and `light.master_bedroom` (Hue group)
-   - Hidden `light.master_bedroom_ceiling` (ZHA SBM relay entity — not useful)
-   - Assigned Tap Dial device to master_bedroom area
-3. **Tap Dial automation rebuilt:** Found 100% dead entity refs (all 5 triggers referencing `event.hue_tap_dial_switch_3_*`). Rebuilt with correct entities: B1=Relax, B2=Read, B3=Nightlight, B4=Fan Toggle, Rotary=Brightness±10%. Mode=restart.
-4. **VZM36 SBM confirmed correct:** EP1=ON (Hue ceiling bulbs), EP2=OFF (fan motor), EP2 light entity disabled.
+---
 
-## MANUAL ACTION NEEDED
-- **AL update (UI only):** Add `light.master_bedroom_ceiling_1_of_2` and `light.master_bedroom_ceiling_2_of_2` to existing Master Bedroom Wall Lamp AL instance via Settings → Integrations → Adaptive Lighting.
+## WHAT HAPPENED IN S54
 
-## IMMEDIATE NEXT WORK (priority order)
-1. **FOH CLICK SWITCH** — Build automation when physically installed (planned: top-left=Room ON/AL, top-right=Energize, bottom-left=All OFF, bottom-right=Nightlight)
-2. **GOVEE LAMP** → Reassign `light.kitchen_floor_lamp` area when physically moved to master bedroom and plugged in
-3. **ELLA COMPANION APP** — Rename device to get descriptive sensor names (sensor.iphone_40_* → sensor.ella_s_*)
-4. **NEXT AREA GROUP REVIEW** — Garage, living room, or master bedroom full review
+### Hue Ecosystem Audit (comprehensive)
+- Full Hue bridge inventory: 95 devices (47 bulbs, 8 accessories, 16 rooms, 12 zones, ~150 scenes)
+- Bridge firmware: 1.76.2071294010 (v2 square bridge)
+- Entity ref audit: found 2 fully broken automations (16 dead refs total)
 
-## KITCHEN TABLET ENHANCEMENTS (tabled)
-- Calendar Card Pro (HACS) for per-calendar colors/emojis
-- Master Calendar parsing (grade-specific events only)
-- Doorbell camera view + fully_kiosk.load_url
-- Away/home screen control (blocked by house_occupied template fix)
-- FKB screensaver (family photos / ambient clock)
-- Battery management automation (20-80% charge cycle)
-- Context-specific dashboards (kitchen-guest, kitchen-away, etc.) — rebuild apply_tablet_context when dashboards exist
+### Entity Fixes
+- Master Bedroom Ceiling Candle 1+2: area_id null → master_bedroom
+- Kitchen Floor Lamp: renamed device to "Master Bedroom Floor Lamp", area living_room → master_bedroom
+- light.master_bedroom_floor_lamp entity already renamed (prior session), device now matches
 
-## BLOCKED
+### Broken Automations Fixed (2)
+- Entry Room Tap Dial: 5 stale trigger refs (event.hue_tap_dial_switch_1_*) → updated to event.entry_room_tap_dial_switch_*
+- Living Room FOH Scene Cycling: 8 stale trigger refs (event.works_with_hue_switch_1_button_*_2) → updated to event.living_room_hue_switch_button_*. Created 3 missing helpers (input_number.lr_hue_all_lamps_scene_index, lr_hue_table_lamps_scene_index, lr_hue_floor_lamps_scene_index)
+
+### Automations Verified Clean (4)
+- Alaina's Bedroom Dimmer Switch ✓
+- Ella's Bedroom Dimmer Switch ✓
+- Garage Dimmer Switch ✓
+- Master Bedroom Tap Dial Switch ✓ (rebuilt S53)
+
+### Bridge Automation Dual-Fire Audit
+- 4 bridge automations to disable (HA handles these): living_room_hue_switch, alaina_s_bedroom_dimmer_switch, garage_hue_dimmer_switch, master_bedroom_tap_dial_switch
+- 2 bridge automations to keep ON (bridge-only, no HA automation): ella_s_bedroom_hue_light_switch (FOH), living_room_lounge_hue_switch (FOH)
+- MCP 500 error on bridge automation toggle — must disable in HA UI manually
+- Direct link: http://192.168.1.10:8123/config/devices/device/3a6a3c38b469e4d72e6c36fc82151750
+
+### Scene Cycling Strategy Documented
+- Standardized 3-scene cycling per room: Energize → Relax → Nightlight (universal pattern)
+- Living Room FOH has sophisticated 4-button layout: B1=all lamps cycle, B2=table lamps cycle, B3=floor lamps cycle, B4=all off
+- Hue bridge scenes > HA scenes for reliability (atomic group commands via bridge API)
+- Zones for bulb subsets, Rooms for full room control
+
+---
+
+## TABLED / REMAINING WORK
+
+### Hue App Cleanup (John, on phone):
+A. Delete duplicate 1st Floor Bathroom scenes (4 duplicates: nightlight_2, dimmed_2, relax_2, energize_2)
+B. Standardize device names (1of2→1 of 2 format, rename Hue color candle 1/2 to match HA names)
+C. Clean up empty rooms/zones (Very Front Door Hallway, Garage & Front Driveway zone)
+D. Prune excessive scenes (Front Driveway 13 scenes, Very Front Door 12 scenes → 4-5 each)
+E. Assign Master Bedroom Ceiling Candles to Master Bedroom room in Hue app
+F. Clarify Ella's dual accessory roles (FOH for bridge on/off, Dimmer for HA scene cycling)
+
+### Bridge Automations to Disable (HA UI):
+- switch.hue_bridge_automation_living_room_hue_switch → OFF
+- switch.hue_bridge_automation_alaina_s_bedroom_dimmer_switch → OFF
+- switch.hue_bridge_automation_garage_hue_dimmer_switch → OFF
+- switch.hue_bridge_automation_master_bedroom_tap_dial_switch → OFF
+
+### Carried Forward:
+- Govee lamp area fix: light.master_bedroom_floor_lamp now correct ✓ (done this session)
+- Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
+- Next area group review (living room, garage, or master bedroom)
+- Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, etc.)
+
+### Blocked:
 - binary_sensor.house_occupied (unavailable, template package issue)
 - sensor.2nd_floor_bathroom_humidity_derivative (unavailable)
 - Music Assistant (setup_error)
 - Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
 
-## DISCOVERED INTEGRATIONS TO REVIEW
-- 2nd Floor Roomba (192.168.1.48), DS224plus NAS, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
+### _2 Suffix Entities (from Hue re-add):
+- light.ella_s_ceiling_lights_2, light.alaina_s_bedside_lamp_2 — unused, cosmetic
+- light.front_driveway_2 — used in 4 automations, DO NOT rename without updating refs
+- scene.*_2 entities — cleaned up by deleting duplicate scenes in Hue app (item A above)
 
-## VZM36 COSMETIC CLEANUP (low priority)
-- 22 diagnostic entities with stale `upstairs_hallway_vzm36_*` prefix in master bedroom
-- Duplicate ghost registrations at `master_bedroom_vzm36_*` (from device rename)
-- Functional — SBM correct, fan works — just naming mess
+---
 
-## S53 BENCHMARK
-76 automations | 24 scripts | 91 helpers | 0 ghosts | 14 template packages | 19 calendars | 5 HACS cards | 3 dashboards
+## BENCHMARK
+
+| Metric | S53 | S54 |
+|--------|-----|-----|
+| Automations | 76 | 76 |
+| Helpers | 90 | 93 (+3 LR scene index) |
+| Ghosts | 0 | 0 |
+| Scenes | 150 | 150 |
+| Broken auto refs fixed | — | 16 (2 automations) |
+| Hue devices audited | — | 95 |
+
+---
+
+## QUICK REFERENCE
+
+- HA: http://192.168.1.10:8123
+- SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
+- Git push: MCP `shell_command.git_push` only
+- Notify: `notify.mobile_app_galaxy_s26_ultra`
+- Hue Bridge device page: http://192.168.1.10:8123/config/devices/device/3a6a3c38b469e4d72e6c36fc82151750

@@ -1742,42 +1742,42 @@
     B4=all off. Long press = off + reset index.
   triggers:
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_1_2
+    entity_id: event.living_room_hue_switch_button_1
     attribute: event_type
     to: short_release
     id: b1_short
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_1_2
+    entity_id: event.living_room_hue_switch_button_1
     attribute: event_type
     to: long_release
     id: b1_long
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_2_2
+    entity_id: event.living_room_hue_switch_button_2
     attribute: event_type
     to: short_release
     id: b2_short
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_2_2
+    entity_id: event.living_room_hue_switch_button_2
     attribute: event_type
     to: long_release
     id: b2_long
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_3_2
+    entity_id: event.living_room_hue_switch_button_3
     attribute: event_type
     to: short_release
     id: b3_short
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_3_2
+    entity_id: event.living_room_hue_switch_button_3
     attribute: event_type
     to: long_release
     id: b3_long
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_4_2
+    entity_id: event.living_room_hue_switch_button_4
     attribute: event_type
     to: short_release
     id: b4_any
   - platform: state
-    entity_id: event.works_with_hue_switch_1_button_4_2
+    entity_id: event.living_room_hue_switch_button_4
     attribute: event_type
     to: long_release
     id: b4_any
@@ -2668,19 +2668,19 @@
   description: B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%
   triggers:
   - platform: state
-    entity_id: event.hue_tap_dial_switch_1_button_1
+    entity_id: event.entry_room_tap_dial_switch_button_1
     id: b1
   - platform: state
-    entity_id: event.hue_tap_dial_switch_1_button_2
+    entity_id: event.entry_room_tap_dial_switch_button_2
     id: b2
   - platform: state
-    entity_id: event.hue_tap_dial_switch_1_button_3
+    entity_id: event.entry_room_tap_dial_switch_button_3
     id: b3
   - platform: state
-    entity_id: event.hue_tap_dial_switch_1_button_4
+    entity_id: event.entry_room_tap_dial_switch_button_4
     id: b4
   - platform: state
-    entity_id: event.hue_tap_dial_switch_1_rotary
+    entity_id: event.entry_room_tap_dial_switch_rotary
     id: rotary
   actions:
   - choose:

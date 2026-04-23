@@ -79,3 +79,34 @@ Renaming a VZM36 device from "Upstairs Hallway" to "Master Bedroom" created new 
 
 ### Master Bedroom Tap Dial layout pattern
 Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightlight). Tap Dial at nightstand = comfort from bed (Relax/Read/Nightlight/Fan, rotary=dim). Nightlight on both controllers because it's needed from either location. Fan on tap dial button 4 — only non-lighting need from bed.
+
+## S54 — Hue Ecosystem Audit (2026-04-22)
+
+### Hue Bridge Automation Switches — MCP 500 Error
+- switch.hue_bridge_automation_* entities throw 500 Internal Server Error when toggled via MCP ha_call_service OR REST API
+- Must be toggled in HA UI manually (Settings → Devices → Hue Bridge)
+- Likely a Hue bridge API / behavior_instance endpoint issue, not an HA problem
+
+### Bridge Automation Dual-Fire Pattern
+- Bridge-side automations (switch.hue_bridge_automation_*) run independently of HA automations
+- If HA also has automations for the same accessory, BOTH fire on every button press
+- Rule: If HA handles scene cycling for an accessory, disable that accessory's bridge automation
+- Keep bridge automation ON only for accessories with no HA automation (pure bridge control)
+
+### Hue Scene Reliability — Bridge Native vs HA
+- Hue bridge scenes send atomic group commands (all lights in one Zigbee message) — smoother, faster
+- HA-created scenes send sequential commands to each light individually
+- scene.turn_on on a Hue scene entity delegates to the bridge API — you get atomic group control
+- Always prefer Hue bridge scenes for multi-bulb rooms, not HA-created scenes
+
+### Hue Rooms vs Zones (confirmed)
+- Rooms: exclusive (each bulb belongs to exactly one room), represent physical spaces
+- Zones: flexible (bulbs can be in multiple zones), represent logical subsets
+- Use zones for scene cycling on bulb subsets (e.g., Kitchen Chandelier zone = 5 chandelier bulbs only)
+- 64 groups max per bridge (rooms + zones combined)
+
+### Entity Ref Audit — 4th occurrence (S42, S44, S45, S54)
+- Entry Room tap dial: 5 stale refs (hue_tap_dial_switch_1_* → entry_room_tap_dial_switch_*)
+- Living Room FOH: 8 stale trigger refs + 3 missing helpers (completely dead automation)
+- All stale refs were generic Hue names from before bridge migration (works_with_hue_switch_1_*, hue_tap_dial_switch_1_*)
+- HUE MIGRATION RULE confirmed again: After any Hue bridge re-add/migration, ALL automations must be scanned for stale hue_ prefixed entity refs
