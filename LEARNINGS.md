@@ -110,3 +110,23 @@ Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightli
 - Living Room FOH: 8 stale trigger refs + 3 missing helpers (completely dead automation)
 - All stale refs were generic Hue names from before bridge migration (works_with_hue_switch_1_*, hue_tap_dial_switch_1_*)
 - HUE MIGRATION RULE confirmed again: After any Hue bridge re-add/migration, ALL automations must be scanned for stale hue_ prefixed entity refs
+
+### Hue Bridge CLIP v2 API — Direct Scene Management
+- Bridge API accessible at https://\<bridge-ip\>/clip/v2/resource/scene (requires -sk for self-signed cert)
+- API key stored in /config/.storage/core.config_entries under hue domain data.api_key
+- DELETE scenes: curl -sk -X DELETE "https://<ip>/clip/v2/resource/scene/<scene-id>" -H "hue-application-key: <key>"
+- HA auto-removes deleted scene entities within ~60 seconds (bridge event stream)
+- Always export full scene dump before bulk deletes: curl + python3 → JSON backup file
+
+### Hue Scene Strategy — Standardized Pattern
+- Default 3 per room: Energize (bright cool), Relax (warm moderate), Nightlight (very dim amber)
+- Outdoor: add Nighttime (muted outdoor-specific)
+- Kids bedrooms: add 1-2 fun color scenes (Malibu pink etc.)
+- Zones for subset control (chandelier, vanity, ceiling, bedside) — scenes on zones enable independent cycling
+- Room group entity (light.<room>) = atomic control of all bulbs — use for "all on/off"
+- Zone group entity (light.<zone>) = atomic control of subset — use for scene cycling on subsets
+
+### Hue Backup Best Practice
+- Three-layer backup before bulk changes: HA snapshot + Hue cloud backup (app) + local API JSON export
+- Local export includes full scene color/brightness data (can recreate any deleted scene)
+- Force-add backup files to git if backup dir is gitignored: git add -f
