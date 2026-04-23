@@ -1714,9 +1714,8 @@
   mode: single
 - id: '1775774068635'
   alias: Living Room — FOH Fan + Light Control
-  description: Living Room Hue Switch repurposed for VZM36 fan+light. Left=fan (up=cycle
-    low/med/high, down=off). Right=ceiling light (up=on, down=off). Long press left
-    up=high, long press right up=50% brightness.
+  description: LR FOH switch. Left=fan (up=cycle, down=off). Right=ceiling (up=on,
+    down short=ceiling off, down long=ALL LR off).
   triggers:
   - platform: state
     entity_id: event.living_room_hue_switch_button_1
@@ -1801,10 +1800,30 @@
     - conditions:
       - condition: trigger
         id: b4
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+          }}'
       sequence:
       - action: light.turn_off
         target:
           entity_id: light.living_room_ceiling
+    - conditions:
+      - condition: trigger
+        id: b4
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''long_release''
+          }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+          - light.living_room_ceiling
+          - light.living_room_table_lamps
+          - light.living_room_floor_lamps
+          - light.living_room_behind_tv_tp_link_smart_light_strip
+      - action: fan.turn_off
+        target:
+          entity_id: fan.living_room_fan
   mode: queued
   max: 5
 - id: '1776295699407'
@@ -2470,92 +2489,6 @@
       - light.garage_south_wall_motion_light_sensor
       - light.garage_south_of_east_wall_motion_light_sensor
   mode: restart
-- id: '1776363551038'
-  alias: Entry Room — Tap Dial Switch
-  description: B1=Energize B2=Relax B3=Dimmed B4=Off Rotary=Brightness±10%
-  triggers:
-  - platform: state
-    entity_id: event.entry_room_tap_dial_switch_button_1
-    id: b1
-  - platform: state
-    entity_id: event.entry_room_tap_dial_switch_button_2
-    id: b2
-  - platform: state
-    entity_id: event.entry_room_tap_dial_switch_button_3
-    id: b3
-  - platform: state
-    entity_id: event.entry_room_tap_dial_switch_button_4
-    id: b4
-  - platform: state
-    entity_id: event.entry_room_tap_dial_switch_rotary
-    id: rotary
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: b1
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-          }}'
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.entry_room_energize
-    - conditions:
-      - condition: trigger
-        id: b2
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-          }}'
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.entry_room_relax
-    - conditions:
-      - condition: trigger
-        id: b3
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-          }}'
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.entry_room_dimmed
-    - conditions:
-      - condition: trigger
-        id: b4
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-          }}'
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.entry_room
-    - conditions:
-      - condition: trigger
-        id: rotary
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''clock_wise''
-          }}'
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id: light.entry_room
-        data:
-          brightness_step_pct: 10
-    - conditions:
-      - condition: trigger
-        id: rotary
-      - condition: template
-        value_template: '{{ trigger.to_state.attributes.event_type == ''counter_clock_wise''
-          }}'
-      sequence:
-      - action: light.turn_on
-        target:
-          entity_id: light.entry_room
-        data:
-          brightness_step_pct: -10
-  mode: single
 - id: '1776363561506'
   alias: Master Bedroom — Tap Dial Switch
   description: B1=Relax B2=Energize B3=Nightlight B4=Fan Toggle B4-Hold=All Off Rotary=Brightness
@@ -3621,5 +3554,94 @@
           entity_id:
           - fan.master_bedroom_fan
           - fan.living_room_fan
+  max: 5
+  mode: queued
+- id: '1776918377212'
+  alias: Living Room — Tap Dial (TV + Rotary)
+  description: Companion to bridge tap dial. Bridge handles button scenes. HA handles
+    TV backlight + rotary dimming.
+  triggers:
+  - entity_id: event.living_room_tap_dial_button_1
+    id: b1
+    platform: state
+  - entity_id: event.living_room_tap_dial_button_2
+    id: b2
+    platform: state
+  - entity_id: event.living_room_tap_dial_button_3
+    id: b3
+    platform: state
+  - entity_id: event.living_room_tap_dial_button_4
+    id: b4
+    platform: state
+  - entity_id: event.living_room_tap_dial_rotary
+    id: rotary
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type in [''short_release'',
+      ''clock_wise'', ''counter_clock_wise''] }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 10
+          color_temp_kelvin: 2700
+        target:
+          entity_id: light.living_room_behind_tv_tp_link_smart_light_strip
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 12
+          color_temp_kelvin: 2700
+        target:
+          entity_id: light.living_room_behind_tv_tp_link_smart_light_strip
+    - conditions:
+      - condition: trigger
+        id: b3
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 6
+          color_temp_kelvin: 2700
+        target:
+          entity_id: light.living_room_behind_tv_tp_link_smart_light_strip
+    - conditions:
+      - condition: trigger
+        id: b4
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.living_room_behind_tv_tp_link_smart_light_strip
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: 5
+        target:
+          entity_id: light.living_room
+    - conditions:
+      - condition: trigger
+        id: rotary
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''counter_clock_wise''
+          }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: -5
+        target:
+          entity_id: light.living_room
   max: 5
   mode: queued

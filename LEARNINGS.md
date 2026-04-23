@@ -186,3 +186,42 @@ Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightli
 - Device rename via ha_update_device does NOT cascade to entities
 - Must rename each event.* entity individually via ha_set_entity(new_entity_id=...)
 - Plan entity naming before creating automations to avoid double-rename
+
+### Hue Bridge Device Name Limit (S55)
+- Hue CLIP v2 API enforces 32 character max on device metadata.name
+- "Living Room Lounge Ceiling 1 of 3" = 33 chars → rejected
+- Keep abbreviated names like "LR Lounge Ceiling" when full name exceeds limit
+
+### Hue Tap Dial Bridge Behavior — FOHSWITCH Workaround (S55)
+- Tap dial (RDM002) behavior_instance creation fails with native model_id
+- FOHSWITCH model_id works for button behaviors but ignores rotary
+- Solution: bridge handles buttons (snappy), HA handles rotary dimming as companion
+- Rotary dimming: target Hue room group (light.living_room) not individual zones
+- Individual zone targeting causes inconsistent dimming (each bulb at different level)
+
+### Hue Zone Strategy — Final Architecture (S55)
+- Zones = subsets of room lights for targeted control (ceiling vs lamps vs vanity)
+- Don't create single-bulb zones (pointless, just use the light entity)
+- Don't mix rooms in zones (Garage & Front Driveway was confusing)
+- Standardize 3 scenes per zone minimum: Energize, Relax, Nightlight
+- Outdoor zones get Nighttime scene addition
+- "All Exterior" super-zone for whole-outdoor control (seasonal, security)
+
+### FOH Switch Architecture Decision Tree (S55, promoted)
+- Pure Hue targets → bridge-direct (fastest, HA-independent)
+- ZHA/non-Hue targets → HA automation required
+- Mixed → hybrid (bridge for Hue buttons, HA for non-Hue buttons)
+- Cross-system actions (whole-home-off) → HA on long_release only
+- Bridge behavior_instance uses script_id 67d9395b (Hue Accessories)
+- FOHSWITCH model_id works for both FOH clicks and tap dials (buttons only)
+
+### Hue Room Naming — Avoid Confusing Similarities (S55)
+- "Very Front Door" (exterior) vs "Very Front Door Hallway" (interior) caused confusion
+- Renamed hallway to "Front Hallway" — clearly distinct from exterior room
+- Rule: if two room names share a prefix, one needs renaming
+
+### Scene-Based vs Toggle-Based Switch UX (S55)
+- Toggle (press=on, press again=off) is bad for multi-group rooms
+- User must remember which buttons they pressed to undo
+- Scene-based (each button = whole-room mood, one button = off) is best practice
+- This is how Hue designed the tap dial — match the mental model
