@@ -546,11 +546,10 @@
     platform: state
     to: 'off'
 - id: 2nd_floor_bathroom_vanity_inovelli
-  alias: 2nd Floor Bathroom — Inovelli Switch Control (Both Lights)
-  description: 'Both bathroom Inovelli switches (vanity + ceiling) jointly control
-    both Hue light groups with scene cycling. UP=apply current scene, DOWN=off, Config=cycle
-    scene, Hold=brightness step, 2xUP=Energize (index 0), 2xDOWN=Nightlight (index
-    3). Scene index: 0=Energize 1=Relax 2=Dimmed 3=Nightlight.'
+  alias: 2nd Floor Bathroom — Inovelli Switch Control
+  description: Both switches (vanity+ceiling) control all 5 Hue lights together via
+    room scenes. UP=current scene on, DOWN=off, Config=cycle (Energize/Relax/Nightlight),
+    Config hold=Nightlight, 2xUP=Energize, 2xDOWN=Nightlight, Hold=dim.
   triggers:
   - platform: event
     event_type: zha_event
@@ -568,53 +567,10 @@
       - condition: template
         value_template: '{{ command == ''button_2_press'' }}'
       sequence:
-      - choose:
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            below: 0.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_energize
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_energize
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 0.5
-            below: 1.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_relax
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_relax
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 1.5
-            below: 2.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_dimmed
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_read
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 2.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_nightlight
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_nightlight
+      - action: scene.turn_on
+        target:
+          entity_id: '{{ scenes[states(''input_number.bathroom_scene_index'') | int(0)]
+            }}'
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_1_press'' }}'
@@ -630,57 +586,26 @@
       sequence:
       - action: input_number.set_value
         data:
-          value: '{{ ((states(''input_number.bathroom_scene_index'') | int + 1) %
-            4) }}'
+          value: '{{ ((states(''input_number.bathroom_scene_index'') | int(0) + 1)
+            % 3) }}'
         target:
           entity_id: input_number.bathroom_scene_index
-      - choose:
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            below: 0.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_energize
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_energize
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 0.5
-            below: 1.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_relax
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_relax
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 1.5
-            below: 2.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_dimmed
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_read
-        - conditions:
-          - condition: numeric_state
-            entity_id: input_number.bathroom_scene_index
-            above: 2.5
-          sequence:
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_bathroom_nightlight
-          - action: scene.turn_on
-            target:
-              entity_id: scene.2nd_floor_vanity_lights_nightlight
+      - action: scene.turn_on
+        target:
+          entity_id: '{{ scenes[((states(''input_number.bathroom_scene_index'') |
+            int(0)))] }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ command == ''button_3_hold'' }}'
+      sequence:
+      - action: input_number.set_value
+        data:
+          value: 2
+        target:
+          entity_id: input_number.bathroom_scene_index
+      - action: scene.turn_on
+        target:
+          entity_id: scene.2nd_floor_bathroom_nightlight
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_2_hold'' }}'
@@ -688,7 +613,6 @@
       - action: light.turn_on
         data:
           brightness_step_pct: 10
-          transition: 3
         target:
           entity_id:
           - light.2nd_floor_bathroom
@@ -700,7 +624,6 @@
       - action: light.turn_on
         data:
           brightness_step_pct: -10
-          transition: 3
         target:
           entity_id:
           - light.2nd_floor_bathroom
@@ -717,29 +640,32 @@
       - action: scene.turn_on
         target:
           entity_id: scene.2nd_floor_bathroom_energize
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_vanity_lights_energize
     - conditions:
       - condition: template
         value_template: '{{ command == ''button_1_double'' }}'
       sequence:
       - action: input_number.set_value
         data:
-          value: 3
+          value: 2
         target:
           entity_id: input_number.bathroom_scene_index
       - action: scene.turn_on
         target:
           entity_id: scene.2nd_floor_bathroom_nightlight
-      - action: scene.turn_on
-        target:
-          entity_id: scene.2nd_floor_vanity_lights_nightlight
   mode: restart
   variables:
     command: '{%- if trigger.id == ''vanity_switch'' -%}{{ trigger.event.data.command
-      }}{%- else -%}{{ trigger.event.data.button }}_{{ {''press'':''press'',''held_down'':''hold'',''release'':''release'',''double'':''double''}.get(trigger.event.data.press_type,
-      trigger.event.data.press_type) }}{%- endif -%}'
+      }}{%- else -%}{{ trigger.event.data.command | default(trigger.event.data.button
+      ~ ''_'' ~ {''press'':''press'',''held_down'':''hold'',''release'':''release'',''double'':''double''}.get(trigger.event.data.press_type
+      | default(''''), trigger.event.data.press_type | default(''''))) }}{%- endif
+      -%}'
+    scenes:
+    - scene.2nd_floor_bathroom_energize
+    - scene.2nd_floor_bathroom_relax
+    - scene.2nd_floor_bathroom_nightlight
+    targets:
+    - light.2nd_floor_bathroom
+    - light.2nd_floor_vanity_lights
 - id: '1772045640891'
   alias: Back Patio — Inovelli Controls Hue Lights
   description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Dimmed→Nightlight),
@@ -3463,9 +3389,8 @@
   mode: queued
 - id: '1776999915173'
   alias: Alaina's Bedroom — Dimmer Kasa Companion
-  description: Kasa LED strips follow Hue dimmer buttons. Bridge handles Hue lights
-    directly. B1=strips white, B2=strips warm, B3=strips pink, B4=strips off. No dual-fire
-    (HA only touches Kasa).
+  description: Kasa LED strips follow Hue dimmer. B1=white, B2=warm, B3=pink, B4=off.
+    Hold up/down dims strips too.
   triggers:
   - entity_id: event.alaina_s_bedroom_dimmer_switch_button_1
     id: b1
@@ -3481,8 +3406,8 @@
     platform: state
   conditions:
   - condition: template
-    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-      }}'
+    value_template: '{{ trigger.to_state.attributes.event_type in [''short_release'',
+      ''repeat''] }}'
   actions:
   - choose:
     - conditions:
@@ -3491,7 +3416,7 @@
       sequence:
       - action: light.turn_on
         data:
-          brightness_pct: 80
+          brightness_pct: 50
           color_temp_kelvin: 4000
         target:
           entity_id: light.alaina_s_led_strips
@@ -3501,7 +3426,7 @@
       sequence:
       - action: light.turn_on
         data:
-          brightness_pct: 50
+          brightness_pct: 30
           color_temp_kelvin: 2700
         target:
           entity_id: light.alaina_s_led_strips
@@ -3511,7 +3436,7 @@
       sequence:
       - action: light.turn_on
         data:
-          brightness_pct: 40
+          brightness_pct: 20
           hs_color:
           - 316
           - 75
@@ -3522,6 +3447,28 @@
         id: b4
       sequence:
       - action: light.turn_off
+        target:
+          entity_id: light.alaina_s_led_strips
+    - conditions:
+      - condition: trigger
+        id: b2
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''repeat'' }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: 10
+        target:
+          entity_id: light.alaina_s_led_strips
+    - conditions:
+      - condition: trigger
+        id: b3
+      - condition: template
+        value_template: '{{ trigger.to_state.attributes.event_type == ''repeat'' }}'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_step_pct: -10
         target:
           entity_id: light.alaina_s_led_strips
   max: 5
