@@ -191,8 +191,8 @@
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
 - id: '1771556632224'
   alias: Kitchen Lounge — Inovelli Controls Hue Ceiling
-  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
-    Hold=brightness step.
+  description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Fan cycle
+    (low/med/high/off), Config hold=Fan off, Hold up/down=brightness step.
   max_exceeded: silent
   mode: queued
   use_blueprint:
@@ -226,10 +226,18 @@
         target:
           entity_id: light.kitchen_lounge
       button_3:
-      - action: scene.turn_on
+      - action: fan.set_percentage
+        data:
+          percentage: '{% set pct = state_attr(''fan.kitchen_lounge_fan'', ''percentage'')
+            | int(0) %}{% if pct == 0 %}33{% elif pct <= 33 %}66{% elif pct <= 66
+            %}100{% else %}0{% endif %}'
         target:
-          entity_id: scene.kitchen_lounge_dimmed
+          entity_id: fan.kitchen_lounge_fan
       inovelli_switch: 5e2d477e04d216ab91a0c2f1364ab118
+      button_3_hold:
+      - action: fan.turn_off
+        target:
+          entity_id: fan.kitchen_lounge_fan
     path: fxlt/zha-inovelli-vzm31-sn-blue-series-2-1-switch.yaml
 - actions:
   - choose:
@@ -2588,57 +2596,6 @@
         target:
           entity_id: fan.master_bedroom_fan
   mode: restart
-- id: '1776363569434'
-  alias: Alaina's Bedroom — Dimmer Switch
-  description: B1=Energize B2=Relax B3=Malibu pink B4=Off
-  triggers:
-  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_1
-    id: b1
-    platform: state
-  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_2
-    id: b2
-    platform: state
-  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_3
-    id: b3
-    platform: state
-  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_4
-    id: b4
-    platform: state
-  conditions:
-  - condition: template
-    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
-      }}'
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: b1
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.alaina_s_bedroom_energize
-    - conditions:
-      - condition: trigger
-        id: b2
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.alaina_s_bedroom_relax
-    - conditions:
-      - condition: trigger
-        id: b3
-      sequence:
-      - action: scene.turn_on
-        target:
-          entity_id: scene.alaina_s_bedroom_malibu_pink
-    - conditions:
-      - condition: trigger
-        id: b4
-      sequence:
-      - action: light.turn_off
-        target:
-          entity_id: light.alaina_s_bedroom
-  mode: single
 - id: '1776363588459'
   alias: Garage — Dimmer Switch
   description: B1=Energize B2=Relax B3=Dimmed B4=Off
@@ -3502,5 +3459,70 @@
           brightness_step_pct: -5
         target:
           entity_id: light.living_room
+  max: 5
+  mode: queued
+- id: '1776999915173'
+  alias: Alaina's Bedroom — Dimmer Kasa Companion
+  description: Kasa LED strips follow Hue dimmer buttons. Bridge handles Hue lights
+    directly. B1=strips white, B2=strips warm, B3=strips pink, B4=strips off. No dual-fire
+    (HA only touches Kasa).
+  triggers:
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_1
+    id: b1
+    platform: state
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_2
+    id: b2
+    platform: state
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_3
+    id: b3
+    platform: state
+  - entity_id: event.alaina_s_bedroom_dimmer_switch_button_4
+    id: b4
+    platform: state
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.to_state.attributes.event_type == ''short_release''
+      }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: b1
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 80
+          color_temp_kelvin: 4000
+        target:
+          entity_id: light.alaina_s_led_strips
+    - conditions:
+      - condition: trigger
+        id: b2
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 50
+          color_temp_kelvin: 2700
+        target:
+          entity_id: light.alaina_s_led_strips
+    - conditions:
+      - condition: trigger
+        id: b3
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 40
+          hs_color:
+          - 316
+          - 75
+        target:
+          entity_id: light.alaina_s_led_strips
+    - conditions:
+      - condition: trigger
+        id: b4
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.alaina_s_led_strips
   max: 5
   mode: queued
