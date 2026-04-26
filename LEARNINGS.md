@@ -272,3 +272,69 @@ The 7 entities + 1 config entry I modified all live in `.storage/` (gitignored).
 ### LEARNING: `ha_set_entity(enabled=False)` is registry-level, REQUIRES integration reload
 Per the tool description: setting `enabled=False` removes the entity from the state machine entirely. The entity will not appear in state queries until re-enabled AND the integration is reloaded. This is fine for redundant entities (like VZM36 EP2 firmware) where you don't want the entity at all, but DON'T use it as a substitute for `automation.turn_off` or `script.turn_off`.
 
+
+## S57 — Back Patio Iconic + Quiet Travel + Hot Tub Deprecation (2026-04-26)
+
+### Hue CLIP v2 device rename works cleanly via PUT
+PUT `/clip/v2/resource/device/{id}` with `{"metadata":{"name":"new name"}}` returns
+`{"data":[{"rid":"...","rtype":"device"}],"errors":[]}` and the rename propagates to
+HA's Hue integration on next poll. No reload required. Confirmed with Iconic rename.
+**Pattern:** `curl -sk -X PUT -H "hue-application-key: $KEY" -H "Content-Type: application/json" -d '{"metadata":{"name":"X"}}' "https://$BRIDGE/clip/v2/resource/device/$ID"`
+
+### Hue Bridge stores API key in core.config_entries, not anywhere obvious
+`grep` against `hac/backup/` failed because the bridge backups don't contain the key.
+The actual key lives in `.storage/core.config_entries` under `domain=hue`,
+field `data.api_key`. Use:
+`python3 -c "import json; d=json.load(open('.storage/core.config_entries')); [print(e['data']) for e in d['data']['entries'] if e.get('domain')=='hue']"`
+
+### Hue rooms vs zones — HA exposure
+A Hue **room** with multiple bulbs already creates a usable HA group entity
+(`light.back_patio` covered both Iconic + Steps Light without any zone work).
+**Zones are not needed for basic HA grouping** — only useful for grouping bulbs
+across multiple rooms. The S57 prompt's "create a Back Patio zone" assumption
+was wrong; the room already handles it.
+
+### "TASK is already partially done" detection pattern
+S57 prompt assumed green-field, but reality:
+- Helpers (`quiet_travel`, `back_patio_manual_override`, `timer.back_patio_override`,
+  `input_number.back_patio_scene_index`) all already existed from S55/S56
+- 3 motion automations already had `quiet_travel` skip-conditions wired
+- `back_patio_motion_lighting` description literally said "S57 changes"
+**New rule:** Before any rewrite, search for the entity_ids the rewrite would create.
+If they already exist, this is a finishing pass, not a build. Adjust scope accordingly.
+
+### HANDOFF.md drift causes wasted reasoning
+HANDOFF said S54, but actual last commit was S56. Project Memory said "post-S45"
+which was further out of date. Effect: I assumed work hadn't been done that had been.
+**New rule:** mcp_session_init shows last commit — if commit number > HANDOFF session,
+the HANDOFF is stale. Pull recent git logs to fill the gap before assuming the prompt's
+baseline.
+
+### Timer + boolean override pattern (canonical for outdoor manual override)
+Pair: `input_boolean.X_manual_override` + `timer.X_override`. Both must be set together.
+- UP/config press: turn ON boolean + start timer 2hr
+- DOWN press: turn OFF boolean + start timer 90s (motion-suppress cooldown)
+- Config hold: turn OFF boolean + cancel timer (panic reset)
+- Companion automation needed: when timer.finished event fires → turn off boolean
+- Motion automation conditions: `boolean off AND timer idle` (covers both 2hr claim + 90s cooldown with one timer)
+
+**Single timer doing double duty (claim + cooldown) is simpler than two timers.**
+Outcome: motion is suppressed during both 2hr claim period and 90s post-DOWN cooldown.
+
+### Disabling hot_tub_mode automations: turn_off (not delete)
+`ha_config_set_automation` with config=null returns 400. There's no clean MCP primitive
+to delete UI-managed automations. Workaround: `automation.turn_off` keeps them inert
++ visible in registry for forensics. Physical removal needs `.storage/automations`
+surgical edit. Acceptable trade-off — the boolean they trigger on was deleted, so
+they're double-defended against firing.
+
+### Hue Behaviors API for motion-binding audit
+`/clip/v2/resource/behavior_instance` returns all bridge-side automations (FOH switches,
+motion bindings, time-of-day routines). Pre-flight check before any HA outdoor motion
+automation: confirm no `enabled: true` behavior is bound to the same motion sensor.
+Otherwise dual-fire / double-control conflicts are possible.
+
+### Bash heredoc + python3 -c in single commands
+- Use `2>&1 | head -N` to limit output and merge stderr
+- Use `python3 -c "..."` for inline JSON parsing — avoids jq dependency
+- Pipe `curl -sk` to python3 for both pretty-print and structured filtering
