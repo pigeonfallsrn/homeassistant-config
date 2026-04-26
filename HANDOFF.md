@@ -1,126 +1,119 @@
-# HANDOFF — Session S57
+# HANDOFF — Session S57 (final)
 
-## Last Session: S57 (2026-04-26)
-## Last Commit: pending
-## Baseline: 79 automations, 51 input_booleans, 15 input_numbers, 6 timers, 118 scenes, 3 back_patio scenes
+## Last Session: S57 (2026-04-26 — extended)
+## Last Commit: pending (post-Hue addendum)
+## Baseline: 79 automations, 51 input_booleans, 15 input_numbers, 6 timers, 121 scenes (+3 new entryway), 0 ghosts
 
 ---
 
 ## WHAT HAPPENED IN S57
 
-### Hue Bridge — Iconic integration
-- Renamed device `Hue Econic outdoor wall 1` → **`Back Patio Iconic`** via CLIP v2 PUT
-- Device id: `72ce24d6-e4c7-4d8a-8aed-5da970083b6d`
-- Light service id: `5c63ba3b-2018-4111-84ca-f9ff2e3c0572`
-- Already in Back Patio room (alongside Steps Light + Motion Sensor) — `light.back_patio` HA group already covers both bulbs
-- **TASK 1 from prompt was largely already done** — Hue room exposure to HA was working, only the rename was needed
-- No "Back Patio zone" exists or was needed — the room handles grouping
+### Phase 1 — HA-side (committed 4dd90f8)
+- **Back Patio Iconic** renamed via Hue CLIP v2; `light.back_patio` already grouped both bulbs via room exposure
+- **Hot Tub Mode → Quiet Travel** clean replace: 6 hot_tub automations disabled, helper deleted, `input_boolean.quiet_travel` is canonical toggle
+- **Back Patio Inovelli automation** rewritten: drops broken Dimmed scene ref, new button map with manual override + 90s motion-suppress + panic-reset
+- **Companion timer-clear automation** created (`back_patio_clear_override_on_timer_finish`)
+- **Quiet Travel suppression** verified on entry room, kitchen lounge, back patio motion
+- **Auto-off at midnight** for Quiet Travel with phone notification
 
-### Hue Behaviors audit (motion-binding check for TASK 4)
-- 10 Hue Behaviors found on bridge — ALL switch/dimmer-bound (FOH, tap dial, dimmer)
-- **Zero motion-bound behaviors on Back Patio** → HA motion automation has clean ownership
-- Critical TASK 4 risk eliminated
+### Phase 2 — Front Hallway split (Hue Bridge only, no HA changes to commit)
+- **5 device renames**: bulb 3 of 3 → Front Entryway Ceiling, bulbs 1+2 of 3 → Stairway Ceiling 1+2 of 2, FOH `de12236c` → Stairway FOH Switch, FOH `3d42422e` → Front Entryway FOH Switch
+- **Zone cleanup**: deleted duplicate Front Hallway zone (`25a68a7b`), repurposed surviving (`22271fad`) as "Stairway" with 2 stairway bulbs, created new "Front Entryway" zone (`7c8cb7c5`) with 1 bulb
+- **3 new scenes** for Front Entryway: Energize / Relax / Nightlight at house standard (156 / 370 / 454 mirek)
+- **2 behavior_instance bindings**: each FOH bound to its zone, top buttons → Energize scene, bottom → all_off, hold → dim
+- **Tested live**: both switches respond correctly, lights snap to scene on press
+- **Logbook quirk noted**: "Front Hallway turned on" appears alongside Stairway events because Front Hallway is the parent room — cosmetic only, not a bug
 
-### Back Patio Inovelli automation (rewritten)
-- `automation.back_patio_inovelli_controls_hue_lights` — full rewrite
-- Drops broken `scene.back_patio_dimmed` reference (deleted in S54, never updated)
-- New button map:
-  - Paddle UP (button_2_press) → activate current scene + claim override 2hr
-  - Paddle DOWN (button_1_press) → off + 90s motion suppress (timer-based)
-  - Config press (button_3_press) → cycle Energize→Relax→Nightlight + claim override 2hr
-  - Config hold (button_3_hold) → all off + clear override (panic-reset)
-- Hot tub mode toggle removed from button_3_hold
-
-### New companion automation
-- `automation.back_patio_clear_override_on_timer_finish` (created)
-- Trigger: `timer.back_patio_override` finished event
-- Action: clears `input_boolean.back_patio_manual_override`
-- Necessary because timer doesn't auto-clear the boolean it's paired with
-
-### Hot Tub Mode → Quiet Travel deprecation (clean replace)
-- All 6 `hot_tub_mode` automations disabled (turn_off, not deleted — inert)
-- `input_boolean.hot_tub_mode` deleted
-- `input_boolean.quiet_travel` (already existed from prior session) is now the canonical toggle
-- `automation.system_quiet_travel_auto_off_at_midnight` updated with phone notification
-- Duplicate `_2` automation disabled
-
-### Quiet Travel scope (suppresses motion lighting)
-All three already had `input_boolean.quiet_travel` skip-condition wired from a prior session:
-- `automation.back_patio_motion_lighting` ✓
-- `automation.entry_room_lamp_motion_control` ✓
-- `automation.kitchen_lounge_motion_lighting` ✓ (description says "Updated S57: added quiet_travel suppression")
-
-### Helpers verified (all pre-existed from prior session staging)
-- `input_boolean.quiet_travel`
-- `input_boolean.back_patio_manual_override`
-- `timer.back_patio_override` (2hr default)
-- `input_number.back_patio_scene_index`
+### S55/S56 work discovered (HANDOFF drift)
+HANDOFF said S54 but actual last commit was S56. Multiple staging items from S55/S56 (helpers, motion automation skip-conditions, zone scenes) were already in place — S57 was effectively a finishing pass. Caught and noted.
 
 ---
 
-## SESSION DRIFT DISCOVERED
+## CURRENT STATE — Hue Bridge
 
-HANDOFF.md was last refreshed at S54. Sessions S55 (`5533cab` from project memory) and S56 (`a3e4b67` "best-practice scorecard + duplicate/orphan cleanup") happened without HANDOFF refresh. Many of the helpers and scope conditions for THIS session's work were already staged by S55/S56 — S57 was effectively a finishing pass on top of incomplete prior work.
+### Front Hallway area (post-S57)
+- **Room**: Front Hallway (`a5bc471b`) — 3 bulbs + 1 FOH (Stairway)
+- **Zone**: Stairway (`22271fad`) — Stairway Ceiling 1 + 2 of 2
+- **Zone**: Front Entryway (`7c8cb7c5`) — Front Entryway Ceiling
 
-**Lesson:** Always refresh HANDOFF at session close, even on small sessions. The drift between Project Memory ("post-S45") and actual state ("post-S56") cost real reasoning time.
+### Switches (front area)
+- `de12236c` Stairway FOH Switch → bound to Stairway zone, recalls scene `dc7e7749` (Energize)
+- `3d42422e` Front Entryway FOH Switch → bound to Front Entryway zone, recalls scene `c2b6859b` (Energize)
+- `9b3e8740` Very Front Door FOH Switch → controls exterior lights (untouched, working)
 
----
-
-## DEFERRED FROM S57 PROMPT
-
-These items from the original prompt were intentionally not done — Path B scope:
-- TASK 2: 10 curated outdoor scenes (Savanna sunset, Galaxy, Disco, etc.) — needs Hue app work first
-- TASK 5: Front Driveway + Very Front Door unification into "Front Exterior" zone
-- Mode-aware scene cycling (`input_select.back_patio_scene_mode`) — simpler 3-scene cycle was enough
-
----
-
-## DUPLICATE ZONES ON HUE BRIDGE (flagged for cleanup)
-
-From S57 recon — three duplicate zone names exist:
-- "All Exterior" ×2 (`5ab3b908-...` and `6e661a7a-...`, both children=4)
-- "Front Hallway" ×2 (`22271fad-...` and `25a68a7b-...`, both children=3)
-- "Garage Ceiling" ×2 (`3e3e7939-...` and `ea986821-...`, both children=6)
+### Scenes (per zone, all at house standard)
+- Stairway: dc7e7749 (E) / bef539d1 (R) / 0813de8f (N)
+- Front Entryway: c2b6859b (E) / 8a6549b2 (R) / 676876cd (N)
 
 ---
 
-## CARRIED FORWARD (from S54 + new)
+## DUPLICATE ZONES STILL ON HUE BRIDGE (carry forward)
 
-- Front exterior unification (Front Driveway + Very Front Door) — defer to dedicated session
-- Curated outdoor scene library (TASK 2 from S57 prompt)
-- Inovelli typo entity: `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` — rename via MCP
-- Generic Hue entity_ids `light.hue_color_lamp_1` and `light.hue_color_lamp_2` (Front Hallway) need rename
-- Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
-- Garage opener Hue bulbs unreachable (power circuit issue)
-- Very Front Door Hallway: physically disconnected, awaiting rewire + 2 new A19s
-- Hue Bridge duplicate zones (3 pairs flagged above)
-- 6 disabled hot_tub_mode automations + `_2` quiet_travel duplicate — physically remove from `.storage` next session
-- Phase B Hue app items from S54 (Master Bedroom Ceiling zone, Ella scenes, etc.) still pending
+After Front Hallway dup cleanup, 2 dup pairs remain:
+- "All Exterior" ×2 (`5ab3b908` + `6e661a7a`, both children=4)
+- "Garage Ceiling" ×2 (`3e3e7939` + `ea986821`, both children=6)
+
+Same cleanup pattern as Front Hallway: identify which zone is referenced by behaviors/scenes and DELETE the orphan.
 
 ---
 
-## BLOCKED
+## CARRIED FORWARD
 
+### High priority
+- **Rotate HA long-lived token** — confirmed REVOKED (curl returns 401). Internal scripts using `ha_api_token` from `secrets.yaml` are silently failing
+- **Front Driveway + Very Front Door unification** (deferred TASK 5 from original prompt) — driveway + very front door, resolve duplicate entities + typo
+- **Inovelli typo entity**: `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` — rename via MCP
+- **Stale generic Hue entities**: `light.hue_color_lamp_1` and `light.hue_color_lamp_2` (Front Hallway) — these likely auto-rename within hours after Hue integration polls; verify next session and clean any stragglers
+- **HA stale automation refs**: scan dashboards + remaining automations for `light.front_hallway_ceiling_*` references that should now point at `light.front_entryway_ceiling` or `light.stairway_ceiling_*_of_2`
+
+### Medium priority
+- **Curated outdoor scene library** (deferred TASK 2) — 10 scenes for Back Patio (Galaxy/Northern Lights/Disco/etc.), needs Hue app work first
+- **Hue Bridge duplicate zone cleanup** — All Exterior + Garage Ceiling pairs (2 remaining)
+- **Physical hot_tub_mode automation removal** from `.storage` (6 disabled + `_2` quiet_travel duplicate) — cosmetic
+- **Ella companion app rename** (sensor.iphone_40_* → sensor.ella_s_*)
+- **Music Assistant** setup_error
+- **Michelle person tracker** missing (MAC `6a:9a:25:dd:82:f1`)
+
+### Low priority / blocked
 - `binary_sensor.house_occupied` (unavailable — template package issue)
 - `sensor.2nd_floor_bathroom_humidity_derivative` (unavailable)
-- Music Assistant (setup_error)
-- Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-- **HA long-lived token in secrets.yaml is REVOKED (confirmed 401)** — needs new token generated at /profile/security and pasted into `secrets.yaml` as `ha_api_token`. Any internal scripts using it (Google Sheets sync, REST commands, etc.) are silently failing.
+- Garage opener Hue bulbs unreachable (power circuit issue)
+- Very Front Door Hallway bulb sockets — physically disconnected, awaiting rewire + 2 new A19s
+- `automations.yaml` is being modified despite UI-first architecture — investigate next session
+- Phase B Hue items from S54 (Master Bedroom Ceiling zone, Ella scenes, etc.)
+
+---
+
+## OPPORTUNITIES NOTED THIS SESSION
+
+1. **Pattern: full FOH wiring via CLIP v2** is now proven and reusable. Apply to:
+   - Re-binding the 2 disconnected Very Front Door bulbs after rewire
+   - Any future Inovelli SBM + FOH companion setups (driveway approach lights backlog)
+
+2. **Zone-as-switch-target architecture** scales cleanly. Consider for:
+   - Back Patio (currently controlled via Inovelli targeting room) — could split into "Back Patio Iconic only" + "Back Patio All" zones
+   - Living Room (multiple lamps, currently one room) — could create zones per furniture group
+
+3. **House-standard scene values are now locked** (156/370/454 mirek for E/R/N). Next zone created should use these values without fresh review.
+
+4. **Hue logbook stale-name confusion** is real and will recur. Add session checklist item: when reviewing activity log, note that names reflect time-of-event, not current device names.
 
 ---
 
 ## BENCHMARK
 
-| Metric | S54 | S57 |
-|--------|-----|-----|
-| Automations | 76 | 79 (+3: companion timer-finish, _2 dup, midnight quiet_travel — net intentional +1) |
+| Metric | S54 | S57 (final) |
+|--------|-----|-------------|
+| Automations | 76 | 79 |
 | input_booleans | — | 51 |
 | input_numbers | — | 15 |
 | timers | — | 6 |
-| Scenes | 101 | 118 (+17 since S54 — likely added in S55/S56) |
-| Back Patio scenes | 3 | 3 (unchanged: Energize/Relax/Nightlight) |
+| Hue Bridge zones | n/a | 21 (incl. 2 remaining dup pairs) |
+| Hue Bridge scenes | n/a | 121 |
+| Hue Bridge FOH switches bound | n/a | 11 |
+| Front Hallway / Entryway / Stairway split | one fixture, one switch | 2 fixtures, 2 switches, 2 zones, 6 scenes ✓ |
 | Ghosts | 0 | 0 |
-| hot_tub_mode automations active | 6 | 0 (all disabled) |
+| hot_tub_mode automations active | 6 | 0 |
 | Hot tub helper | exists | DELETED |
 
 ---
@@ -129,21 +122,26 @@ From S57 recon — three duplicate zone names exist:
 
 - HA: http://192.168.1.10:8123
 - Hue Bridge: 192.168.1.68
-- Hue API key: in `.storage/core.config_entries` (domain=hue, data.api_key)
-- Hue Bridge device page: http://192.168.1.10:8123/config/devices/device/3a6a3c38b469e4d72e6c36fc82151750
-- Back Patio Iconic device: `72ce24d6-e4c7-4d8a-8aed-5da970083b6d`
-- Inovelli Back Patio device_id: `70c1c990c1792ade4fc2eb2fd0d8487a`
+- Hue API key: `.storage/core.config_entries` → domain=hue → data.api_key
 - SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
 - Git push: MCP `shell_command.git_push` only
 - Notify: `notify.mobile_app_galaxy_s26_ultra`
+
+### Hue Bridge IDs (S57)
+- Front Entryway zone: `7c8cb7c5-0d26-4200-a239-6ae412e0f054`
+- Stairway zone: `22271fad-8853-4a3f-b517-88c0d31df259`
+- Stairway FOH Switch: `de12236c-9aac-42d6-80ea-0ccd9a002fbc`
+- Front Entryway FOH Switch: `3d42422e-0b77-421b-9532-a56858844084`
+- Hue FOH script_id: `67d9395b-4403-42cc-b5f0-740b699d67c6`
+- House Energize standard: brightness=100, mirek=156
 
 ---
 
 ## NEXT SESSION SUGGESTED FOCUS
 
 Pick ONE:
-1. **Rotate HA long-lived token** — fix the 401 + audit what was using it
-2. **Front Exterior unification** (deferred TASK 5) — driveway + very front door, resolve duplicate entities + typo
-3. **Curated outdoor scene library** (deferred TASK 2) — but only after John creates the scenes in Hue app
-4. **Hue Bridge duplicate zone cleanup** (3 pairs)
-5. **Physical hot_tub_mode automation removal** from `.storage` (cosmetic cleanup)
+1. **Rotate HA long-lived token** — confirmed broken, fix the 401 + audit what was using it
+2. **Front Driveway + Very Front Door unification** (deferred TASK 5) — applies the S57 Hue split pattern
+3. **HA-side stale entity ref scan** — `light.front_hallway_ceiling_*` cleanup post-rename
+4. **Curated outdoor scene library** (deferred TASK 2) — needs Hue app work first
+5. **Hue Bridge duplicate zone cleanup** (All Exterior + Garage Ceiling pairs)

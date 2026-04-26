@@ -338,3 +338,48 @@ Otherwise dual-fire / double-control conflicts are possible.
 - Use `2>&1 | head -N` to limit output and merge stderr
 - Use `python3 -c "..."` for inline JSON parsing — avoids jq dependency
 - Pipe `curl -sk` to python3 for both pretty-print and structured filtering
+
+## S57 Addendum — Front Hallway Split via Hue CLIP v2 (2026-04-26 evening)
+
+### Hue Bridge work pattern: full FOH switch wiring without HA touching anything
+Successfully built a complete FOH-controlled fixture from scratch using only CLIP v2 PUTs/POSTs:
+- Device renames (5 PUTs)
+- Zone restructure (DELETE dup, PUT to repurpose, POST new zone)
+- Scene creation (POST x3 per zone for full house standard set)
+- behavior_instance binding (POST x1 per switch — this is what makes the switch DO something)
+This is the canonical "switch controls scene" pattern, all bridge-side, zero HA round-trip latency.
+
+### House-standard scene values (locked S57 — verified across 35 zones)
+- **Energize**: brightness=100, mirek=156 (≈6410K cool/blue, mimics morning daylight — Hue stock template)
+- **Relax**: brightness=56, mirek=370 (≈2700K warm)
+- **Nightlight**: brightness=2, mirek=454 (warmest, dimmest — circadian-friendly)
+**Pre-flight check:** When creating a new scene named "Energize/Relax/Nightlight", first dump existing scenes by that name across the bridge — match the dominant value before creating. Picking arbitrary values without a survey causes house-wide inconsistency.
+
+### Hue behavior_instance: device→script→buttons→where→scene chain
+Script `67d9395b-4403-42cc-b5f0-740b699d67c6` is the canonical "FOH switch" handler. To bind a switch to a scene:
+1. Get the device's button service IDs (4 for 4-button FOH, also 4 for cosmetically-single-rocker — bridge always exposes 4)
+2. Each button's control_id maps to physical position (1=top-left, 2=bottom-left, 3=top-right, 4=bottom-right)
+3. POST behavior_instance with config containing `device.rid`, `model_id: FOHSWITCH`, and `buttons` dict keyed by button service UUID (NOT control_id)
+4. Each button entry: `on_short_release` action (recall scene OR all_off), `on_repeat` (dim_up/dim_down), `where` (zone or room target)
+5. **For consistent UX:** bind both top buttons (1 & 3) to the same recall, both bottom (2 & 4) to all_off — physical layout doesn't matter
+
+### POST to behavior_instance with same device replaces existing binding
+When POSTing a new behavior_instance for a device that already had one, the new POST inherits the existing UUID (or replaces silently). Net effect: one binding per device-script combo. This is convenient (you don't need to DELETE the old one first) but can be confusing when verifying — the "new" binding's UUID may match what was previously on the device.
+
+### Hue scenes stay attached to a zone after zone rename
+When zone `22271fad` was renamed from "Front Hallway" → "Stairway", its 3 existing scenes (S54-era Energize/Relax/Nightlight) **kept their group reference** to that zone. They became "Stairway scenes" automatically. No need to recreate scenes after zone rename — only after zone DELETE.
+
+### CLIP v2 identify action = bulb breathing flash
+PUT `/clip/v2/resource/device/{id}` with `{"identify":{"action":"identify"}}` triggers a brief breathe/dim. **Only visible if the bulb is already on.** Use the off-one-at-a-time approach (turn off N-1 bulbs, leave 1 on, observe) for unambiguous physical mapping. Identify is unreliable for "which bulb is which" mapping.
+
+### Device renames don't propagate to HA logbook history
+After a Hue device rename, HA's logbook continues to show events under the OLD name for events that occurred before the rename was polled. Activity views look like a stale device fired — actually it's just historical labeling. Wait for the integration to poll, then events going forward use the new name.
+
+### Rooms vs Zones for HA exposure (canonical, S57 confirmed twice)
+- A Hue **room** with multiple bulbs creates a single HA group entity (`light.front_hallway`)
+- A Hue **zone** with multiple bulbs creates a separate HA group entity (`light.stairway`)
+- Both can coexist — `light.front_hallway` covers the whole room (3 bulbs); `light.stairway` covers just 2 of those 3
+- Zone is the right tool for "subset of a room with its own switch"; room is the right tool for "all lights in this physical space"
+
+### Activity log "X turned on" with no obvious cause = parent group reflection
+When a zone turns on, any room containing those zone-member bulbs ALSO logs "turned on" because some members are on. This is correct/expected — not a bug, not a stray automation. Only worry if the change includes lights that AREN'T members of any expected group.
