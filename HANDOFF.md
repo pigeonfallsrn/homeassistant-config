@@ -105,7 +105,7 @@ From S57 recon — three duplicate zone names exist:
 - `sensor.2nd_floor_bathroom_humidity_derivative` (unavailable)
 - Music Assistant (setup_error)
 - Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-- HA long-lived token in secrets.yaml may be stale (curl returned non-JSON, but exp=2036 so unclear)
+- **HA long-lived token in secrets.yaml is REVOKED (confirmed 401)** — needs new token generated at /profile/security and pasted into `secrets.yaml` as `ha_api_token`. Any internal scripts using it (Google Sheets sync, REST commands, etc.) are silently failing.
 
 ---
 
@@ -142,8 +142,8 @@ From S57 recon — three duplicate zone names exist:
 ## NEXT SESSION SUGGESTED FOCUS
 
 Pick ONE:
-1. **Front Exterior unification** (deferred TASK 5) — driveway + very front door, resolve duplicate entities + typo
-2. **Curated outdoor scene library** (deferred TASK 2) — but only after John creates the scenes in Hue app
-3. **Hue Bridge duplicate zone cleanup** (3 pairs)
-4. **Physical hot_tub_mode automation removal** from `.storage` (cosmetic cleanup)
-5. **Resume HANDOFF/LEARNINGS sync discipline** — review S55/S56 work for any other staged-but-unfinished patterns
+1. **Rotate HA long-lived token** — fix the 401 + audit what was using it
+2. **Front Exterior unification** (deferred TASK 5) — driveway + very front door, resolve duplicate entities + typo
+3. **Curated outdoor scene library** (deferred TASK 2) — but only after John creates the scenes in Hue app
+4. **Hue Bridge duplicate zone cleanup** (3 pairs)
+5. **Physical hot_tub_mode automation removal** from `.storage` (cosmetic cleanup)
