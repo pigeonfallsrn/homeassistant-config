@@ -1,118 +1,121 @@
-# HANDOFF — Session S55
+# HA Migration HANDOFF — S56
+**Date:** 2026-04-25
+**Last commit:** (this session) | Previous: 5533cab (S55)
 
-## Last Session: S55 (2026-04-22)
-## Last Commit: (pending)
-## Baseline: 77 automations, 93 helpers, 0 ghosts, 115 scenes
+## S56 Goal
+Best-practice scorecard + duplicate/orphan cleanup ("Option C" → folded into "Option B" unavailable triage).
 
----
+## What S56 did
+Targeted registry cleanup of 7 redundant entities + 1 duplicate config entry. Zero risk to live automations or running devices. All changes verified post-action.
 
-## WHAT HAPPENED IN S55 (MEGA SESSION)
+| # | Action | Result |
+|---|---|---|
+| 1 | Disabled `update.master_bedroom_vzm36_firmware_2` (EP2 redundant) | ✅ |
+| 2 | Disabled `update.kitchen_lounge_vzm36_firmware_2` (EP2 redundant) | ✅ |
+| 3 | Disabled `update.living_room_vzm36_firmware_2` (EP2 redundant) | ✅ |
+| 4 | Disabled `update.upstairs_hallway_vzm36_firmware_2` (EP2 redundant) | ✅ |
+| 5 | Removed orphan `tts.google_translate_en_com` (stale Green→EQ14 unique_id 01KP4*) | ✅ |
+| 6 | Renamed `tts.google_translate_en_com_2` → `tts.google_translate_en_com` | ✅ |
+| 7 | Removed orphan `todo.shopping_list` (stale Green→EQ14 unique_id 01KP4*) | ✅ |
+| 8 | Renamed `todo.shopping_list_2` → `todo.shopping_list` | ✅ |
+| 9 | Deleted duplicate Met.no config entry `01K41S8Z8F74NC72SG49APACGY` (user-added) | ✅ |
+| 10 | Verified single canonical `weather.forecast_home` (state: cloudy) | ✅ |
 
-### Phase B — Hue Bridge Scene/Zone Cleanup
-- Created MB Ceiling zone (2 candle bulbs) + 3 scenes
-- Added Relax+Nightlight to Alaina's + Ella's Ceiling zones
-- Deleted 19 stale scenes from S54 leftovers
-- Scene count: 101 → 89 (mid-session, grew to 115 after audit)
+**Net registry impact:** -7 redundant entities, -1 duplicate config entry, +0 orphans, all canonical names preserved.
 
-### Phase C — HA Automation Updates
-- 4 dead entity refs fixed (Alaina dimmer, MB tap dial, FD Inovelli, FD motion)
-- FD motion rebuilt: Hue sensor + UniFi person/vehicle → Energize, auto-off
-- Back Patio motion created (new Hue outdoor sensor)
-- Outdoor sunset schedule: sunset→Relax, 11pm→Nightlight, sunrise→Off
-- Entry Room tap dial automation deleted (tap dial moved to Living Room)
+## S56 Benchmark
+- 2785 entities (was 2792, delta -7)
+- 75 automations (was 78 reported, actually 75 measured)
+- 89 helpers
+- 0 ghosts, 0 repairs, 0 persistent notifications
+- 14 template packages (legit spine)
+- 19 calendars
+- 5 HACS resources
+- 4 storage dashboards
+- HAOS 17.2 / Core 2026.4.3 / Python 3.14.2 / Supervisor 2026.04.0
+- Disk: 22.9 / 916 GB (3% used)
+- Recorder: SQLite, 234 MiB, ~4 days history (Phase 22 MariaDB-on-NAS still pending)
 
-### FOH Switch Infrastructure (new capability)
-- 2 new FOH click switches configured (MB + VFD)
-- LR Hue Switch repurposed from broken lamp cycling → VZM36 fan+light
-- Hybrid architecture: bridge-direct for Hue, HA for ZHA/non-Hue
+## Best-practice scorecard
+- ✅ Platform currency (HAOS 17.2, Core 2026.4.3 all current)
+- ✅ Architecture (UI-first intact, 0 ghosts)
+- ✅ System health (0 repairs, 0 notifications)
+- ✅ Disk headroom (3% used)
+- ✅ Git hygiene (clean tree)
+- ⚠️ Recorder on SQLite, only 4 days history — Phase 22 MariaDB never ran
+- ⚠️ ~283 unavailable entities (down from ~290) — mostly device-offline clusters, see triage below
+- ⚠️ 3 empty/underpopulated areas: boiler_room (0), attic (1), workout_area (1)
+- ⚠️ 3 integrations not loaded: tplink garage_receiver_HS100 (setup_retry), androidtv 192.168.1.17 (setup_retry, DO NOT DELETE), music_assistant (setup_error)
 
-**Current FOH/Switch Config:**
+## Device-offline triage (~283 unavailable entities)
+**For John to triage** — these are device-level, not registry pollution. Verify each cluster and decide keep/fix/remove.
 
-| Switch | Bridge Behavior | HA Automation | What It Controls |
-|--------|----------------|---------------|-----------------|
-| LR Lounge FOH | 4 buttons | None | LR Lounge zone + LR room (all Hue) |
-| LR Hue Switch | None | 4 buttons | VZM36 fan+ceiling (ZHA), B4 long=all LR off |
-| LR Tap Dial | 4 buttons (FOHSWITCH) | Rotary+TV strip | Hue lamps (bridge) + Kasa strip + dimming (HA) |
-| MB FOH | 2 buttons (right) | 3 triggers (left+B4 long) | MB Ceiling (bridge) + fan (HA) + whole-home-off |
-| VFD FOH | 2 buttons (right) | None | VFD exterior (bridge-only) |
+### Cluster 1: G4 Bullet camera (~28 entities, all unavailable)
+- Real device, MAC 70:a7:41:0c:53:19, located at Pigeon Falls Properties (remote site)
+- Status: device offline. Likely network or power at PFP.
+- **Action: Keep registry entry; fix when at PFP**
 
-**Bridge behaviors: 5 total** (LR Lounge, LR Tap Dial, MB FOH, VFD FOH + FD zone recreated)
+### Cluster 2: Garage opener Hue bulb entities (~24 entities)
+- `garage_*_lift_master_*` numbers/selects/lights all unavailable
+- Status: known power circuit issue per HANDOFF history
+- **Action: Already on backlog**
 
-### Hue Outdoor Motion Sensors (2 new)
-- Front Driveway + Back Patio, renamed, area-assigned
+### Cluster 3: Stairwell_Night_Light (~6 entities, ZHA Third Reality 3RSNL02043Z)
+- Real Zigbee device, paired (LQI 162) but not responding
+- **Action: Check if physically plugged in / power restored**
 
-### LR Tap Dial — Scene-Based Room Control
-- B1=Relax (all 4 lamps), B2=Table Relax, B3=Floor Nightlight, B4=All off
-- Rotary=dim all lamps via HA (bridge FOHSWITCH model lacks rotary)
-- TV backlight (Kasa strip) follows buttons at warm 2700K
-- Hue scenes → bridge-direct (snappy), TV strip+rotary → HA companion
+### Cluster 4: Living_Room_Dual_Smart_Plug (~7 entities, ZHA Third Reality 3RDP01072Z)
+- No LQI/RSSI = gone from Zigbee mesh (likely unplugged or removed)
+- **Action: Confirm if still in service. If retired, remove device from registry**
 
-### Full Hue Ecosystem Audit
-**Device renames (7):** Generic names → proper naming convention
-**Room rename:** Very Front Door Hallway → Front Hallway
-**Room reassignments:** Tap dial→LR, FOH1→MB, FOH2→VFD
-**Zones created (3):** Front Hallway, Garage Ceiling, All Exterior
-**Zones deleted (3):** Garage & Front Driveway, Alaina's Bedside Lamp, Front Driveway (recreated)
-**Scenes created (22+):** Standardized Energize/Relax/Nightlight across new zones
-**LR Lounge ceiling names:** "LR Lounge Ceiling N of 3" kept — Hue 32-char limit blocks longer names
+### Cluster 5: Kitchen_Lounge_TV_Dual_Smart_Plug (~6 entities)
+- Same pattern as Cluster 4 — Zigbee plug not responding
+- **Action: Confirm if still in service**
 
-### MB Tap Dial Updates
-- B2: dead ref Read → Energize
-- B4: added long_release → All Off (lights + fan)
+### Cluster 6: Upstairs_Hallway_East_Wall_Night_Light (~5 entities)
+- ZHA device offline
+- **Action: Check power / physical presence**
 
----
+### Cluster 7: Yamaha RX-V671 MAIN + zone_2 (~9 entities)
+- Number/select unavailable when receiver in standby (normal)
+- **Action: No action — expected behavior**
 
-## NEEDS VERIFICATION
+### Cluster 8: Alexa Echo shuffle/repeat (~18 entities)
+- All unavailable when no media playing (normal Alexa Media Player behavior)
+- **Action: No action — expected behavior**
 
-1. MB FOH: B1 fan cycle, B3 ceiling Energize, B4 long whole-home-off
-2. VFD FOH: B3 exterior Energize, B4 off
-3. LR FOH: B1 fan cycle, B3 ceiling on, B4 long all-LR-off
-4. LR Tap Dial: B1-B4 scenes, rotary dimming, TV strip follows
-5. Outdoor motion sensors: walk test FD vs BP
-6. Sunset schedule: fires at next sunset
-7. Front Hallway: verify 3 bulbs respond to room scenes
+### Cluster 9: UniFi switch port_power_cycle (~30 buttons)
+- Mixed unavailable/unknown for empty/unpowered ports (normal)
+- **Action: No action — expected behavior**
 
-## CARRIED FORWARD
+### Cluster 10: PFP West climate (1 entity)
+- Mini-split offline at remote site
+- **Action: Diagnose at PFP**
 
-- Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
-- Garage opener Hue bulbs showing unreachable (power circuit)
-- Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, etc.)
-- Orphaned LR scene index helpers (3): delete next session
-- VFD FOH left side: unassigned
-- Back Patio: new lamp being installed (add to bridge when ready)
-- HA entity cleanup: rename new Hue entities from bridge renames
-- LR Tap Dial rotary: slight latency (HA-routed, bridge FOHSWITCH workaround)
+### Cluster 11: Very Front Door — chime/IR/motion (~4 entities)
+- Subset unavailable — likely feature-not-active states from UniFi Protect
+- **Action: Verify camera config in Protect UI**
 
-## BLOCKED
+### Cluster 12: Music Assistant (setup_error) — known blocker
 
-- binary_sensor.house_occupied (unavailable, template package issue)
+## Tabled (no progress this session)
+- GOVEE LAMP → MASTER BEDROOM (waiting on physical move)
+- ELLA COMPANION APP rename (sensor.iphone_40_* → sensor.ella_s_*)
+- Phase 22: MariaDB recorder migration to NAS
+- Empty area cleanup (boiler_room, attic, workout_area — merge or populate)
+- house_occupied template fix
+- Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
+- Discovered integrations to review: 2nd Floor Roomba, DS224plus, Bluetooth hci0, Roku 4620X, Tuya, Vizio SmartCast
+- HACS Calendar Card Pro for kitchen tablet
+
+## Recommended next priorities
+1. **Phase 22 — MariaDB on NAS** (biggest long-term win, 1 session). Adds real history retention, reduces SQLite contention.
+2. **Device-offline triage walk-through** with John (one cluster at a time)
+3. **Continue from S55 Phase C list** — LR FOH redesign for VZM36, Master Bedroom "All Off" hold, Alaina dimmer B3 → Malibu pink, disable the 4 bridge automations
+4. **Empty area cleanup** (small but satisfying — half session)
+
+## Blocked
+- binary_sensor.house_occupied (template package issue)
 - sensor.2nd_floor_bathroom_humidity_derivative (unavailable)
 - Music Assistant (setup_error)
-- Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-
----
-
-## BENCHMARK
-
-| Metric | S54 | S55 |
-|--------|-----|-----|
-| Automations | 76 | 77 |
-| Helpers | 93 | 93 |
-| Ghosts | 0 | 0 |
-| Scenes (Hue) | 101 | 115 |
-| Dead refs fixed | — | 4 |
-| Hue zones | 14 | 14 (3 created, 3 deleted) |
-| FOH/switches configured | 1 | 5 |
-| Bridge behaviors | 1 | 5 |
-| Outdoor automations | 0 | 3 |
-| Motion sensors | 0 | 2 |
-| Devices renamed (bridge) | — | 7 |
-| Rooms renamed | — | 1 |
-
-## QUICK REFERENCE
-
-- HA: http://192.168.1.10:8123
-- Hue Bridge: 192.168.1.68 (API key in /homeassistant/hac/backup/)
-- SSH: ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"
-- Git push: MCP shell_command.git_push only
-- Notify: notify.mobile_app_galaxy_s26_ultra
+- Michelle person tracker

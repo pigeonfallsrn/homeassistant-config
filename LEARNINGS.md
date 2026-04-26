@@ -225,3 +225,50 @@ Bedroom with FOH + Tap Dial: FOH at door = power states (ON/Energize/OFF/Nightli
 - User must remember which buttons they pressed to undo
 - Scene-based (each button = whole-room mood, one button = off) is best practice
 - This is how Hue designed the tap dial — match the mental model
+
+## S56 — 2026-04-25 — Best-practice scorecard + duplicate cleanup
+
+### LEARNING: Stale Green→EQ14 restore artifacts have unique_id prefix `01KP4*`
+The TTS and Shopping List "duplicates" I cleaned up weren't really duplicates — they were stale entity registry records left over from the Green→EQ14 backup restore. Pattern:
+- Old entity (`tts.google_translate_en_com`) had unique_id starting `01KP4FQ7*`
+- New entity (`tts.google_translate_en_com_2`) had unique_id matching live config entry (e.g., `01K3HJC*`)
+- The `01KP4*` unique_id had no live config entry behind it → orphan
+- Symptom: entity shows as `unavailable` permanently, while `_2` works
+
+**Detection pattern for future audits:** When you see `entity` and `entity_2` both in the registry, check unique_ids against active config entry IDs. If the non-_2 has a unique_id with no live config entry, it's a stale restore artifact, not a true duplicate.
+
+**Safe action:** ha_remove_entity on the orphan, then ha_set_entity new_entity_id to rename `_2` → canonical. Both ops are entity-registry-only; no device touched.
+
+### LEARNING (4-OCCURRENCE PROMOTION CANDIDATE): VZM36 EP2 firmware redundancy is universal
+Project memory documented "VZM36 EP2 entities redundant — disable, don't delete" for the Master Bedroom switch. This session confirmed the pattern applies to ALL VZM36 instances:
+- Master Bedroom: `update.master_bedroom_vzm36_firmware_2` ✅ disabled
+- Kitchen Lounge: `update.kitchen_lounge_vzm36_firmware_2` ✅ disabled
+- Living Room: `update.living_room_vzm36_firmware_2` ✅ disabled
+- Upstairs Hallway: `update.upstairs_hallway_vzm36_firmware_2` ✅ disabled
+
+The VZM36 has two endpoints (EP1 light, EP2 fan) but a single physical firmware. ZHA exposes the same firmware update on both endpoints. Always disable EP2 firmware update entity.
+
+**Promote to CRITICAL_RULES if seen one more time?** Already at 4 occurrences across 4 distinct devices — this should promote to CRITICAL_RULES now under "VZM36 device pattern."
+
+### LEARNING: Triage at integration-level FIRST when chasing unavailable entities
+The instinct is to filter all entities by `state: unavailable` and walk the list. That gives ~283 lines for a system this size and feels overwhelming.
+
+Better workflow:
+1. `ha_get_integration` (no filter) → see which integrations are NOT `state: loaded`
+2. For loaded integrations with many unavailable entities, `ha_get_device` → check radio_metrics (LQI/RSSI null = gone from mesh)
+3. Cluster unavailables by device, not by entity
+
+Result: ~283 unavailable entities collapse into ~12 device-level clusters, of which ~6 are normal/expected behavior (Alexa idle, switch port empty, AVR standby).
+
+### LEARNING: `source` field disambiguates duplicate config entries
+When you see two config entries for the same integration (Met.no "Home" ×2), the `source` field tells you which is canonical:
+- `source: "onboarding"` → created at first-run, the canonical one
+- `source: "user"` → manually added later, often by mistake
+Prefer deleting `user`-source duplicates over `onboarding`-source.
+
+### PATTERN CONFIRMED: Registry-only changes don't touch git
+The 7 entities + 1 config entry I modified all live in `.storage/` (gitignored). After the session: `git status` returned empty stdout. This is correct and expected — registry changes persist in HA but not in version control. The HANDOFF.md update IS the audit trail for these changes.
+
+### LEARNING: `ha_set_entity(enabled=False)` is registry-level, REQUIRES integration reload
+Per the tool description: setting `enabled=False` removes the entity from the state machine entirely. The entity will not appear in state queries until re-enabled AND the integration is reloaded. This is fine for redundant entities (like VZM36 EP2 firmware) where you don't want the entity at all, but DON'T use it as a substitute for `automation.turn_off` or `script.turn_off`.
+
