@@ -503,3 +503,35 @@ First heredoc rewrote packages/adaptive_lighting_entry_lamp.yaml with clean `|` 
 
 ### HANDOFF REGEN BUG STILL UNRESOLVED AS OF S62 START
 S61 commit message claimed "HANDOFF regen-template-bug fix (full rebuild)" but S62 session-init found HANDOFF.md still showing S58 baseline content. S61's fix did not stick. S62 close uses standard heredoc paste workflow with explicit verification (head/grep) to test whether the regen process now works.
+
+## S62 (2026-04-27) — RETROSPECTIVE: workflow improvements
+
+### SURGICAL EDITS STAY SURGICAL (1st occurrence — track)
+S62 package edit task was "remove 2 hot_tub branches" but Claude delivered "rewrite full file with clean block scalars AND remove 2 branches". Two writes for net-zero formatting change. Recovery from .bak reverted formatting anyway. **Rule:** when task says "remove X", edit removes X only. Cosmetic improvements are separate sessions, separate commits. Mixing concerns inflates blast radius and complicates rollback.
+
+### FILE-CONTENT VERIFY BEFORE PIVOTING TO RECOVERY (1st occurrence — track)
+S62 chat displayed `[boolean.school](http://boolean.school)_tomorrow` (autolinked TLD) and Claude declared "linkification disaster" without grep/diff verification of the actual file. The file was always correct. ~10 min lost to recovery script for a non-problem. **Rule:** when chat display looks corrupted, run grep/diff on file content (2 seconds) before declaring failure. Chat display is suspect; the file is truth.
+
+### PRE-FLIGHT REGISTRY CHECK BEFORE ANY ha_*_remove (PROMOTABLE — high leverage)
+`ha_config_remove_helper("hot_tub_mode")` returned ENTITY_NOT_FOUND in S62 because helper had been orphaned in a prior session. A 1-second `ha_search_entities("hot_tub_mode")` upfront would have skipped the failed delete entirely. **Rule:** always `ha_search_entities` before any `ha_*_remove` call. The query is effectively free; the failed delete is not.
+
+### EDIT-VIA-PYTHON-READING-ORIGINAL > FULL HEREDOC REWRITE (workflow shift)
+For existing files: pattern is `read .bak → string-replace → assert old_str in src → assert new_str in out → write`. Asserts catch bad replacements, preserves byte-for-byte non-target content, no retyping. **New default:** full heredoc only for NEW files. For existing-file edits, read-replace-assert pattern. Bonus: side-steps linkification entirely because chat only renders the small replacement strings, not the whole file.
+
+### BACKTICK TLD-BEARING STRINGS IN CHAT CONTENT (PROMOTED — 2nd occurrence with S58 chain)
+When writing entity names containing `.school`, `.hot`, `.travel`, `.app`, `.dev`, `.com`, etc. into chat output, wrap in inline code spans. Chat clients do not autolink inside backtick code spans. Costs nothing, avoids the entire S58/S62 linkification panic class. First occurrence S58 (single-quoted heredoc terminators), second S62 (TLD strings in heredoc body) — promote to operational defenses.
+
+### GITIGNORE HARDENING NEEDED — *.bak *.corrupted *.orig *.tmp BASELINE
+S62 caught .bak commit leakage at last second via amend. Audit revealed 6 pre-existing `.bak` files in `hac/` already tracked from prior sessions. Pattern recurs. **S63 micro-task:** audit `git ls-files | grep -E "\.(bak|corrupted|orig|tmp)$"`, untrack matches, harden gitignore. Done as one-shot, not as recurring overhead.
+
+### HANDOFF REGEN BUG WAS WORKFLOW DRIFT, NOT TEMPLATE BUG
+S58 found drift, S61 claimed template fix that didn't take, S62 close used manual heredoc paste with inline verification (head/wc/grep before commit) and committed cleanly. **Reframe:** the close ritual IS the fix. Stop engineering a template; document the ritual once and follow it every time. Required ritual: heredoc paste, then `head -3 HANDOFF.md` (confirms session number), `grep -c "^## WHAT HAPPENED IN S<NN>"` (confirms = 1), `grep -c "^## S<NN>" LEARNINGS.md` (confirms = 1, no double-append), then commit.
+
+### DIAGNOSTIC DISCIPLINE PAYING DIVIDENDS (4th occurrence — durable)
+S58: starter said "REVOKED" — wrong. S60: starter said "drift detected" — was non-drift. S62: starter said "top of queue" — queue 80% stale (S59/S60 burned through). Verifying ground truth (git log, file grep) before executing has now saved meaningful rework in 3+ consecutive sessions. Already promoted at S60; surface this rule MORE often when session starters make claims of state.
+
+### DROP STRAWMAN OPTIONS (style — Claude side)
+When offering A/B/C/X/Y/Z, every option must be a genuine path. S62 closed with X/Y/Z where Z was "close + note something we already do automatically" = filler. Two real options is enough. Trust user's binary decision-making.
+
+### S62 SESSION QUALITY READ
+Task delivered cleanly (72 automations, 0 hot_tub refs, clean push). ~15 of ~90 minutes lost to self-inflicted overhead (formatting rewrite, linkification panic, failed helper delete). Strong: diagnostic discipline, verify-before-push, amend-before-push catch on .bak leakage. Weak: destructive-action ergonomics, edit-scope discipline, panic threshold on chat-display artifacts.
