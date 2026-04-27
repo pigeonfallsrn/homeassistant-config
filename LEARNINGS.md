@@ -555,3 +555,22 @@ When a "drift" or "regen" persists across multiple alleged fixes, audit the **re
 
 ### Other reads still pointing at hac/
 `read_critical_rules` and `read_critical_rules_full` still point at `/config/hac/CRITICAL_RULES_CORE.md` and `/config/hac/CRITICAL_RULES.md`. Files exist there. Whether they're stale or current is unaudited as of S62 close. **S63 priority candidate:** verify these or migrate them to repo root for parity with HANDOFF.md.
+
+## S63 (2026-04-27) — MCP ha_set_entity wraps the websocket; S45 bulk-rename rule obsolete
+
+### Finding
+S45 promoted rule said: "Entity registry renames: REST API returns 404 — must use websocket (config/entity_registry/update). Bulk renames: python3+websockets script (aiohttp unavailable in HAOS)". This was true at the time. It is no longer true.
+
+`ha_set_entity` (MCP) accepts `new_entity_id` and internally calls the websocket `config/entity_registry/update` op. ZHA child entities renamed cleanly, one call per entity, state preserved, friendly names preserved. No SSH, no python script, no token handling.
+
+### Confirmation
+43 ZHA entities under one VZM30-SN renamed across 7 domains (light, button, number, select, sensor, switch, update). All succeeded. No rollbacks. Verification: `ha_search_entities("drivay")` returned 0; new prefix returned 43.
+
+### New rule (promote to Instructions on 2nd occurrence)
+For ZHA / integration-managed entity registry renames, prefer MCP `ha_set_entity(entity_id=old, new_entity_id=new)` over SSH websocket scripts. Combine `new_device_name=...` on any one call to rename the device in the same op.
+
+### Workflow lesson
+When a starter or HANDOFF cites a constraint from older sessions ("needs websocket script"), spend one MCP call to test the modern path before scripting. The 30-min budget for this rename collapsed to ~2 min of MCP calls. Two-Occurrence Rule says next confirmation promotes this — filing as candidate.
+
+### Side note
+House convention for Inovelli SBM switches confirmed: `{area}_{fixture}_inovelli_smart_bulb_mode_*`. Verified against the two existing 2nd-floor bathroom switches. The VZM30-SN's prior slug (`front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode_*`) was the outlier in both spelling and verbosity. Fixing both at once cost no additional effort because all 43 had to be touched anyway.

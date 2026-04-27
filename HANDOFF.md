@@ -1,52 +1,53 @@
-# HANDOFF — Session S62
+# HANDOFF — Session S63
 
-## Last Session: S62 (2026-04-27)
+## Last Session: S63 (2026-04-27)
 ## Last Commit: (set after this session's commit)
 ## Baseline: 72 automations, 51 input_booleans, 0 repairs, HA 2026.4.4
 
 ---
 
-## WHAT HAPPENED IN S62
+## WHAT HAPPENED IN S63
 
 ### Goal
-Stale-ref scan post-S55–S57 Hue restructure (top of HANDOFF queue).
+Front_drivay typo rename — 43 child entities + device on ZHA Inovelli VZM30-SN (IEEE c0:9b:9e:ff:fe:d1:2d:4e, device_id 16a22c25ead6b47a6b9666c539ff2509). S45 carry-forward.
 
-### Diagnosis chain rewrote the work
-1. **S58 priority queue mostly burned through.** Git log showed: S59 already resolved auth-retry hunt (storm ended 2026-04-14, revoked Mobile App Temp LLAT, stripped stale auth: block from configuration.yaml). S60 diagnosed automations.yaml drift as **non-drift**. S61 attempted HANDOFF regen-template-bug fix but the rebuild produced S58 baseline content. **HANDOFF.md drift fix did NOT take.**
-2. **Stale-ref scan results:**
-   - front_hallway_ceiling: 0 hits ✓
-   - front_drivay typo: 0 in YAML, ~20 entities in .storage registry. Deferred to S63.
-   - hot_tub: **20 hits in YAML** (6 automations + 2 package template branches). S57 deprecation was framing-only.
-   - hue_dimmer_switch_N: 0 hits ✓
-   - front_entryway_ceiling/stairway_ceiling: 0 in YAML (Hue-direct via FOH, expected) ✓
-3. **Bonus: duplicate quiet_travel automation** (IDs 1777222465965 and 1777223651091, identical config). Triple-fire risk per S44 rule.
+### Pre-rename scope check
+- Registry: 43 entities with `front_drivay_*` slug
+- YAML refs: 0 (re-confirmed S62 finding)
+- Automation/script/helper/dashboard refs: 0 (`ha_deep_search` clean)
+- Collision check vs existing `front_driveway_*` (109 entities, mostly doorbell/camera): no overlap
+- House convention for Inovelli SBM switches: `{area}_{fixture}_inovelli_smart_bulb_mode_*` (matches 2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode, 2nd_floor_bathroom_vanity_lights_inovelli_smart_bulb_mode)
 
-### Hot tub full deprecation (the real one)
-- Deleted 6 hot_tub automations via MCP ha_config_remove_automation
-- Deleted duplicate: automation.system_quiet_travel_auto_off_at_midnight_2
-- input_boolean.hot_tub_mode helper: ENTITY_NOT_FOUND (already orphaned in prior session, refs were silently evaluating False)
-- Edited packages/adaptive_lighting_entry_lamp.yaml: stripped 2 hot_tub_mode template branches (1am off-time override, 5%-dim brightness override)
-- Templates + automations reloaded via MCP. ha_check_config valid. No restart needed.
-- 3 template sensors verified healthy post-reload: Entry Room Average Lux 16.0 lx, Evening Lamp Off Time 23:30, Evening Lamp Max Brightness 100%
+### Rename map
+Old prefix: `front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode`
+New prefix: `front_driveway_inovelli_smart_bulb_mode`
 
-### Files touched
-- automations.yaml: 7 automations removed (HA-managed via MCP)
-- packages/adaptive_lighting_entry_lamp.yaml: 2 template branches stripped (Python heredoc paste)
-- packages/adaptive_lighting_entry_lamp.yaml.s62.bak + .s62.corrupted: forensic copies, NOT gitignored — recommend cleanup S63
+Strategy abandoned the literal "fix the typo only" path (would have produced redundant `front_driveway_..._front_driveway_...` slugs ~90 chars). Adopted house convention instead — same effort, cleaner long-term, friendly names already carry the human-readable label.
 
-### Discovered (S63+)
-- **HANDOFF regen-template-bug** confirmed unfixed by S61. S62 close is next test.
-- **.s62.bak / .s62.corrupted** files need cleanup + gitignore pattern (*.bak, *.corrupted)
-- **Front_drivay rename**: ZHA device IEEE c0:9b:9e:ff:fe:d1:2d:4e, device_id 16a22c25ead6b47a6b9666c539ff2509. ~20 child entities. Per S45 rule: bulk renames need websocket config/entity_registry/update.
+### Execution
+- 43 individual `ha_set_entity` MCP calls with `new_entity_id`
+- First call also passed `new_device_name="Front Driveway Inovelli VZM30-SN (Smart Bulb Mode)"` — device renamed in same op
+- All 43 succeeded, no rollbacks needed
+- States preserved (e.g., Power-on level 255, Smart bulb mode `on`, On level 181)
+- **No SSH script needed.** S45 promoted rule is now obsolete: MCP `ha_set_entity` wraps the websocket `config/entity_registry/update` internally.
+
+### Verify
+- `ha_search_entities("drivay")` → 0 hits ✓
+- `ha_search_entities("front_driveway_inovelli_smart_bulb_mode")` → 43 hits, all healthy ✓
+- Friendly names intact ✓
+
+### Bonus cleanup (HANDOFF queue item 2)
+- Removed: `packages/adaptive_lighting_entry_lamp.yaml.s62.bak`, `packages/adaptive_lighting_entry_lamp.yaml.s62.corrupted`
+- Added to .gitignore: `*.bak`, `*.corrupted`
 
 ---
 
-## NEXT SESSION (S63) — RECOMMENDED PRIORITY ORDER
+## NEXT SESSION (S64) — RECOMMENDED PRIORITY ORDER
 
-1. **Front_drivay typo rename** (~30 min, websocket bulk rename per S45)
-2. **Backup file cleanup** + gitignore *.bak, *.corrupted, *.s62.*
-3. **Google Calendar re-auth** if still showing in repairs (1-click)
-4. **Deferred from S57**: Front Driveway + Very Front Door unification, Hue Bridge duplicate zone cleanup (All Exterior x2, Garage Ceiling x2), curated outdoor scene library
+1. **Google Calendar re-auth** if still showing in repairs (1-click)
+2. **VZM30-SN area assignment** — renamed device's `area_id` is null. Assign to Front Driveway area for proper grouping. ~2 min.
+3. **Deferred from S57**: Front Driveway + Very Front Door unification, Hue Bridge duplicate zone cleanup (All Exterior x2, Garage Ceiling x2), curated outdoor scene library
+4. **HANDOFF regen test #2**: S62 close + S63 close are now two consecutive heredoc-paste tests. If S64 reads back S63 content, the read-path fix from S62 LEARNINGS holds.
 
 ---
 
@@ -70,13 +71,15 @@ Stale-ref scan post-S55–S57 Hue restructure (top of HANDOFF queue).
 
 ## BENCHMARK
 
-| Metric | S58 | S62 |
+| Metric | S62 | S63 |
 |---|---|---|
-| Automations | 79 | 72 (−7) |
+| Automations | 72 | 72 |
 | Input booleans | 51 | 51 |
-| YAML hot_tub_mode refs | 20 | 0 |
-| Quiet travel duplicates | 2 | 1 |
-| Repair count | — | 0 |
+| `drivay` entities | 43 | 0 |
+| `front_driveway_inovelli_smart_bulb_mode_*` | 0 | 43 |
+| Backup file pollution | 2 | 0 |
+| .gitignore patterns | (n) | (n+2) |
+| Repair count | 0 | 0 |
 | HA version | 2026.4.4 | 2026.4.4 |
 
 ## QUICK REFERENCE
