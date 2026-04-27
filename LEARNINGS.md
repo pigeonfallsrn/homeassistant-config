@@ -383,3 +383,34 @@ After a Hue device rename, HA's logbook continues to show events under the OLD n
 
 ### Activity log "X turned on" with no obvious cause = parent group reflection
 When a zone turns on, any room containing those zone-member bulbs ALSO logs "turned on" because some members are on. This is correct/expected — not a bug, not a stray automation. Only worry if the change includes lights that AREN'T members of any expected group.
+
+## S59 (2026-04-27) — Auth-retry loop hunt: false-alarm diagnosis, LLAT cleanup, configuration.yaml stale-block strip
+
+### Substantive learnings
+
+- **Diagnostic discipline — second occurrence (PROMOTE).** S58 starter said "token REVOKED, scripts failing silently" — actual root cause was a `::1` IP ban predating any token issue. S59 starter said "auth-retry loop generating ~14 bans/week" — actual state was zero new bans for 13 days; the storm had ended on its own at the EQ14 cutover stabilization point. Pattern: starter framings inherit S(N-1)'s in-the-moment confidence and become stale by S(N) start. Always verify ground truth (count, timestamp, current vs. historical) before acting on starter premise. This is now a promoted rule.
+
+- **`error_log` source returns 404 via ha_get_logs MCP.** Only `system` source works for log retrieval over MCP. system surfaces only structured WARNING/ERROR entries — INFO-level events ("Login attempt failed", successful auth) do not appear. For INFO/DEBUG retrospective, terminal grep on /homeassistant/home-assistant.log + .log.1 is authoritative.
+
+- **HA log rotates aggressively.** 13-day-old entries are gone from home-assistant.log + .log.1 combined. Plan retrospective forensics for ≤1 week windows; for older state rely on persisted artifacts (ip_bans.yaml timestamps, .storage/auth refresh_token created_at/last_used_at).
+
+- **`http.ban` logger at default level already includes URL + user-agent.** WARN-level "Login attempt or request with invalid authentication from <ip>. Requested URL: '<url>'. (<user-agent>)" — DEBUG isn't required for retrospective enrichment, only for per-request granularity. DEBUG remains cheap insurance for live capture.
+
+- **LLAT `last_used_at` is NOT a reliable in-use indicator.** Tokens validating clients via JWT signature verification do not necessarily update the auth store on every request. The `Claude Desktop MCP` LLAT showed last_used_at 2026-04-14 yet MCP-served HA tools answered cleanly today. Conclusion: never revoke an LLAT based purely on stale last_used_at — probe with an authenticated tool call after a controlled revoke of any other LLAT first, verify in-flight auth still works.
+
+- **Pre-revoke probe pattern (NEW workflow rule).** Before revoking ANY LLAT that might be the in-flight auth token, (1) revoke a different unambiguously-stale token first, (2) immediately call any authenticated MCP tool, (3) confirm response, only then proceed. Caught a near-mistake in S59 where I almost recommended revoking the LLAT that may be authenticating MCP itself.
+
+- **WHOIS-on-external-IP triage shortcut.** Pattern "datacenter ASN (AS262287 Latitude.sh) + Cyber Assets FZCO London abuse contact" in IPinfo lookup = commercial VPN egress, almost certainly user's own VPN client. Don't escalate "unknown external IP touching token" without first asking the user "do you run a VPN on that device?" — VPN-on-phone is the high-prior explanation.
+
+- **Migration-induced ban storms.** Green→EQ14 host cutover (S51) generated 71 bans across 23 days from T-Mobile/Verizon CGNAT IPv6 ranges before stabilizing. Mobile companion apps holding old-host tokens retry through cellular IPv6, each retry rotates to a new IP, each IP gets banned at 5-fail threshold. Future host migrations: rotate all mobile-issued tokens BEFORE re-pointing the tunnel, not after. Add to migration runbook.
+
+### Workflow lessons
+
+- **`&&` chain breaks at `diff` when files differ.** `diff` returns exit code 1 on difference (the success case for our use). For chains where diff is mid-pipeline and we want to continue regardless, use `;` separator after diff or append `|| true`. S59 lost the `ha core check` step at the end of the configuration.yaml edit chain because of this. Fix: separate the validation step into its own command, or use `;` between "show diff" and "validate."
+
+- **Pattern-based sed (anchor-line to anchor-line) safer than line-number sed.** `sed -i '/^# Trusted networks for tablet auto-login$/,/^    - type: homeassistant$/d'` survives line-count drift between read and edit. Line-number sed (`sed -i '88,91d'`) does not.
+
+- **Always backup before sed -i.** `cp file file.s<NN>-bak` immediately before, `rm file.s<NN>-bak` immediately after `ha core check` confirms validity. Costs nothing, saves a session if the edit goes wrong.
+
+- **Pre-close one-click side-quests.** Repairs UI 1-click fixes (OAuth re-auths) and configuration.yaml logger suppressions are perfect tack-on items at session close — low cognitive load, knock items off the queue without changing scope.
+

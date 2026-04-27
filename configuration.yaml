@@ -85,10 +85,6 @@ light:
       - light.ella_s_ceiling_light_2_of_3
       - light.ella_s_ceiling_light_3_of_3
 
-# Trusted networks for tablet auto-login
-auth:
-  auth_providers:
-    - type: homeassistant
 
 # HAC Master Context Excel Auto-Export
 shell_command:
