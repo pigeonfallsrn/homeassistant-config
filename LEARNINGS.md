@@ -462,3 +462,24 @@ S60 second occurrence: zsh history expansion on `!include` pattern → `zsh: eve
 Same root cause: text pasted from chat into interactive shell goes through layers of interpretation (chat-client formatting + shell history/glob expansion) before execution. Single-quoting strings containing shell-special characters (!, $, *, ~, URL-like foo.bar patterns) avoids both classes of failure.
 
 This counts as 2nd occurrence under the same root-cause umbrella. Candidate for promotion to OPERATIONAL DEFENSES on next governance cycle as: CHAT-PASTE SHELL HYGIENE — single-quote anything in pasted commands containing !, $, *, ~, or foo.bar patterns to neutralize chat-client linkification AND shell history/glob expansion.
+
+
+## S61 (2026-04-27) — HANDOFF regen-template-bug fix + diagnostic discipline 3rd occurrence
+
+### Substantive learnings
+
+- **Diagnostic discipline — 3rd consecutive occurrence (S58, S60, S61).** Already promoted at S60. S61 reinforced: read_handoff returned S58-headed file, "top of HANDOFF queue" appeared to mean #1 auth-retry hunt, but `git log` revealed S59 had already closed it and S60 had closed #2. Treating starter premise as truth would have wasted the session re-doing solved work. Pattern is now entrenched across 3 sessions; promoted rule is correctly placed.
+
+- **mcp_session_init enrichment proposal.** Current init dumps git log + working tree + HANDOFF body. Body alone doesn't surface header/commit drift in the visible scroll. Proposal for S62: add `head -3 HANDOFF.md` and `git log --oneline -5` side-by-side at the top of init output so `## Last Session: S<X>` is visible next to the actual recent commits. Drift becomes unmissable.
+
+- **Full overwrite > surgical edit for HANDOFF regen.** S59 attempted partial edits (body content correct, header stale). S60 documented the rule but did not rebuild the file. S61 demonstrated the only reliable shape: full `cat > HANDOFF.md << 'EOF' ... EOF` overwrite at every close. The file is small (~5KB), regen cost is trivial, partial-edit risk is real. Surgical edits to HANDOFF are now banned by convention.
+
+- **`hac/` directory contains legacy artifacts, not active files.** `/homeassistant/hac/HANDOFF.md` and `/homeassistant/hac/LEARNINGS.md` exist with recent mtimes (Apr 27 11:44 and 12:43). Both are leftovers from pre-EQ14 `hac.sh` tooling era. The active files are `/homeassistant/HANDOFF.md` and `/homeassistant/LEARNINGS.md` at the repo root. Do not edit `hac/`-prefixed copies.
+
+### Workflow lessons
+
+- **`grep -c PATTERN file` returns exit 1 on zero matches.** S61 dump #1 chained through `&&`; output stopped at "IP_BANS TOTAL: 0" because grep -c returning 0 matches set `$?` = 1 and `&&` aborted the rest. Same root cause as S59 `diff`-on-difference. **Two-occurrence candidate: exit-code-aware chaining** — promote next governance cycle as: in diagnostic dumps, separate sections with `;` not `&&`, terminate complex one-liners with `; true`, and wrap optional/may-be-empty greps with `|| true`.
+
+- **`; true` terminator confirmed.** Dump #2 used `; true` at end-of-line and ran to completion despite intermediate `awk`/`find` returning empty. Pattern is reliable; adopt as default for diagnostic one-liners.
+
+- **`HA_MASTER_PROJECT_PLAN.md` was archived in S58** (commit `e9ca905`) but cached references in dump templates can cause `ls` chains to break when one path is missing. When chains include file paths, prefer `ls -la X Y Z 2>/dev/null` (with redirect on the whole `ls`) over assuming all paths exist.

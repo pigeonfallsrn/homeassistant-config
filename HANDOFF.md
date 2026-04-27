@@ -1,68 +1,48 @@
-# HANDOFF — Session S60
+# HANDOFF — Session S61
 
-## Last Session: S60 (2026-04-27)
+## Last Session: S61 (2026-04-27)
 ## Last Commit: (set after this session's commit)
-## Baseline: 79 automations, 51 input_booleans, 15 input_numbers, 6 timers, IP bans post-storm
+## Baseline: 79 automations, 51 input_booleans, 15 input_numbers, 6 timers, 0 IP bans
 
 ---
 
-## NOTE ON HANDOFF DRIFT (now resolved twice)
-
-Two prior drift events: S55–S57 (3-session skip), S59 (1-session skip — content rewritten but session header not bumped). S60 found S59 drift on session start.
-
-Going forward:
-- HANDOFF.md regenerates every session-end via heredoc paste — NO EXCEPTIONS
-- Regeneration MUST bump the session header (Last Session, WHAT HAPPENED IN S<NN>, benchmark column), not just rewrite content. S59 rewrote 197 lines but kept "Session S58" header — that masked the drift.
-
----
-
-## WHAT HAPPENED IN S60
+## WHAT HAPPENED IN S61
 
 ### Goal
-S58 queue items #2 (automations.yaml drift diagnosis) and #3 (Google Calendar re-auth).
+Top of HANDOFF queue. read_handoff returned S58-headed content; diagnostic flipped the goal.
 
-### Findings
+### Diagnostic chain (3rd consecutive session where starter premise was stale)
 
-**#3 Google Calendar — already resolved.** 0 active repairs, 0 persistent notifications, all 19 calendar entities returning normal on/off states. Presumed fixed during S59.
+1. `git log` showed S59 (`2e0033a`) and S60 (`d63716d`) had completed without bumping HANDOFF's `## Last Session:` header. Body partially updated, header stale, BENCHMARK column added — Frankenstein file. That is the regen-template bug S60 commit identified; fix landed this session.
 
-**#2 automations.yaml — NO DRIFT, working as designed.** The "drift" was based on a faulty mental model in Project Instructions and prior HANDOFFs. Evidence:
+2. **S58 priority queue is fully retired:**
+   - #1 auth-retry hunt — closed S59. Storm ended 2026-04-14 at EQ14 cutover stabilization. Mobile App Temp LLAT revoked. Stale `auth:` block stripped from configuration.yaml.
+   - #2 automations.yaml drift — closed S60. Diagnosed as non-drift. configuration.yaml line 52 sets `automation ui: !include automations.yaml` → that YAML IS the canonical UI storage layer on this system.
+   - #3 Google Calendar re-auth — closed by John pre-S61. Verified live: `calendar.pigeonfallsrn_gmail_com` state `on` ("Hokens birthday"), last_updated 17:55 UTC.
 
-1. configuration.yaml:52 contains `automation ui: !include automations.yaml` — this directive makes automations.yaml the canonical store for UI automations.
-2. .storage/ contains no automation files.
-3. automations.yaml has 79 alias entries — matches HA automation count exactly.
-4. Mixed ID styles in the file (snake_case manual + numeric Unix-timestamp UI-generated) confirm both write paths land in the same file. Normal.
+3. **HANDOFF.md rebuilt cleanly** (full overwrite, not surgical edit). Header bumped, body S61-only, BENCHMARK extended.
 
-**Conclusion:** When `automation: !include X.yaml` is in configuration.yaml, that YAML file IS canonical UI storage. There is no parallel .storage/automations to be in conflict with. UI editor and ha_config_set_automation writes both go to the YAML.
+### Workflow lessons (S61)
 
-The `automation ui:` label (vs default `automation:`) is non-standard but functional. Likely legacy from an abandoned manual+UI split. Not worth changing.
+- `grep -c PATTERN file` returns exit 1 when zero matches → broke `&&` chain at `IP_BANS TOTAL: 0`. Same root cause as S59 `diff`-on-difference. Two-occurrence candidate: **exit-code-aware chaining** — `;` not `&&` between sections in diagnostic dumps; close optional/may-be-empty commands with `|| true`; trailing `; true` at end of complex one-liner.
+- Defensive `; true` at end of dump #2 successfully prevented break. Pattern confirmed.
+- `hac/HANDOFF.md` and `hac/LEARNINGS.md` exist as legacy files in `/homeassistant/hac/` from pre-EQ14 tooling era. **The active files are top-level**, not in hac/.
 
-### Bonus discoveries
-
-- S59 commit 2e0033a rewrote 197 lines of HANDOFF.md but kept "Session S58" header — masked S59 drift until S60 git log surfaced the mismatch.
-- hac/MASTER_PLAN.md.stub_backup_s58: untracked S58 archive stub — deleted in S60 close.
-
-### Files touched in S60
-- hac/MASTER_PLAN.md.stub_backup_s58: deleted
-- HANDOFF.md: regenerated for S60
-- LEARNINGS.md: appended S60 entry
+### Files touched (S61)
+- `/homeassistant/HANDOFF.md` — full rebuild
+- `/homeassistant/LEARNINGS.md` — S61 section appended
 
 ---
 
-## NEXT SESSION (S61) — RECOMMENDED PRIORITY ORDER
+## NEXT SESSION (S62) — RECOMMENDED PRIORITY
 
-### 1. DEFERRED FROM S57 (longest in queue)
-- Front Driveway + Very Front Door unification (apply S57 Hue split pattern)
-- Resolve `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` typo entity
-- Stale ref scan post-S57 (`light.front_hallway_ceiling_*` → `light.front_entryway_ceiling` or `light.stairway_ceiling_*_of_2`)
-- Hue Bridge duplicate zone cleanup (All Exterior x2, Garage Ceiling x2)
-- Curated outdoor scene library (Back Patio: Galaxy/Northern Lights/Disco — needs Hue app work first)
+S58 queue empty. S57 deferred batch is now top.
 
-### 2. PROJECT INSTRUCTIONS UPDATE (governance)
-Apply S60 corrections to Project Instructions:
-- Remove ".storage/ is canonical for automations" assumption from UI-first description
-- Add: "When `automation: !include X.yaml` is in configuration.yaml, that YAML is canonical UI storage. .storage/ is NOT used for automations on this system."
-- Add HANDOFF regen rule: "session header bump is mandatory, not just content rewrite"
-- Promote DIAGNOSTIC DISCIPLINE to PROMOTED RULES (S58 + S60 = 2 occurrences confirmed)
+1. **Front Driveway + Very Front Door unification.** Apply S57 Hue CLIP v2 split pattern. Resolve typo entity `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode`.
+2. **Stale ref scan post-S57.** `light.front_hallway_ceiling_*` → `light.front_entryway_ceiling` or `light.stairway_ceiling_*_of_2`. Use batch `ha_get_state` (entity-ref hygiene PROMOTED RULE).
+3. **Hue Bridge duplicate zone cleanup.** All Exterior x2, Garage Ceiling x2.
+4. **Curated outdoor scene library.** Back Patio: Galaxy / Northern Lights / Disco — Hue app work first.
+5. **mcp_session_init enrichment (optional).** Add `head -3 HANDOFF.md` + `git log --oneline -5` to the init dump so header/commit drift is unmissable in the first 10 lines of session start.
 
 ---
 
@@ -72,8 +52,11 @@ Apply S60 corrections to Project Instructions:
 - Garage opener Hue bulbs unreachable (power circuit, not software)
 - Very Front Door Hallway: disconnected pending rewire + 2 new A19s
 - Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, screensaver, battery mgmt)
-- Govee lamp area reassignment when physically moved to master bedroom
-- 2nd Floor Roomba, DS224plus NAS, Roku 4620X, Tuya, Vizio SmartCast — discovered integrations to review
+- Govee lamp area reassignment when moved to master bedroom
+- Discovered integrations to review: 2nd Floor Roomba, DS224plus NAS, Roku 4620X, Tuya, Vizio SmartCast
+- Navien + Yamaha RX-V671 not yet on EQ14
+- NordPass: "Mobile App Temp Long-lived Token - HA" entry is DEAD (revoked S59) — delete from vault
+- NordPass backlog renames (hassio adv ssh, 192.168.1.3 entries, ha_synology entries)
 
 ## BLOCKED
 
@@ -86,23 +69,23 @@ Apply S60 corrections to Project Instructions:
 
 ## BENCHMARK
 
-| Metric | S58 | S59 | S60 |
-|---|---|---|---|
-| Automations | 79 | 79 | 79 |
-| Input booleans | 51 | 51 | 51 |
-| Local API auth | working | working | working |
-| HA version | 2026.4.4 | 2026.4.4 | 2026.4.4 |
-| Active repairs | 1 (Cal OAuth) | 0 | 0 |
-| Active notifications | unknown | 0 | 0 |
-| HANDOFF state | S55-S57 catchup | unbumped header | resolved + protocol fix |
-| automations.yaml architecture | "drifted" (wrong) | "drifted" (wrong) | confirmed canonical |
+| Metric | S58 | S59 | S60 | S61 |
+|---|---|---|---|---|
+| Automations | 79 | 79 | 79 | 79 |
+| Input booleans | 51 | 51 | 51 | 51 |
+| IP bans (total) | 70 | 0 | 0 | 0 |
+| Local API auth | working | working | working | working |
+| HA version | 2026.4.4 | 2026.4.4 | 2026.4.4 | 2026.4.4 |
+| Active repairs | 1 (Cal OAuth) | 0 | 0 | 0 |
+| HANDOFF state | S55–S57 catchup | unbumped header | partial regen | clean rebuild |
+| automations.yaml architecture | "drifted" (wrong) | "drifted" (wrong) | confirmed canonical | confirmed canonical |
+| S58 priority queue | created | #1 done | #2 done | #3 done, retired |
 
 ## QUICK REFERENCE
 
 - HA: http://192.168.1.10:8123
 - Hue Bridge: 192.168.1.68 (API key in /homeassistant/hac/backup/)
 - SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
-- Git push: MCP shell_command.git_push only
-- Notify: notify.mobile_app_galaxy_s26_ultra
-- Token in NordPass: "HA EQ14 — LLAT for export_to_sheets (john)"
-- NordPass entry "Mobile App Temp Long-lived Token - HA" is now DEAD (revoked S59) — delete from vault
+- Git push: MCP `shell_command.git_push` only
+- Notify: `notify.mobile_app_galaxy_s26_ultra`
+- Tokens in NordPass: "HA EQ14 — LLAT for export_to_sheets (john)" + "Claude Desktop MCP" both active. "Mobile App Temp" revoked, delete entry.
