@@ -483,3 +483,23 @@ This counts as 2nd occurrence under the same root-cause umbrella. Candidate for 
 - **`; true` terminator confirmed.** Dump #2 used `; true` at end-of-line and ran to completion despite intermediate `awk`/`find` returning empty. Pattern is reliable; adopt as default for diagnostic one-liners.
 
 - **`HA_MASTER_PROJECT_PLAN.md` was archived in S58** (commit `e9ca905`) but cached references in dump templates can cause `ls` chains to break when one path is missing. When chains include file paths, prefer `ls -la X Y Z 2>/dev/null` (with redirect on the whole `ls`) over assuming all paths exist.
+
+## S62 (2026-04-27) — hot_tub deprecation completion + linkification depth + exit-code-aware chaining 2nd-occurrence
+
+### LINKIFICATION REACHES DEEPER, BUT IS PURELY CHAT-DISPLAY
+Chat-client autolinks `boolean.school_tomorrow` as `[boolean.school](http://boolean.school)_tomorrow` because `.school` is a registered TLD. The autolink wraps only the matchable substring; surrounding `input_` prefix and `_tomorrow` suffix stay outside the link boundary. When user copy-pastes from chat into terminal, the terminal's paste handler strips markdown to display text, reproducing the original plain-text string. **Linkification is a chat-display artifact only when surrounding chars stay outside the autolink boundary.** Don't panic-rewrite based on chat appearance — verify file content via grep/diff. S62 burned ~10 min on a recovery script that wasn't needed.
+
+### EXIT-CODE-AWARE CHAINING (PROMOTED — 2nd occurrence)
+`&&`-chained `grep -c "pattern"` returning 0 (zero matches) is exit code 1 and kills the rest of the chain. **Rule:** diagnostic/verification dumps where every part should run regardless of individual results use `;` separator. Reserve `&&` for sequential ops where each step's success is a precondition for the next (file edits, deploys, installs). First occurrence S61, second S62 — promote to operational defenses.
+
+### HELPER DELETION RETURNS ENTITY_NOT_FOUND WHEN ALREADY ORPHANED
+`ha_config_remove_helper` returns ENTITY_NOT_FOUND when helper was never in (or was previously removed from) entity registry, even if YAML/automation refs persist. Refs are inert: Jinja `is_state(missing_entity, 'on')` gracefully evaluates False with no error or warning. **Implication:** absence of HA error logs is NOT proof referenced entities exist. Verify via ha_search_entities or ha_get_state before assuming refs are live.
+
+### DEPRECATION FRAMING ≠ DEPRECATION EXECUTION (1st-occurrence — track for promotion)
+S57 commit "Hot Tub deprecation" actually only deleted the helper; left 6 automations + 2 package template branches live. S62 finished the actual deprecation. **Rule candidate:** when a session frames work as "deprecation"/"removal", the audit must verify full scope of refs gets removed in the same pass — not just the headline entity. Distinct from entity-ref-hygiene (which is about broken refs to existing entities); this is dangling refs to deleted entities.
+
+### TWO-WRITE EQUIVALENCE
+First heredoc rewrote packages/adaptive_lighting_entry_lamp.yaml with clean `|` block scalars; Python recovery from .s62.bak restored original ugly serialized format minus hot_tub branches. Both produce functionally identical sensor outputs (HA strips whitespace from template state). No retry needed for cosmetic improvement; HA's parser is format-agnostic for template state.
+
+### HANDOFF REGEN BUG STILL UNRESOLVED AS OF S62 START
+S61 commit message claimed "HANDOFF regen-template-bug fix (full rebuild)" but S62 session-init found HANDOFF.md still showing S58 baseline content. S61's fix did not stick. S62 close uses standard heredoc paste workflow with explicit verification (head/grep) to test whether the regen process now works.

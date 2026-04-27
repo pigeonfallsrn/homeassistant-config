@@ -13,7 +13,7 @@ template:
     name: Evening Lamp Off Time
     state: "{% set kids_home = is_state('binary_sensor.alaina_home', 'on') or is_state('binary_sensor.ella_home',\
       \ 'on') %} {% set school = is_state('input_boolean.school_tomorrow', 'on') %}\
-      \ {% if is_state('input_boolean.hot_tub_mode', 'on') %}\n  01:00\n{% elif is_state('input_boolean.extended_evening',\
+      \ {% if is_state('input_boolean.extended_evening',\
       \ 'on') %}\n  00:30\n{% elif is_state('input_boolean.guest_present', 'on') %}\n\
       \  00:30\n{% elif kids_home and school %}\n  22:30\n{% else %}\n  23:30\n{%\
       \ endif %}\n"
@@ -23,8 +23,7 @@ template:
       \ = hour + minute/60 %} {% set kids_home = is_state('binary_sensor.alaina_home',\
       \ 'on') or is_state('binary_sensor.ella_home', 'on') %} {% set school = is_state('input_boolean.school_tomorrow',\
       \ 'on') %} {% set extended = is_state('input_boolean.extended_evening', 'on')\
-      \ or is_state('input_boolean.guest_present', 'on') %} {% set hot_tub = is_state('input_boolean.hot_tub_mode',\
-      \ 'on') %} {% if hot_tub %}\n  5\n{% elif extended %}\n  100\n{% elif kids_home\
+      \ or is_state('input_boolean.guest_present', 'on') %} {% if extended %}\n  100\n{% elif kids_home\
       \ and school %}\n  {% if time_val >= 21.5 %}30{% else %}100{% endif %}\n{% else\
       \ %}\n  {% if time_val >= 22.5 %}30{% else %}100{% endif %}\n{% endif %}\n"
     unique_id: evening_lamp_max_brightness
