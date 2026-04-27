@@ -535,3 +535,23 @@ When offering A/B/C/X/Y/Z, every option must be a genuine path. S62 closed with 
 
 ### S62 SESSION QUALITY READ
 Task delivered cleanly (72 automations, 0 hot_tub refs, clean push). ~15 of ~90 minutes lost to self-inflicted overhead (formatting rewrite, linkification panic, failed helper delete). Strong: diagnostic discipline, verify-before-push, amend-before-push catch on .bak leakage. Weak: destructive-action ergonomics, edit-scope discipline, panic threshold on chat-display artifacts.
+
+## S62 (2026-04-27) — HANDOFF drift root cause: read path bug, not regen template
+
+### The actual bug
+For 5 sessions (S58-S62) we believed HANDOFF.md was being regenerated from a template at session init. S58 named it "regen-template-bug", S60 "diagnostic discipline" learning came from re-investigating it, S61 attempted "full rebuild" fix that didn't take. **There was no template. There was no regenerator.** `shell_command.read_handoff` was defined as `cat /config/hac/HANDOFF.md`. Every session's close ritual wrote `/config/HANDOFF.md`. Two real files, both on disk, divergent for 5 sessions. Reading the wrong file every session start created the appearance of "drift" because the read returned an older real handoff that never got updated.
+
+### Fix
+- Edited configuration.yaml: read_handoff and mcp_session_init paths from `/config/hac/HANDOFF.md` to `/config/HANDOFF.md`
+- HA full restart required (shell_command not affected by reload_core target=all)
+- Archived 7 stale handoff files (hac/HANDOFF.md, hac/HANDOFF_S11_PATCH.md, root S32-S36_HANDOFF.md) to hac/archive/handoffs_pre_s62/
+- Verified: post-restart `read_handoff` returns S62 content
+
+### PROMOTABLE RULE — read-path-vs-write-path asymmetry
+When a "drift" or "regen" persists across multiple alleged fixes, audit the **read path** before fixing the **write path** again. Asymmetry between where data is read and where data is written is a common drift source — and it hides because both files are real, both have plausible content, and the close ritual updates the one you're looking at while session-init reads the one you're not. **Symptom:** "we keep fixing it but it keeps coming back." **Diagnostic:** `grep -rn "ACTUAL_PATH" configuration.yaml shell_commands.yaml` to confirm the read path matches what your write ritual produces. Generalizes beyond HANDOFF.md to any periodic-update document, log, or state file. Add to operational defenses on next governance review.
+
+### shell_command reload behavior
+`ha_reload_core(target="all")` reloads 16 components (automations, scripts, scenes, groups, helpers, templates, persons, zones, core, themes) but NOT shell_command. shell_command definitions are loaded at HA startup only — changes require full ha_restart. Counter to S40+ "prefer reload over restart" preference for shell_command edits.
+
+### Other reads still pointing at hac/
+`read_critical_rules` and `read_critical_rules_full` still point at `/config/hac/CRITICAL_RULES_CORE.md` and `/config/hac/CRITICAL_RULES.md`. Files exist there. Whether they're stale or current is unaudited as of S62 close. **S63 priority candidate:** verify these or migrate them to repo root for parity with HANDOFF.md.
