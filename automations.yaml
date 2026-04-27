@@ -668,39 +668,29 @@
     - light.2nd_floor_vanity_lights
 - id: '1772045640891'
   alias: Back Patio — Inovelli Controls Hue Lights
-  description: UP=Energize, DOWN=Off, Config press=scene cycle (Energize→Relax→Dimmed→Nightlight),
-    Config hold=Hot Tub Mode toggle.
+  description: S57 rewrite. UP=current scene + claim override 2hr. DOWN=off + 90s
+    motion suppress. Config press=cycle Energize→Relax→Nightlight + claim override
+    2hr. Config hold=panic-reset (all off + clear override). Drops broken Dimmed scene
+    ref. Hot tub mode deprecated.
   triggers:
-  - event_data:
-      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
+  - platform: event
     event_type: zha_event
-    platform: event
+    event_data:
+      device_id: 70c1c990c1792ade4fc2eb2fd0d8487a
   actions:
   - choose:
     - conditions:
       - condition: template
         value_template: '{{ trigger.event.data.command == ''button_2_press'' }}'
       sequence:
-      - action: scene.turn_on
+      - action: input_boolean.turn_on
         target:
-          entity_id: scene.back_patio_energize
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
-      sequence:
-      - action: light.turn_off
+          entity_id: input_boolean.back_patio_manual_override
+      - action: timer.start
         target:
-          entity_id: light.back_patio
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
-      sequence:
-      - action: input_number.set_value
+          entity_id: timer.back_patio_override
         data:
-          value: '{{ ((states(''input_number.back_patio_scene_index'') | int + 1)
-            % 4) }}'
-        target:
-          entity_id: input_number.back_patio_scene_index
+          duration: 02:00:00
       - choose:
         - conditions:
           - condition: state
@@ -725,11 +715,67 @@
           sequence:
           - action: scene.turn_on
             target:
-              entity_id: scene.back_patio_dimmed
+              entity_id: scene.back_patio_nightlight
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.back_patio_energize
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_1_press'' }}'
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.back_patio
+        data:
+          transition: 2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.back_patio_manual_override
+      - action: timer.start
+        target:
+          entity_id: timer.back_patio_override
+        data:
+          duration: 00:01:30
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == ''button_3_press'' }}'
+      sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.back_patio_scene_index
+        data:
+          value: '{{ ((states(''input_number.back_patio_scene_index'') | int + 1)
+            % 3) }}'
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.back_patio_manual_override
+      - action: timer.start
+        target:
+          entity_id: timer.back_patio_override
+        data:
+          duration: 02:00:00
+      - choose:
         - conditions:
           - condition: state
             entity_id: input_number.back_patio_scene_index
-            state: '3.0'
+            state: '0.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.back_patio_energize
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '1.0'
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.back_patio_relax
+        - conditions:
+          - condition: state
+            entity_id: input_number.back_patio_scene_index
+            state: '2.0'
           sequence:
           - action: scene.turn_on
             target:
@@ -738,11 +784,19 @@
       - condition: template
         value_template: '{{ trigger.event.data.command == ''button_3_hold'' }}'
       sequence:
-      - action: input_boolean.toggle
+      - action: light.turn_off
         target:
-          entity_id: input_boolean.hot_tub_mode
-  max_exceeded: silent
+          entity_id: light.back_patio
+        data:
+          transition: 2
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.back_patio_manual_override
+      - action: timer.cancel
+        target:
+          entity_id: timer.back_patio_override
   mode: queued
+  max_exceeded: silent
 - id: '1772057917525'
   alias: 1st Floor Bathroom — Inovelli Controls Hue Ceiling
   description: UP=Energize, 2xUP=Relax, DOWN=Off, 2xDOWN=Nightlight, Config=Dimmed,
@@ -1133,24 +1187,22 @@
 - id: '1774539842937'
   alias: Kitchen + Lounge — Motion Lighting
   description: '3-tier time-based motion lighting for open-concept kitchen/lounge.
-    Day (06-21): full task lighting, all lights auto. Evening (21-23): ambient only
-    — under-cabinet, lounge ceiling, lounge lamp auto; overhead kitchen lights (chandelier,
-    ceiling, pendants) manual-only. Late night (23-06): under-cabinet only. Hue group
-    lights get bare turn_on — AL owns brightness/color_temp. Dumb lights get explicit
-    brightness. Suppresses off when TV playing. Respects manual override. Updated
-    2026-04-06: trigger consolidated to first_floor_main_motion (kitchen P1 + west
-    kitchen TR + entry P1). Added kitchen_manual_override gate alongside kitchen_lounge_manual_override.'
+    Day (06-21): full task lighting. Evening (21-23): ambient only. Late night (23-06):
+    under-cabinet only. Hue group lights get bare turn_on — AL owns brightness/color_temp.
+    Suppresses off when TV playing. Respects manual override + quiet_travel (motion_on
+    branch only — motion_off still fires to clean up). Updated S57: added quiet_travel
+    suppression.'
   triggers:
-  - platform: state
-    entity_id: binary_sensor.first_floor_main_motion
-    to: 'on'
+  - entity_id: binary_sensor.first_floor_main_motion
     id: motion_on
-  - platform: state
-    entity_id: binary_sensor.first_floor_main_motion
-    to: 'off'
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.first_floor_main_motion
     for:
       minutes: 12
     id: motion_off
+    platform: state
+    to: 'off'
   actions:
   - choose:
     - conditions:
@@ -1162,110 +1214,113 @@
       - condition: state
         entity_id: input_boolean.kitchen_manual_override
         state: 'off'
+      - condition: state
+        entity_id: input_boolean.quiet_travel
+        state: 'off'
       sequence:
       - choose:
         - conditions:
-          - condition: time
-            after: 06:00:00
+          - after: 06:00:00
             before: '21:00:00'
+            condition: time
           sequence:
           - action: light.turn_on
+            data:
+              transition: 0
             target:
               entity_id: light.kitchen_chandelier
+          - action: light.turn_on
             data:
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_above_sink_light
-            data:
-              transition: 0
           - action: light.turn_on
+            data:
+              brightness_pct: 100
+              transition: 0
             target:
               entity_id: light.kitchen_ceiling_inovelli_vzm31_sn
+          - action: light.turn_on
             data:
               brightness_pct: 100
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_bar_pendant_lights
-            data:
-              brightness_pct: 100
-              transition: 0
           - action: light.turn_on
-            target:
-              entity_id: light.inovelli_vzm31_sn_4
             data:
               brightness_pct: 80
               transition: 0
-          - action: light.turn_on
             target:
-              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+              entity_id: light.inovelli_vzm31_sn_4
+          - action: light.turn_on
             data:
               brightness_pct: 70
               color_temp_kelvin: 3000
               transition: 0
+            target:
+              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
           - action: light.turn_on
+            data:
+              transition: 0
             target:
               entity_id: light.kitchen_govee_floor_lamp
+          - action: light.turn_on
             data:
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge
+          - action: light.turn_on
             data:
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge_lamp
-            data:
-              transition: 0
         - conditions:
-          - condition: time
-            after: '21:00:00'
+          - after: '21:00:00'
             before: '23:00:00'
+            condition: time
           sequence:
           - action: light.turn_on
-            target:
-              entity_id: light.inovelli_vzm31_sn_4
             data:
               brightness_pct: 40
               transition: 0
-          - action: light.turn_on
             target:
-              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+              entity_id: light.inovelli_vzm31_sn_4
+          - action: light.turn_on
             data:
               brightness_pct: 50
               color_temp_kelvin: 2500
               transition: 0
+            target:
+              entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
           - action: light.turn_on
+            data:
+              transition: 0
             target:
               entity_id: light.kitchen_govee_floor_lamp
+          - action: light.turn_on
             data:
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge
+          - action: light.turn_on
             data:
               transition: 0
-          - action: light.turn_on
             target:
               entity_id: light.kitchen_lounge_lamp
-            data:
-              transition: 0
         default:
         - action: light.turn_on
-          target:
-            entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
           data:
             brightness_pct: 6
             color_temp_kelvin: 2100
             transition: 0
-        - action: light.turn_on
           target:
-            entity_id: light.inovelli_vzm31_sn_4
+            entity_id: light.kitchen_under_cabinet_aqara_t1_led_strip
+        - action: light.turn_on
           data:
             brightness_pct: 12
             transition: 0
+          target:
+            entity_id: light.inovelli_vzm31_sn_4
     - conditions:
       - condition: trigger
         id: motion_off
@@ -1285,6 +1340,8 @@
           state: playing
       sequence:
       - action: light.turn_off
+        data:
+          transition: 0
         target:
           entity_id:
           - light.kitchen_chandelier
@@ -1296,8 +1353,6 @@
           - light.kitchen_govee_floor_lamp
           - light.kitchen_lounge
           - light.kitchen_lounge_lamp
-        data:
-          transition: 0
   mode: restart
 - id: '1774544318554'
   alias: Upstairs Bathroom — Motion Lighting
@@ -2126,7 +2181,7 @@
     condition: numeric_state
     entity_id: sensor.entry_room_average_lux
   - condition: state
-    entity_id: input_boolean.hot_tub_mode
+    entity_id: input_boolean.quiet_travel
     state: 'off'
   - condition: state
     entity_id: input_boolean.dad_bedtime_mode
@@ -2151,7 +2206,7 @@
     entity_id: light.entry_room_desk_lamp
     state: 'on'
   - condition: state
-    entity_id: input_boolean.hot_tub_mode
+    entity_id: input_boolean.quiet_travel
     state: 'off'
   actions:
   - action: light.turn_off
@@ -2172,7 +2227,7 @@
     platform: time
   conditions:
   - condition: state
-    entity_id: input_boolean.hot_tub_mode
+    entity_id: input_boolean.quiet_travel
     state: 'off'
   actions:
   - action: switch.turn_off
@@ -2816,7 +2871,7 @@
   alias: Entry Room — Lamp Motion Control
   description: 'Consolidated motion-based lamp control. Motion on: turn on lamp with
     AL at context-aware brightness (lux gated). Motion off 3min: dim to 20%. Motion
-    off 10min: full off. Respects manual override, hot tub mode, and bedtime mode.'
+    off 10min: full off. Respects manual override, quiet travel, and bedtime mode.'
   triggers:
   - platform: state
     entity_id: binary_sensor.entry_room_motion
@@ -2839,7 +2894,7 @@
     entity_id: input_boolean.entry_room_manual_override
     state: 'off'
   - condition: state
-    entity_id: input_boolean.hot_tub_mode
+    entity_id: input_boolean.quiet_travel
     state: 'off'
   - condition: state
     entity_id: input_boolean.dad_bedtime_mode
@@ -2900,18 +2955,10 @@
   mode: restart
 - id: '1776535795628'
   alias: Entry Room — Lamp Mode Overrides
-  description: 'Handles hot tub mode and bedtime mode lamp behavior. Hot tub on: deep
-    red 5%, disable AL. Hot tub off: restore AL and normal operation. Bedtime on:
-    dim warm fade then off after 15min.'
+  description: 'Bedtime mode lamp behavior: dim warm fade then off after 15min. (Hot
+    tub branches stripped S57 — quiet_travel suppresses motion lights via conditions
+    instead.)'
   triggers:
-  - entity_id: input_boolean.hot_tub_mode
-    id: hot_tub_on
-    platform: state
-    to: 'on'
-  - entity_id: input_boolean.hot_tub_mode
-    id: hot_tub_off
-    platform: state
-    to: 'off'
   - entity_id: input_boolean.dad_bedtime_mode
     id: bedtime_on
     platform: state
@@ -2922,42 +2969,6 @@
     state: 'off'
   actions:
   - choose:
-    - conditions:
-      - condition: trigger
-        id: hot_tub_on
-      sequence:
-      - action: light.turn_on
-        data:
-          brightness_pct: 5
-          rgb_color:
-          - 255
-          - 30
-          - 0
-          transition: 2
-        target:
-          entity_id: light.entry_room_desk_lamp
-      - action: switch.turn_off
-        target:
-          entity_id:
-          - switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
-          - switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
-          - switch.living_spaces_adaptive_lighting_living_spaces
-    - conditions:
-      - condition: trigger
-        id: hot_tub_off
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id:
-          - switch.living_spaces_adaptive_lighting_living_spaces
-          - switch.entry_room_lamp_adaptive_adaptive_lighting_entry_room_lamp_adaptive
-          - switch.entry_room_ceiling_adaptive_lighting_entry_room_ceiling
-      - action: adaptive_lighting.apply
-        data:
-          entity_id: switch.living_spaces_adaptive_lighting_living_spaces
-          lights:
-          - light.entry_room_desk_lamp
-          transition: 5
     - conditions:
       - condition: trigger
         id: bedtime_on
@@ -3214,8 +3225,10 @@
   mode: restart
 - id: '1776914781061'
   alias: Back Patio — Motion Lighting
-  description: Hue outdoor motion sensor. Energize scene on motion after dark, auto-off
-    5min no motion or 15min hard cap.
+  description: 'Hue outdoor motion sensor. Activates current scene (from input_number.back_patio_scene_index)
+    on motion after dark. Auto-off 5min no motion or 15min hard cap. S57 changes:
+    respects manual override toggle, quiet_travel, and override timer (covers 90s
+    post-DOWN suppress + 2hr post-UP claim).'
   triggers:
   - entity_id: binary_sensor.back_patio_hue_motion
     platform: state
@@ -3224,10 +3237,45 @@
   - after: sunset
     after_offset: -00:15:00
     condition: sun
+  - condition: state
+    entity_id: input_boolean.back_patio_manual_override
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.quiet_travel
+    state: 'off'
+  - condition: state
+    entity_id: timer.back_patio_override
+    state: idle
   actions:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.back_patio_energize
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_number.back_patio_scene_index
+        state: '0.0'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_energize
+    - conditions:
+      - condition: state
+        entity_id: input_number.back_patio_scene_index
+        state: '1.0'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_relax
+    - conditions:
+      - condition: state
+        entity_id: input_number.back_patio_scene_index
+        state: '2.0'
+      sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.back_patio_nightlight
+    default:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.back_patio_energize
   - continue_on_timeout: true
     timeout:
       minutes: 15
@@ -3473,3 +3521,73 @@
           entity_id: light.alaina_s_led_strips
   max: 5
   mode: queued
+- id: '1777222465965'
+  alias: System — Quiet Travel Auto-Off at Midnight
+  description: S57. Replaces hot_tub_mode 3am auto-reset. Auto-disables quiet_travel
+    at midnight if still on — catches forgotten toggles. Notifies on phone.
+  triggers:
+  - at: 00:00:00
+    platform: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.quiet_travel
+    state: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.quiet_travel
+  - action: notify.mobile_app_galaxy_s26_ultra
+    data:
+      message: Quiet Travel auto-disabled at midnight — motion lighting resumed.
+      title: Quiet Travel Off
+  mode: single
+- id: '1777222476971'
+  alias: System — Back Patio Override Timer Finished
+  description: When the 2hr override timer expires (or 90s post-DOWN suppress timer),
+    clear the override boolean so motion lighting resumes.
+  triggers:
+  - event_data:
+      entity_id: timer.back_patio_override
+    event_type: timer.finished
+    platform: event
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.back_patio_manual_override
+  mode: single
+- id: '1777223568235'
+  alias: Back Patio — Clear Override on Timer Finish
+  description: S57. Companion to Inovelli automation. When timer.back_patio_override
+    finishes (2hr claim expires OR 90s suppress expires), clears the manual override
+    flag so motion lighting can resume.
+  triggers:
+  - event_data:
+      entity_id: timer.back_patio_override
+    event_type: timer.finished
+    platform: event
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.back_patio_manual_override
+  mode: single
+- id: '1777223651091'
+  alias: System — Quiet Travel Auto Off at Midnight
+  description: S57. Replaces the hot_tub_mode 3am auto-reset. Auto-disables quiet_travel
+    at midnight if still on — catches forgotten toggles before motion lighting stays
+    suppressed all night.
+  triggers:
+  - at: 00:00:00
+    platform: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.quiet_travel
+    state: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.quiet_travel
+  - action: notify.mobile_app_galaxy_s26_ultra
+    data:
+      message: Quiet Travel auto-disabled at midnight — motion lighting resumed.
+      title: Quiet Travel Off
+  mode: single
