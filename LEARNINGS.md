@@ -414,3 +414,51 @@ When a zone turns on, any room containing those zone-member bulbs ALSO logs "tur
 
 - **Pre-close one-click side-quests.** Repairs UI 1-click fixes (OAuth re-auths) and configuration.yaml logger suppressions are perfect tack-on items at session close — low cognitive load, knock items off the queue without changing scope.
 
+
+## S60 (2026-04-27) — automations.yaml architecture correction + regen-template bug + diagnostic discipline 2nd occurrence
+
+### Architecture correction: automations.yaml IS canonical for UI automations on this system
+
+Long-held assumption in Project Instructions and prior HANDOFFs: "UI-first means all automations live in .storage/." S60 diagnostic disproved this.
+
+Evidence:
+- configuration.yaml:52: `automation ui: !include automations.yaml`
+- .storage/: no automation files
+- automations.yaml: 79 alias entries (matches HA automation count exactly)
+- Mixed ID styles confirm UI editor + ha_config_set_automation MCP writes both land in the YAML
+
+Rule: When `automation: !include X.yaml` is in configuration.yaml, that YAML file IS the canonical UI storage layer. There is no parallel .storage/automations on this system. Both UI edits and MCP-set automations write here.
+
+Corollary: helpers, scripts, scenes, and other entity types may behave differently — each include directive needs individual verification before generalizing. Don't say "X lives in storage" without checking configuration.yaml for `X: !include`.
+
+Implication: S58's "automations.yaml drift confirmed" finding was based on the faulty assumption. Content arriving via UI was correct behavior, not drift.
+
+### Regen-template bug: session header bump is mandatory, not optional
+
+S59 commit 2e0033a rewrote 197 lines of HANDOFF.md but `## Last Session: S58` header stayed unchanged. Content was current; metadata was stale. The drift wasn't visible until S60 session-init compared git log (S59 last commit) against HANDOFF header (S58).
+
+Rule: HANDOFF regeneration must update session header AND content. Add to session-close protocol checklist:
+- `## Last Session: S<NN>` matches current session
+- `## WHAT HAPPENED IN S<NN>` matches current session
+- Benchmark table gets a new column for S<NN>
+- Last Commit gets filled post-push
+
+### DIAGNOSTIC DISCIPLINE — 2nd occurrence confirmed, promote to PROMOTED RULES
+
+S58 was the candidate; S60 is the second occurrence.
+
+- S58: starter said LLAT was REVOKED. Diagnostic found `::1` IP ban. Token was likely working; rotation was a side effect of misdiagnosis.
+- S60: prior HANDOFF said automations.yaml drift was "confirmed." Diagnostic found no drift — the file is canonical by design.
+
+Both cases: treating the starter/handoff claim as established fact would have led to wasted execution (rotating a working token; "fixing" a non-broken architecture). Brief verification before action saved both sessions.
+
+Promoted rule (apply in next governance update): When a session starter, prior HANDOFF, or LEARNINGS entry says "X is broken / confirmed / revoked / drifted," verify ground truth with a clean diagnostic before treating the claim as established. Especially for architectural or security claims where the cost of acting on a wrong assumption is high.
+
+### Two-Occurrence candidate: chat-paste shell hygiene
+
+S58 first occurrence: LINKIFICATION (chat-client mangling foo.bar patterns into hyperlinks).
+S60 second occurrence: zsh history expansion on `!include` pattern → `zsh: event not found: include`.
+
+Same root cause: text pasted from chat into interactive shell goes through layers of interpretation (chat-client formatting + shell history/glob expansion) before execution. Single-quoting strings containing shell-special characters (!, $, *, ~, URL-like foo.bar patterns) avoids both classes of failure.
+
+This counts as 2nd occurrence under the same root-cause umbrella. Candidate for promotion to OPERATIONAL DEFENSES on next governance cycle as: CHAT-PASTE SHELL HYGIENE — single-quote anything in pasted commands containing !, $, *, ~, or foo.bar patterns to neutralize chat-client linkification AND shell history/glob expansion.

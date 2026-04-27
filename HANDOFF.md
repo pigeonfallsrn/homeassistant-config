@@ -1,72 +1,68 @@
-# HANDOFF — Session S59
+# HANDOFF — Session S60
 
-## Last Session: S59 (2026-04-27)
+## Last Session: S60 (2026-04-27)
 ## Last Commit: (set after this session's commit)
-## Baseline: 79 automations, 51 input_booleans, 11 refresh_tokens (was 12), 70 ip_bans (unchanged; 0 new since 2026-04-14)
+## Baseline: 79 automations, 51 input_booleans, 15 input_numbers, 6 timers, IP bans post-storm
 
 ---
 
-## WHAT HAPPENED IN S59
+## NOTE ON HANDOFF DRIFT (now resolved twice)
+
+Two prior drift events: S55–S57 (3-session skip), S59 (1-session skip — content rewritten but session header not bumped). S60 found S59 drift on session start.
+
+Going forward:
+- HANDOFF.md regenerates every session-end via heredoc paste — NO EXCEPTIONS
+- Regeneration MUST bump the session header (Last Session, WHAT HAPPENED IN S<NN>, benchmark column), not just rewrite content. S59 rewrote 197 lines but kept "Session S58" header — that masked the drift.
+
+---
+
+## WHAT HAPPENED IN S60
 
 ### Goal
-Auth-retry loop hunt — identify what was generating ~14 IP bans/week from T-Mobile/Verizon IPv6 ranges.
+S58 queue items #2 (automations.yaml drift diagnosis) and #3 (Google Calendar re-auth).
 
-### Diagnosis (the loop already ended 13 days ago)
+### Findings
 
-1. **ip_bans.yaml last entry timestamped 2026-04-14T21:05:55** — 71 bans across 2026-03-22 → 2026-04-14, then quiet. S58's "ongoing 14/week" framing was a snapshot of the 5-week storm window, not current behavior. No new bans since.
+**#3 Google Calendar — already resolved.** 0 active repairs, 0 persistent notifications, all 19 calendar entities returning normal on/off states. Presumed fixed during S59.
 
-2. **Two strong timing correlations on the last day of bans (2026-04-14):**
-   - Ban `216.183.105.23` at 04:07:02 → `Mobile App Temp` LLAT issued at 04:10:57 (Δ +3m55s)
-   - Ban `216.26.125.164` at 21:05:55 → `Claude Desktop MCP` LLAT issued at 21:10:02 (Δ +4m07s)
-   Pattern fits: stale Green-era token retries → 5 fails → ban → human re-issues LLAT → device pairs against EQ14 → vector ends.
+**#2 automations.yaml — NO DRIFT, working as designed.** The "drift" was based on a faulty mental model in Project Instructions and prior HANDOFFs. Evidence:
 
-3. **Story end-to-end:** Green decommissioned S51. Cloudflare tunnel re-pointed ha.myhomehub13.xyz to EQ14. Mobile clients holding Green-era tokens kept retrying through cellular CGNAT (T-Mobile 2600:1008:*, Verizon 2603:b078:*, T-Mobile IPv4 174.x), each retry rotating to a fresh mobile IP. By 2026-04-14 every active client had been re-paired and the storm ended on its own.
+1. configuration.yaml:52 contains `automation ui: !include automations.yaml` — this directive makes automations.yaml the canonical store for UI automations.
+2. .storage/ contains no automation files.
+3. automations.yaml has 79 alias entries — matches HA automation count exactly.
+4. Mixed ID styles in the file (snake_case manual + numeric Unix-timestamp UI-generated) confirm both write paths land in the same file. Normal.
 
-4. **No rogue tokens.** All 12 (now 11) refresh_tokens belong to known household members or system services. Token review revealed John's android last_used_ip = 181.215.195.101 (AS262287 Latitude.sh Chicago, hosting/VPN). Confirmed as NordVPN egress. Benign.
+**Conclusion:** When `automation: !include X.yaml` is in configuration.yaml, that YAML file IS canonical UI storage. There is no parallel .storage/automations to be in conflict with. UI editor and ha_config_set_automation writes both go to the YAML.
 
-### Cleanups completed
-- LLAT revoked: `Mobile App Temp` (bae7d574b3..) via /profile/security UI. Refresh_token store dropped 12 → 11.
-- `configuration.yaml` lines 88-91 removed: stale `auth: { auth_providers: [{type: homeassistant}] }` block (was logging ERROR on every restart). `ha core check` passed clean.
-- Runtime logger: `homeassistant.components.http.ban` set to DEBUG. Insurance for S60 — captures path + user-agent if any new ban fires before next restart.
+The `automation ui:` label (vs default `automation:`) is non-standard but functional. Likely legacy from an abandoned manual+UI split. Not worth changing.
 
-### Pre-revoke MCP probe (workflow safeguard)
-Before revoking the second LLAT (`Claude Desktop MCP`), I ran ha_get_state on sun.sun to verify MCP authentication after the first revoke. Result confirmed MCP still authed → MCP is using a different token path than `Claude Desktop MCP`. Skipped the second revoke. Decision deferred to S60.
+### Bonus discoveries
 
-### Discovered, not pursued
-- **Music Assistant** setup_error InvalidToken — internal HA retry, no external bans. Carryforward.
-- **AndroidTV 192.168.1.17** setup_retry — LAN device, no external bans. Carryforward.
-- **Google Calendar OAuth** still expired (1-click fix at /config/repairs). Top of S60 quick-wins.
-- **UniFi UBB websocket spam** — 860 `aiounifi.models.event` "Unsupported event" warnings in <1h (EVT_BB_ChannelChanged / EVT_BB_LinkRadioChanged from P.F.P. - UBB). Pure noise. S60 logger suppression.
-- **Adaptive_lighting stale refs** — `switch.adaptive_lighting_sleep_mode_*`, `light.kitchen_lounge_ceiling_2of2`, `light.living_room_tv_smart_light_strip` warned as missing/unavailable. Carryforward from S57.
+- S59 commit 2e0033a rewrote 197 lines of HANDOFF.md but kept "Session S58" header — masked S59 drift until S60 git log surfaced the mismatch.
+- hac/MASTER_PLAN.md.stub_backup_s58: untracked S58 archive stub — deleted in S60 close.
 
-### Files touched
-- `configuration.yaml` (lines 88-91 deleted, validated)
-- `HANDOFF.md` (this file, regenerated)
-- `LEARNINGS.md` (S59 entry appended)
+### Files touched in S60
+- hac/MASTER_PLAN.md.stub_backup_s58: deleted
+- HANDOFF.md: regenerated for S60
+- LEARNINGS.md: appended S60 entry
 
 ---
 
-## NEXT SESSION (S60) — RECOMMENDED PRIORITY ORDER
+## NEXT SESSION (S61) — RECOMMENDED PRIORITY ORDER
 
-### 1. Quick-wins block (chain in one short pass)
-- Google Calendar OAuth re-auth via /config/repairs → verify 19 calendar entities online
-- Suppress aiounifi spam: add `aiounifi.models.event: error` to logger block in configuration.yaml
-- `Claude Desktop MCP` LLAT decision: probe whether it's actually in use (test revoke in a maintenance window? compare /api/states response with vs without it). Last_used_at stuck at 2026-04-14 but MCP probes work — token may be JWT-validated without store updates.
-- Drop `http.ban` DEBUG logger if no new bans observed (terminal grep "Login attempt|Banned IP" in home-assistant.log)
-
-### 2. automations.yaml drift diagnosis (S58 carryforward, architectural)
-- `grep -rn 'automations.yaml' /homeassistant/configuration.yaml` — referenced for include?
-- `.storage/core.config_entries` automation domain check
-- `inotifywait` on automations.yaml to catch the writer
-- If dual-write: drop YAML inclusion; .storage is canonical
-- If direct edit: identify the MCP tool or shell script writing it
-
-### 3. Deferred from S57
-- Front Driveway + Very Front Door unification (S57 Hue split pattern; resolve `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` typo entity)
+### 1. DEFERRED FROM S57 (longest in queue)
+- Front Driveway + Very Front Door unification (apply S57 Hue split pattern)
+- Resolve `light.front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode` typo entity
 - Stale ref scan post-S57 (`light.front_hallway_ceiling_*` → `light.front_entryway_ceiling` or `light.stairway_ceiling_*_of_2`)
-- Adaptive_lighting stale refs cleanup (S59 finding)
 - Hue Bridge duplicate zone cleanup (All Exterior x2, Garage Ceiling x2)
 - Curated outdoor scene library (Back Patio: Galaxy/Northern Lights/Disco — needs Hue app work first)
+
+### 2. PROJECT INSTRUCTIONS UPDATE (governance)
+Apply S60 corrections to Project Instructions:
+- Remove ".storage/ is canonical for automations" assumption from UI-first description
+- Add: "When `automation: !include X.yaml` is in configuration.yaml, that YAML is canonical UI storage. .storage/ is NOT used for automations on this system."
+- Add HANDOFF regen rule: "session header bump is mandatory, not just content rewrite"
+- Promote DIAGNOSTIC DISCIPLINE to PROMOTED RULES (S58 + S60 = 2 occurrences confirmed)
 
 ---
 
@@ -83,36 +79,30 @@ Before revoking the second LLAT (`Claude Desktop MCP`), I ran ha_get_state on su
 
 - binary_sensor.house_occupied (template package issue)
 - sensor.2nd_floor_bathroom_humidity_derivative (unavailable)
-- Music Assistant (setup_error — InvalidToken)
-- AndroidTV 192.168.1.17 (setup_retry)
+- Music Assistant (setup_error)
 - Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-
-## NORDPASS BACKLOG (manual)
-
-- DELETE: `Mobile App Temp Long-lived Token - HA` (token revoked S59)
-- Existing rename queue unchanged (8 entries: hassio adv ssh; http://192.168.1.3:8123 x2; ha_synology; DS finder ha_synology; http://192.168.1.52:5000 x3; http://192.168.1.52:32400\)
 
 ---
 
 ## BENCHMARK
 
-| Metric                          | S57    | S58    | S59    |
-|---------------------------------|--------|--------|--------|
-| Automations                     | 79     | 79     | 79     |
-| Input booleans                  | 51     | 51     | 51     |
-| IP bans (total)                 | 73     | 70     | 70     |
-| Refresh tokens                  | ?      | 12     | 11     |
-| Active LLATs                    | ?      | 3      | 2      |
-| New bans since prior session    | n/a    | n/a    | 0      |
-| configuration.yaml parse ERRORs | 1      | 1      | 0      |
-| Local API auth                  | broken | working| working|
-| HA version                      | 2026.4.3 | 2026.4.4 | 2026.4.4 |
+| Metric | S58 | S59 | S60 |
+|---|---|---|---|
+| Automations | 79 | 79 | 79 |
+| Input booleans | 51 | 51 | 51 |
+| Local API auth | working | working | working |
+| HA version | 2026.4.4 | 2026.4.4 | 2026.4.4 |
+| Active repairs | 1 (Cal OAuth) | 0 | 0 |
+| Active notifications | unknown | 0 | 0 |
+| HANDOFF state | S55-S57 catchup | unbumped header | resolved + protocol fix |
+| automations.yaml architecture | "drifted" (wrong) | "drifted" (wrong) | confirmed canonical |
 
 ## QUICK REFERENCE
 
 - HA: http://192.168.1.10:8123
 - Hue Bridge: 192.168.1.68 (API key in /homeassistant/hac/backup/)
-- SSH: ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"
+- SSH: `ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"`
 - Git push: MCP shell_command.git_push only
 - Notify: notify.mobile_app_galaxy_s26_ultra
-- LLATs in NordPass: "HA EQ14 — LLAT for export_to_sheets (john)" (active), "HA EQ14 — LLAT for Claude Desktop MCP (john)" (decision pending S60)
+- Token in NordPass: "HA EQ14 — LLAT for export_to_sheets (john)"
+- NordPass entry "Mobile App Temp Long-lived Token - HA" is now DEAD (revoked S59) — delete from vault
