@@ -1,52 +1,62 @@
-# HANDOFF — S67 (2026-04-28)
+# HAC HANDOFF — 2026-04-28 S68 Close
 
-## Last commit at session start
-f663c36 (S66 close)
+## Session Goal
+Tier 5 governance pass + CRITICAL_RULES path audit (option C from session start).
 
-## S67 work — workflow improvements (post-S66 close)
+## Completed
+- LEARNINGS audit S58–S67 → 4 promotions to Project Instructions:
+  1. LINKIFICATION — drop "(2-occ candidate)" tag, durable since S58
+  2. DIAGNOSTIC DISCIPLINE — 5 occurrences S58/S60/S61/S64/S65, durable
+  3. EXIT-CODE CHAINING — `;` for diagnostic dumps, `&&` for sequential ops (S61/S62)
+  4. BACKTICK TLD STRINGS — wrap `.school`/`.travel`/`.app` etc in inline code spans (S58/S62)
+  5. SHELL RULES updated for bundled git_push (S67)
+- BATTERY DEVICE rule honest defer (S65 single occurrence, Two-Occ Rule pending 2nd)
+- ha_set_entity supersedes S45 honest defer (S63 single occurrence)
+- CRITICAL_RULES collapse:
+  - Old: hac/CRITICAL_RULES_CORE.md (12KB, 301 lines) + hac/CRITICAL_RULES.md (60KB, 1200+ lines)
+  - New: /CRITICAL_RULES.md at repo root, 266 lines, deduplicated + stale content removed
+  - Old files archived to hac/archive/critical_rules_pre_s68/
+- shell_command updates:
+  - read_critical_rules → /config/CRITICAL_RULES.md (was /config/hac/CRITICAL_RULES_CORE.md)
+  - read_critical_rules_full → REMOVED (collapsed into single file)
+- front_driveway entity inventory corrected: `light.front_driveway_inovelli_smart_bulb_mode` is Tier 1 SBM (was incorrectly listed as Tier 2 dumb load — S63 rename never propagated to docs)
+- ha_restart applied; verified: read_critical_rules returns new content, read_critical_rules_full returns 400 (gone)
 
-**Goal:** Fix the friction surfaced during S66 close. Make session-close one paste + one MCP call, not three steps.
+## State Right Now
+- HA: 2026.4.x, HAOS — all green, Repairs=0
+- Counts (unchanged from S67): 77 automations, 91 helpers, 0 YAML automations/helpers, 14 template packages, 0 ghosts, 19 calendars, 5 HACS cards, 3 storage-mode dashboards
+- shell_command block loaded clean post-restart
 
-**Completed:**
-1. Patched `shell_command:` block in configuration.yaml (line 90):
-   - `git_push` was push-only; now bundles `git add -A && (git diff --cached --quiet || git commit -m "$1") && git push origin main`. Empty-commit guard prevents failure when there's nothing to stage.
-   - `git_status` now leads with `git status --short` (dirty working tree) before showing unpushed commits — closes the diagnostic blind spot that misled S66 close (MCP showed clean tree while user prompt showed `✗`).
-   - Added `shell_command.read_learnings` mirroring `read_handoff`.
-2. Verified config valid via `ha_check_config`, restarted HA, all three new/changed shell_commands tested live.
-3. Live commit (this configuration.yaml change) made via the new bundled git_push: `f663c36 → c029974` pushed to main in a single MCP call. Workflow proven.
-4. Memory edit #22 added documenting new git_push behavior so future sessions don't revert to manual-commit pattern.
-5. Withdrew the LINKIFICATION 2-occurrence governance flag I raised in S66 close — review of LEARNINGS confirmed S62 already promoted the right defense (backtick TLD strings in chat output). Linkification is chat-display only when terminal paste-handler strips markdown back to plaintext; no file-content risk.
+## S69 Priority Queue
+1. **Land Phase A Project Instructions edits** — outside-of-Claude task. Paste revised OPERATIONAL DEFENSES + revised SHELL RULES blocks (drafted in S68 chat) into project settings. Without this, the 4 promotions don't take effect.
+2. **TIER 1 entry_room rename** — gated on physical-layout question: is the entry_room ceiling fixture the same physical fixture as entry_room_lamp, or a separate ceiling can? Answer unblocks rename + AL instance assignment.
+3. **TIER 2/3/4 lighting work** — needs Hue app or battery hands-on, not chat-session fit.
+4. **shell_command.health_check** — build on EQ14 using REST API pattern (carried forward since S51).
 
-## Verify
-- `git_last_commit` → `c029974 S67 governance: shell_command improvements...` ✓
-- `git_status` working tree section displays cleanly ✓
-- `read_learnings` returns full LEARNINGS.md ✓
-- `git_push` with bundled add+commit+push committed and pushed in single call ✓
+## Promotion Candidates Watch List
+- BATTERY DEVICE: check manufacturer/model before destructive action on `unavailable` (S65) — promote on 2nd occurrence
+- ha_set_entity supersedes S45 websocket entity rename (S63) — promote on 2nd occurrence
 
-## S68 priority queue
+## Tabled Items (carryforward, no change)
+- AndroidTV at 192.168.1.17 — DO NOT DELETE
+- Music Assistant in setup_error state
+- Michelle's device tracker missing (MAC 6a:9a:25:dd:82:f1)
+- Ella: 20 entity_ids still named iphone_40_*
+- Ratgdo north: clean physical IR sensor lenses
+- Navien integration not yet added to EQ14
+- Yamaha RX-V671 (192.168.21.171:50000) not yet added
+- Full system audit planned post-Green shutdown
+- NordPass backlog cleanup
+- Google Drive audit + DS224+ NAS reorganization
+- Privacy/Security backlog: SSH password auth, CF Zero Trust, Git PAT plaintext, device_tracker recorder exclude
 
-### Carry-forward from S66/S65 (entry_room work)
-- **TIER 1 entry_room naming cleanup** (gated on physical-layout question: is "Front Hallway" same room as Entry Room or distinct adjacent space?). Two paths documented in S66 HANDOFF — one MERGED, one DISTINCT. Need physical confirmation from John before locking in `front_entryway_*` rename or splitting Hue Front Hallway back to its own area.
-- **TIER 2 Hue duplicate zones** (physical Hue app task): All Exterior x2, Garage Ceiling x2.
-- **TIER 3 Outside 4 West Lights revisit** (after TIER 2).
-- **TIER 4 Stairwell_Night_Light recharge** (physical battery).
-
-### S67 micro-tasks (new)
-- **Git committer identity:** `git config --global user.email "..." && git config --global user.name "..."` to silence "configured automatically based on username and hostname" warning. Cosmetic only — commits land correctly under `pigeonfallsrn` PAT auth regardless.
-- **read_critical_rules path audit:** `shell_command.read_critical_rules` and `read_critical_rules_full` still point at `/config/hac/CRITICAL_RULES_CORE.md` and `/config/hac/CRITICAL_RULES.md` (S62 close noted these were unaudited). Either verify content is current or migrate to repo root for parity with HANDOFF.md.
-
-### TIER 5 — Governance pass (overdue, S65 flagged, slipped past S65/S66/S67)
-- Drop "(S58 — 2-occurrence candidate)" tag from DIAGNOSTIC DISCIPLINE: now 4+ occurrences (S58, S60, S61, S64, S65), durable rule. Tag cleanup in Project Instructions only.
-- Promote "battery-powered Zigbee unavailable ≠ remove" from S65 (Third Reality / Aqara battery devices have legitimate offline states).
-- Promote S63's "MCP `ha_set_entity(new_entity_id=...)` supersedes S45 websocket script rule" — confirmed once at S63, second confirmation needed per Two-Occurrence Rule. Watch for it.
-
-## Carry-forward
-- All S66 carry-forwards still apply.
-
-## Blocked
-None.
+## Physical Updates
+None this session.
 
 ## Benchmark
-- 5th consecutive successful HANDOFF regen (S63→S64→S65→S66→S67) — drift mitigation holding.
-- Session-close went from 3 steps (heredocs paste + manual git commit + MCP push) to 2 steps (heredocs paste + MCP git_push). Real saving on every future close, not just S67.
-- Live test of bundled git_push succeeded on its first authentic use.
+S68 = 1 session for governance + path audit (3 sessions overdue from S65/S66/S67). Future cadence: governance every 5 sessions, no slippage.
+
+## Session Workflow Reminder
+- read_critical_rules now points to /config/CRITICAL_RULES.md (single canonical file at repo root)
+- read_critical_rules_full no longer exists
+- shell_command edits in configuration.yaml require ha_restart (NOT reload_core) — S62

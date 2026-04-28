@@ -669,3 +669,19 @@ To pass a Jinja template variable as `$1` into `bash -c "..."`, the pattern is:
 git_push: 'bash -c "cd /config && ... commit -m \"$1\" ... " _ "{{ message }}"'
 ```
 The `_` is a positional placeholder for `$0` (program name), then `{{ message }}` becomes `$1`. Inside `bash -c`, escape `\"$1\"` so YAML's outer single-quoted scalar passes through to bash with the actual quote characters. Without quoting `$1`, shell word-splitting would fragment any commit message with spaces.
+
+## S68 (2026-04-28) — Governance pass + CRITICAL_RULES collapse
+
+### Workflow lessons
+- Two-Occurrence Rule + HANDOFF queue can disagree. When HANDOFF flags "promote X" but X has only 1 occurrence in LEARNINGS, the rule wins. Honest defer + add to a watch list. This protects Project Instructions from accumulating low-evidence rules. (Applied to BATTERY DEVICE S65 + ha_set_entity supersedes S63.)
+- Governance pass slippage compounds. Missed S65/S66/S67 = 3 sessions of staleness, made S68 take longer than it would have on cadence. Strict every-5-sessions, no exceptions, no "I'll catch it next time."
+- Two redundant canonical files (CORE + full) doubled read cost without doubling value. One canonical file at repo root + archive of predecessors is the right shape. Total content shrunk from ~73KB to ~13KB by removing: session-history blocks, decommissioned-Green sections, hac.sh references, superseded workflow rituals (now in Project Instructions), security/privacy backlog (now in HANDOFF), session promotion log (now LEARNINGS' job).
+- Post-restart 400 Bad Request on existing shell_command may NOT mean config failure. S62 rule was: "If new commands return 400, config did NOT load." S68 observed: existing `git_status` returned 400 immediately after CONNECTION_FAILED resolved, then succeeded on retry 30s later — shell_command integration hadn't finished loading yet. Refinement: 400 once → wait 30s and retry; 400 twice in a row → real config failure.
+
+### Tactical lessons
+- Device renames silently rot inventory documentation. front_driveway VZM30-SN was renamed S63 to `light.front_driveway_inovelli_smart_bulb_mode` (Tier 1 SBM), but the inventory in CRITICAL_RULES_CORE.md INOVELLI ECOSYSTEM AUDIT block kept circulating it as Tier 2 dumb load. Caught only because S68 governance pass forced re-verification. Rule: when a device is renamed, update entity registry + CRITICAL_RULES inventory + any HANDOFF references in the SAME session.
+- ha core check returning "Command completed successfully" with no error block = exit 0 = clean (different signal than the S62 "partial success" non-zero exit). Both are green; the 0-exit case is unambiguous.
+
+### Promotion candidates (watching for 2nd occurrence)
+- BATTERY DEVICE: check manufacturer/model + battery state before destructive registry action on `unavailable` device. S65 was first occurrence (Aqara P1 reported unavailable but had dead battery, not orphaned).
+- ha_set_entity supersedes S45 websocket workflow for entity renames (S63 first occurrence).
