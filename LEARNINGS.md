@@ -641,3 +641,31 @@ When auditing an area with multiple entities sharing a name root (entry_room_cei
 In S66, 6 "ceiling-related" entities resolved to: 2 physical fixtures (3 bulbs total) + 1 Inovelli SBM virtual + 1 Hue Zone (functional bulb-subset) + 1 Hue Room rollup. Zero true redundancy. Renaming work gated on a separate architectural question (room split). Don't reach for ha_set_entity or rename scripts until topology + consumer references are mapped.
 
 Workflow lesson: when the goal is "audit + rename if useful", split decisively. Audit produces a topology document; rename is a separate session with explicit physical-layout assumptions stated up front. Mixing them risks half-renaming based on an unconfirmed merge.
+
+## S67 (2026-04-28) — Workflow improvements: bundled git_push + git_status surfaces dirty tree + read_learnings
+
+### shell_command.git_push was push-only, project memory said it bundled
+For multiple sessions, project memory described the close ritual as "stage, commit, push via shell_command.git_push" — implying one call did all three. S66 close demonstrated otherwise: `git_push` ran `git push origin main` only. Tree stayed dirty, no commit, push reported "Everything up-to-date" (because there were no new commits to push). Took 3 retries and a `read_handoff` ground-truth check to diagnose.
+
+Patched the shell_command in configuration.yaml to actually bundle: `git add -A && (git diff --cached --quiet || git commit -m "$1") && git push origin main`. The empty-commit guard means it's safe to call with no pending changes — push succeeds, no fake commit. Live test on the configuration.yaml patch itself: one call, clean commit, clean push.
+
+**Generalized rule:** When project memory describes a tool's behavior, verify the actual implementation before relying on it across sessions. Especially for tools that wrap multi-step workflows — "X does A+B+C" descriptions are easy to write and hard to falsify without testing edge cases.
+
+### shell_command.git_status was unpushed-commits-only, hid dirty working tree
+Original `git_status` was `git log origin/main..HEAD --oneline` — only showed local-but-unpushed commits, not modified-but-uncommitted files. S66 close: `git_status` returned empty stdout while user's prompt clearly showed `✗`. The MCP and the human were looking at different parts of git state.
+
+Fixed: `git status --short` first (working tree), then `git log origin/main..HEAD` (unpushed). Both now visible from MCP without needing terminal access. The dirty-tree blind spot is closed.
+
+### Withdrawing LINKIFICATION 2-occurrence flag from S66 close
+S66 close raised "linkification reaches command lines, not just heredoc bodies" as 2-occurrence material. Wrong. S62 LEARNINGS already documented: linkification is purely chat-display, terminal paste-handler strips markdown back to plain text on the way in. The `[HANDOFF.md](http://HANDOFF.md)` formatting John saw in `git status --short` output was the chat client rendering the output, not the file or commit being corrupted. File contents and commits were always correct.
+
+S62 already promoted the right defense (backtick TLD-bearing strings in chat output). No additional rule needed. The S66 flag was real-time over-reaction without checking past LEARNINGS first.
+
+**Workflow lesson:** Before raising a 2-occurrence governance flag, search LEARNINGS for the same phenomenon. The Two-Occurrence Rule counts independent occurrences across sessions, not "I noticed something twice in one session." S58/S62 had already counted; S66 was a third sighting of the same already-promoted phenomenon, not a new candidate.
+
+### HA shell_command parameter passing — the `_ "{{ message }}"` trick
+To pass a Jinja template variable as `$1` into `bash -c "..."`, the pattern is:
+```yaml
+git_push: 'bash -c "cd /config && ... commit -m \"$1\" ... " _ "{{ message }}"'
+```
+The `_` is a positional placeholder for `$0` (program name), then `{{ message }}` becomes `$1`. Inside `bash -c`, escape `\"$1\"` so YAML's outer single-quoted scalar passes through to bash with the actual quote characters. Without quoting `$1`, shell word-splitting would fragment any commit message with spaces.
