@@ -1,92 +1,61 @@
-# HANDOFF — Session S63
+# HANDOFF — S64 (2026-04-27)
 
-## Last Session: S63 (2026-04-27)
-## Last Commit: (set after this session's commit)
-## Baseline: 72 automations, 51 input_booleans, 0 repairs, HA 2026.4.4
+## Last commit at session start
+387ebb4
 
----
+## S64 work — area cleanup + calendar verify
 
-## WHAT HAPPENED IN S63
+**Goal:** VZM30-SN area assignment + verify calendar re-auth + (extended) Very Front Door pollution cleanup.
 
-### Goal
-Front_drivay typo rename — 43 child entities + device on ZHA Inovelli VZM30-SN (IEEE c0:9b:9e:ff:fe:d1:2d:4e, device_id 16a22c25ead6b47a6b9666c539ff2509). S45 carry-forward.
+**Completed:**
+1. Front Driveway VZM30-SN device (16a22c25ead6b47a6b9666c539ff2509) → area=front_driveway
+2. Renamed 2 stragglers from S63 carryforward (disabled-by-integration, missed by search):
+   - sensor.front_drivay_..._rssi → sensor.front_driveway_inovelli_smart_bulb_mode_rssi
+   - sensor.front_drivay_..._lqi → sensor.front_driveway_inovelli_smart_bulb_mode_lqi
+3. Calendar re-auth confirmed (0 repairs) — physical re-auth done by John
+4. Front Entryway Ceiling Hue device (b6c054c82b1f90ac71c99a7ea6c022b2) → area=entry_room
+   - light.very_front_door_ceiling_hallway + zigbee_connectivity sensor
+5. Stairway FOH Switch Hue device (b15d946ebaeec2ff5f4da06525831f67) → area=stairway_cubby
+   - 4 button events: event.front_hallway_foh_button_1-4
 
-### Pre-rename scope check
-- Registry: 43 entities with `front_drivay_*` slug
-- YAML refs: 0 (re-confirmed S62 finding)
-- Automation/script/helper/dashboard refs: 0 (`ha_deep_search` clean)
-- Collision check vs existing `front_driveway_*` (109 entities, mostly doorbell/camera): no overlap
-- House convention for Inovelli SBM switches: `{area}_{fixture}_inovelli_smart_bulb_mode_*` (matches 2nd_floor_bathroom_ceiling_lights_inovelli_smart_bulb_mode, 2nd_floor_bathroom_vanity_lights_inovelli_smart_bulb_mode)
+## Verify
+- VFD area pollution check: 0 ceiling/FOH leftovers ✓
+- entry_room: light.very_front_door_ceiling_hallway present ✓
+- stairway_cubby: 4 FOH button events present ✓
+- VZM30-SN entity_count=45, all front_driveway_* prefix ✓
 
-### Rename map
-Old prefix: `front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode`
-New prefix: `front_driveway_inovelli_smart_bulb_mode`
+## S65 priority queue
 
-Strategy abandoned the literal "fix the typo only" path (would have produced redundant `front_driveway_..._front_driveway_...` slugs ~90 chars). Adopted house convention instead — same effort, cleaner long-term, friendly names already carry the human-readable label.
+### TIER 1 — Front Hallway physical-knowledge ambiguity (deferred from S64)
+Need physical clarification: which area should these belong to?
+- light.very_front_door_hallway ("Front Hallway") — currently in very_front_door
+- scene.very_front_door_hallway_energize ("Front Hallway Energize")
+- scene.front_hallway_relax_2 ("Front Hallway Relax")
+- scene.front_hallway_nightlight_2 ("Front Hallway Nightlight")
+No `front_hallway` area exists. Candidates: entry_room, stairway_cubby, or new area.
+Ask John: where physically is the "Front Hallway" light? Same room as Stairway Cubby? Between Entry Room and Stairway?
 
-### Execution
-- 43 individual `ha_set_entity` MCP calls with `new_entity_id`
-- First call also passed `new_device_name="Front Driveway Inovelli VZM30-SN (Smart Bulb Mode)"` — device renamed in same op
-- All 43 succeeded, no rollbacks needed
-- States preserved (e.g., Power-on level 255, Smart bulb mode `on`, On level 181)
-- **No SSH script needed.** S45 promoted rule is now obsolete: MCP `ha_set_entity` wraps the websocket `config/entity_registry/update` internally.
+### TIER 2 — Outside 4 West Lights area question
+- light.outside_4_west_lights — currently in very_front_door
+- scene.outside_4_west_lights_energize, _relax — same
+Likely a Hue zone spanning multiple physical lights. Decide: leave at very_front_door, move to front_driveway, or new "Exterior West" area?
 
-### Verify
-- `ha_search_entities("drivay")` → 0 hits ✓
-- `ha_search_entities("front_driveway_inovelli_smart_bulb_mode")` → 43 hits, all healthy ✓
-- Friendly names intact ✓
+### TIER 3 — Hue Bridge duplicate zones
+Physical task on Hue app — Claude can identify HA-side duplicates but not fix.
+- All Exterior x2
+- Garage Ceiling x2
 
-### Bonus cleanup (HANDOFF queue item 2)
-- Removed: `packages/adaptive_lighting_entry_lamp.yaml.s62.bak`, `packages/adaptive_lighting_entry_lamp.yaml.s62.corrupted`
-- Added to .gitignore: `*.bak`, `*.corrupted`
+### TIER 4 — Discovered side-questions (out of S64 scope)
+- entry_room now has 5 ceiling-related lights (entry_room_ceiling_1, _2, very_front_door_ceiling_hallway, entry_room_ceiling_light, _inovelli_smart_dimmer_switch). Possibly Hue zone hierarchy + Inovelli SBM virtual + 2 individual bulbs. Worth a small audit for naming consistency.
+- stairway_cubby has stairwell_night_light_* device fully unavailable (disconnected). Remove or revive?
 
----
+## Carry-forward (from prior sessions, not addressed in S64)
+- S57 deferred broader unification framing — replaced by S65 TIER 1-3 above
+- Unrelated prior items: see LEARNINGS.md for context as needed
 
-## NEXT SESSION (S64) — RECOMMENDED PRIORITY ORDER
+## Blocked
+None new this session.
 
-1. **Google Calendar re-auth** if still showing in repairs (1-click)
-2. **VZM30-SN area assignment** — renamed device's `area_id` is null. Assign to Front Driveway area for proper grouping. ~2 min.
-3. **Deferred from S57**: Front Driveway + Very Front Door unification, Hue Bridge duplicate zone cleanup (All Exterior x2, Garage Ceiling x2), curated outdoor scene library
-4. **HANDOFF regen test #2**: S62 close + S63 close are now two consecutive heredoc-paste tests. If S64 reads back S63 content, the read-path fix from S62 LEARNINGS holds.
-
----
-
-## CARRIED FORWARD
-
-- Ella companion app rename (sensor.iphone_40_* → sensor.ella_s_*)
-- Garage opener Hue bulbs unreachable (power circuit, not software)
-- Very Front Door Hallway: disconnected pending rewire + 2 new A19s
-- Kitchen tablet enhancements (Calendar Card Pro, doorbell camera, screensaver, battery mgmt)
-- Govee lamp area reassignment when physically moved to master bedroom
-- 2nd Floor Roomba, DS224plus NAS, Roku 4620X, Tuya, Vizio SmartCast — discovered integrations to review
-
-## BLOCKED
-
-- binary_sensor.house_occupied (template package issue)
-- sensor.2nd_floor_bathroom_humidity_derivative (unavailable)
-- Music Assistant (setup_error)
-- Michelle person tracker (MAC 6a:9a:25:dd:82:f1)
-
----
-
-## BENCHMARK
-
-| Metric | S62 | S63 |
-|---|---|---|
-| Automations | 72 | 72 |
-| Input booleans | 51 | 51 |
-| `drivay` entities | 43 | 0 |
-| `front_driveway_inovelli_smart_bulb_mode_*` | 0 | 43 |
-| Backup file pollution | 2 | 0 |
-| .gitignore patterns | (n) | (n+2) |
-| Repair count | 0 | 0 |
-| HA version | 2026.4.4 | 2026.4.4 |
-
-## QUICK REFERENCE
-
-- HA: http://192.168.1.10:8123
-- Hue Bridge: 192.168.1.68 (API key in /homeassistant/hac/backup/)
-- SSH: ssh hassio@192.168.1.10 -p 2222 -o "MACs=hmac-sha2-256-etm@openssh.com"
-- Git push: MCP shell_command.git_push only
-- Notify: notify.mobile_app_galaxy_s26_ultra
-- Token in NordPass: "HA EQ14 — LLAT for export_to_sheets (john)"
+## Benchmark
+- Read-handoff path tested clean at session start (S62 fix confirmed working).
+- Two consecutive successful HANDOFF regenerations (S63, S64) — drift mitigated for now.

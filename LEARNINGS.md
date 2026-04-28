@@ -574,3 +574,42 @@ When a starter or HANDOFF cites a constraint from older sessions ("needs websock
 
 ### Side note
 House convention for Inovelli SBM switches confirmed: `{area}_{fixture}_inovelli_smart_bulb_mode_*`. Verified against the two existing 2nd-floor bathroom switches. The VZM30-SN's prior slug (`front_drivay_inovelli_switch_for_front_driveway_hue_lights_smart_bulb_mode_*`) was the outlier in both spelling and verbosity. Fixing both at once cost no additional effort because all 43 had to be touched anyway.
+
+## S64 (2026-04-27) — area cleanup + search-filter learning
+
+### NEW — ha_search_entities silently excludes disabled-by-integration entities
+S63 verify-rename search reported "drivay → 0 hits ✓" but two RSSI/LQI sensors with
+disabled_by="integration" remained. They were caught only at S64 baseline by reading
+the device's full entity list via `ha_get_device(detail_level=full)`.
+
+Pattern fix: when renaming a device's child entities, the post-rename verify must use
+`ha_get_device(device_id)` to enumerate ALL children (including disabled) — NOT a
+substring search of `ha_search_entities`. The latter has a hidden filter that drops
+disabled-by-integration entities from default results.
+
+### CONFIRMED 2nd occurrence — Diagnostic Discipline rule (PROMOTE: drop candidate tag)
+S58 first-occurrence: starter claim contradicted ground truth.
+S64 second-occurrence: HANDOFF claimed `area_id=null` for VZM30-SN device; baseline
+`ha_get_device` showed `area_id=entry_room`. Verifying at baseline prevented an
+unnecessary "move null → front_driveway" framing that would have masked the actual
+state ("move from entry_room → front_driveway").
+
+Recommend in next governance review: drop "(S58 — 2-occurrence candidate)" tag from
+DIAGNOSTIC DISCIPLINE in OPERATIONAL DEFENSES — now a permanent promoted rule with
+S58 + S64 evidence.
+
+### NEW — Device-area-move is the durable pattern for Hue cross-area pollution
+Hue platform entities have `area_id=null` at entity level and inherit area from device.
+Use `ha_update_device(area_id=...)` not `ha_set_entity(area_id=...)`. Benefits:
+- Connectivity / zigbee_connectivity sensors come along automatically (same device)
+- 4 FOH button events handled in 1 device update vs 4 entity updates
+- No fragile entity-level override that can de-sync from device
+
+### WORKFLOW — Mid-session scope discovery is OK
+S64 starter scope was "VZM30-SN area + calendar". Baseline surfaced (a) 2 missed
+stragglers and (b) 6+ misplaced entities in VFD. Expanding scope mid-session was
+correct because (i) baseline data made the additional moves trivially safe, (ii) the
+extra moves were verifiable in-session, (iii) deferred-ambiguous items got documented
+explicitly for S65. Counter-rule: scope creep is OK when the new work is bounded,
+testable, and the unbounded portion is captured as deferred — not when chasing
+unbounded threads.
