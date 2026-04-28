@@ -613,3 +613,19 @@ extra moves were verifiable in-session, (iii) deferred-ambiguous items got docum
 explicitly for S65. Counter-rule: scope creep is OK when the new work is bounded,
 testable, and the unbounded portion is captured as deferred — not when chasing
 unbounded threads.
+
+## S65 (2026-04-27) — Hue Room/Zone semantics, device-level area cascade, diagnostic discipline 2nd occurrence
+
+### Hue Room vs Hue Zone — device.model is the deciding signal
+When deciding area assignment for a Hue grouping, check device.model:
+- model="Room" = single physical room in Hue app. Standard pattern: 1 light + 3 scenes (Energize/Relax/Nightlight). Maps cleanly to one HA area.
+- model="Zone" = cross-room logical grouping. Standard pattern: 1 light + 2 scenes (Energize/Relax). Spans multiple physical rooms — area choice is judgment, not deterministic.
+Collapses the "one room or multiple" gating question without physical knowledge.
+
+### ha_update_device(area_id=...) cascades to entities when entity-level area_id is null
+Default state for Hue (and most integration-discovered) entities is area_id=null at entity level — they inherit from device. Updating device area propagates to all child entities in one call. Verified S65: 7 entities across 2 devices migrated with 2 device-level calls. Default to device-level area update; only use ha_set_entity when entities explicitly override device area.
+
+### DIAGNOSTIC DISCIPLINE — 2nd occurrence (promotion candidate fulfilled)
+First occurrence S58 (starter claims "X is broken/confirmed/revoked" need verification before treating as fact). Second occurrence S65: recommended removing Stairwell_Night_Light based on "12 unavailable entities" alone; checked device.manufacturer/model before executing and found Third Reality 3RSNL02043Z battery-powered nightlight — battery depletion is more likely than physical removal. Reversed recommendation before destructive action.
+**Generalized rule:** Before recommending destructive action on an "unavailable" device, check device.manufacturer + device.model. Battery-powered Zigbee devices (Third Reality, Aqara battery, etc.) have legitimate offline states that don't warrant removal.
+**Per Two-Occurrence Rule: ready for promotion to PROMOTED RULES** on next governance pass.
