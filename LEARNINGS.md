@@ -685,3 +685,17 @@ The `_` is a positional placeholder for `$0` (program name), then `{{ message }}
 ### Promotion candidates (watching for 2nd occurrence)
 - BATTERY DEVICE: check manufacturer/model + battery state before destructive registry action on `unavailable` device. S65 was first occurrence (Aqara P1 reported unavailable but had dead battery, not orphaned).
 - ha_set_entity supersedes S45 websocket workflow for entity renames (S63 first occurrence).
+
+## S69 (2026-04-28) — Outside-of-Claude paste tasks: payload must live in HANDOFF, not chat
+
+**Context:** S68 HANDOFF queue item #1 was "Land Phase A Project Instructions edits — drafted in S68 chat." S69 loaded stale Project Instructions (DIAGNOSTIC DISCIPLINE still tagged "(2-occurrence candidate)", BACKTICK TLD STRINGS absent, `git_push` bundled wording absent). The S68 drafts were referenced but not retrievable — chat history does not carry into the next session.
+
+**Problem:** When a queued action requires the user to paste content drafted by Claude into an outside-of-Claude surface (project settings, NordPass, NAS config UI, etc.), and the session closes before the paste happens, the drafted content is effectively lost. Next session must re-derive it from HANDOFF + LEARNINGS + memory pointers — costs a session turn or more, and any nuance from the original drafting conversation is gone.
+
+**Rule:** Outside-of-Claude paste tasks must include the full paste-ready payload as a fenced code block inside HANDOFF.md (or, if too large, saved to `hac/pending/<topic>.md` and referenced by path). "Drafted in S<NN> chat" is not a valid pointer.
+
+**Workflow lesson — close discipline:** S68 closed with the Phase A drafts in chat but not in HANDOFF. The close protocol verified acceptance criteria for the *session goal* (governance pass + CRITICAL_RULES collapse) but did not verify that *queued items requiring user action* had their payloads persisted. Add to close checklist: for every S<NN+1> queue item that depends on user paste/upload/manual action, confirm the payload is reachable from HANDOFF.md (inline or path reference) before generating the heredoc.
+
+**Cost this time:** ~1 session turn re-deriving the drafts. Cheap because the source-of-truth (HANDOFF S68 list of 4 promotions + memory user_memories S67 update) was rich enough to reconstruct. Could have been worse if the drafts had nuance not preserved elsewhere.
+
+**Promotion status:** Single occurrence (S69). LEARNINGS only. Promote on 2nd occurrence of an outside-of-Claude task losing its payload across a session boundary.
