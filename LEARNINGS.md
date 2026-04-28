@@ -629,3 +629,15 @@ Default state for Hue (and most integration-discovered) entities is area_id=null
 First occurrence S58 (starter claims "X is broken/confirmed/revoked" need verification before treating as fact). Second occurrence S65: recommended removing Stairwell_Night_Light based on "12 unavailable entities" alone; checked device.manufacturer/model before executing and found Third Reality 3RSNL02043Z battery-powered nightlight — battery depletion is more likely than physical removal. Reversed recommendation before destructive action.
 **Generalized rule:** Before recommending destructive action on an "unavailable" device, check device.manufacturer + device.model. Battery-powered Zigbee devices (Third Reality, Aqara battery, etc.) have legitimate offline states that don't warrant removal.
 **Per Two-Occurrence Rule: ready for promotion to PROMOTED RULES** on next governance pass.
+
+## S66 (2026-04-28) — Entity stack "redundancy" is usually role separation
+
+When auditing an area with multiple entities sharing a name root (entry_room_ceiling_*, light.entry_room, light.entry_room_ceiling_light, etc.), the default mental model "5 lights for 1 fixture = redundant" is wrong more often than right. Resolve the topology first via:
+1. ha_get_entity batch → device_id and platform per entity
+2. ha_get_device(area_id=...) full → device hierarchy + Hue model field (Room vs Zone vs color lamp)
+3. ha_get_state on rollups → is_hue_group, hue_type, lights[] reveals what's a container vs a leaf
+4. ha_deep_search per entity_id → who actually consumes it
+
+In S66, 6 "ceiling-related" entities resolved to: 2 physical fixtures (3 bulbs total) + 1 Inovelli SBM virtual + 1 Hue Zone (functional bulb-subset) + 1 Hue Room rollup. Zero true redundancy. Renaming work gated on a separate architectural question (room split). Don't reach for ha_set_entity or rename scripts until topology + consumer references are mapped.
+
+Workflow lesson: when the goal is "audit + rename if useful", split decisively. Audit produces a topology document; rename is a separate session with explicit physical-layout assumptions stated up front. Mixing them risks half-renaming based on an unconfirmed merge.

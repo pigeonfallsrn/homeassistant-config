@@ -1,51 +1,53 @@
-# HANDOFF — S65 (2026-04-27)
+# HANDOFF — S66 (2026-04-28)
 
 ## Last commit at session start
-2e1233c
+94bccbd
 
-## S65 work — area assignments + Stairwell_Night_Light triage
+## S66 work — entry_room ceiling stack audit (TIER 1 from S65 queue)
 
-**Goal:** TIER 1 Front Hallway, TIER 2 Outside 4 West Lights, TIER 4 Stairwell_Night_Light (chose 1A 2A 4B).
+**Goal:** Map hierarchy of 5 ceiling-related lights + 1 room rollup in entry_room, identify redundancy, rename if useful. Chose option A (document + defer rename).
 
 **Completed:**
-1. Front Hallway Hue Room (b8924dbf13d6d832c14564b264c4ac37) → area=entry_room
-   - 4 entities cascaded via device-level update: light.very_front_door_hallway + scene.very_front_door_hallway_energize + scene.front_hallway_relax_2 + scene.front_hallway_nightlight_2
-2. Outside 4 West Lights Hue Zone (a969f3259ca998494832b131071b713c) → area=front_driveway
-   - 3 entities: light.outside_4_west_lights + scene.outside_4_west_lights_energize + scene.outside_4_west_lights_relax
-3. Stairwell_Night_Light triage (4B = leave alone). Identified as Third Reality 3RSNL02043Z battery-powered Zigbee nightlight (IEEE 1c:78:4b:9d:08:12:00:00, area=stairway_cubby). Unavailable state likely depleted rechargeable battery, not phantom. Revive on physical recharge.
+1. Topology mapped via ha_get_entity batch + ha_get_device(area_id=entry_room) + ha_deep_search.
+2. **Two distinct physical ceiling fixtures, not one** — apparent redundancy is legitimate role separation:
+   - Fixture 1 "Entry Room ceiling": 2 Hue bulbs (light.entry_room_ceiling_1/_2) + Inovelli VZM31-SN in SBM (light.entry_room_ceiling_light_inovelli_smart_dimmer_switch). Hue Zone "Entry Room Ceiling Light" (light.entry_room_ceiling_light, device 9316088c, no scenes) targets ceiling-only without desk lamp.
+   - Fixture 2 "Front Entryway ceiling": 1 Hue bulb (light.very_front_door_ceiling_hallway), separate Hue Room "Front Hallway" rollup (light.very_front_door_hallway, device b8924dbf — moved to entry_room area in S65).
+   - Plus desk lamp (light.entry_room_desk_lamp) and whole-room rollup light.entry_room (Hue Room with 3 scenes: Energize/Nightlight/Relax).
+3. Reference scan: light.entry_room_ceiling_light used by automation.entry_room_ceiling_inovelli_controls_hue_lights + automation.entry_room_aux_switch_control. Inovelli SBM virtual used by AUX automations. very_front_door_* used by 4 automations (doorbell snapshot/package, kitchen tablet popup, outdoor sunset).
+
+**Verdict:** No structural redundancy. Hue Zone is functional (per project rule "Use Hue zones (not rooms) for bulb subsets"). SBM virtual is legitimate. Real issue is naming legacy: very_front_door_* entity IDs / mixed scene naming (very_front_door_hallway_energize vs front_hallway_relax_2). Rename gated on physical-layout question (Front Hallway = part of Entry Room or distinct space?) — deferred to S67.
 
 ## Verify
-- VFD area pollution check: 0 hallway, 0 outside_4_west ✓
-- entry_room: 6 hallway entities (2 from S64 + 4 from S65) ✓
-- front_driveway: 3 outside_4_west entities present ✓
+- 6 audit entities all present, enabled, in expected device hierarchy ✓
+- light.entry_room_ceiling_light = is_hue_group=true, hue_type=zone, lights=[ceiling_2, ceiling_1] ✓
+- light.entry_room = hue_type=room, lights=[ceiling_2, desk_lamp, ceiling_1], scenes=[Energize,Nightlight,Relax] ✓
 
-## S66 priority queue
+## S67 priority queue
 
-### TIER 1 — entry_room ceiling stack audit (deferred from S64/S65)
-5 ceiling-related lights + 1 room rollup now in entry_room:
-- light.entry_room_ceiling_1, light.entry_room_ceiling_2 (individual Hue bulbs)
-- light.entry_room_ceiling_light (likely Hue Room/Zone rollup — verify device.model)
-- light.very_front_door_ceiling_hallway ("Front Entryway Ceiling")
-- light.entry_room_ceiling_light_inovelli_smart_dimmer_switch (Inovelli SBM virtual)
-- light.entry_room (whole-room Hue rollup)
-Goal: hierarchy mapping, identify redundancy, rename if useful.
+### TIER 1 — entry_room naming cleanup (gated on layout question)
+First: confirm physical layout. Is "Front Hallway" (the very_front_door_ceiling_hallway fixture) physically the same room as Entry Room, or a distinct adjacent hallway? S65 moved its Hue Room into entry_room area on the assumption of merge.
+- If MERGED → rename very_front_door_* → front_entryway_* (entity IDs + 3 scenes), update 4 referencing automations, optionally rename light.entry_room_ceiling_light_inovelli_smart_dimmer_switch → light.entry_room_ceiling_switch, optionally hide SBM virtual from UI.
+- If DISTINCT → split Front Hallway back to its own area, reverse part of S65, then rename within new area.
 
-### TIER 2 — Hue Bridge duplicate zones (physical Hue app task)
+### TIER 2 — Hue Bridge duplicate zones (physical Hue app task, carry from S65)
 HA-side duplicates: All Exterior x2, Garage Ceiling x2. After Hue-app cleanup, re-audit HA and prune orphan zones.
 
-### TIER 3 — Outside 4 West Lights revisit (after TIER 2)
-Currently in front_driveway. May reassign/rename after Hue duplicate-zone cleanup clarifies exterior topology.
+### TIER 3 — Outside 4 West Lights revisit (carry from S65)
+Currently in front_driveway. May reassign/rename after TIER 2 cleanup.
 
-### TIER 4 — Stairwell_Night_Light recharge (physical)
+### TIER 4 — Stairwell_Night_Light recharge (physical, carry from S65)
 Recharge battery, verify online, confirm motion + illuminance entities populate.
+
+### TIER 5 — Governance pass (overdue)
+S65 flagged DIAGNOSTIC DISCIPLINE 2-occurrence promotion candidate (S58, S65). Per Two-Occurrence Rule, ripe for promotion to PROMOTED RULES. Address on next governance pass — ideally S67 since 5-session cadence (S60→S65→S70) had governance scheduled at S65 and slipped.
 
 ## Carry-forward
 - S57 broader unification framing — superseded by per-tier work
-- **S65 governance flag:** DIAGNOSTIC DISCIPLINE now has 2 occurrences (S58, S65) — ripe for promotion from "OPERATIONAL DEFENSES candidate" to full PROMOTED RULES per Two-Occurrence Rule. Address on next governance pass.
+- DIAGNOSTIC DISCIPLINE promotion (from S65)
 
 ## Blocked
-None new.
+None.
 
 ## Benchmark
-- 3rd consecutive successful HANDOFF regen (S63→S64→S65) — drift mitigation holding.
-- ha_update_device(area_id=...) cascades to child entities when entity-level area_id is null. 7 entities migrated via 2 device calls vs 7 entity calls.
+- 4th consecutive successful HANDOFF regen (S63→S64→S65→S66) — drift mitigation holding.
+- Topology audit completed in 4 MCP calls (entity batch, state batch, device-by-area, 3x deep_search). Zero terminal calls — MCP sufficient for read-only mapping work when scope is bounded.
