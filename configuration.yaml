@@ -90,13 +90,14 @@ light:
 shell_command:
   health_check: "bash /config/hac/scripts/health_check_full.sh"
   hac_export: 'bash -c "cd /config/hac && ./hac.sh export"'
-  git_status: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -20"'
+  git_status: 'bash -c "cd /config && echo === WORKING TREE === && git status --short && echo === UNPUSHED === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -20"'
   git_last_commit: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1"'
   read_critical_rules: 'bash -c "timeout 15 cat /config/hac/CRITICAL_RULES_CORE.md"'
   read_critical_rules_full: 'cat /config/hac/CRITICAL_RULES.md'
   read_handoff: 'cat /config/HANDOFF.md'
+  read_learnings: 'cat /config/LEARNINGS.md'
   mcp_session_init: 'bash -c "echo === LAST COMMIT === && cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === GIT PENDING === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -5 && echo === DISK === && df -h / | tail -1 && echo === HANDOFF === && cat /config/HANDOFF.md"'
-  git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git push origin main"'
+  git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git add -A && (git diff --cached --quiet || git commit -m \"$1\") && git push origin main" _ "{{ message }}"'
 
 packages: !include_dir_named packages
 
