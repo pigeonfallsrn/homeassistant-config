@@ -22,6 +22,13 @@ EREG = f"{CFG}/.storage/core.entity_registry"
 DREG = f"{CFG}/.storage/core.device_registry"
 
 TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
+TOKEN_FILE = "/config/.health_check_token"
+try:
+    with open(TOKEN_FILE) as _tf:
+        _file_token = _tf.read().strip()
+except (OSError, IOError):
+    _file_token = ""
+TOKENS = [t for t in (TOKEN, _file_token) if t]
 SUP_URL = "http://supervisor/core/api"
 
 DISK_WARN, DISK_CRIT = 85, 95
@@ -29,8 +36,8 @@ DB_WARN_GB, DB_CRIT_GB = 1.0, 3.0
 PSI_WARN, PSI_CRIT = 10.0, 50.0
 UNAVAIL_WARN, UNAVAIL_CRIT = 1, 10
 ERRLOG_TAIL = 1000
-EXCLUDE_DOMS = {"device_tracker", "person"}
-EXCLUDE_RE = re.compile(r"_battery(_|$)")
+EXCLUDE_DOMS = {"device_tracker", "person", "event", "scene"}
+EXCLUDE_RE = re.compile(r"_battery(_|$)|^button\.[a-z0-9_]+_(identify|restart|power_cycle|reset_[a-z0-9_]+)$|^update\.[a-z0-9_]+_firmware$")
 HELPER_DOMS = {"input_boolean","input_number","input_select","input_text",
                "input_datetime","input_button","timer","counter"}
 
@@ -42,14 +49,19 @@ def add(n, label, status, summary, advisor="", detail=""):
         detail_lines.append(f"--- [{n}] {label} ---\n{detail}\n")
 
 def fetch(path):
-    if not TOKEN:
+    if not TOKENS:
         return None
-    try:
-        req = Request(f"{SUP_URL}{path}", headers={"Authorization": f"Bearer {TOKEN}"})
-        with urlopen(req, timeout=15) as r:
-            return r.read().decode()
-    except (URLError, OSError):
-        return None
+    last_err = None
+    for tok in TOKENS:
+        url = "http://localhost:8123/api" + path if tok == _file_token else SUP_URL + path
+        try:
+            req = Request(url, headers={"Authorization": f"Bearer {tok}"})
+            with urlopen(req, timeout=15) as r:
+                return r.read().decode()
+        except (URLError, OSError) as e:
+            last_err = e
+            continue
+    return None
 
 def safe_load(p):
     try:

@@ -749,3 +749,42 @@ The `_` is a positional placeholder for `$0` (program name), then `{{ message }}
 
 ### PROMOTION CANDIDATES UPDATE (for S75 governance review)
 - HANDOFF DRIFT (S58 first, S70 second) — **READY TO PROMOTE** to PROMOTED RULES: count drift in HANDOFF is real and unflagged without explicit cross-check; health_check.py [9] now does this automatically
+
+## S71 (2026-04-28) — health_check filter v2, MCP path repair, two governance learnings
+
+### Technical
+
+**HA Core shell_command auth scope (NEW PROMOTION CANDIDATE — 2nd occurrence, S70 bare hac/health pattern was 1st):**
+- `SUPERVISOR_TOKEN` IS injected into shell_command subprocess env (length 112, confirmed) but its scope is Supervisor API only, NOT Core REST API
+- All three Core endpoints (`http://supervisor/core/api`, `http://localhost:8123/api`, `http://homeassistant:8123/api`) return HTTP 401 with that token
+- Fix pattern: long-lived access token (LLAT) created via HA UI → Profile → Security, stored at `/config/.health_check_token` (chmod 600, gitignored), script falls through env → file
+- Use `http://localhost:8123/api` when authenticating with LLAT (script subprocess in Core container reaches Core directly); use `http://supervisor/core/api` when using SUPERVISOR_TOKEN (addon path)
+- Script reads both, tries env first (so terminal path keeps working), file second
+
+**Filter design — health_check chk_unavail v2:**
+- "unavailable" + "unknown" states across all entities are dominated by domains that are unknown-by-design until first interaction
+- Promote to EXCLUDE_DOMS: `event` (zha_event etc., unknown until first fire), `scene` (unknown until first activation)
+- Promote to EXCLUDE_RE: `button.*_(identify|restart|power_cycle|reset_*)` (stateless action buttons), `update.*_firmware` (unavailable when no update pending — Inovelli/ratgdo pattern)
+- Result: ~40% noise reduction (653 → 393) without losing any actual diagnostic signal
+- Conservative leftovers: `number.*` and `select.*` Inovelli config endpoints (77+16) — could be promoted later but some are real
+
+### Workflow / governance
+
+**S70 close note misdiagnosis (NEW PROMOTION CANDIDATE — 2nd occurrence after S58/60/61/64/65 diagnostic-discipline cluster):**
+- S70 close note claimed "30+ false positives are firmware updates" — actually 9 out of 653 (1.4%)
+- S70 close note implied `shell_command.health_check` was working — actually [1] always errored 401 from MCP path; "first-run findings" came from terminal where SSH addon has different auth
+- Lesson: **S70 close note had two factual errors that S71 caught only because we did a fresh terminal dump before patching**. If we had trusted the handoff and patched only `_firmware`, we'd have shipped a fix that dropped 9 entries instead of 260.
+- Promotion: any S<NN> close note diagnosis must come from a fresh dump in that same session, not from older memory or assumption. If the diagnosis isn't backed by a `=== ... ===` block dumped during the session that wrote the note, it doesn't go in the close note.
+
+**Secret-channel ambiguity (NEW LEARNING):**
+- Said "paste here when ready (or paste into /tmp/llat.txt via terminal)" — the "or" allowed user to interpret the easier option as paste-into-chat
+- LLAT was leaked into chat session, browser console history, and any conversation logs
+- Required full revoke + recreate cycle, costs ~5 min and a NordPass churn
+- Lesson: when asking for a secret, the prompt MUST specify exactly one channel and that channel MUST be terminal-only. Phrase: "Open browser terminal, run `nano /path`, paste, save, then tell me 'done'." Never include "paste here" or "send me the token" anywhere in the request.
+- Promote to OPERATIONAL DEFENSES on next governance review.
+
+**Linkification / backtick TLD strings — confirmed working under stress (S58/S62 rule held):**
+- LINKIFICATION rule survived three nested heredocs in this session — no failures attributable to that rule
+- BUT: chat client inserted stray `\;` inside heredoc body when a URL string was followed by `]:` on same line — first time this manifested *inside* a heredoc rather than in prose
+- Workaround applied: list URLs with trailing commas, closing bracket on its own line, no `]` adjacent to URL string
+- Not promotion-worthy yet (1st occurrence of inside-heredoc form), but worth noting if it recurs
