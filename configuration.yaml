@@ -95,7 +95,8 @@ shell_command:
   read_critical_rules: 'bash -c "timeout 15 cat /config/CRITICAL_RULES.md"'
   read_handoff: 'cat /config/HANDOFF.md'
   read_learnings: 'cat /config/LEARNINGS.md'
-  mcp_session_init: 'bash -c "echo === LAST COMMIT === && cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === GIT PENDING === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -5 && echo === DISK === && df -h / | tail -1 && echo === HANDOFF === && cat /config/HANDOFF.md"'
+  read_instructions: 'cat /config/INSTRUCTIONS.md'
+  mcp_session_init: 'bash -c "echo === LAST COMMIT === && cd /config && GIT_TERMINAL_PROMPT=0 git log -1 --oneline 2>&1 && echo === GIT PENDING === && GIT_TERMINAL_PROMPT=0 git log origin/main..HEAD --oneline 2>&1 | head -5 && echo === DISK === && df -h / | tail -1"'
   git_push: 'bash -c "cd /config && GIT_TERMINAL_PROMPT=0 git add -A && (git diff --cached --quiet || git commit -m \"$1\") && git push origin main" _ "{{ message }}"'
 
 packages: !include_dir_named packages

@@ -788,3 +788,52 @@ The `_` is a positional placeholder for `$0` (program name), then `{{ message }}
 - BUT: chat client inserted stray `\;` inside heredoc body when a URL string was followed by `]:` on same line — first time this manifested *inside* a heredoc rather than in prose
 - Workaround applied: list URLs with trailing commas, closing bracket on its own line, no `]` adjacent to URL string
 - Not promotion-worthy yet (1st occurrence of inside-heredoc form), but worth noting if it recurs
+
+## S72 (2026-04-28) — INSTRUCTIONS.md foundation, governance promotions, session-init trim
+
+### Technical
+
+**INSTRUCTIONS.md as versioned source of truth:**
+- Pre-S72 state: project rules lived only in chat-starter paste — not in git, not versioned, no diff history. Every chat session re-pasted ~6KB rule block from somewhere outside the repo.
+- S72 fix: rules captured verbatim into `/config/INSTRUCTIONS.md`, exposed via new `shell_command.read_instructions`. Future sessions can `cat` from inside-repo source instead of relying on external paste.
+- Session-starter paste still works (3-line minimal form per protocol), but now there's a versioned target for promotions and a single source of truth.
+
+**HA shell_command binding lifecycle:**
+- `homeassistant.reload_core_config` reloads customize/packages but does NOT re-register shell_command bindings — those load only at startup.
+- For shell_command additions/edits: full `ha_restart` is required. `ha_reload_core(target='core')` is insufficient.
+- Hot-reloadable: automations, scripts, scenes, groups, input_*, timers, counters, templates, persons, zones, themes, core (customize/packages). Everything else needs restart.
+- Confirmed by: adding `read_instructions` line to configuration.yaml, calling reload_core (no effect on binding), then ha_restart (binding registered).
+
+**MCP `ha_call_service` parameter shape:**
+- Param name is `data`, not `service_data`. Cost one extra tool call to discover.
+- Pattern for shell_command with parameters: `ha_call_service(domain="shell_command", service="git_push", data={"message": "..."}, return_response=true)`.
+
+### Workflow / governance
+
+**Token-efficiency wins this session:**
+- Trimmed `mcp_session_init`: removed redundant HANDOFF.md dump from inline yaml. Output went from ~3.3KB to ~280 bytes per call (~91% reduction). HANDOFF is already returned by `read_handoff` which runs immediately before init — the duplication was waste.
+- Net: every future session start saves ~3KB.
+
+**Building infra vs. workflow rules:**
+- John raised: should we build a `safe_restart` shell_command that wraps check + restart atomically?
+- Decision: NO. The MCP tools `ha_check_config` and `ha_restart` already work cleanly. Building shell_command-as-orchestrator adds brittleness (restart kills script mid-execution; need fire-and-forget; can't easily return validity status). The real value was the *rule* "never restart without checking" — and that's a discipline patch, not infra.
+- Captured as CONFIG EDIT WORKFLOW in INSTRUCTIONS.md.
+
+**Pattern: when in doubt, rule before tool.** Workflow rules cost 8 lines of markdown. Tools cost a script + yaml binding + restart cycle to register + ongoing maintenance. Choose rules unless the rule is being violated repeatedly despite being known.
+
+### Promotions
+
+This session promoted four learnings from LEARNINGS.md into INSTRUCTIONS.md:
+
+| Original learning | Original session | Promoted to INSTRUCTIONS section |
+|---|---|---|
+| HA Core auth scope (LLAT for shell_command path) | S71 | (kept in LEARNINGS — instance-specific technical knowledge, not a behavioral rule) |
+| S70 close-note misdiagnosis → DIAGNOSTIC DISCIPLINE provenance clause | S71 | OPERATIONAL DEFENSES → DIAGNOSTIC DISCIPLINE → Provenance clause |
+| Secret-channel ambiguity → SECRET REQUEST PROTOCOL | S71 | OPERATIONAL DEFENSES → SECRET REQUEST PROTOCOL (1st-occurrence under credential-class carve-out) |
+| Regex pre-flight check pattern | S71 retro | SHELL RULES → REGEX PRE-FLIGHT |
+| CONFIG EDIT WORKFLOW (check_config → reload/restart) | S72 (own session) | New section between SHELL RULES and SESSION STARTER PROTOCOL |
+
+Plus governance additions to INSTRUCTIONS.md GOVERNANCE section:
+- Credential-class carve-out (1st-occurrence promotion for secret-leak failure modes)
+- Promotion tracking convention (this `### Promotions` subsection pattern)
+
