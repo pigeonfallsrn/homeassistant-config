@@ -699,3 +699,53 @@ The `_` is a positional placeholder for `$0` (program name), then `{{ message }}
 **Cost this time:** ~1 session turn re-deriving the drafts. Cheap because the source-of-truth (HANDOFF S68 list of 4 promotions + memory user_memories S67 update) was rich enough to reconstruct. Could have been worse if the drafts had nuance not preserved elsewhere.
 
 **Promotion status:** Single occurrence (S69). LEARNINGS only. Promote on 2nd occurrence of an outside-of-Claude task losing its payload across a session boundary.
+
+## S70 (2026-04-28) — health_check build + workflow refinements
+
+### TECHNICAL — health_check.py architecture (DOCUMENTED)
+- 11 sections, single source of truth at `/config/hac/scripts/health_check.py`
+- Wired via existing `shell_command.health_check` (already in shell_command block since pre-S70 — was pointing at a 3KB inventory-only stub)
+- Detail at `/config/hac/health_check_detail.txt` (gitignored)
+- Section list: [1] unavail entities (excl device_tracker, person, *_battery*), [2] PSI cpu/mem/io avg10, [3] disk %, [4] DB GB, [5] active repairs (from `.storage/repairs.issue_registry`), [6] integration setup errors (log grep), [7] recent ERROR/CRIT in last 1000 log lines, [8] ZHA double-fire (zha_event device_ieee + platform:device domain:zha), [9] HANDOFF count drift, [10] git working tree, [11] last commit age
+- Inventory + area-less summary appended
+- Thresholds: disk WARN 85% / CRIT 95%, DB WARN 1GB / CRIT 3GB, PSI WARN 10.0 / CRIT 50.0, unavail WARN ≥1 / CRIT ≥10
+- Run time ~0.6s
+
+### TECHNICAL — UI automation storage on EQ14 (CORRECTED)
+- `.storage/automations` does NOT exist on this box. UI-managed automations live in `/config/automations.yaml` (HA's default behavior with no `automation:` integration override)
+- Same for scripts: `/config/scripts.yaml`, helpers split across `.storage/input_*` files
+- Project rule "0 YAML automations/helpers" was wrong; corrected to "0 hand-edited YAML automations/helpers"
+- Affects all future scripts that read automation config — use `yaml.safe_load(open(AUTOS_YAML))` not `.storage/automations`
+
+### TECHNICAL — ZHA double-fire detection pattern
+- For `automations.yaml` (UI-managed): scan triggers for `platform: event` + `event_type: zha_event` + matching `event_data.device_ieee`, AND `platform: device` + `domain: zha` + matching `device_id`
+- Generic shared `entity_id` triggers are NOT a useful signal (intentional shared state triggers are normal); ZHA-specific is the right granularity per TRIPLE-FIRE PROMOTED RULE
+
+### WORKFLOW [CANDIDATE] — Phase 0 "Adopt/Adapt/Build" dump
+- This session lost ~5 turns to progressive rediscovery of existing partial implementation (`shell_command.health_check` already wired, `health_check.py` already existed but was a stub, `health_check.sh` was an unused alternate, `health_automations.py` was a third companion, `.storage/automations` path was wrong on this box)
+- Pattern fix: any "build a tool" carryforward gets a single Phase 0 terminal dump as turn 1 covering: `ls /config/hac/scripts/ /config/scripts/ /config/python_scripts/`, `grep configuration.yaml for the relevant feature`, `find . -name '*<keyword>*'` under `/config/hac/`, HACS-installed integration scan, plus a 5-min web pattern survey
+- Promote-on: second carryforward where existing partial impl discovered mid-build
+
+### WORKFLOW [CANDIDATE] — maximalist single diagnostic dump
+- Issued 5 separate diagnostic dumps across S70 (turns 4, 6, 8, 9, 11) instead of one comprehensive one. Each dump answered just enough to need the next.
+- Pattern fix: investigation-phase dumps default to maximalist — existing files, schemas, paths, env, smoke test of existing thing, 2-3 representative samples — single block, single paste
+- Promote-on: second investigation phase that exceeds 3 turns
+
+### WORKFLOW [OBSERVATION] — auto-verify project rules at session start
+- "0 YAML automations" rule survived ~50 sessions because nothing checked it against the file system. Now that health_check.py exists with the count-drift section, this is free.
+- Action: extend `mcp_session_init` shell_command to `&&` chain a 1-line health_check summary
+- Surfaces drift at session start, before work begins, not at session close
+
+### WORKFLOW [OBSERVATION] — every CANDIDATE entry needs a "promote-on" line
+- S69 added a watch list but promotion-trigger criteria were implicit. S70 hit at least one watch-list item but the promotion was manual.
+- Format adopted in this entry: `Promote-on: <specific second-occurrence trigger>`
+- At session close, grep LEARNINGS.md for `[CANDIDATE]` and verify whether this session triggered any promotion. Turns governance review from "every 5 sessions manual" to "every session automatic."
+
+### WORKFLOW [OBSERVATION] — community pattern survey paid off
+- HAGHS (HACS) provided the score+advisor structure that made [each section's output one-line + remediation hint]
+- System Monitor PSI > raw % for "actually struggling" signal
+- Watchman's ignore-class concept informed the device_tracker/person/_battery_ exclusions
+- Pattern: any monitoring/audit/health build is improved by a 5-min HA community search before designing from spec. Cost: 1 web_search call. Benefit: avoid local re-invention.
+
+### PROMOTION CANDIDATES UPDATE (for S75 governance review)
+- HANDOFF DRIFT (S58 first, S70 second) — **READY TO PROMOTE** to PROMOTED RULES: count drift in HANDOFF is real and unflagged without explicit cross-check; health_check.py [9] now does this automatically
