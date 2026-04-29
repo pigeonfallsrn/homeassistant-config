@@ -42,3 +42,4 @@ ip_bans.yaml
 # Session backup files (S62+)
 *.bak
 *.corrupted
+hac/health_check_detail.txt
