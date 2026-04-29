@@ -837,3 +837,46 @@ Plus governance additions to INSTRUCTIONS.md GOVERNANCE section:
 - Credential-class carve-out (1st-occurrence promotion for secret-leak failure modes)
 - Promotion tracking convention (this `### Promotions` subsection pattern)
 
+
+## S73 (2026-04-29) — carryforward refactor + 393-unavail diagnosis (no entities cleared)
+
+### Technical
+
+**Apollo MSR-1 ESP-button-not-rebooting (1st occurrence — note for promotion if recurs):**
+- ESPHome devices expose a `button.<device>_esp_reboot` entity that should restart the ESP.
+- This session: pressed `button.entry_room_r_pro_1_esp_reboot` via `ha_call_service(button.press)`, service returned success with new last_changed timestamp, but the ESP's uptime sensor did NOT reset and downstream sensors stayed in their pre-press state.
+- Possible causes: (a) ESPHome firmware on the device has the reboot button defined but its action is misconfigured/no-op; (b) HA→ESPHome auth lapsed; (c) device rejects the command at firmware layer.
+- Workaround paths for S74: try integration-level config entry reload first; if that fails, hit dashboard direct reboot.
+- Watch for this pattern on other ESPHome devices in S74+. If 2nd occurrence: promote to INSTRUCTIONS as "ESPHome reboot via HA button is unreliable; use integration reload or dashboard."
+
+**Template ghost pattern (NEW — analog of S45 ghost script):**
+- Template entities with `platform: template`, `attributes.restored: true`, and state `unavailable` AND no yaml definition in `/config/packages/`, `/config/templates.yaml`, or `/config/configuration.yaml` are GHOSTS.
+- Origin: a previous package refactor renamed/removed the yaml that defined them; their entity registry entries persist with last-known state (loaded from recorder DB on each restart, never refreshed by source).
+- Fix: same as S45 ghost-script pattern — `ha_remove_entity`. NOT yaml work, NOT package work; the yaml is already correct (no definition exists).
+- Detection query: REST API `/api/states`, filter `state == "unavailable"` AND `attributes.restored == true`. Confirmed 22 ghosts in this session.
+- 1st occurrence of TEMPLATE-platform variant of this pattern. S45 was script-platform. Likely promotable to a generic "GHOST ENTITY pattern" rule when 2nd occurrence happens.
+
+**Carryforward refactor (S72-flagged retro item, executed S73):**
+- Single-instance carryforward block was being copy-pasted across HANDOFF.md every session — three sessions of identical text in different commits.
+- Fix: extract to `/config/CARRYFORWARD.md`, lightly versioned, edited only when items resolve. HANDOFF references it instead of duplicating.
+- AndroidTV "DO NOT DELETE" was MIS-classified as carryforward — it's a standing rule, moved to INSTRUCTIONS.md NEVER DO.
+- Net: ~15 lines saved per HANDOFF, single source of truth for open items, pattern transfers cleanly to other long-running projects.
+
+**Pre-flight assumption-checking (S71 REGEX PRE-FLIGHT rule paying off):**
+- This session: my "Inovelli config" hypothesis for `number.*`/`select.*` filter promotion was WRONG. Pre-flight (listing actual entity_ids) showed they track real device problems. Filtering would hide signal.
+- Cost of pre-flight: one extra terminal dump (~15 sec). Cost of skipping: would have shipped a filter that hides Apollo, Yamaha, ratgdo, and dual-plug failure modes.
+- This is the second time pre-flight saved a wrong move (S71 was the first — `=== UNAVAIL ===` regex was wrong header). 2nd occurrence on the value of pre-flight; the rule itself is established (S71-promoted) so this just confirms it's working.
+
+### Workflow / governance
+
+**Diagnosis-only sessions are valid sessions:**
+- S73 ended with NET ZERO entities cleared from 394. That looks bad in a benchmark column.
+- But: 3 wrong assumptions corrected (filter promotion non-viable, Apollo not "device offline", Yamaha partial-state mid-air), 1 new pattern discovered (template ghosts), 1 unblock-needed item identified (ESP-button broken).
+- The DIAGNOSTIC DISCIPLINE rule (S71-promoted, provenance clause) means: a session that shifted understanding without changing state isn't a wasted session — it's the foundation that lets the NEXT session ship a real fix.
+- HANDOFF needs a "Diagnosis value" framing alongside numerical reductions, otherwise diagnosis-heavy sessions look like failures. Worth noting for HANDOFF template iteration.
+
+**Tool-loading cost (1st occurrence — note for promotion if recurs):**
+- This session needed: `ha_call_service`, `ha_get_state`, `ha_get_entity`, `ha_get_integration`. Loaded them in three separate `tool_search` calls instead of one batch.
+- Ideal pattern: at session start, after init, do ONE batched `tool_search` covering all anticipated tool categories.
+- Counter-pattern observed this session: `ha_get_integration` was not surfaced even when I searched for it specifically, suggesting tool_search ranking is keyword-sensitive in non-obvious ways.
+- Promotion candidate if this recurs in S74. For now, just a note.

@@ -40,7 +40,7 @@ BASELINE → SCOPE → DUMP → RESEARCH → ANALYZE+OPTIONS → DECIDE → EXEC
 ## SESSION CLOSE PROTOCOL
 On EVERY close, Claude executes without being asked. If user says "close" / "wrap" / signals end:
   1. Verify acceptance criteria for goal
-  2. Generate HANDOFF.md heredoc (overwrites — captures S<NN> only)
+  2. Generate HANDOFF.md heredoc (overwrites — captures S<NN> only; references CARRYFORWARD.md rather than duplicating it). If a carryforward item resolved this session, also update CARRYFORWARD.md to remove it.
   3. Generate LEARNINGS.md heredoc (appends — new learnings + workflow lessons + any `### Promotions` subsection)
   4. User pastes both in browser terminal
   5. After confirmation: stage, commit, push via MCP `shell_command.git_push`
@@ -77,6 +77,7 @@ Every 5 sessions: review LEARNINGS.md to promote mature learnings into INSTRUCTI
 
 ## NEVER DO
 - Commands targeting Green (`192.168.1.3`) — decommissioned
+- Delete or remove the AndroidTV at `192.168.1.17` from any registry (project-essential device)
 - Create UI automation before stripping any conflicting YAML
 - Auto-cycle garage door (no automation should toggle it without explicit human trigger)
 - Edit `.storage/*` while HA is running
@@ -87,7 +88,8 @@ Every 5 sessions: review LEARNINGS.md to promote mature learnings into INSTRUCTI
 
 ## POINTERS (current state lives in files, not here)
 - **INSTRUCTIONS.md** (this file): permanent rules, promoted from LEARNINGS via Two-Occurrence Rule + credential-class carve-out
-- **HANDOFF.md** (overwritten each session): current state, S<NN> work, S<NN+1> priority queue, carryforward, blocked, benchmark
+- **HANDOFF.md** (overwritten each session): current state, S<NN> work, S<NN+1> priority queue, blocked, benchmark. References CARRYFORWARD.md rather than duplicating it.
 - **LEARNINGS.md** (append-only): all accumulated learnings by session, with `### Promotions` subsections noting what each session promoted to INSTRUCTIONS.md
+- **CARRYFORWARD.md** (lightly versioned): persistent open items that span multiple sessions. Edited only when items resolve, not regenerated each session.
 - **HA_MASTER_PROJECT_PLAN.md** (project file): long-term migration plan
 - All session-specific state (current automation count, blocked items, etc.) is in HANDOFF.md — do not duplicate here

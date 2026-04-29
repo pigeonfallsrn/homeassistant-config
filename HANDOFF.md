@@ -1,78 +1,72 @@
-# HANDOFF — S72 → S73
+# HANDOFF — S73 → S74
 
-**Last commit:** (S72 close, this session)
-**Live counts:** 72 automations, 98 helpers, 14 template packages, 0 ghosts
+**Last commit:** (S73 close, this session)
+**Live counts:** 72 automations, 98 helpers, 14 template packages, 0 ghost scripts
 **HA path:** EQ14 sole instance, ha.myhomehub13.xyz via Cloudflare
 
 ---
 
-## S72 — INSTRUCTIONS.md governance foundation
+## S73 — carryforward refactor + 393-unavail diagnosis
 
-**Goal:** Promote S71 learnings into permanent rules + create versioned INSTRUCTIONS.md as source of truth, replacing chat-starter-paste fragility.
+**Goal:** Refactor carryforward into separate file; triage 393 unavail down via Apollo reboot + Inovelli filter promotion.
 
 **Done (verified):**
-- Created `/config/INSTRUCTIONS.md` (93 lines, 8.4KB) — captures full chat-starter rule set + 4 weaved-in patches. Verified live via `shell_command.read_instructions` smoke-test.
-- Promoted SECRET REQUEST PROTOCOL (credential-class carve-out, 1st-occurrence promotion) — under OPERATIONAL DEFENSES
-- Promoted REGEX PRE-FLIGHT — under SHELL RULES
-- Promoted DIAGNOSTIC DISCIPLINE provenance clause — extension of existing rule, OPERATIONAL DEFENSES
-- Promoted CONFIG EDIT WORKFLOW (own-session promotion) — new section between SHELL RULES and SESSION STARTER PROTOCOL. Mandates `ha_check_config` → `ha_reload_core` or `ha_restart` after any yaml edit.
-- Established Promotion tracking convention: each promoting session adds `### Promotions` subsection in LEARNINGS entry linking original learning header → INSTRUCTIONS section.
-- Established credential-class carve-out: any failure mode leaking secrets/tokens/PII promotes on 1st occurrence (asymmetric cost rule), bypassing Two-Occurrence Rule.
-- `configuration.yaml` line 98 trimmed: `mcp_session_init` no longer dumps HANDOFF.md (saves ~3KB per call forever — `read_handoff` already returns it). Verified live.
-- `configuration.yaml` line 98: added `read_instructions: 'cat /config/INSTRUCTIONS.md'`. Verified live via MCP smoke-test.
-- Full HA restart performed (required for shell_command binding registration). `ha_check_config` valid before restart. Restart took ~60-90s. Both new/changed bindings confirmed working post-restart.
+- Created `/config/CARRYFORWARD.md` (20 lines) — 8 open multi-session items extracted from HANDOFF.
+- Patched INSTRUCTIONS.md (95 lines, was 93): added AndroidTV to NEVER DO; updated POINTERS to include CARRYFORWARD.md; updated SESSION CLOSE PROTOCOL to reference CARRYFORWARD.md instead of duplicating.
+- HANDOFF.md no longer carries unchanged 9-line carryforward block. Saves ~15 lines/session.
+
+**Diagnosis (provenance: ha_get_state probe + grep audit, this session):**
+- **Inovelli filter promotion: NOT VIABLE.** Pre-flight revealed `number.*` (77) and `select.*` (16) entities track real device problems (Apollo LD2412 thresholds, Yamaha not-yet-on-EQ14, ratgdo orphans, dual-plug unreachables). Filtering would hide signal. S71 v2 filter is well-targeted; pushing further hides real data.
+- **Apollo MSR-1 (Entry Room R-PRO-1) — ~140 unavail entities:** ESP alive (uptime reporting fresh, ~7h), but LD2412 mmWave + SCD40 CO2 subsystems failed to re-establish after S72 HA restart. `button.entry_room_r_pro_1_esp_reboot` was pressed but did NOT restore subsystems (sensors still `unknown` post-press). Likely needs ESPHome integration reload OR direct dashboard reboot (not the HA-exposed button).
+- **Template ghost pattern (NEW):** `binary_sensor.first_floor_hallway_motion`, `binary_sensor.adults_only_home`, `sensor.alaina_minutes_until_wake`, `binary_sensor.first_floor_main_motion`, others — registry says `platform: template`, attributes show `restored: true`, state `unavailable`. NO yaml definition exists in /config/packages/, /config/templates.yaml, or /config/configuration.yaml. These are template-platform analogs of S45 ghost-script pattern. Total ghost count: 22 (per REST API count of `state==unavailable && restored==true` entities).
+- **Echo Dot — alexa_media platform:** `media_player.echo_dot_extra` truly `unavailable` (not unknown). Alexa Media Player integration broken or Echo unreachable. ~35 entities affected (alarms/timers/reminders chain).
+
+**Counts:**
+- Pre-S73: 393 unavail
+- Post-S73: 394 unavail (+1 from a state flip)
+- Net entities cleared: **0** — diagnosis-only session
+- Diagnosis value: 3 wrong assumptions corrected, 1 new pattern discovered (template ghosts)
 
 **Files touched:**
-- `/config/INSTRUCTIONS.md` (NEW, 93 lines)
-- `/config/configuration.yaml` (lines 98-99: trimmed `mcp_session_init`, added `read_instructions`)
-- `/config/HANDOFF.md` (this file, S72 close)
-- `/config/LEARNINGS.md` (S72 entry + ### Promotions subsection)
-
-**Provenance:**
-- INSTRUCTIONS.md baseline: chat-starter text from S71 message turn 1, captured verbatim, then patches weaved in.
-- All four patches verified live in INSTRUCTIONS.md via `shell_command.read_instructions` chat output (this session).
-- Trimmed init verified: `mcp_session_init` output ends at "DISK ===" no HANDOFF block.
+- `/config/CARRYFORWARD.md` (NEW, 20 lines)
+- `/config/INSTRUCTIONS.md` (3 patches, 93→95 lines)
+- `/config/HANDOFF.md` (this file, S73 close)
+- `/config/LEARNINGS.md` (S73 entry)
 
 ---
 
-## S73 priority queue
+## S74 priority queue
 
-**Top of queue: Triage the 393 unavail down to actionable list.**
-(Carried from S72 priority queue — deferred for governance work this session.)
-Post-S71 v2 filter domain breakdown:
-- sensor 172, number 77, switch 55, button 32, select 16, binary_sensor 16, light 10, media_player 6, tts 2, notify 2, conversation 2, stt 1, input_button 1, image 1
+**Top of queue: Apollo MSR-1 deep debug.**
+ESP is alive but LD2412 + SCD40 subsystems aren't streaming after HA restart. Try in order:
+1. `homeassistant.reload_config_entry` for the ESPHome integration entry covering this device (need `ha_get_integration` tool). If integration-level reload restores subsystems, this is the fix path for any future Apollo-style failures and worth promoting.
+2. ESPHome dashboard direct reboot (Settings → Add-ons → ESPHome → device → restart). This bypasses the HA-exposed button which appears non-functional.
+3. If neither works: check ESPHome device logs at the dashboard for what's actually failing.
+4. Once fixed, expect ~140 entities to clear.
 
-Likely real-signal clusters to attack first:
-- Template chain `binary_sensor._house_occupied` / `_kids_home` / `_home_alone` / `_john_home_alone` — probably cascading from one broken upstream (Michelle's missing device_tracker per carryforward?)
-- Apollo MSR-1 entry_room presence sensor (`entry_room_r_pro_1_ld2412_*`) — multi-entity unavail suggests offline or just-flashed
-- First-floor motion (`first_floor_hallway_motion`, `first_floor_main_motion`)
-- Music Assistant 7 entries (known carryforward — setup_error)
-- Inovelli `number.*` 77 + `select.*` 16 — likely diagnostic noise; promotion-to-EXCLUDE_RE candidates if clearly stateless
+**Second priority: Template ghost cleanup (22 entities).**
+S45 playbook: `ha_remove_entity` for each. Need to first verify they have no consumers (no automation, dashboard, or other template references), then bulk-remove. Should be fast once verified.
 
-**Other S73 candidates (lower priority):**
-- `mcp_session_init` v2: convert inline yaml to script file at `/config/hac/scripts/mcp_session_init.sh`, add ground-truth dump (live counts verification, latest health [1] summary line). Currently inline yaml — too brittle to extend cleanly.
-- `read_learnings_recent`: tail-200 lines version of read_learnings for token efficiency (full file is 790+ lines).
+**Third priority: Echo/Alexa Media Player investigation.**
+~35 entities. Likely root cause: Alexa Media Player config entry needs reload or the underlying Amazon credentials need refresh.
 
-**Suggested approach for top of queue:** terminal dump grouped by suspected root, then options A/B/C per cluster.
+**Fourth priority (deferred from S73): Yamaha cluster cleanup.**
+Some Yamaha satellite entities now show ENTITY_NOT_FOUND while the main media_player shows `state: off`. Carryforward says "not yet added to EQ14" but partial entities exist. Investigate whether to remove orphans or complete the integration add.
+
+**Open S74 candidates (lower priority, capture for governance review at S75):**
+- `mcp_session_init` v2 (script file with ground-truth dump)
+- `read_learnings_recent` (token-efficient last-N-lines)
+- Promote "rule before tool" pattern to INSTRUCTIONS (1st occurrence — workflow-class, not credential-class, so two-occurrence default applies; wait for S74-S75 to see if it recurs)
 
 ---
 
-## Carryforward (unchanged)
-
-- AndroidTV at 192.168.1.17 — DO NOT DELETE
-- Music Assistant in setup_error state
-- Michelle's device tracker missing (MAC `6a:9a:25:dd:82:f1`)
-- Ella: 20 entity_ids still named `iphone_40_*` — need rename
-- Ratgdo north: clean physical IR sensor lenses
-- Navien integration not yet added to EQ14
-- Yamaha RX-V671 not yet added to EQ14
-- NordPass backlog cleanup
-- Google Drive audit and reorganization
+## Carryforward
+See `/config/CARRYFORWARD.md`. No changes this session.
 
 ## Blocked
-None.
+- Apollo `button.entry_room_r_pro_1_esp_reboot` does not actually reboot the ESP (sensors stayed in pre-press state). Either the button's underlying ESPHome service is misconfigured or the ESP rejects the command. S74 needs to figure out why.
 
 ## Benchmark
-- `shell_command.read_instructions`: returncode 0, returns 8.4KB INSTRUCTIONS.md
-- `shell_command.mcp_session_init`: returncode 0, output trimmed (~280 bytes vs ~3.3KB pre-S72 — ~91% reduction)
-- HA restart cycle: ~60-90s, no automation impact noted
+- `shell_command.read_instructions`: returncode 0, returns INSTRUCTIONS.md (now 95 lines)
+- `shell_command.mcp_session_init`: ~280 bytes per call (S72 trim holding)
+- Health check: 394 unavail (no change, +1 vs S72 close due to state flip)
